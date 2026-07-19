@@ -40,9 +40,8 @@ Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt si
 `ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
 Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
 Typen vorgewählt sind. TypeScript erzeugt die Typauswahl aus `nativeShapeSchema`; Rust prüft die
-aktivierten Typen in derselben stabilen Reihenfolge. Kreis-, Rechteck-, Ellipsen- und
-Linienerkennung sind implementiert; noch nicht implementierte oder nicht eindeutig erkannte
-Konturen bleiben Pfade.
+aktivierten Typen in derselben stabilen Reihenfolge. Alle fünf Einzeldetektoren sind implementiert;
+nicht eindeutig erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -53,26 +52,22 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 - WebMCP-Inputschema.
 
 Der Rust-`ConversionResult` enthält den SVG-String und typisierte Shape-Zählungen. Die Web-App
-ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße sowie Pfad-, Kreis-,
-Rechteck-, Ellipsen- und Linienanzahl und den unveränderlichen Options-Snapshot des History-Runs.
+ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße sowie Pfad- und alle fünf
+Shape-Anzahlen und den unveränderlichen Options-Snapshot des History-Runs.
 
 Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
-Dateiname, Zielmaße, Pfad-, Kreis-, Rechteck-, Ellipsen- und Linienanzahl sowie Laufzeit. Run und
-Options-Snapshot sowie die zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der
-Sitzung monoton steigend. Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und
-verwaltet die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular.
+Dateiname, Zielmaße, Pfad- und alle fünf Shape-Anzahlen sowie Laufzeit. Run, Options-Snapshot und
+zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung monoton steigend.
+Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet die ausgewählte
+Run-ID getrennt vom aktuellen Eingabeformular.
 
 ## 4. Engine-Module
 
-Vorgesehene Core-Module:
+Der Core trennt Pipeline und Formerkennung, damit beide Quellen unter 1000 Zeilen bleiben:
 
 ```text
-config        Validierung und Defaults
-clustering    Adapter um visioncortex
-detect        Kreis, Ellipse, Rechteck, Linie, Polygon
-svg           deterministische Assembly und Escaping
-pipeline      Orchestrierung und Statistik
-error         öffentliche Fehlertypen
+lib.rs               Konfiguration, Pipeline, Fehler und Pfad-Fallback
+shape_detection.rs   Typen, Detektorreihenfolge, native SVG-Elemente und Statistik
 ```
 
 `visioncortex` wird als Abhängigkeit verwendet, nicht kopiert. Herkunft, Version und Lizenz
@@ -120,6 +115,13 @@ kürzere Seite wird zur Strichbreite, die Mittellinie der längeren Achse zu den
 schmale Cluster sind zuvor ausdrücklich vom Rechteckdetektor ausgeschlossen. Transparenz wird als
 `stroke-opacity` ausgegeben; Skalierung und Zahlenformat bleiben mit den gefüllten Formen
 identisch.
+
+Der Polygon-Detektor leitet für das aktuelle Dreiecksprofil aus jeder belegten Bildzeile die
+linke und rechte Kante ab. `PolygonSimplificationEpsilon` kapselt die zulässige Abweichung von
+2 Pixeln zur jeweiligen idealen Geraden. Die Clusterfläche darf höchstens acht Prozent von der
+abgeleiteten Dreiecksfläche abweichen. Gekrümmte oder komplexe Konturen überschreiten mindestens
+eine dieser Grenzen und bleiben Pfade. Die ausgegebene Punktreihenfolge ist Spitze, rechts unten,
+links unten.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.

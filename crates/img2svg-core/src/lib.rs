@@ -1,12 +1,18 @@
 //! Deterministic browser-independent raster-to-SVG core.
 
-use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::f64::consts::PI;
 use std::fmt;
 
 use visioncortex::color_clusters::{HIERARCHICAL_MAX, KeyingAction, Runner, RunnerConfig};
-use visioncortex::{BoundingRect, Color, ColorImage, PathSimplifyMode, PointF64};
+use visioncortex::{Color, ColorImage, PathSimplifyMode, PointF64};
+
+mod shape_detection;
+
+pub use shape_detection::{
+    NativeShapeKind, NativeShapeTypes, ShapeDetectionOptions, ShapeStatistics,
+};
+use shape_detection::{ShapeCandidate, detect_native_shape};
 
 const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (255, 0, 255),
@@ -18,13 +24,6 @@ const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (255, 255, 255),
     (1, 1, 1),
 ];
-const MINIMUM_NATIVE_SHAPE_SPAN_PIXELS: f64 = 4.0;
-const MAXIMUM_CIRCLE_ASPECT_ERROR: f64 = 0.03;
-const MAXIMUM_ELLIPTIC_AREA_ERROR: f64 = 0.08;
-const MAXIMUM_ELLIPSE_OCCUPANCY_ERROR: f64 = 0.08;
-const MAXIMUM_FILLED_BOX_AREA_ERROR: f64 = 0.02;
-const MINIMUM_LINE_ASPECT_RATIO: f64 = 4.0;
-const MINIMUM_RECTANGLE_ASPECT_RATIO: f64 = 0.1;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConversionErrorCode {
@@ -39,158 +38,6 @@ pub enum ConversionOptionError {
     ColorPrecision,
     FilterSpeckle,
     ScalePercent,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum NativeShapeKind {
-    Circle,
-    Rectangle,
-    Ellipse,
-    Line,
-    Polygon,
-}
-
-impl NativeShapeKind {
-    const ORDERED: [Self; 5] = [
-        Self::Circle,
-        Self::Rectangle,
-        Self::Ellipse,
-        Self::Line,
-        Self::Polygon,
-    ];
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct NativeShapeTypes {
-    circle: bool,
-    ellipse: bool,
-    line: bool,
-    polygon: bool,
-    rectangle: bool,
-}
-
-impl NativeShapeTypes {
-    const CIRCLE_FLAG: u32 = 1 << 0;
-    const RECTANGLE_FLAG: u32 = 1 << 1;
-    const ELLIPSE_FLAG: u32 = 1 << 2;
-    const LINE_FLAG: u32 = 1 << 3;
-    const POLYGON_FLAG: u32 = 1 << 4;
-
-    pub const fn new(
-        circle: bool,
-        rectangle: bool,
-        ellipse: bool,
-        line: bool,
-        polygon: bool,
-    ) -> Self {
-        Self {
-            circle,
-            ellipse,
-            line,
-            polygon,
-            rectangle,
-        }
-    }
-
-    pub const fn all() -> Self {
-        Self::new(true, true, true, true, true)
-    }
-
-    pub const fn from_flags(flags: u32) -> Self {
-        Self::new(
-            flags & Self::CIRCLE_FLAG != 0,
-            flags & Self::RECTANGLE_FLAG != 0,
-            flags & Self::ELLIPSE_FLAG != 0,
-            flags & Self::LINE_FLAG != 0,
-            flags & Self::POLYGON_FLAG != 0,
-        )
-    }
-
-    pub const fn is_enabled(self, shape: NativeShapeKind) -> bool {
-        match shape {
-            NativeShapeKind::Circle => self.circle,
-            NativeShapeKind::Rectangle => self.rectangle,
-            NativeShapeKind::Ellipse => self.ellipse,
-            NativeShapeKind::Line => self.line,
-            NativeShapeKind::Polygon => self.polygon,
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ShapeDetectionOptions {
-    enabled: bool,
-    types: NativeShapeTypes,
-}
-
-impl ShapeDetectionOptions {
-    const ENABLED_FLAG: u32 = 1 << 5;
-
-    pub const fn new(enabled: bool, types: NativeShapeTypes) -> Self {
-        Self { enabled, types }
-    }
-
-    pub const fn enabled(self) -> bool {
-        self.enabled
-    }
-
-    pub const fn types(self) -> NativeShapeTypes {
-        self.types
-    }
-
-    pub const fn from_flags(flags: u32) -> Self {
-        Self::new(
-            flags & Self::ENABLED_FLAG != 0,
-            NativeShapeTypes::from_flags(flags),
-        )
-    }
-}
-
-impl Default for ShapeDetectionOptions {
-    fn default() -> Self {
-        Self::new(false, NativeShapeTypes::all())
-    }
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct ShapeStatistics {
-    circles: usize,
-    ellipses: usize,
-    lines: usize,
-    polygons: usize,
-    rectangles: usize,
-}
-
-impl ShapeStatistics {
-    pub const fn circles(self) -> usize {
-        self.circles
-    }
-
-    pub const fn ellipses(self) -> usize {
-        self.ellipses
-    }
-
-    pub const fn lines(self) -> usize {
-        self.lines
-    }
-
-    pub const fn polygons(self) -> usize {
-        self.polygons
-    }
-
-    pub const fn rectangles(self) -> usize {
-        self.rectangles
-    }
-
-    fn record(&mut self, shape: NativeShapeKind) {
-        match shape {
-            NativeShapeKind::Circle => self.circles += 1,
-            NativeShapeKind::Rectangle => self.rectangles += 1,
-            NativeShapeKind::Ellipse => self.ellipses += 1,
-            NativeShapeKind::Line => self.lines += 1,
-            NativeShapeKind::Polygon => self.polygons += 1,
-        }
-    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -442,334 +289,6 @@ pub fn convert_rgba_with_options_result(
     })
 }
 
-#[derive(Clone, Copy)]
-struct ShapeCandidate<'a> {
-    area: usize,
-    cluster_color: Color,
-    indices: &'a [u32],
-    pixels: &'a [u8],
-    rect: BoundingRect,
-    scale_percent: u16,
-    source_width: usize,
-}
-
-struct DetectedShape {
-    kind: NativeShapeKind,
-    svg: String,
-}
-
-fn detect_native_shape(
-    candidate: ShapeCandidate<'_>,
-    options: ShapeDetectionOptions,
-) -> Option<DetectedShape> {
-    if !options.enabled() {
-        return None;
-    }
-
-    NativeShapeKind::ORDERED
-        .into_iter()
-        .filter(|shape| options.types().is_enabled(*shape))
-        .find_map(|shape| detect_shape(shape, candidate))
-}
-
-fn detect_shape(shape: NativeShapeKind, candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
-    match shape {
-        NativeShapeKind::Circle => detect_circle(candidate),
-        NativeShapeKind::Rectangle => detect_rectangle(candidate),
-        NativeShapeKind::Ellipse => detect_ellipse(candidate),
-        NativeShapeKind::Line => detect_line(candidate),
-        NativeShapeKind::Polygon => None,
-    }
-}
-
-fn detect_rectangle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
-    let width = f64::from(candidate.rect.width());
-    let height = f64::from(candidate.rect.height());
-    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
-        return None;
-    }
-
-    let expected_area = width * height;
-    let area_error = relative_area_error(candidate.area, expected_area);
-    let aspect_ratio = width.min(height) / width.max(height);
-    // Thin filled clusters remain available for the dedicated line detector instead of becoming rectangles.
-    if area_error > MAXIMUM_FILLED_BOX_AREA_ERROR || aspect_ratio < MINIMUM_RECTANGLE_ASPECT_RATIO {
-        return None;
-    }
-
-    Some(DetectedShape {
-        kind: NativeShapeKind::Rectangle,
-        svg: svg_rectangle(
-            f64::from(candidate.rect.left),
-            f64::from(candidate.rect.top),
-            width,
-            height,
-            dominant_color(candidate),
-            candidate.scale_percent,
-        ),
-    })
-}
-
-fn detect_line(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
-    let width = f64::from(candidate.rect.width());
-    let height = f64::from(candidate.rect.height());
-    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
-        return None;
-    }
-
-    let aspect_ratio = width.max(height) / width.min(height);
-    let expected_area = width * height;
-    if aspect_ratio < MINIMUM_LINE_ASPECT_RATIO
-        || relative_area_error(candidate.area, expected_area) > MAXIMUM_FILLED_BOX_AREA_ERROR
-    {
-        return None;
-    }
-
-    let left = f64::from(candidate.rect.left);
-    let top = f64::from(candidate.rect.top);
-    let right = f64::from(candidate.rect.right);
-    let bottom = f64::from(candidate.rect.bottom);
-    let (start_x, start_y, end_x, end_y, stroke_width) = if width > height {
-        (left, top + height / 2.0, right, top + height / 2.0, height)
-    } else {
-        (left + width / 2.0, top, left + width / 2.0, bottom, width)
-    };
-
-    Some(DetectedShape {
-        kind: NativeShapeKind::Line,
-        svg: svg_line(
-            start_x,
-            start_y,
-            end_x,
-            end_y,
-            stroke_width,
-            dominant_color(candidate),
-            candidate.scale_percent,
-        ),
-    })
-}
-
-fn detect_circle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
-    let width = f64::from(candidate.rect.width());
-    let height = f64::from(candidate.rect.height());
-    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
-        return None;
-    }
-
-    let aspect_error = (width - height).abs() / width.max(height);
-    let expected_area = PI * width * height / 4.0;
-    let area_error = relative_area_error(candidate.area, expected_area);
-    // Tight independent bounds favor the lossless path fallback over false native geometry.
-    if aspect_error > MAXIMUM_CIRCLE_ASPECT_ERROR || area_error > MAXIMUM_ELLIPTIC_AREA_ERROR {
-        return None;
-    }
-
-    let center_x = (f64::from(candidate.rect.left) + f64::from(candidate.rect.right)) / 2.0;
-    let center_y = (f64::from(candidate.rect.top) + f64::from(candidate.rect.bottom)) / 2.0;
-    let radius = (width + height) / 4.0;
-    Some(DetectedShape {
-        kind: NativeShapeKind::Circle,
-        svg: svg_circle(
-            center_x,
-            center_y,
-            radius,
-            dominant_color(candidate),
-            candidate.scale_percent,
-        ),
-    })
-}
-
-fn detect_ellipse(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
-    let width = f64::from(candidate.rect.width());
-    let height = f64::from(candidate.rect.height());
-    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
-        return None;
-    }
-
-    let aspect_error = (width - height).abs() / width.max(height);
-    let expected_area = PI * width * height / 4.0;
-    if aspect_error <= MAXIMUM_CIRCLE_ASPECT_ERROR
-        || relative_area_error(candidate.area, expected_area) > MAXIMUM_ELLIPTIC_AREA_ERROR
-        || ellipse_occupancy_error(candidate, width, height) > MAXIMUM_ELLIPSE_OCCUPANCY_ERROR
-    {
-        return None;
-    }
-
-    Some(DetectedShape {
-        kind: NativeShapeKind::Ellipse,
-        svg: svg_ellipse(
-            (f64::from(candidate.rect.left) + f64::from(candidate.rect.right)) / 2.0,
-            (f64::from(candidate.rect.top) + f64::from(candidate.rect.bottom)) / 2.0,
-            width / 2.0,
-            height / 2.0,
-            dominant_color(candidate),
-            candidate.scale_percent,
-        ),
-    })
-}
-
-fn ellipse_occupancy_error(candidate: ShapeCandidate<'_>, width: f64, height: f64) -> f64 {
-    let actual_pixels = candidate
-        .indices
-        .iter()
-        .map(|index| *index as usize)
-        .collect::<BTreeSet<_>>();
-    let center_x = f64::from(candidate.rect.left) + width / 2.0;
-    let center_y = f64::from(candidate.rect.top) + height / 2.0;
-    let radius_x = width / 2.0;
-    let radius_y = height / 2.0;
-    let mut expected_pixel_count = 0_usize;
-    let mut mismatched_pixel_count = 0_usize;
-
-    for y in candidate.rect.top..candidate.rect.bottom {
-        for x in candidate.rect.left..candidate.rect.right {
-            let normalized_x = (f64::from(x) + 0.5 - center_x) / radius_x;
-            let normalized_y = (f64::from(y) + 0.5 - center_y) / radius_y;
-            let expected = normalized_x * normalized_x + normalized_y * normalized_y <= 1.0;
-            let pixel_index = y as usize * candidate.source_width + x as usize;
-            let actual = actual_pixels.contains(&pixel_index);
-            expected_pixel_count += usize::from(expected);
-            mismatched_pixel_count += usize::from(expected != actual);
-        }
-    }
-
-    // Comparing occupancy rejects jagged clusters that happen to share only area and bounds.
-    mismatched_pixel_count as f64 / expected_pixel_count.max(1) as f64
-}
-
-fn relative_area_error(actual_area: usize, expected_area: f64) -> f64 {
-    (actual_area as f64 - expected_area).abs() / expected_area
-}
-
-fn dominant_color(candidate: ShapeCandidate<'_>) -> Color {
-    let mut counts = BTreeMap::<[u8; 4], usize>::new();
-    for &pixel_index in candidate.indices {
-        let start = pixel_index as usize * 4;
-        if let Some(pixel) = candidate.pixels.get(start..start + 4) {
-            let rgba = [pixel[0], pixel[1], pixel[2], pixel[3]];
-            *counts.entry(rgba).or_default() += 1;
-        }
-    }
-
-    counts
-        .into_iter()
-        .max_by_key(|(_, count)| *count)
-        .map(|(rgba, _)| Color::new_rgba(rgba[0], rgba[1], rgba[2], rgba[3]))
-        .unwrap_or(candidate.cluster_color)
-}
-
-fn svg_circle(
-    center_x: f64,
-    center_y: f64,
-    radius: f64,
-    color: Color,
-    scale_percent: u16,
-) -> String {
-    let opacity = fill_opacity(color);
-    let transform = shape_scale_transform(scale_percent);
-    format!(
-        "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"{}\"{opacity}{transform}/>",
-        format_svg_number(center_x),
-        format_svg_number(center_y),
-        format_svg_number(radius),
-        color.to_hex_string()
-    )
-}
-
-fn svg_rectangle(
-    x: f64,
-    y: f64,
-    width: f64,
-    height: f64,
-    color: Color,
-    scale_percent: u16,
-) -> String {
-    let opacity = fill_opacity(color);
-    let transform = shape_scale_transform(scale_percent);
-    format!(
-        "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"{opacity}{transform}/>",
-        format_svg_number(x),
-        format_svg_number(y),
-        format_svg_number(width),
-        format_svg_number(height),
-        color.to_hex_string()
-    )
-}
-
-fn svg_ellipse(
-    center_x: f64,
-    center_y: f64,
-    radius_x: f64,
-    radius_y: f64,
-    color: Color,
-    scale_percent: u16,
-) -> String {
-    let opacity = fill_opacity(color);
-    let transform = shape_scale_transform(scale_percent);
-    format!(
-        "<ellipse cx=\"{}\" cy=\"{}\" rx=\"{}\" ry=\"{}\" fill=\"{}\"{opacity}{transform}/>",
-        format_svg_number(center_x),
-        format_svg_number(center_y),
-        format_svg_number(radius_x),
-        format_svg_number(radius_y),
-        color.to_hex_string()
-    )
-}
-
-fn svg_line(
-    start_x: f64,
-    start_y: f64,
-    end_x: f64,
-    end_y: f64,
-    stroke_width: f64,
-    color: Color,
-    scale_percent: u16,
-) -> String {
-    let opacity = stroke_opacity(color);
-    let transform = shape_scale_transform(scale_percent);
-    format!(
-        "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"{}\" stroke-width=\"{}\"{opacity}{transform}/>",
-        format_svg_number(start_x),
-        format_svg_number(start_y),
-        format_svg_number(end_x),
-        format_svg_number(end_y),
-        color.to_hex_string(),
-        format_svg_number(stroke_width)
-    )
-}
-
-fn fill_opacity(color: Color) -> String {
-    if color.a < 255 {
-        format!(" fill-opacity=\"{}\"", format_opacity(color.a))
-    } else {
-        String::new()
-    }
-}
-
-fn stroke_opacity(color: Color) -> String {
-    if color.a < 255 {
-        format!(" stroke-opacity=\"{}\"", format_opacity(color.a))
-    } else {
-        String::new()
-    }
-}
-
-fn shape_scale_transform(scale_percent: u16) -> String {
-    if scale_percent == 100 {
-        String::new()
-    } else {
-        format!(" transform=\"scale({})\"", scale_factor(scale_percent))
-    }
-}
-
-fn format_svg_number(value: f64) -> String {
-    let formatted = format!("{value:.2}");
-    formatted
-        .trim_end_matches('0')
-        .trim_end_matches('.')
-        .to_owned()
-}
-
 fn scaled_dimension(dimension: usize, scale_percent: u16) -> Result<usize, ConversionError> {
     dimension
         .checked_mul(usize::from(scale_percent))
@@ -840,7 +359,7 @@ fn svg_path(path_data: &str, color: Color, offset: PointF64, scale_percent: u16)
     )
 }
 
-fn scale_factor(scale_percent: u16) -> String {
+pub(crate) fn scale_factor(scale_percent: u16) -> String {
     let whole = scale_percent / 100;
     let fraction = scale_percent % 100;
     if fraction == 0 {
@@ -852,7 +371,7 @@ fn scale_factor(scale_percent: u16) -> String {
     }
 }
 
-fn format_opacity(alpha: u8) -> String {
+pub(crate) fn format_opacity(alpha: u8) -> String {
     let formatted = format!("{:.3}", f64::from(alpha) / 255.0);
     formatted
         .trim_end_matches('0')

@@ -46,6 +46,7 @@ function runInput(
     lineCount: 0,
     options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },
     pathCount: 1,
+    polygonCount: 0,
     rectangleCount: 0,
     svg: "<svg></svg>",
     widthPixels: 256,

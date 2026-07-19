@@ -9,6 +9,7 @@ export interface NewConversionRun {
   lineCount: number;
   options: ConversionOptions;
   pathCount: number;
+  polygonCount: number;
   rectangleCount: number;
   svg: string;
   widthPixels: number;

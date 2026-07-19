@@ -6,7 +6,7 @@ describe("SVG document metrics", () => {
     const svg = {
       getAttribute: (name: string) => ({ height: "256", width: "256" })[name] ?? null,
       querySelectorAll: (selector: string) => ({
-        length: ["circle", "ellipse", "line", "rect"].includes(selector) ? 1 : 0,
+        length: ["circle", "ellipse", "line", "polygon", "rect"].includes(selector) ? 1 : 0,
       }),
     } as unknown as Element;
 
@@ -16,6 +16,7 @@ describe("SVG document metrics", () => {
       heightPixels: 256,
       lineCount: 1,
       pathCount: 0,
+      polygonCount: 1,
       rectangleCount: 1,
       widthPixels: 256,
     });

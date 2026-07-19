@@ -72,23 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-06 — Polygone als native SVG-Elemente erkennen
-
-**Ergebnis:** Das Dreieck-Fixture erzeugt ein `<polygon>` innerhalb der Toleranz. Ein typisiertes
-Vereinfachungs-Epsilon begrenzt die Kontur; komplexe Freiformen fallen auf Pfade zurück.
-
-```gherkin
-Given das Dreieck-Fixture und nur die Polygonerkennung sind aktiv
-When das Bild konvertiert wird
-Then enthält das SVG genau ein natives Polygon mit drei erwarteten Punkten
-And eine Kontur außerhalb des Epsilon-Grenzwerts bleibt ein Pfad
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_polygon.rs` mit
-`cargo test -p img2svg-core --test detect_polygon`.
-
-**Dokumentation:** Handbuch „Native Polygone“ und Epsilon-Verhalten.
-
 ## SHAPE-07 — Gemischte Formen deterministisch ausgeben
 
 **Ergebnis:** Die gemischte Szene hält Detektorreihenfolge, Elementanzahl und Z-Reihenfolge

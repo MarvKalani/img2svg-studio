@@ -231,7 +231,18 @@ vertikale Cluster. Das Fixture wird als `<line>` von `x1="48"`, `y1="128"` nach 
 
 Die längere Seite muss mindestens viermal so groß wie die kürzere sein; die Fläche darf höchstens
 zwei Prozent vom Begrenzungsrahmen abweichen. Dadurch bleiben kompakte Formen Pfade und normale
-Rechtecke Rechtecke. Polygon folgt in einem eigenen geprüften Slice.
+Rechtecke Rechtecke.
+
+### Native Polygone
+
+Ist „Polygon“ aktiv, erkennt die Engine aktuell gefüllte aufrechte Dreiecke mit drei geraden
+Kanten. Das Fixture erzeugt `<polygon points="127.5,48 216,207 40,207">` und
+`fill="#EC4899"`. Alle Punkte liegen innerhalb der 2-Pixel-Manifesttoleranz; Status und History
+zeigen „1 Polygon“ und keinen Pfad.
+
+Ein typisiertes Vereinfachungs-Epsilon erlaubt pro linker und rechter Kante höchstens 2 Pixel
+Abweichung von der idealen Geraden. Zusätzlich darf die Clusterfläche höchstens acht Prozent von
+der Dreiecksfläche abweichen. Eine gekrümmte oder komplexe Kontur bleibt dadurch ein Pfad.
 
 ## KI-Manager
 
@@ -264,9 +275,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
 Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
-sicheren Pfad-Fallback. Kreis-, Rechteck-, Ellipsen- und Linienabnahme lesen das gemeinsame
-Manifest und prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort
-definierten 2-Pixel-Toleranz.
+sicheren Pfad-Fallback. Die Einzelabnahmen aller fünf Formtypen lesen das gemeinsame Manifest und
+prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
+2-Pixel-Toleranz.
 
 ## Datenschutz
 

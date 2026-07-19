@@ -127,6 +127,9 @@ function shapeMetrics(run: ConversionRun): string {
   if (run.lineCount > 0) {
     metrics.push(`${String(run.lineCount)} ${run.lineCount === 1 ? "Linie" : "Linien"}`);
   }
+  if (run.polygonCount > 0) {
+    metrics.push(`${String(run.polygonCount)} ${run.polygonCount === 1 ? "Polygon" : "Polygone"}`);
+  }
   return metrics.join(" · ");
 }
 

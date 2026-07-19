@@ -57,6 +57,7 @@ async function runConversion(
       metrics.circleCount,
       metrics.ellipseCount,
       metrics.lineCount,
+      metrics.polygonCount,
       metrics.rectangleCount,
     );
     recordRun({
@@ -80,6 +81,7 @@ function completedStatus(
   circleCount: number,
   ellipseCount: number,
   lineCount: number,
+  polygonCount: number,
   rectangleCount: number,
 ): string {
   const nativeShapes = [];
@@ -96,6 +98,9 @@ function completedStatus(
   }
   if (lineCount > 0) {
     nativeShapes.push(`${String(lineCount)} ${lineCount === 1 ? "Linie" : "Linien"}`);
+  }
+  if (polygonCount > 0) {
+    nativeShapes.push(`${String(polygonCount)} ${polygonCount === 1 ? "Polygon" : "Polygone"}`);
   }
   const nativeShapeStatus = nativeShapes.length > 0 ? ` · ${nativeShapes.join(" · ")}` : "";
   return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeShapeStatus}`;

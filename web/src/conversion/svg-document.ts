@@ -6,6 +6,7 @@ export interface SvgMetrics {
   heightPixels: number;
   lineCount: number;
   pathCount: number;
+  polygonCount: number;
   rectangleCount: number;
   widthPixels: number;
 }
@@ -32,6 +33,7 @@ export function readSvgMetrics(svg: Element): SvgMetrics {
     heightPixels,
     lineCount: svg.querySelectorAll("line").length,
     pathCount: svg.querySelectorAll("path").length,
+    polygonCount: svg.querySelectorAll("polygon").length,
     rectangleCount: svg.querySelectorAll("rect").length,
     widthPixels,
   };

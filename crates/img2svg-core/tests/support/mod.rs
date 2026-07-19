@@ -1,3 +1,6 @@
+// Every integration-test crate compiles this shared module and uses a different helper subset.
+#![allow(dead_code)]
+
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
@@ -6,8 +9,6 @@ use serde::Deserialize;
 
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-// Each integration-test crate reads a different subset of this shared manifest projection.
-#[allow(dead_code)]
 pub struct ExpectedShape {
     pub center_x: Option<f64>,
     pub center_y: Option<f64>,
@@ -16,6 +17,7 @@ pub struct ExpectedShape {
     pub end_y: Option<f64>,
     pub fill: Option<String>,
     pub height: Option<f64>,
+    pub points: Option<Vec<[f64; 2]>>,
     pub radius: Option<f64>,
     pub radius_x: Option<f64>,
     pub radius_y: Option<f64>,

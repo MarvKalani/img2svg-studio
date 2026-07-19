@@ -36,6 +36,7 @@ function run(id: number): ConversionRun {
     lineCount: 0,
     options: defaultConversionOptions,
     pathCount: 1,
+    polygonCount: 0,
     rectangleCount: 0,
     svg: "<svg></svg>",
     widthPixels: 256,
