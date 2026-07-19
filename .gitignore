@@ -1,0 +1,30 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Web / Node
+/node_modules/
+/web/node_modules/
+/web/dist/
+/web/src/wasm-pkg/
+
+# WASM build output
+/pkg/
+/dist/
+
+# Test and coverage output
+/coverage/
+/artifacts/
+/playwright-report/
+/test-results/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp

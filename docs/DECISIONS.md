@@ -1,0 +1,89 @@
+# Entscheidungsprotokoll
+
+Dieses Dokument hält verbindliche Entscheidungen fest. Änderungen erhalten einen neuen
+Eintrag oder markieren einen alten Eintrag ausdrücklich als ersetzt.
+
+## D-001 — Local-first ohne Anwendungs-Backend
+
+**Status:** entschieden
+
+Bildverarbeitung und Konvertierung laufen im Browser. Es gibt keine Upload-API, Telemetrie
+oder Nutzerkonten. Optionale Modell-Downloads sind sichtbar und werden separat behandelt.
+
+## D-002 — `visioncortex` als Fundament
+
+**Status:** entschieden
+
+Clustering und rohes Tracing verwenden `visioncortex` als reguläre Abhängigkeit. Die eigene
+Leistung liegt in Konfiguration, Detektoren, PathOptimizer, SVG-Assembly, Vergleichsworkflow,
+KI-Werkzeugen, WebMCP und UI. Abhängigkeit und Lizenz werden transparent genannt.
+
+## D-003 — Formerkennung als optionale Schicht
+
+**Status:** entschieden; ersetzt die starre Trennung in Pure und Smart
+
+Die robuste Pfad-Pipeline bleibt immer verfügbar. Native Formen werden global und pro Typ
+aktiviert. Presetnamen dürfen „Smart“ verwenden, die Engine modelliert jedoch einzelne
+Fähigkeiten statt zweier unflexibler Welten.
+
+## D-004 — Sichere Reststrategie
+
+**Status:** entschieden
+
+Nicht erkannte Inhalte bleiben standardmäßig optimierte Pfade. `ignore` und eingebettetes
+Raster sind explizite Alternativen; Hybrid-SVGs werden sichtbar gekennzeichnet.
+
+## D-005 — Web-Stack
+
+**Status:** entschieden
+
+Vite und TypeScript ohne schweres UI-Framework. Das reduziert Abhängigkeiten und hält Canvas-,
+Worker- und WebMCP-Integration direkt kontrollierbar. Diese Entscheidung darf überprüft
+werden, falls das UI dadurch nachweislich schwerer wartbar wird.
+
+## D-006 — Rust-Workspace
+
+**Status:** entschieden
+
+Core, WASM-Binding und CLI werden getrennte Crates. Die Core-Engine bleibt browserunabhängig
+und wird von WASM und CLI gleichermaßen verwendet.
+
+## D-007 — WebMCP als progressive Erweiterung
+
+**Status:** entschieden
+
+Die Anwendung funktioniert vollständig ohne WebMCP. Ein Adapter nutzt Feature Detection und
+die aktuelle `document.modelContext`-API. Tool-Aufrufe und UI verwenden dieselben Services.
+Ein sichtbarer Browser-Tab gehört zum vorgesehenen Agentenablauf.
+
+## D-008 — Größenmodell
+
+**Status:** entschieden
+
+Unverändert, Prozent, eigene Maße, Icon-Presets und HD/FHD/QHD/UHD sind Teil des Produkts.
+Das Seitenverhältnis ist standardmäßig gesperrt. KI-Upscaling folgt erst nach einem stabilen
+konventionellen Resampling.
+
+## D-009 — Lizenz des eigenen Projekts
+
+**Status:** offen, blockiert Veröffentlichung und Einreichung, nicht die lokale Entwicklung
+
+Ausgangswunsch ist BSL 1.1 mit späterem Wechsel zu Apache 2.0. Falls die Hackathon-Regeln eine
+OSI-Lizenz verlangen, soll die Einreichung direkt Apache 2.0 verwenden. Vor Veröffentlichung
+müssen die konkreten Regeln und die Entscheidung des Lizenzgebers dokumentiert werden.
+
+## D-010 — Binäre Eingabe für Browser-Agenten
+
+**Status:** entschieden für MVP
+
+Lokale Bilddateien werden über die sichtbare Datei-/Drop-Oberfläche geladen. WebMCP übernimmt
+Konfiguration, Konvertierung, Vergleich und Export nach dem Laden. Dadurch bleiben binäre
+Daten außerhalb großer JSON-Tool-Aufrufe. Ein Agent kann eine lokal erzeugte Datei über den
+Browser auswählen.
+
+## Noch zu klären
+
+- Welche konkrete Hackathon-Veranstaltung und welche Lizenz-/Einreichungsregeln gelten?
+- Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?
+- Sind MODNet und SAM Pflicht für die erste Einreichung oder ein nachgelagerter Meilenstein?
+- Welche zusätzlichen Rasterexporte sind neben PNG und WebP im Zielbrowser sinnvoll?
