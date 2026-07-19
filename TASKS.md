@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-04 — Modellressourcen zuverlässig freigeben und Fehler erholen
-
-**Ergebnis:** Entladen wartet auf Inferenz, beendet Session, Tensoren und Caches und meldet den
-tatsächlichen Endzustand. Abbruch, Offlinefehler und beschädigte Cache-Daten bleiben retrybar.
-
-```gherkin
-Given ein geladenes oder gerade verwendetes Modell
-When Entladen oder ein Ladefehler eintritt
-Then endet keine Operation dauerhaft in downloading oder initializing
-And alle besessenen Ressourcen werden einmal freigegeben und ein Retry bleibt möglich
-```
-
-**Ausführbare Abnahme:** `web/src/ai/model-lifecycle.test.ts` und
-`web/e2e/model-lifecycle.spec.ts`; `npm --prefix web test -- model-lifecycle.test.ts` und
-`npm --prefix web run test:e2e -- model-lifecycle.spec.ts`.
-
-**Dokumentation:** Handbuch-Fehlerbehebung und technische Ressourceninvarianten.
-
 ## SHAPE-08 — Vorhandene Visioncortex-Formerkennung gezielt nutzbar machen
 
 **Ergebnis:** Die öffentlichen `Shape`-Algorithmen aus `visioncortex` 0.8.10 für Kreis, Ellipse,

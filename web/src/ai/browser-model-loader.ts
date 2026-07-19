@@ -6,10 +6,10 @@ export function createBrowserModelLoader(): ModelLoader {
   const modnetLoader = createModnetModelLoader();
   const upcomingModelLoader = createDemoModelLoader();
   const loader: ModelLoader = {
-    load: (model, report) =>
+    load: (model, report, context) =>
       model.id === "modnet"
-        ? modnetLoader.load(model, report)
-        : upcomingModelLoader.load(model, report),
+        ? modnetLoader.load(model, report, context)
+        : upcomingModelLoader.load(model, report, context),
   };
   return Object.freeze(loader);
 }

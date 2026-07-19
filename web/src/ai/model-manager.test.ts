@@ -9,10 +9,10 @@ describe("model manager DOM contract", () => {
     [
       { status: "downloading", downloadedBytes: 12_944_544, totalBytes: 25_889_088 },
       "50 % geladen",
-      null,
+      "Abbrechen",
       50,
     ],
-    [{ status: "initializing" }, "Initialisierung …", null, null],
+    [{ status: "initializing" }, "Initialisierung …", "Abbrechen", null],
     [
       { status: "error", message: "controlled download failed" },
       "Fehler",
@@ -20,6 +20,7 @@ describe("model manager DOM contract", () => {
       null,
     ],
     [{ status: "ready", backend: "webgpu" }, "Bereit · WebGPU", "Entladen", null],
+    [{ status: "unloading" }, "Wird entladen …", null, null],
   ] as const)(
     "Given state $status, when presented, then its status, action, and progress are explicit",
     (state, statusText, actionLabel, progressPercent) => {

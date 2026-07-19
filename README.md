@@ -31,7 +31,8 @@ byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert. Der KI
 die beiden gepinnten Browsermodelle mit Größe und Lizenz und führt Laden, sichtbaren Fehler,
 Retry, Initialisierung, Bereitschaft und Entladen über eine typisierte Registry aus. MODNet lädt
 erst nach Nutzeraktion mit echtem Bytefortschritt, nutzt WebGPU mit WASM-Fallback und erzeugt die
-lokale Alpha-Freistellung als neues PNG.
+lokale Alpha-Freistellung als neues PNG. Modellabrufe sind abbrechbar, Artefakte werden gegen
+Größe und SHA-256 geprüft, und Entladen wartet auf laufende Inferenz vor der Freigabe.
 
 ## Lokal starten
 

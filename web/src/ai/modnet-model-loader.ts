@@ -5,6 +5,7 @@ import type {
   Tensor,
 } from "@huggingface/transformers";
 import type { RasterPixels } from "../conversion/read-raster-pixels";
+import { prepareModelArtifactCache, type ModelArtifactCache } from "./model-artifact-cache";
 import {
   type BrowserExecutionBackend,
   type BrowserModelDefinition,
@@ -22,19 +23,25 @@ type DownloadProgress = Readonly<{
 
 export function createModnetModelLoader(): ModelLoader {
   const loader: ModelLoader = {
-    load: async (model, report) => {
+    load: async (model, report, context) => {
       if (model.id !== "modnet") {
         throw new Error(`MODNet-Loader kann ${model.id} nicht laden.`);
       }
 
-      const transformers = await import("@huggingface/transformers");
-      configureLocalOnnxRuntime(transformers);
       const progress = createDownloadProgressReporter(model, report);
+      const artifactCache = await prepareModelArtifactCache(model, progress, context.signal);
+      context.signal.throwIfAborted();
+      const transformers = await import("@huggingface/transformers");
+      configureLocalOnnxRuntime(transformers, artifactCache);
       const processor = await transformers.AutoProcessor.from_pretrained(model.repository, {
-        progress_callback: progress,
+        local_files_only: true,
         revision: model.revision,
       });
-      const { backend, pretrainedModel } = await loadWithBestBackend(transformers, model, progress);
+      const { backend, pretrainedModel } = await loadWithBestBackend(
+        transformers,
+        model,
+        context.signal,
+      );
       report({ downloadedBytes: totalModelBytes(model), phase: "downloading" });
       report({ phase: "initializing" });
 
@@ -47,7 +54,10 @@ export function createModnetModelLoader(): ModelLoader {
   return Object.freeze(loader);
 }
 
-function configureLocalOnnxRuntime(transformers: TransformersModule): void {
+function configureLocalOnnxRuntime(
+  transformers: TransformersModule,
+  artifactCache: ModelArtifactCache,
+): void {
   // Transformers.js defaults to a CDN although Vite already ships the matching WASM asset.
   transformers.env.backends.onnx.wasm!.wasmPaths = {
     wasm: new URL(
@@ -55,6 +65,11 @@ function configureLocalOnnxRuntime(transformers: TransformersModule): void {
       import.meta.url,
     ).href,
   };
+  transformers.env.allowLocalModels = true;
+  transformers.env.allowRemoteModels = false;
+  transformers.env.useBrowserCache = false;
+  transformers.env.useCustomCache = true;
+  transformers.env.customCache = artifactCache;
   // ONNX reports intentional CPU assignments as warnings even when WebGPU runs the graph.
   transformers.env.backends.onnx.logLevel = "fatal";
 }
@@ -94,15 +109,16 @@ export function createDownloadProgressReporter(
 async function loadWithBestBackend(
   transformers: TransformersModule,
   model: BrowserModelDefinition,
-  progress: (progress: DownloadProgress) => void,
+  signal: AbortSignal,
 ): Promise<Readonly<{ backend: BrowserExecutionBackend; pretrainedModel: PreTrainedModel }>> {
   let lastError: unknown;
   for (const backend of availableBackends(model.runtime.backends)) {
+    signal.throwIfAborted();
     try {
       const pretrainedModel = await transformers.AutoModel.from_pretrained(model.repository, {
         device: backend,
         dtype: model.runtime.dataType,
-        progress_callback: progress,
+        local_files_only: true,
         revision: model.revision,
         // ORT assigns shape operations to CPU by design; surface only actionable session errors.
         session_options: { logSeverityLevel: 3 },

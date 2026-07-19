@@ -282,6 +282,24 @@ Manager-Testablauf.
 Gleichzeitige Lade- oder Entladebefehle für dasselbe Modell teilen sich eine Operation. Dadurch
 wird ein Modell einmal initialisiert und sein `dispose()` beim Entladen einmal ausgeführt.
 
+### Abbrechen, erneut versuchen und entladen
+
+Während Download und Initialisierung bietet die Modellkarte „Abbrechen“. Die Aktion beendet den
+aktiven Abruf und führt das Modell in „Nicht geladen“ zurück; „Laden“ startet danach einen neuen
+Versuch. Netzwerkfehler erscheinen mit einer verständlichen Meldung und „Erneut versuchen“.
+
+Jedes Modellartefakt wird vor der Initialisierung gegen Bytezahl und SHA-256 aus dem Manifest
+geprüft. Ein beschädigter Cache-Eintrag wird gezielt ersetzt. Der verifizierte Downloadcache
+bleibt für spätere Sitzungen erhalten, während „Entladen“ auf eine laufende Inferenz wartet und
+anschließend Tensoren, Session und flüchtige Modellressourcen freigibt. Die Karte zeigt während
+dieser Barriere „Wird entladen …“ und endet erst danach in „Nicht geladen“.
+
+Bei einem Verbindungsfehler:
+
+1. Netzwerkverbindung wiederherstellen.
+2. In der betroffenen Modellkarte „Erneut versuchen“ ausführen.
+3. Nach „Bereit · WebGPU“ oder „Bereit · WASM“ die KI-Aktion erneut starten.
+
 ## WebMCP
 
 In einem unterstützten Browser kann ein Agent dieselben sichtbaren Anwendungsdienste verwenden

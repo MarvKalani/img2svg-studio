@@ -16,9 +16,19 @@ export function createModnetAdapter(
   backend: BrowserExecutionBackend,
   session: ModnetSession,
 ): LoadedModnetModel {
+  let disposal: Promise<void> | undefined;
   return Object.freeze({
     backend,
-    dispose: () => session.dispose(),
+    dispose: () => {
+      disposal ??= Promise.resolve()
+        .then(() => session.dispose())
+        .catch((error: unknown) => {
+          // A failed close still owns resources, so a later retry must reach the session again.
+          disposal = undefined;
+          throw error;
+        });
+      return disposal;
+    },
     modelId: "modnet" as const,
     removeBackground: async (input: RasterPixels) =>
       applyAlphaMatte(input, await session.predictAlpha(input)),

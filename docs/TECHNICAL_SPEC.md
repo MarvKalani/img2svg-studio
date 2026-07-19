@@ -296,11 +296,13 @@ teilen dasselbe Lade-Promise. Fehler führen immer in einen sichtbaren `error`-Z
 Lizenzketten, Größen und Prüfsummen stehen in `docs/THIRD_PARTY.md`.
 
 `model-registry.ts` implementiert die disjunkte Zustandsmenge `not-loaded`, `downloading`,
-`initializing`, `ready` und `error`. Unveränderliche Snapshots enthalten ausschließlich
+`initializing`, `ready`, `unloading` und `error`. Unveränderliche Snapshots enthalten ausschließlich
 Modelldefinition und sichtbaren Zustand; Runtime-Handles bleiben intern. Je Modell deduplizieren
 separate Maps aktive Lade- und Entlade-Promises. Downloadfortschritt wird auf die manifestierte
-Gesamtgröße begrenzt. Erst nach erfolgreichem `dispose()` wird der Handle entfernt und
-`not-loaded` veröffentlicht.
+Gesamtgröße begrenzt. Ein `AbortController` gehört genau zu einem Ladeversuch. Entladen bricht ihn
+ab, sperrt neue Inferenz und wartet über eine Operationsmenge auf alle bereits gestarteten
+Aufrufe. Erst nach erfolgreichem `dispose()` wird der Handle entfernt und `not-loaded`
+veröffentlicht; ein Freigabefehler bleibt als retrybarer Fehler mit Handle erhalten.
 
 `model-manager.ts` projiziert jeden Snapshot in eine semantische Modellkarte mit `aria-live`,
 `progress`, verständlichem Fehler und genau der im Zustand zulässigen Aktion. Der MODNet-Loader
@@ -313,6 +315,18 @@ festgelegten ONNX-Graphen aus. Die Alpha-Matte wird bilinear auf die Originalma�
 mit dem vorhandenen Alpha-Kanal multipliziert; RGB bleibt unverändert. Das Ergebnis wird lokal
 als PNG codiert und über denselben validierten Bildladepfad wieder in den Workspace übernommen.
 SlimSAM verwendet bis zu seinem eigenen Funktionsslice den deterministischen Manager-Adapter.
+
+`model-artifact-cache.ts` lädt ausschließlich die manifestierten revisionsgebundenen URLs mit dem
+Abortsignal des Versuchs. Jeder Cache- und Netzwerk-Response wird vor der Verwendung gegen
+Bytezahl und SHA-256 geprüft. Ein abweichender Cache-Eintrag wird gelöscht und einmal frisch
+abgerufen. Erst die verifizierten Responses werden als eigener Transformers-Custom-Cache
+freigegeben; dessen anschließende Modellinitialisierung arbeitet ohne weitere Remote-Auflösung.
+Der persistente Artefaktcache gehört zum Downloadmanager und bleibt für Wiederverwendung erhalten.
+
+Der MODNet-Adapter macht `dispose()` idempotent. Die ONNX-Session wird damit auch bei parallelen
+Entladebefehlen einmal geschlossen. Eingabe- und Ausgabetensor werden pro Inferenz in `finally`
+freigegeben. MODNet besitzt keinen Embedding-Cache; künftige Modelle schließen ihre flüchtigen
+Embedding- und Maskencaches über denselben `LoadedBrowserModel.dispose()`-Vertrag.
 
 ## 9. Teststrategie
 

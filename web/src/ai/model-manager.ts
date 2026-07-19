@@ -41,14 +41,16 @@ export function modelManagerPresentation(
         (snapshot.state.downloadedBytes / snapshot.state.totalBytes) * 100,
       );
       return {
-        ...presentation(`${String(progressPercent)} % geladen`, null, null),
+        ...presentation(`${String(progressPercent)} % geladen`, "Abbrechen", "unload"),
         progressPercent,
       };
     }
     case "initializing":
-      return presentation("Initialisierung …", null, null);
+      return presentation("Initialisierung …", "Abbrechen", "unload");
     case "ready":
       return presentation(`Bereit · ${backendLabel(snapshot.state.backend)}`, "Entladen", "unload");
+    case "unloading":
+      return presentation("Wird entladen …", null, null);
     case "error":
       return {
         ...presentation("Fehler", "Erneut versuchen", "retry"),
