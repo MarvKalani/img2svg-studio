@@ -69,7 +69,7 @@ function presentation(
 
 function modelCard(snapshot: ModelRegistrySnapshot, registry: ModelRegistry): HTMLElement {
   const view = modelManagerPresentation(snapshot);
-  const card = document.createElement("article");
+  const card = document.createElement("div");
   card.className = "model-card";
   card.dataset.modelId = snapshot.model.id;
   card.dataset.modelState = snapshot.state.status;

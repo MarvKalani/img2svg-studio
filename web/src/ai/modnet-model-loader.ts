@@ -5,21 +5,20 @@ import type {
   Tensor,
 } from "@huggingface/transformers";
 import type { RasterPixels } from "../conversion/read-raster-pixels";
-import { prepareModelArtifactCache, type ModelArtifactCache } from "./model-artifact-cache";
+import { prepareModelArtifactCache } from "./model-artifact-cache";
+import { createDownloadProgressReporter } from "./model-download-progress";
 import {
   type BrowserExecutionBackend,
   type BrowserModelDefinition,
   totalModelBytes,
 } from "./model-manifest";
 import { createModnetAdapter, type ModnetSession } from "./modnet-adapter";
-import type { ModelLoader, ModelLoadUpdate } from "./model-registry";
-
-type TransformersModule = typeof import("@huggingface/transformers");
-type DownloadProgress = Readonly<{
-  file?: string;
-  loaded?: number;
-  status: string;
-}>;
+import type { ModelLoader } from "./model-registry";
+import {
+  availableBackends,
+  configureLocalOnnxRuntime,
+  type TransformersModule,
+} from "./transformers-runtime";
 
 export function createModnetModelLoader(): ModelLoader {
   const loader: ModelLoader = {
@@ -54,58 +53,6 @@ export function createModnetModelLoader(): ModelLoader {
   return Object.freeze(loader);
 }
 
-function configureLocalOnnxRuntime(
-  transformers: TransformersModule,
-  artifactCache: ModelArtifactCache,
-): void {
-  // Transformers.js defaults to a CDN although Vite already ships the matching WASM asset.
-  transformers.env.backends.onnx.wasm!.wasmPaths = {
-    wasm: new URL(
-      "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm",
-      import.meta.url,
-    ).href,
-  };
-  transformers.env.allowLocalModels = true;
-  transformers.env.allowRemoteModels = false;
-  transformers.env.useBrowserCache = false;
-  transformers.env.useCustomCache = true;
-  transformers.env.customCache = artifactCache;
-  // ONNX reports intentional CPU assignments as warnings even when WebGPU runs the graph.
-  transformers.env.backends.onnx.logLevel = "fatal";
-}
-
-export function createDownloadProgressReporter(
-  model: BrowserModelDefinition,
-  report: (update: ModelLoadUpdate) => void,
-): (progress: DownloadProgress) => void {
-  const downloadedByPath = new Map(model.files.map((file) => [file.path, 0]));
-
-  return (progress): void => {
-    const artifact = model.files.find(
-      (file) => progress.file === file.path || progress.file?.endsWith(`/${file.path}`),
-    );
-    if (!artifact) {
-      return;
-    }
-
-    const reportedBytes =
-      progress.status === "done"
-        ? artifact.bytes
-        : progress.status === "progress" && Number.isFinite(progress.loaded)
-          ? Math.min(Math.max(progress.loaded ?? 0, 0), artifact.bytes)
-          : (downloadedByPath.get(artifact.path) ?? 0);
-    downloadedByPath.set(
-      artifact.path,
-      Math.max(downloadedByPath.get(artifact.path) ?? 0, reportedBytes),
-    );
-    const downloadedBytes = [...downloadedByPath.values()].reduce(
-      (total, bytes) => total + bytes,
-      0,
-    );
-    report({ downloadedBytes, phase: "downloading" });
-  };
-}
-
 async function loadWithBestBackend(
   transformers: TransformersModule,
   model: BrowserModelDefinition,
@@ -131,14 +78,6 @@ async function loadWithBestBackend(
   throw lastError instanceof Error
     ? lastError
     : new Error("MODNet konnte mit keinem Browser-Backend initialisiert werden.");
-}
-
-function availableBackends(
-  configuredBackends: readonly BrowserExecutionBackend[],
-): readonly BrowserExecutionBackend[] {
-  return configuredBackends.filter(
-    (backend) => backend !== "webgpu" || (typeof navigator !== "undefined" && "gpu" in navigator),
-  );
 }
 
 function createTransformersSession(

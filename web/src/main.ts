@@ -4,6 +4,7 @@ import { createBrowserModelLoader } from "./ai/browser-model-loader";
 import { browserModelManifest } from "./ai/model-manifest";
 import { initializeModelManager } from "./ai/model-manager";
 import { createModelRegistry } from "./ai/model-registry";
+import { initializeSmartSelect } from "./ai/smart-select-controller";
 import { initializeCompare } from "./compare/compare-controller";
 import { createCompareSelection } from "./compare/compare-selection";
 import { initializeConversion } from "./conversion/conversion-controller";
@@ -24,11 +25,14 @@ const historyController = initializeHistory(
   compareController,
 );
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
+let smartSelect: ReturnType<typeof initializeSmartSelect>;
 const imageLoader = initializeImageLoader(imageStore, (image) => {
   optionsController.showSourceDimensions(image);
   backgroundRemoval.imageLoaded();
+  smartSelect.imageLoaded();
 });
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
+smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload(imageStore);
 initializeModelManager(modelRegistry);

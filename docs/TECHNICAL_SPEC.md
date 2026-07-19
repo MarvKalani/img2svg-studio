@@ -345,7 +345,22 @@ Der Hintergrundadapter liest RGBA lokal, bereitet RGB über `AutoProcessor` auf 
 festgelegten ONNX-Graphen aus. Die Alpha-Matte wird bilinear auf die Originalmaße skaliert und
 mit dem vorhandenen Alpha-Kanal multipliziert; RGB bleibt unverändert. Das Ergebnis wird lokal
 als PNG codiert und über denselben validierten Bildladepfad wieder in den Workspace übernommen.
-SlimSAM verwendet bis zu seinem eigenen Funktionsslice den deterministischen Manager-Adapter.
+MODNet und SlimSAM teilen Runtime-Konfiguration, verifizierten Artefaktcache, Fortschrittsadapter
+und PNG-Encoder, ohne ihre Modellverträge zu vermischen.
+
+`sam-model-loader.ts` lädt nach expliziter Nutzeraktion die beiden revisionsgebundenen
+SlimSAM-FP16-Graphen ausschließlich über WebGPU. Pro Auswahl verarbeitet `AutoProcessor` das
+lokale RGBA einmal und der Vision Encoder erzeugt Bild- und Positions-Embedding. Jeder weitere
+Punkt verwendet dieselben Embeddings im Prompt-/Mask-Decoder. Vordergrundpunkte werden als Label
+1, Hintergrundpunkte als Label 0 und alle Koordinaten über die Prozessor-Maße in den 1024er
+Modellraum übertragen. Von drei postprozessierten Masken in Originalgröße wird deterministisch
+die Maske mit dem höchsten IoU-Wert übernommen.
+
+`smart-select-controller.ts` bildet die tatsächliche `object-fit: contain`-Bildfläche auf ein
+Canvas in Originalauflösung ab. Maske und typisierte DOM-Punktmarker teilen damit exakt dieselbe
+Geometrie. Punkte akkumulieren, während eine Inferenz läuft keine konkurrierende Aktualisierung.
+Invertieren ändert nur die sichtbare und anzuwendende Polarität. Anwenden nullt den Alpha-Kanal
+außerhalb der gewählten Maske; Verwerfen berührt weder `ImageStore` noch History.
 
 `model-artifact-cache.ts` lädt ausschließlich die manifestierten revisionsgebundenen URLs mit dem
 Abortsignal des Versuchs. Jeder Cache- und Netzwerk-Response wird vor der Verwendung gegen
@@ -354,10 +369,11 @@ abgerufen. Erst die verifizierten Responses werden als eigener Transformers-Cust
 freigegeben; dessen anschließende Modellinitialisierung arbeitet ohne weitere Remote-Auflösung.
 Der persistente Artefaktcache gehört zum Downloadmanager und bleibt für Wiederverwendung erhalten.
 
-Der MODNet-Adapter macht `dispose()` idempotent. Die ONNX-Session wird damit auch bei parallelen
-Entladebefehlen einmal geschlossen. Eingabe- und Ausgabetensor werden pro Inferenz in `finally`
-freigegeben. MODNet besitzt keinen Embedding-Cache; künftige Modelle schließen ihre flüchtigen
-Embedding- und Maskencaches über denselben `LoadedBrowserModel.dispose()`-Vertrag.
+Die Modelladapter machen `dispose()` idempotent. MODNet schließt seine ONNX-Session einmal und
+gibt Ein- und Ausgabetensoren pro Inferenz in `finally` frei. SlimSAM wartet auf eine aktive
+Maskenaktualisierung, gibt Punkt-/Label-/Maskentensoren pro Vorhersage und beide Embeddings beim
+Beenden der Auswahl frei. Beim Modellentladen beendet der Adapter alle noch offenen Auswahlen vor
+den beiden ONNX-Sessions.
 
 ## 9. Teststrategie
 

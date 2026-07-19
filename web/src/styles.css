@@ -258,6 +258,11 @@ a:focus-visible {
   font-size: 0.77rem;
 }
 
+.source-actions {
+  display: grid;
+  gap: 0.35rem;
+}
+
 .image-error {
   grid-column: 1 / -1;
   margin: 0;

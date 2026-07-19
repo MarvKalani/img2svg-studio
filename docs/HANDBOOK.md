@@ -71,6 +71,10 @@ Homebrew-Installation den Rustup-Compiler für den WASM-Build mit
 „Bild wählen“ öffnet die lokale Dateiauswahl. Alternativ kann ein Bild auf die gestrichelte
 Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
 
+„Beispiel laden“ öffnet ohne Dateidialog die mitgelieferte geometrische Mixed-Fixture. Sie läuft
+über denselben Decoder und eignet sich für einen sofortigen Rundgang durch Konvertierung, History
+und A/B-Vergleich. Der Abruf bleibt auf der App-Origin und enthält keine Nutzerdaten.
+
 Unterstützt werden PNG, JPEG und WebP bis 25 MB. Nach erfolgreichem Laden zeigt die Oberfläche
 Dateiname, Format, echte Pixelmaße, eine Miniatur und die große Vorschau. Die Vorschau verwendet
 eine lokale `blob:`-URL; die Bilddaten werden nicht übertragen.
@@ -277,8 +281,25 @@ Bytefortschritt. Anschließend erscheint das tatsächlich verwendete Backend als
 Vorverarbeitung, Inferenz, Alpha-Maske und PNG-Erzeugung laufen lokal. Das Ergebnis wird als
 `<ausgangsname>-freigestellt.png` in den Workspace übernommen. MODNet bleibt für weitere Aufrufe
 im KI-Manager bereit und kann dort entladen werden. Ein Ladefehler bietet über denselben Manager
-einen erneuten Versuch. SlimSAM verwendet bis zu seinem Smart-Select-Slice den sichtbaren
-Manager-Testablauf.
+einen erneuten Versuch.
+
+### Smart Select
+
+Smart Select wird verfügbar, sobald ein Bild geladen und SlimSAM 77 Uniform im KI-Manager
+explizit auf „Bereit · WebGPU“ gebracht wurde. „Smart Select“ berechnet einmalig das lokale
+Bild-Embedding und legt eine deckungsgleiche, türkisfarbene Maskenebene über das Rasterbild.
+
+„+ Vordergrund“ setzt grüne Punkte auf Bereiche, die zur Auswahl gehören. „− Hintergrund“ setzt
+rote Korrekturpunkte auf Bereiche, die ausgeschlossen werden sollen. Jeder neue Punkt bleibt
+sichtbar, ergänzt alle vorherigen Punkte und aktualisiert die Maske. Der getestete Kernablauf
+verwendet zwei Vordergrundpunkte und einen Hintergrundpunkt.
+
+„Maske invertieren“ wechselt zwischen ausgewähltem und nicht ausgewähltem Bereich. „Anwenden“
+multipliziert die Maske mit dem vorhandenen Alpha-Kanal und lädt
+`<ausgangsname>-smart-select.png` in den Workspace. RGB-Werte bleiben unverändert. „Verwerfen“
+beendet die Auswahl und lässt Eingabebild sowie Conversion-History unverändert. Bild, Punkte,
+Embedding, Decoder und PNG-Erzeugung bleiben im Browser; Netzwerkzugriffe dienen ausschließlich
+dem bewusst gestarteten, revisionsgebundenen Modelldownload.
 
 Gleichzeitige Lade- oder Entladebefehle für dasselbe Modell teilen sich eine Operation. Dadurch
 wird ein Modell einmal initialisiert und sein `dispose()` beim Entladen einmal ausgeführt.

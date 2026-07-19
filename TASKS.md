@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-05 — SAM-Auswahl mit positiven und negativen Punkten liefern
-
-**Ergebnis:** Nach explizitem Modelldownload kann der Nutzer mindestens zwei positive und einen
-negativen Punkt setzen, die Maske verfeinern, invertieren, anwenden oder verwerfen.
-
-```gherkin
-Given SAM ist geladen und ein lokales Bild wird angezeigt
-When zwei positive und ein negativer Auswahlpunkt gesetzt werden
-Then zeigt die Arbeitsfläche Punkte und aktualisierte Maske deckungsgleich
-And Anwenden erzeugt RGBA, während Verwerfen Original und History unverändert lässt
-```
-
-**Ausführbare Abnahme:** `web/src/ai/sam-selection.test.ts` mit
-`npm --prefix web test -- sam-selection.test.ts`; realer Adapter- und Browserablauf in
-`web/e2e/smart-select.spec.ts` mit `npm --prefix web run test:ai -- smart-select.spec.ts`.
-
-**Dokumentation:** Handbuch „Smart Select“, Punktbedeutung, Anwenden und Beenden.
-
 ## AI-06 — KI-Ergebnis in Conversion und Vergleich übernehmen
 
 **Ergebnis:** Ein angewendetes MODNet- oder SAM-Ergebnis wird zur versionierten Eingabe des

@@ -8,6 +8,30 @@ const circleFixturePath = resolve(
 );
 const brokenFixturePath = resolve(import.meta.dirname, "../../fixtures/image-loading/broken.png");
 
+test("Given a fresh Studio, when the bundled example is chosen, then it enters the same local image workflow", async ({
+  page,
+}) => {
+  const crossOriginRequests: string[] = [];
+  page.on("request", (request) => {
+    const requestUrl = new URL(request.url());
+    if (requestUrl.origin !== "http://127.0.0.1:4173") {
+      crossOriginRequests.push(request.url());
+    }
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Beispiel laden" }).click();
+
+  await expect(page.getByText("mixed.png", { exact: true })).toBeVisible();
+  await expect(
+    page
+      .getByTestId("image-dropzone")
+      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Konvertieren" })).toBeEnabled();
+  expect(crossOriginRequests).toEqual([]);
+});
+
 test("Given a 256 by 256 PNG, when selected, then the same local image and dimensions are visible", async ({
   page,
 }) => {
@@ -18,7 +42,9 @@ test("Given a 256 by 256 PNG, when selected, then the same local image and dimen
 
   await expect(page.getByText("circle.png", { exact: true })).toBeVisible();
   await expect(
-    page.getByTestId("image-dropzone").getByText("256 × 256 · PNG", { exact: true }),
+    page
+      .getByTestId("image-dropzone")
+      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
   ).toBeVisible();
   const workspaceImage = page.getByTestId("workspace-raster-preview");
   await expect(workspaceImage).toBeVisible();
@@ -43,7 +69,9 @@ test("Given a 256 by 256 PNG, when dropped, then it uses the same visible loadin
 
   await expect(page.getByText("circle.png", { exact: true })).toBeVisible();
   await expect(
-    page.getByTestId("image-dropzone").getByText("256 × 256 · PNG", { exact: true }),
+    page
+      .getByTestId("image-dropzone")
+      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
   ).toBeVisible();
   await dataTransfer.dispose();
 });

@@ -49,7 +49,13 @@
               <strong id="source-name">Noch kein Bild</strong>
               <span id="source-metadata">PNG, JPEG oder WebP</span>
             </div>
-            <button id="image-select-button" type="button">Bild wählen</button>
+            <div class="source-actions">
+              <button id="image-select-button" type="button">Bild wählen</button>
+              <button id="load-example-image" type="button">Beispiel laden</button>
+              <button id="restore-original-image" type="button" hidden>
+                Original wiederherstellen
+              </button>
+            </div>
             <input
               id="image-input"
               class="visually-hidden"
@@ -163,6 +169,11 @@
               class="ai-tool-status"
               aria-live="polite"
             ></output>
+            <button id="smart-select" class="ai-tool-button" type="button" disabled>
+              <span aria-hidden="true">⌁</span>
+              Smart Select
+            </button>
+            <output id="smart-select-status" class="ai-tool-status" aria-live="polite"></output>
             <button
               id="model-manager-toggle"
               type="button"
@@ -193,6 +204,43 @@
                   alt=""
                   hidden
                 />
+                <div
+                  id="sam-selection-overlay"
+                  class="sam-selection-overlay"
+                  data-testid="sam-selection-overlay"
+                  hidden
+                >
+                  <canvas
+                    id="sam-mask-canvas"
+                    class="sam-mask-canvas"
+                    data-testid="sam-mask-canvas"
+                    aria-label="Smart-Select-Maske und Punktfläche"
+                  ></canvas>
+                  <div id="sam-selection-points" class="sam-selection-points"></div>
+                  <div class="sam-selection-toolbar" role="toolbar" aria-label="Smart Select">
+                    <button
+                      id="sam-positive-point"
+                      type="button"
+                      aria-pressed="true"
+                      title="Vordergrundpunkt setzen"
+                    >
+                      + Vordergrund
+                    </button>
+                    <button
+                      id="sam-negative-point"
+                      type="button"
+                      aria-pressed="false"
+                      title="Hintergrundpunkt setzen"
+                    >
+                      − Hintergrund
+                    </button>
+                    <button id="sam-invert-mask" type="button" aria-pressed="false" disabled>
+                      Maske invertieren
+                    </button>
+                    <button id="sam-apply-mask" type="button" disabled>Anwenden</button>
+                    <button id="sam-discard-mask" type="button">Verwerfen</button>
+                  </div>
+                </div>
                 <div
                   id="svg-output"
                   class="workspace-svg-output"
@@ -302,11 +350,11 @@
         </main>
       </div>
 
-      <footer class="statusbar" role="status" aria-label="Anwendungsstatus">
+      <div class="statusbar" role="status" aria-label="Anwendungsstatus">
         <span id="status-image"><strong>Bereit</strong> für ein lokales Bild</span>
         <span id="status-variant-count">0 Varianten</span>
         <span>Keine Netzwerkübertragung</span>
-      </footer>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

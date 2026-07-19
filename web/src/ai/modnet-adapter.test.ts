@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { RasterPixels } from "../conversion/read-raster-pixels";
 import { browserModelManifest, totalModelBytes } from "./model-manifest";
 import { applyAlphaMatte, createModnetAdapter, type ModnetSession } from "./modnet-adapter";
-import { createDownloadProgressReporter } from "./modnet-model-loader";
+import { createDownloadProgressReporter } from "./model-download-progress";
 import type { ModelLoadUpdate } from "./model-registry";
 
 describe("MODNet adapter", () => {

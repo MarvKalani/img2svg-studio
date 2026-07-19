@@ -1,11 +1,14 @@
-import { readRasterPixels, type RasterPixels } from "../conversion/read-raster-pixels";
+import { readRasterPixels } from "../conversion/read-raster-pixels";
 import type { ImageLoaderController } from "../image/image-loader";
 import type { ImageStore } from "../image/image-store";
+import { encodeRasterPng } from "./encode-raster-png";
 import { isLoadedModnetModel } from "./modnet-adapter";
 import type { ModelRegistry } from "./model-registry";
+import type { AiActionResult } from "./ai-action-result";
 
 export interface BackgroundRemovalController {
   imageLoaded(): void;
+  removeBackground(): Promise<AiActionResult>;
 }
 
 export function initializeBackgroundRemoval(
@@ -27,10 +30,13 @@ export function initializeBackgroundRemoval(
     void removeBackground();
   });
 
-  const removeBackground = async (): Promise<void> => {
+  async function removeBackground(): Promise<AiActionResult> {
     const source = imageStore.current();
-    if (!source || processing) {
-      return;
+    if (!source) {
+      return { message: "Es ist kein Eingabebild geladen.", ok: false };
+    }
+    if (processing) {
+      return { message: "Die Hintergrundentfernung läuft bereits.", ok: false };
     }
     processing = true;
     button.disabled = true;
@@ -58,46 +64,27 @@ export function initializeBackgroundRemoval(
         }
         return model.removeBackground(await readRasterPixels(source.file));
       });
-      const resultFile = await encodePng(result, resultFileName(source.file.name));
-      if (!(await imageLoader.load(resultFile))) {
+      if (imageStore.current() !== source) {
+        throw new Error("Das Eingabebild wurde während der Hintergrundentfernung gewechselt.");
+      }
+      const resultFile = await encodeRasterPng(result, resultFileName(source.file.name));
+      if (!(await imageLoader.loadAiVersion(resultFile))) {
         throw new Error("Das freigestellte PNG konnte nicht angezeigt werden.");
       }
       status.textContent = `Hintergrund lokal entfernt · ${backendLabel(loaded.state.backend)}`;
+      return { fileName: resultFile.name, ok: true };
     } catch (error) {
-      status.textContent = errorMessage(error);
+      const message = errorMessage(error);
+      status.textContent = message;
+      return { message, ok: false };
     } finally {
       processing = false;
       button.disabled = imageStore.current() === undefined;
       button.removeAttribute("aria-busy");
     }
-  };
-
-  return Object.freeze({ imageLoaded });
-}
-
-async function encodePng(pixels: RasterPixels, fileName: string): Promise<File> {
-  const canvas = document.createElement("canvas");
-  canvas.width = pixels.widthPixels;
-  canvas.height = pixels.heightPixels;
-  const context = canvas.getContext("2d");
-  if (!context) {
-    throw new Error("Der Browser konnte das KI-Ergebnis nicht als PNG speichern.");
   }
-  context.putImageData(
-    new ImageData(new Uint8ClampedArray(pixels.rgba), pixels.widthPixels, pixels.heightPixels),
-    0,
-    0,
-  );
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob((result) => {
-      if (result) {
-        resolve(result);
-      } else {
-        reject(new Error("Der Browser konnte das KI-Ergebnis nicht als PNG speichern."));
-      }
-    }, "image/png");
-  });
-  return new File([blob], fileName, { type: "image/png" });
+
+  return Object.freeze({ imageLoaded, removeBackground });
 }
 
 function resultFileName(sourceName: string): string {
