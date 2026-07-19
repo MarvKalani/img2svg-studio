@@ -1,22 +1,27 @@
 import { SupportedImageMimeType, decodeImage, type DecodedImage } from "./decode-image";
 import type { ImageStore } from "./image-store";
 
+export interface ImageLoaderController {
+  load(file: File): Promise<boolean>;
+}
+
 export function initializeImageLoader(
   imageStore: ImageStore,
   onImageLoaded: (image: DecodedImage) => void,
-): void {
+): ImageLoaderController {
   const elements = readImageLoaderElements();
 
-  const loadImage = async (file: File): Promise<void> => {
+  const loadImage = async (file: File): Promise<boolean> => {
     const result = await decodeImage(file);
     if (!result.ok) {
       showImageError(elements, result.error.message);
-      return;
+      return false;
     }
 
     imageStore.replace(file, result.image);
     onImageLoaded(result.image);
     showDecodedImage(elements, result.image);
+    return true;
   };
 
   elements.selectButton.addEventListener("click", () => elements.fileInput.click());
@@ -44,6 +49,7 @@ export function initializeImageLoader(
   });
 
   window.addEventListener("beforeunload", () => imageStore.dispose());
+  return Object.freeze({ load: loadImage });
 }
 
 interface ImageLoaderElements {

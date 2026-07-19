@@ -154,6 +154,15 @@
 
           <section class="control-panel ai-panel">
             <h2>KI-Werkzeuge</h2>
+            <button id="remove-background" class="ai-tool-button" type="button" disabled>
+              <span aria-hidden="true">◌</span>
+              Hintergrund entfernen
+            </button>
+            <output
+              id="background-removal-status"
+              class="ai-tool-status"
+              aria-live="polite"
+            ></output>
             <button
               id="model-manager-toggle"
               type="button"

@@ -9,12 +9,13 @@ Primärquellen und Prüfergebnisse.
 
 | Komponente | Version | Lizenz | Primärquelle |
 | --- | --- | --- | --- |
-| `@huggingface/transformers` | 4.2.0 | Apache-2.0 | [Release 4.2.0](https://github.com/huggingface/transformers.js/releases/tag/4.2.0) |
-| `onnxruntime-web` | 1.26.0-dev.20260416-b7804b056c | MIT | [npm-Paket](https://www.npmjs.com/package/onnxruntime-web/v/1.26.0-dev.20260416-b7804b056c) |
+| `@huggingface/transformers` | 3.8.1 | Apache-2.0 | [Release 3.8.1](https://github.com/huggingface/transformers.js/releases/tag/3.8.1) |
+| `onnxruntime-web` | 1.22.0-dev.20250409-89f8206ba4 | MIT | [npm-Paket](https://www.npmjs.com/package/onnxruntime-web/v/1.22.0-dev.20250409-89f8206ba4) |
 
-Transformers.js 4.2.0 bindet diese ONNX-Runtime-Version direkt ein. ONNX Runtime Web unterstützt
-`webgpu` und `wasm` als Browser-Execution-Provider. Die zu Runtime und WASM gehörenden Dateien
-werden immer aus derselben Paketversion ausgeliefert.
+Transformers.js 3.8.1 bindet diese ONNX-Runtime-Version direkt ein. Der exakte Paketstand ist
+ohne bekannte `npm audit`-Befunde installiert. ONNX Runtime Web unterstützt `webgpu` und `wasm`
+als Browser-Execution-Provider. Das passende WASM-Artefakt wird aus demselben lokalen Paketstand
+mit der Anwendung ausgeliefert.
 
 Primärquellen: [Transformers.js WebGPU](https://huggingface.co/docs/transformers.js/guides/webgpu),
 [ONNX Runtime WebGPU](https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html) und

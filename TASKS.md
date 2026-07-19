@@ -72,25 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-03 — MODNet laden und Hintergrund lokal entfernen
-
-**Ergebnis:** Erst nach Nutzeraktion lädt das festgelegte MODNet mit echtem Bytefortschritt,
-zeigt WebGPU/WASM-Backend und erzeugt lokal ein neues RGBA-Bild mit Alpha-Maske.
-
-```gherkin
-Given ein Bild mit Vordergrund und ein noch nicht geladenes MODNet
-When der Nutzer Hintergrund entfernen ausführt
-Then werden Downloadfortschritt und tatsächliches Backend sichtbar
-And das Ergebnis erfüllt die festgelegten Alpha-Erwartungen ohne Bild-Upload
-```
-
-**Ausführbare Abnahme:** Adaptertests `web/src/ai/modnet-adapter.test.ts` mit kleinem Fixture und
-Browsertest `web/e2e/remove-background.spec.ts`; `npm --prefix web test --
-modnet-adapter.test.ts` und `npm --prefix web run test:ai -- remove-background.spec.ts`.
-Die Netzwerkassertion erlaubt nur die festgelegten Modellartefakte.
-
-**Dokumentation:** Handbuch-BG-Remove, Modellgröße, Backend und erstmaliger Download.
-
 ## AI-04 — Modellressourcen zuverlässig freigeben und Fehler erholen
 
 **Ergebnis:** Entladen wartet auf Inferenz, beendet Session, Tensoren und Caches und meldet den

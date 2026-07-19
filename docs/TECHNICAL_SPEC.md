@@ -283,8 +283,9 @@ Browsermodelle. Jeder Eintrag enthält vollständige Hub-Revision, erwartete Art
 und SHA-256, kommerziell nutzbare Lizenz, Tensorformen sowie Runtime und erlaubte Backends. Die
 Validierung läuft beim Modulimport und lehnt unvollständige oder nicht freigegebene Einträge ab.
 
-Die gemeinsame Runtime ist `@huggingface/transformers` 4.2.0 mit dem darin gepinnten
-`onnxruntime-web` 1.26.0-dev.20260416-b7804b056c. MODNet nutzt den revisionsgebundenen
+Die gemeinsame Runtime ist `@huggingface/transformers` 3.8.1 mit dem darin gepinnten
+`onnxruntime-web` 1.22.0-dev.20250409-89f8206ba4. Das passende WASM-Artefakt wird lokal mit dem
+App-Build ausgeliefert. MODNet nutzt den revisionsgebundenen
 FP32-Graphen für `float32[1,3,H,W] → float32[1,1,H,W]` über WebGPU mit WASM-Fallback. SlimSAM 77
 Uniform nutzt den FP16-Vision-Encoder und den FP16-Prompt-/Mask-Decoder über WebGPU. Punkt- und
 Labeltensoren erzeugen drei postprozessierte Masken in Originalgröße und zugehörige IoU-Werte.
@@ -302,11 +303,16 @@ Gesamtgröße begrenzt. Erst nach erfolgreichem `dispose()` wird der Handle entf
 `not-loaded` veröffentlicht.
 
 `model-manager.ts` projiziert jeden Snapshot in eine semantische Modellkarte mit `aria-live`,
-`progress`, verständlichem Fehler und genau der im Zustand zulässigen Aktion. Der aktuelle
-`demo-model-loader.ts` durchläuft ohne Netzwerk deterministische Fortschrittswerte, lässt den
-ersten Versuch pro Modell kontrolliert fehlschlagen und liefert beim Retry einen disponierbaren
-WebGPU-Handle. Dieser Adapter hält den Zustandsvertrag stabil, bis die realen Loader ihn in den
-folgenden Slices ersetzen.
+`progress`, verständlichem Fehler und genau der im Zustand zulässigen Aktion. Der MODNet-Loader
+wird erst durch Laden oder Hintergrundentfernung dynamisch importiert. Er aggregiert die real
+empfangenen Bytes der drei manifestierten Artefakte, versucht WebGPU vor WASM und hält den
+Runtime-Handle ausschließlich in der Registry.
+
+Der Hintergrundadapter liest RGBA lokal, bereitet RGB über `AutoProcessor` auf und führt den
+festgelegten ONNX-Graphen aus. Die Alpha-Matte wird bilinear auf die Originalmaße skaliert und
+mit dem vorhandenen Alpha-Kanal multipliziert; RGB bleibt unverändert. Das Ergebnis wird lokal
+als PNG codiert und über denselben validierten Bildladepfad wieder in den Workspace übernommen.
+SlimSAM verwendet bis zu seinem eigenen Funktionsslice den deterministischen Manager-Adapter.
 
 ## 9. Teststrategie
 

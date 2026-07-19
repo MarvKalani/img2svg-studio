@@ -28,6 +28,7 @@ export function createDemoModelLoader(wait: Wait = waitForTimer): ModelLoader {
       return Object.freeze({
         backend: model.runtime.backends[0] ?? "wasm",
         dispose: async () => wait(90),
+        modelId: model.id,
       });
     },
   };

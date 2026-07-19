@@ -44,10 +44,10 @@ export interface BrowserModelDefinition {
 
 const transformersRuntime = Object.freeze({
   onnxRuntimePackage: "onnxruntime-web" as const,
-  onnxRuntimeVersion: "1.26.0-dev.20260416-b7804b056c",
+  onnxRuntimeVersion: "1.22.0-dev.20250409-89f8206ba4",
   processorClass: "AutoProcessor" as const,
   transformersPackage: "@huggingface/transformers" as const,
-  transformersVersion: "4.2.0",
+  transformersVersion: "3.8.1",
 });
 
 export const browserModelManifest: readonly BrowserModelDefinition[] = Object.freeze([

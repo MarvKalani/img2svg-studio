@@ -51,13 +51,17 @@ describe("model registry", () => {
     await Promise.resolve();
     reporters[1]!({ phase: "initializing" });
     expect(registry.snapshot("modnet").state).toEqual({ status: "initializing" });
-    retryAttempt.resolve({ backend: "webgpu", dispose });
+    const loadedModel: LoadedBrowserModel = { backend: "webgpu", dispose, modelId: "modnet" };
+    retryAttempt.resolve(loadedModel);
     await retry!;
     expect(loader.load).toHaveBeenCalledTimes(2);
     expect(registry.snapshot("modnet").state).toEqual({
       status: "ready",
       backend: "webgpu",
     });
+    await expect(registry.withLoadedModel("modnet", async (model) => model)).resolves.toBe(
+      loadedModel,
+    );
 
     const firstUnload = registry.unload("modnet");
     const duplicateUnload = registry.unload("modnet");
@@ -66,6 +70,22 @@ describe("model registry", () => {
     await firstUnload;
     expect(dispose).toHaveBeenCalledTimes(1);
     expect(registry.snapshot("modnet").state).toEqual({ status: "not-loaded" });
+  });
+
+  it("Given an unloaded model, when an operation requests it, then no implicit download starts", async () => {
+    const loader: ModelLoader = {
+      load: vi.fn(async () => ({
+        backend: "wasm" as const,
+        dispose: async () => undefined,
+        modelId: "modnet" as const,
+      })),
+    };
+    const registry = createModelRegistry(browserModelManifest, loader);
+
+    await expect(registry.withLoadedModel("modnet", async (model) => model)).rejects.toThrow(
+      "Das Modell ist nicht geladen.",
+    );
+    expect(loader.load).not.toHaveBeenCalled();
   });
 });
 

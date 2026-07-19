@@ -23,6 +23,7 @@ export type ModelLoadUpdate =
 
 export interface LoadedBrowserModel {
   readonly backend: BrowserExecutionBackend;
+  readonly modelId: BrowserModelId;
   dispose(): Promise<void>;
 }
 
@@ -40,6 +41,10 @@ export interface ModelRegistry {
   snapshots(): readonly ModelRegistrySnapshot[];
   subscribe(listener: (snapshot: ModelRegistrySnapshot) => void): () => void;
   unload(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
+  withLoadedModel<Result>(
+    modelId: BrowserModelId,
+    operation: (model: LoadedBrowserModel) => Promise<Result>,
+  ): Promise<Result>;
 }
 
 export function createModelRegistry(
@@ -155,6 +160,17 @@ export function createModelRegistry(
     return finishingAttempt ? finishingAttempt.then(() => load(modelId)) : load(modelId);
   };
 
+  const withLoadedModel = async <Result>(
+    modelId: BrowserModelId,
+    operation: (model: LoadedBrowserModel) => Promise<Result>,
+  ): Promise<Result> => {
+    const loadedModel = loadedModels.get(modelId);
+    if (!loadedModel) {
+      throw new Error("Das Modell ist nicht geladen.");
+    }
+    return operation(loadedModel);
+  };
+
   return Object.freeze({
     load,
     retry,
@@ -165,6 +181,7 @@ export function createModelRegistry(
       return () => listeners.delete(listener);
     },
     unload,
+    withLoadedModel,
   });
 }
 

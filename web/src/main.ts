@@ -1,5 +1,6 @@
 import "./styles.css";
-import { createDemoModelLoader } from "./ai/demo-model-loader";
+import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
+import { createBrowserModelLoader } from "./ai/browser-model-loader";
 import { browserModelManifest } from "./ai/model-manifest";
 import { initializeModelManager } from "./ai/model-manager";
 import { createModelRegistry } from "./ai/model-registry";
@@ -14,6 +15,7 @@ import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
 
 const imageStore = createImageStore();
+const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const optionsController = initializeConversionOptions();
 const compareController = initializeCompare(createCompareSelection());
 const historyController = initializeHistory(
@@ -21,8 +23,13 @@ const historyController = initializeHistory(
   optionsController.apply,
   compareController,
 );
-initializeImageLoader(imageStore, optionsController.showSourceDimensions);
+let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
+const imageLoader = initializeImageLoader(imageStore, (image) => {
+  optionsController.showSourceDimensions(image);
+  backgroundRemoval.imageLoaded();
+});
+backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload(imageStore);
-initializeModelManager(createModelRegistry(browserModelManifest, createDemoModelLoader()));
+initializeModelManager(modelRegistry);
 document.documentElement.dataset.appReady = "true";

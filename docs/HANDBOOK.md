@@ -6,10 +6,9 @@ Dieses Handbuch wächst zusammen mit der Anwendung. Es beschreibt nur bereits en
 oder implementierte Funktionen und kennzeichnet noch nicht verfügbare Abläufe ausdrücklich.
 
 Aktueller Stand: Die responsive Studio-Oberfläche ist lokal ausführbar. Kopfzeile,
-Parameterleiste, A/B-Arbeitsfläche, Parameterunterschiede, leerer Verlauf und Statuszeile sind
-sichtbar. PNG-, JPEG- und WebP-Bilder können lokal geladen und mit ihren echten Maßen angezeigt
-werden. „Konvertieren“ erzeugt daraus über den Rust-/WASM-Kern ein echtes SVG und zeigt es in
-der ersten Arbeitsfläche an.
+Parameterleiste, A/B-Arbeitsfläche, Parameterunterschiede, Verlauf und Statuszeile sind sichtbar.
+PNG-, JPEG- und WebP-Bilder können lokal geladen, über den Rust-/WASM-Kern in SVG umgewandelt und
+mit MODNet lokal freigestellt werden.
 
 ## Produktidee
 
@@ -268,10 +267,17 @@ stehen unter Apache-2.0. MODNet ist für WebGPU mit WASM-Fallback vorgesehen; Sl
 zwei FP16-Graphen über WebGPU. Revision, Einzeldateien und Prüfsummen sind im
 Drittanbieter-Inventar festgehalten.
 
-Der aktuelle deterministische Loader bildet den vollständigen Managerablauf lokal ab: Der erste
-Ladeversuch endet sichtbar als kontrollierter Fehler, „Erneut versuchen“ erreicht „Bereit ·
-WebGPU“, und „Entladen“ kehrt zu „Nicht geladen“ zurück. Er erzeugt dabei keinen Modellverkehr.
-Der nächste Slice ersetzt diesen Loader für MODNet durch den echten revisionsgebundenen Download.
+### Hintergrund entfernen
+
+Nach dem Laden eines Bildes startet „Hintergrund entfernen“ den revisionsgebundenen MODNet-Ablauf.
+Beim ersten Aufruf lädt der Browser 25.889.088 Byte (24,69 MiB); die Modellkarte zeigt den echten
+Bytefortschritt. Anschließend erscheint das tatsächlich verwendete Backend als WebGPU oder WASM.
+
+Vorverarbeitung, Inferenz, Alpha-Maske und PNG-Erzeugung laufen lokal. Das Ergebnis wird als
+`<ausgangsname>-freigestellt.png` in den Workspace übernommen. MODNet bleibt für weitere Aufrufe
+im KI-Manager bereit und kann dort entladen werden. Ein Ladefehler bietet über denselben Manager
+einen erneuten Versuch. SlimSAM verwendet bis zu seinem Smart-Select-Slice den sichtbaren
+Manager-Testablauf.
 
 Gleichzeitige Lade- oder Entladebefehle für dasselbe Modell teilen sich eine Operation. Dadurch
 wird ein Modell einmal initialisiert und sein `dispose()` beim Entladen einmal ausgeführt.

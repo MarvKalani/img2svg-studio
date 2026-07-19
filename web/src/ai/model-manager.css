@@ -7,6 +7,34 @@
   margin-bottom: 0.1rem;
 }
 
+.ai-tool-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  border: 1px solid rgba(70, 228, 255, 0.42);
+  border-radius: 0.55rem;
+  background: linear-gradient(135deg, rgba(34, 191, 239, 0.22), rgba(145, 93, 255, 0.2));
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ai-tool-button:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.35);
+  opacity: 0.5;
+}
+
+.ai-tool-status {
+  min-height: 1.05rem;
+  color: var(--text-muted);
+  font-size: 0.71rem;
+  line-height: 1.35;
+}
+
 .manager-button,
 .model-heading {
   display: flex;

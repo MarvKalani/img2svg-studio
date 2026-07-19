@@ -7,6 +7,7 @@
     "build": "tsc -b && vite build",
     "dev": "vite --host 127.0.0.1",
     "test": "vitest run --passWithNoTests",
+    "test:ai": "playwright test",
     "test:e2e": "playwright test",
     "typecheck": "tsc -b"
   },
@@ -15,5 +16,8 @@
     "typescript": "7.0.2",
     "vite": "8.1.5",
     "vitest": "4.1.10"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1"
   }
 }
