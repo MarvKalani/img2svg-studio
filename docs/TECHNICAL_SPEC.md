@@ -283,11 +283,18 @@ laufen über dieselben Application Services.
 Der bestehende Vorgänger auf `https://img2.download` bleibt eine getrennte Anwendung. Sein
 WebMCP-Adapter lebt als kleine Integration mit eigenem Capability-Inventar und eigenem
 Production-Smoke-Test. Dadurch wird keine DOM- oder Zustandslogik zwischen Vorgänger und
-img2svg Studio vermischt.
+img2svg Studio vermischt. Der am 19. Juli 2026 auditierte Produktionsstand verwendet noch
+`navigator.modelContext` und liefert beide Freigabeheader nicht. Der Ersatz unter
+`integrations/img2-download` verwendet die aktuelle API, entfernt den nicht sichtbaren URL-Fetch
+und ordnet elf vorhandene Converter-Kommandos eindeutig zu. Er ist im lokalen Vorgänger-Repository
+als Commit `e386756` übernommen und in Chrome 150 abgenommen; produktiv fehlen noch GitHub-Push,
+Cloudflare-Deployment und die Wiederholung derselben Abnahme auf der öffentlichen Domain.
 
 Primärquellen:
 
 - <https://developer.chrome.com/docs/ai/webmcp>
+- <https://developer.chrome.com/docs/ai/webmcp/imperative-api>
+- <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
 - <https://developer.chrome.com/blog/new-in-devtools-149>
 
 ### Apps-SDK-Rückfallweg

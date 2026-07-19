@@ -14,5 +14,5 @@
     "target": "ES2024",
     "verbatimModuleSyntax": true
   },
-  "include": ["scripts", "vitest.config.ts"]
+  "include": ["integrations/**/*.ts", "scripts", "vitest.config.ts"]
 }

@@ -365,7 +365,10 @@ verständliche Meldung. Dateinamen aus lokalen Eingaben sind als nicht vertrauen
 markiert.
 
 Der bestehende Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter für
-seinen eigenen sichtbaren Converter-Ablauf.
+seinen eigenen sichtbaren Converter-Ablauf. Der vorbereitete Adapter steuert Queue-Zustand,
+globale Einstellungen, Größenberechnung, Batch- und Einzeldownload, Preview-Navigation,
+Transformation, SVG-Parameter und Budgetmodus. Die lokale Dateiauswahl bleibt eine bewusst vom
+Nutzer bestätigte Browseraktion.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
