@@ -47,7 +47,7 @@ Anschließend ist die Oberfläche unter `http://127.0.0.1:5173` erreichbar. Der 
 funktioniert auf breiten und schmalen Viewports ohne horizontales Seitenüberlaufen.
 
 Vor einem Commit prüft `npm run check` im Repository-Root Formatierung, Lint, Zeilenlimit,
-TypeScript, schnelle Tests, Produktionsbuild sowie Rust-Formatierung und Clippy.
+TypeScript, schnelle Web- und Rust-Tests, Produktionsbuild, Rust-Formatierung und Clippy.
 
 ### Engine und WASM neu bauen
 

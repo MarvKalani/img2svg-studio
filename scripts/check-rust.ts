@@ -7,6 +7,7 @@ const rustManifestPath = resolve("Cargo.toml");
 
 if (await isReadable(rustManifestPath)) {
   await run("cargo", ["fmt", "--all", "--check"]);
+  await run("cargo", ["test", "--workspace"]);
   await run("cargo", ["clippy", "--workspace", "--all-targets", "--", "-D", "warnings"]);
 } else {
   console.log("Rust checks: ready for Cargo.toml");

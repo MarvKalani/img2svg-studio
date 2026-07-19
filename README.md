@@ -76,7 +76,8 @@ npm run check
 ```
 
 The gate checks formatting, lint, the 1,000-line source limit, TypeScript, Vitest, the production
-build, Rust formatting and Clippy. Browser contracts are separate so their intent stays explicit:
+build, Rust tests, formatting and Clippy. Browser contracts are separate so their intent stays
+explicit:
 
 ```bash
 npm --prefix web run test:e2e
