@@ -7,6 +7,8 @@ Die verbindlichen Qualitätsregeln stehen in
 
 - als kleinster sinnvoller vertikaler Slice umsetzen.
 - Verhalten zuerst mit dem schnellsten aussagekräftigen Test beschreiben.
+- lösungsorientiert die beste reversible Annahme wählen und den Slice bis zur Abnahme bringen.
+- in der Reihenfolge „make it work, make it right, make it fast“ arbeiten.
 - nur den aktuellen Slice implementieren; keine vorgezogenen Erweiterungen.
 - EVA-Grenzen und typisierte Domänenwerte verwenden.
 - nur notwendige Git-Diffs erzeugen und fremde Änderungen unangetastet lassen.

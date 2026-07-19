@@ -121,9 +121,17 @@ Developer Tools ist der passendste Track für die lokale Konvertierungs-Engine, 
 experimentellen A/B-Workflow und die WebMCP-Steuerung. Die finale Auswahl wird vor dem
 Devpost-Submit bestätigt.
 
+## D-015 — Lösungsorientierte MVP-Ausführung
+
+**Status:** entschieden
+
+Die Hackathon-Umsetzung folgt „make it work, make it right, make it fast“. Bei nicht
+wesentlichen Unklarheiten wird die beste reversible Lösung gewählt und umgesetzt. Eine nur
+hypothetisch bessere Architektur stoppt keinen funktionierenden Slice. Optimiert wird erst
+nach Messung und nur, wenn der Engpass MVP oder Demo beeinträchtigt.
+
 ## Noch zu klären
 
-- Welche konkrete Hackathon-Veranstaltung und welche Lizenz-/Einreichungsregeln gelten?
 - Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?
 - Sind MODNet und SAM Pflicht für die erste Einreichung oder ein nachgelagerter Meilenstein?
 - Welche zusätzlichen Rasterexporte sind neben PNG und WebP im Zielbrowser sinnvoll?

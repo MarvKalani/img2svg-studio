@@ -25,6 +25,32 @@ nicht automatisch einfacher Code.
 - Tote Pfade, auskommentierter Code und spekulative TODOs werden nicht committed.
 - Eine Abstraktion entsteht erst, wenn sie eine reale Wiederholung oder Grenze vereinfacht.
 
+### Lösungsorientierung
+
+Das Ziel ist ein funktionierendes Hackathon-MVP, kein theoretisch vollständiges System.
+Probleme werden als Randbedingungen für die nächste konkrete Lösung behandelt, nicht als Grund,
+die Arbeit einzustellen.
+
+- Bei nicht wesentlichen Unklarheiten die beste reversible Annahme wählen und weiterarbeiten.
+- Die naheliegendste kleine Lösung zuerst praktisch prüfen, statt lange Varianten zu sammeln.
+- Nicht am ersten unvollkommenen Ergebnis stoppen; den aktuellen Slice bis zur Abnahme bringen.
+- Eine funktionierende Lösung nicht wegen einer nur hypothetisch besseren Architektur verwerfen.
+- Recherche und Fehlersuche auf die Entscheidung begrenzen, die den Slice tatsächlich blockiert.
+- Nur pausieren, wenn neue Autorität nötig ist, eine irreversible Außenwirkung droht oder eine
+  Entscheidung die Produktabsicht wesentlich verändern würde.
+
+### Make it work, make it right, make it fast
+
+Diese Reihenfolge ist verbindlich:
+
+1. **Make it work:** Den kleinsten vollständigen Happy Path Ende zu Ende zum Laufen bringen.
+2. **Make it right:** Typen, Fehlergrenzen, Tests, Namen und notwendige Randfälle bereinigen.
+3. **Make it fast:** Nur gemessene Engpässe optimieren, wenn sie MVP oder Demo beeinträchtigen.
+
+Jede Stufe bleibt im Umfang des aktuellen Slices. „Right“ bedeutet robust und verständlich,
+nicht maximal abstrahiert. „Fast“ bedeutet ausreichend schnell für das definierte Szenario,
+nicht vorsorglich auf jede denkbare Last optimiert.
+
 ## 2. Vertikale Slices
 
 Arbeit wird als kleinstes sichtbares Ende-zu-Ende-Verhalten geschnitten. Ein Slice umfasst die
@@ -189,3 +215,4 @@ Ein Slice ist fertig, wenn:
 - Namen, Typen und Kommentare diesen Regeln entsprechen.
 - Taskstatus und betroffene Verträge aktuell sind.
 - der Commit auch ohne Chatverlauf verständlich ist.
+- der Slice den vereinbarten MVP-Nutzen tatsächlich Ende zu Ende liefert.
