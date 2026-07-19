@@ -154,8 +154,8 @@ test:demo` gegen die veröffentlichte Demo.
 Codex-/GPT-5.6-Zusammenarbeit, Setup, Tests, Grenzen, Lizenz und freien Demo-Zugang auf Englisch.
 
 **Status 19. Juli:** Englischer README-/Devpost-Text, Architektur, Drittanbieterinventar,
-Linkprüfung und finale Chrome-Screenshots sind vorbereitet. Finale Demo-, Repository-, Lizenz-
-und Video-Links folgen nach den dokumentierten Owner-Aktionen.
+Linkprüfung, frischer Checkout und finale Chrome-Screenshots sind abgenommen. Finale Demo-,
+Repository-, Lizenz- und Video-Links folgen nach den dokumentierten Owner-Aktionen.
 
 ```gherkin
 Given ein Judge kennt das Projekt nicht

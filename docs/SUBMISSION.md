@@ -139,6 +139,7 @@ for an existing-project disclosure.
 ### Product and evidence
 
 - [x] Production build succeeds.
+- [x] A fresh detached checkout passes `npm ci`, `npm run check` and the production-demo test.
 - [x] Local production-preview judge path passes in Google Chrome.
 - [x] Accessibility, damaged/oversized input and network audits pass automatically.
 - [x] Third-party code and model inventory exists.

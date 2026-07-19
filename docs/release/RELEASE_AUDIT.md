@@ -36,3 +36,14 @@ The workflow passed in Chrome 150.0.7871.129 (arm64):
 The model artifact was already cached in this normal browser session, so the direct network log
 contained no model request. The automated cold-browser scenario separately verifies that an
 uncached explicit model action permits only the revision-pinned artifact and its redirects.
+
+## Clean-checkout gate
+
+A detached worktree at commit `598d8a7` passed `npm ci` with zero reported vulnerabilities,
+followed by `npm run check`. This rebuilt the TypeScript application and compiled the Rust
+workspace from an empty dependency state.
+
+Its production preview ran on an isolated port and passed `test:demo` against that exact URL.
+Direct Chrome 150 acceptance of the same preview produced four native shapes, two runs and one
+A/B parameter difference with an empty warning and error log. The temporary server and worktree
+were removed after the gate.
