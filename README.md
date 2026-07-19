@@ -35,6 +35,17 @@ downloaded only after a visible user action and then run locally through WebGPU 
 
 ![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
 
+## Supported platform and judge access
+
+The Studio targets desktop Google Chrome 150 or newer on macOS, Windows and Linux. The release
+gate runs in Chrome 150 on Apple Silicon; the static build has no OS-specific server component.
+The complete manual conversion workflow remains available when WebMCP or WebGPU is unavailable.
+SlimSAM specifically requires WebGPU, while MODNet can fall back to WASM.
+
+No account, API key or paid service is required. Judges can use the public target demo without
+installing the project; until that deployment gate is complete, the command below reproduces the
+same static build and judge path locally.
+
 ## Try the production build locally
 
 Requirements: Node.js 22.14 or newer and Google Chrome 150 or newer.

@@ -23,6 +23,19 @@ describe("submission documents", () => {
     expect(`${readme}\n${submission}`).not.toMatch(/\b(?:TODO|TBD)\b/u);
   });
 
+  test("Given the official Developer Tools requirements, when the judge materials are inspected, then every submission field has explicit guidance", async () => {
+    const readme = await readDocument("README.md");
+    const submission = await readDocument("docs/SUBMISSION.md");
+
+    expect(readme).toContain("## Supported platform and judge access");
+    expect(readme).toContain("desktop Google Chrome 150 or newer on macOS, Windows and Linux");
+    expect(readme).toContain("No account, API key or paid service is required");
+    expect(submission).toContain("public YouTube");
+    expect(submission).toContain("Codex `/feedback` Session ID");
+    expect(submission).toContain("## Pre-existing work disclosure");
+    expect(submission).toContain("Apache-2.0 recommended");
+  });
+
   test("Given the judge materials, when local links are resolved, then every target exists", async () => {
     const missingTargets: string[] = [];
 
