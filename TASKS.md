@@ -98,9 +98,11 @@ Produktionsdomain.
 **Vorbedingung:** Das Quellprojekt oder der deploybare Asset-Pfad des Vorgängers ist lokal oder
 über GitHub verfügbar.
 
-**Stand 19. Juli 2026:** Quellprojekt-Commit `e386756`, Capability-Test und vollständiger lokaler
-Chrome-150-Ablauf sind grün. Offen bleiben der GitHub-Push nach einmaliger Anmeldung, das dadurch
-ausgelöste Cloudflare-Deployment und dieselbe Abnahme auf `https://img2.download`.
+**Stand 19. Juli 2026:** Die Quellprojekt-Commits `e386756` und `e739a54`, Capability-Test,
+frischer statischer Build und vollständiger lokaler Chrome-150-Ablauf sind grün. Der erzeugte
+`dist`-Build exportierte das Kreis-Fixture als 647-Byte-SVG. Offen bleiben der GitHub-Push nach
+einmaliger Anmeldung, das dadurch ausgelöste Cloudflare-Deployment und dieselbe Abnahme auf
+`https://img2.download`.
 
 **Dokumentation:** Vollständiges Vorgänger-Tool-Inventar, lokale Dateiübergabe, Hosting-Header
 und Agentenablauf.

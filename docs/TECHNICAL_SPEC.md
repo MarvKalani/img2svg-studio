@@ -287,8 +287,10 @@ img2svg Studio vermischt. Der am 19. Juli 2026 auditierte Produktionsstand verwe
 `navigator.modelContext` und liefert beide Freigabeheader nicht. Der Ersatz unter
 `integrations/img2-download` verwendet die aktuelle API, entfernt den nicht sichtbaren URL-Fetch
 und ordnet elf vorhandene Converter-Kommandos eindeutig zu. Er ist im lokalen Vorgänger-Repository
-als Commit `e386756` übernommen und in Chrome 150 abgenommen; produktiv fehlen noch GitHub-Push,
-Cloudflare-Deployment und die Wiederholung derselben Abnahme auf der öffentlichen Domain.
+mit `e386756` übernommen; `e739a54` ergänzt den reproduzierbaren statischen `dist`-Build. Beide
+Commits sind aus einem frischen Checkout sowie gegen den erzeugten Output in Chrome 150 abgenommen.
+Produktiv fehlen noch GitHub-Push, Cloudflare-Deployment und dieselbe Abnahme auf der öffentlichen
+Domain.
 
 Primärquellen:
 

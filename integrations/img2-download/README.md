@@ -16,7 +16,9 @@ Der Adapter verwendet ausschließlich `document.modelContext`, eng begrenzte Sch
 vorhandenen UI-/Anwendungsdienste. Der alte URL-Fetch entfällt: Lokale Dateien gelangen weiterhin
 nur über die vom Nutzer bestätigte Datei- oder Drop-Oberfläche in die Queue.
 
-Der Adapter ist im lokalen Quellprojekt `marvins-image-converter` als Commit `e386756` übernommen
-und dort zusätzlich gegen Erstinstallation, Browser-Extension-Requests und den SVG-Download
-abgesichert. Der Produktionsstand ändert sich erst nach Push und Cloudflare-Deployment; dafür fehlt
-auf diesem Rechner noch die GitHub-Anmeldung.
+Der Adapter ist im lokalen Quellprojekt `marvins-image-converter` als Commit `e386756` übernommen.
+Commit `e739a54` ergänzt den zuvor fehlenden reproduzierbaren Cloudflare-Build: `npm ci`, sechs
+Tests und `npm run build` erzeugen ausschließlich öffentliche Assets unter `dist`. Dieser Output
+bestand in Chrome 150 Dateiübergabe, SVG-Vorschau und einen realen 647-Byte-Download ohne
+Konsolenfehler. Der Produktionsstand ändert sich erst nach Push und Cloudflare-Deployment; dafür
+fehlt auf diesem Rechner noch die GitHub-Anmeldung.

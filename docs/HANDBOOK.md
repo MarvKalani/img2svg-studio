@@ -375,6 +375,10 @@ globale Einstellungen, Größenberechnung, Batch- und Einzeldownload, Preview-Na
 Transformation, SVG-Parameter und Budgetmodus. Die lokale Dateiauswahl bleibt eine bewusst vom
 Nutzer bestätigte Browseraktion.
 
+Sein Quellrepository erzeugt mit `npm ci && npm run build` einen geprüften statischen `dist`-Ordner.
+Dieser enthält die App, VTracer, Service Worker, rechtliche Seiten und WebMCP-Header, aber keine
+Tests oder Paketmetadaten.
+
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
 ## Formerkennungs-Fixtures
