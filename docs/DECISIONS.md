@@ -81,6 +81,29 @@ Konfiguration, Konvertierung, Vergleich und Export nach dem Laden. Dadurch bleib
 Daten außerhalb großer JSON-Tool-Aufrufe. Ein Agent kann eine lokal erzeugte Datei über den
 Browser auswählen.
 
+## D-011 — TypeScript 7 als Web-Compiler
+
+**Status:** entschieden
+
+Das Webprojekt pinnt TypeScript 7.0.2 als aktuelle stabile Version vom 19. Juli 2026. Der
+native Compiler liefert erheblich schnelleres Build- und Editor-Feedback und passt damit zum
+kurzen TDD-Zyklus. Nightly-Versionen werden nicht verwendet; Updates erfolgen als eigener,
+getesteter Dependency-Slice.
+
+Quellen:
+
+- <https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/>
+- <https://www.npmjs.com/package/typescript>
+
+## D-012 — Verbindliche Engineering-Standards
+
+**Status:** entschieden
+
+KISS, SINE, EVA, TDD, vertikale Slices, minimale Git-Diffs, sprechende Namen, typisierte
+Domänenwerte und Warum-Kommentare sind verbindlich. Jede handgeschriebene Quell- oder
+Testdatei bleibt unter 1000 Zeilen. Die ausführbaren Regeln stehen in
+`docs/ENGINEERING_STANDARDS.md`.
+
 ## Noch zu klären
 
 - Welche konkrete Hackathon-Veranstaltung und welche Lizenz-/Einreichungsregeln gelten?

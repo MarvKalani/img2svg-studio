@@ -28,6 +28,7 @@ Implementierung.
 - [Projektidee](docs/PROJECT_BRIEF.md)
 - [Produktspezifikation](docs/PRODUCT_SPEC.md)
 - [Technische Spezifikation](docs/TECHNICAL_SPEC.md)
+- [Engineering-Standards](docs/ENGINEERING_STANDARDS.md)
 - [Entscheidungsprotokoll](docs/DECISIONS.md)
 - [Umsetzungsliste](TASKS.md)
 
@@ -46,6 +47,10 @@ img2svg/
 ```
 
 Die Build-Anleitung wird mit dem lauffähigen Gerüst in Meilenstein M0 ergänzt.
+
+Die Implementierung erfolgt testgetrieben in kleinen vertikalen Slices. Eigene Quell- und
+Testdateien dürfen 1000 Zeilen nicht überschreiten; minimale, sachbezogene Git-Diffs sind
+verbindlich.
 
 ## Lizenz
 

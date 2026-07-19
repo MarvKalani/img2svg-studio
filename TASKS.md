@@ -1,270 +1,290 @@
 # Umsetzungsliste
 
-## Arbeitsregeln
+## Arbeitsweise
 
-- Aufgaben werden in Reihenfolge ihrer Abhängigkeiten bearbeitet.
-- Eine Aufgabe gilt erst als erledigt, wenn ihre Abnahmekriterien geprüft sind.
-- Jeder Meilenstein endet mit einem lauffähigen, überprüften Stand.
-- Neue Entscheidungen werden in `docs/DECISIONS.md` dokumentiert.
-- Änderungen an Parametern müssen Engine, UI, History-Diff und WebMCP gemeinsam beachten.
-- Vor jedem Release werden Lizenzen und aktuelle Modell-/WebMCP-Annahmen erneut geprüft.
+Die verbindlichen Qualitätsregeln stehen in
+[`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md). Für jeden Task gilt:
+
+- als kleinster sinnvoller vertikaler Slice umsetzen.
+- Verhalten zuerst mit dem schnellsten aussagekräftigen Test beschreiben.
+- nur den aktuellen Slice implementieren; keine vorgezogenen Erweiterungen.
+- EVA-Grenzen und typisierte Domänenwerte verwenden.
+- nur notwendige Git-Diffs erzeugen und fremde Änderungen unangetastet lassen.
+- keine handgeschriebene Quell- oder Testdatei mit mehr als 1000 Zeilen zulassen.
+- relevante schnelle Checks vor jedem Commit, vollständige Checks an jedem Gate ausführen.
+- genau einen verständlichen Commit pro abgeschlossenem Slice erstellen.
 
 ## Statuslegende
 
 - `[ ]` offen
 - `[x]` abgeschlossen
-- Aufgaben mit **BLOCKER** benötigen eine Entscheidung, bevor der bezeichnete Folgeschritt
-  abgeschlossen werden kann.
+- **BLOCKER** verlangt eine Entscheidung, bevor der genannte Folgeschritt abgeschlossen wird.
 
-## P0 — Planungsbasis
+## P0 — Verbindliche Projektbasis
 
 - [x] **P0-01 Projektbrief konsolidieren.**
   - Abnahme: Problem, Lösung, Ziele, Nicht-Ziele und Demo sind dokumentiert.
 - [x] **P0-02 Produkt- und Technikgrundlage konsolidieren.**
-  - Abnahme: Spätere Chatentscheidungen ersetzen widersprüchliche Ausgangspunkte sichtbar.
-- [x] **P0-03 Ausführbare Taskliste anlegen.**
-  - Abnahme: Jeder Meilenstein besitzt konkrete Aufgaben und ein Gate.
+  - Abnahme: spätere Entscheidungen ersetzen widersprüchliche Ausgangspunkte sichtbar.
+- [x] **P0-03 Vertikal geschnittene Taskliste anlegen.**
+  - Abnahme: jeder Implementierungstask liefert ein prüfbares Ende-zu-Ende-Verhalten.
 - [ ] **P0-04 Hackathon-Regeln und Projektlizenz bestätigen — BLOCKER für Release.**
-  - Ergebnis in D-009 dokumentieren.
-  - Abnahme: `LICENSE.md`, README-Formulierung und Header-Vorlage widersprechen sich nicht.
+  - Entscheidung in D-009 dokumentieren.
+  - Abnahme: `LICENSE.md`, README, UI-Footer und Quellheader sind widerspruchsfrei.
+- [x] **P0-05 Engineering-Standards festschreiben.**
+  - Abnahme: KISS, SINE, EVA, TDD, minimale Diffs und Dateilimit sind verbindlich.
+- [x] **P0-06 TypeScript-Version entscheiden.**
+  - Abnahme: TypeScript 7.0.2 ist als stabile, exakt zu pinnende Version dokumentiert.
 
-## M0 — Lauffähiges Gerüst
+## M0 — Gerüst und erster vertikaler System-Slice
 
-- [ ] **M0-01 Rust-Workspace erstellen.**
-  - Crates `img2svg-core`, `img2svg-wasm` und `img2svg-cli` anlegen.
-  - Features und Abhängigkeiten pro Ziel sauber trennen.
-  - Abnahme: `cargo check --workspace` läuft.
-- [ ] **M0-02 Web-App mit Vite und TypeScript erstellen.**
-  - Module, CSS, Tests und feste Paketversionen einrichten.
-  - Abnahme: Entwicklungsserver und Produktions-Build laufen.
-- [ ] **M0-03 WASM-Brücke integrieren.**
-  - `get_version` und minimale Initialisierung implementieren.
-  - Abnahme: Web-App zeigt die geladene Engine-Version.
-- [ ] **M0-04 Qualitätsbefehle einrichten.**
-  - Formatierung, Clippy, Typecheck, Lint und Tests als dokumentierte Skripte.
-  - Abnahme: ein lokaler `check`-Ablauf führt alle vorhandenen Prüfungen aus.
-- [ ] **M0-05 CI für Checks und Builds einrichten.**
-  - Keine Veröffentlichung oder Deployment-Secrets anlegen.
-  - Abnahme: sauberer Checkout besteht Rust- und Web-Prüfungen.
-- [ ] **M0-06 Third-Party- und Header-Prozess vorbereiten.**
-  - Konkrete Lizenz erst nach P0-04 einsetzen.
-  - Abnahme: Abhängigkeiten und Modelle können reproduzierbar inventarisiert werden.
+- [ ] **M0-01 Minimalen Workspace anlegen.**
+  - Rust-Crates `img2svg-core` und `img2svg-wasm` sowie `web` mit Vite anlegen.
+  - `img2svg-cli` erst mit seinem ersten nutzbaren Slice ergänzen.
+  - TypeScript exakt als `7.0.2` ohne Versionsbereich pinnen.
+  - Abnahme: leere Rust- und Web-Builds laufen mit committed Lockfiles.
+- [ ] **M0-02 Schnellste Testschleifen einrichten.**
+  - Rust-Unit-Test und TypeScript-Unit-Test mit kleinen gezielten Befehlen ermöglichen.
+  - Abnahme: beide einzelnen Testzyklen starten lokal in wenigen Sekunden.
+- [ ] **M0-03 Engine-Version Ende zu Ende anzeigen.**
+  - Test zuerst: Rust-Version → WASM-Binding → TypeScript-Service → sichtbarer UI-Status.
+  - Nur die für diesen Weg nötige Struktur erzeugen.
+  - Abnahme: Browser zeigt die echte Engine-Version; Vertrags- und UI-Test sind grün.
+- [ ] **M0-04 Lokale Qualitätsgates hinzufügen.**
+  - Formatierung, Clippy, Typecheck, Lint, schnelle Tests und 1000-Zeilen-Prüfung.
+  - Abnahme: ein kurzer `check`-Befehl schlägt bei Warnung oder zu großer Quelldatei fehl.
+- [ ] **M0-05 CI für denselben reproduzierbaren Check einrichten.**
+  - Keine Deployment-Schritte oder Secrets.
+  - Abnahme: frischer Checkout besteht exakt die lokal dokumentierten Prüfungen.
 
-**Gate M0:** Ein frischer Checkout baut Rust, WASM und Web; die Seite zeigt die Engine-Version.
+**Gate M0:** Rust, WASM und Web bauen reproduzierbar. Der Browser zeigt die Rust-Version.
+Alle schnellen Qualitätsgates sind grün.
 
-## M1 — Konfiguration und Engine-Vertrag
+## M1 — Erstes wirklich nutzbares SVG
 
-- [ ] **M1-01 Kanonisches Optionsmodell definieren.**
-  - Defaults, Bereiche, Enums, Formerkennung und Reststrategie abbilden.
-  - Abnahme: gültige und ungültige Grenzwerte sind getestet.
-- [ ] **M1-02 TypeScript-Vertrag aus dem Optionsmodell ableiten.**
-  - Drift zwischen Rust und TypeScript durch Generierung oder Vertragstests verhindern.
-  - Abnahme: Defaults und Feldnamen sind auf beiden Seiten identisch.
-- [ ] **M1-03 `ConversionResult` und öffentliche Fehler definieren.**
-  - SVG, Statistiken, Warnungen und stabile Fehlercodes.
-  - Abnahme: JS erhält strukturierte Resultate und verständliche Fehlermeldungen.
-- [ ] **M1-04 RGBA-Eingaben streng validieren.**
-  - Dimensionen, Überläufe und `width × height × 4` prüfen.
-  - Abnahme: beschädigte Eingaben führen kontrolliert zum Fehler, nicht zum Panic.
-- [ ] **M1-05 Determinismus-Grundregeln testen.**
-  - Kanonische Zahlen, Reihenfolgen und Serialisierung.
-  - Abnahme: zwei identische synthetische Runs liefern identische Bytes.
+- [ ] **M1-01 Bild laden und unverändert anzeigen.**
+  - PNG, JPEG und WebP über Browser-Decoding in typisiertes RGBA überführen.
+  - Fehlerhafte und nicht unterstützte Dateien sichtbar ablehnen.
+  - Abnahme: Drop und Dateiwahl zeigen dasselbe Testbild mit korrekten Maßen.
+- [ ] **M1-02 Default-Konvertierung Ende zu Ende liefern.**
+  - Test zuerst: bekanntes RGBA-Fixture erzeugt deterministisches, valides SVG.
+  - Minimalen `visioncortex`-Adapter, WASM-Aufruf, Konvertieren-Button und SVG-Ansicht bauen.
+  - Abnahme: ein geladenes Fixture wird im Browser sichtbar als SVG gerendert.
+- [ ] **M1-03 SVG herunterladen.**
+  - Export-Service erst für den aktuellen Run und SVG implementieren.
+  - Abnahme: Download entspricht bytegenau dem angezeigten SVG.
+- [ ] **M1-04 Fehler vom Rust-Core bis in die UI führen.**
+  - Ungültige Maße, RGBA-Länge und Enginefehler typisieren.
+  - Abnahme: kein Panic; UI zeigt verständliche Meldung und bleibt bedienbar.
+- [ ] **M1-05 Transparenz Ende zu Ende erhalten.**
+  - Testfixture mit transparenten und teiltransparenten Pixeln verwenden.
+  - Abnahme: Ergebnis rendert erwartetes Alpha und zeigt ein Alpha-Badge.
+- [ ] **M1-06 Determinismus als Systemtest sichern.**
+  - Abnahme: zwei Browser-/WASM-Runs mit gleichem Input liefern identische SVG-Bytes.
 
-**Gate M1:** Die Engine besitzt einen stabilen, validierten WASM-Vertrag ohne echte
-Vektorisierungslücken in der API.
+**Gate M1:** Ein Nutzer lädt ein Bild, konvertiert es lokal, sieht das SVG und lädt exakt
+dieses Ergebnis herunter.
 
-## M2 — Robuste Pfad-Vektorisierung
+## M2 — Qualität kontrollierbar machen
 
-- [ ] **M2-01 `visioncortex`-Version und API verifizieren und pinnen.**
-  - Lizenz, WASM-Kompatibilität und benötigte Funktionen dokumentieren.
-  - Abnahme: kleiner Adaptertest läuft nativ und für WASM.
-- [ ] **M2-02 Farb- und Alpha-Vorbereitung implementieren.**
-  - Transparenz vor RGB-Verlust erkennen; stabile Farbrepräsentation.
-  - Abnahme: transparente und teiltransparente Fixtures behalten erwartete Alpha-Werte.
-- [ ] **M2-03 Hierarchisches Clustering anbinden.**
-  - `stacked` und `cutout`, Filter, Farbschritte und stabile Z-Reihenfolge.
-  - Abnahme: beide Modi erzeugen deterministische, visuell plausible Cluster.
-- [ ] **M2-04 Compound-Path-Tracing anbinden.**
-  - Corner, Splice, Segmentlänge und Kurvenmodus korrekt übersetzen.
-  - Abnahme: Außenkonturen und Löcher werden korrekt serialisiert.
-- [ ] **M2-05 Interne Pfadrepräsentation und Parser implementieren.**
-  - Unterstützte SVG-Kommandos und Parserfehler vollständig testen.
-  - Abnahme: Roundtrip-Fixtures verlieren keine Geometrie.
-- [ ] **M2-06 Offset- und Transform-Optimierung implementieren.**
-  - Translation in Koordinaten einrechnen.
-  - Abnahme: Testpfade benötigen kein redundantes `transform`.
-- [ ] **M2-07 Relative Kommandos sowie H/V-Auswahl implementieren.**
-  - Jeweils die kürzere kanonische Darstellung wählen.
-  - Abnahme: Golden-Tests decken positive und negative Koordinaten ab.
-- [ ] **M2-08 Präzision und Zahlformatierung implementieren.**
-  - Rundung, `-0`, führende und nachgestellte Nullen behandeln.
-  - Abnahme: alle Präzisionsstufen 0–6 besitzen Grenzwerttests.
-- [ ] **M2-09 Deterministische SVG-Assembly implementieren.**
-  - Attribute, Farben, Whitespace und Escaping kanonisieren.
-  - Abnahme: SVG ist valide, renderbar und byte-stabil.
-- [ ] **M2-10 Engine-Statistiken berechnen.**
-  - Pfade, Punkte, Farben, Alpha und Optimizer-Ersparnis ohne UI-Regex.
-  - Abnahme: Statistiken stimmen mit bekannten Fixtures überein.
-- [ ] **M2-11 Visuellen Integrationsvergleich aufbauen.**
-  - SVG über `resvg`/`tiny-skia` rendern und gegen Input vergleichen.
-  - Abnahme: dokumentierte Fehlerschwellen für Logo, Icon, Illustration und Foto.
-- [ ] **M2-12 Optimizer-Nutzen belegen.**
-  - Optimierte und unoptimierte Ausgabe desselben Runs vergleichen.
-  - Abnahme: Bericht zeigt Größe und visuelle Gleichheit.
+Jeder Parameter-Slice reicht vom typisierten Optionswert über WASM und Engine bis zur
+sichtbaren UI und enthält mindestens einen Wirkungs- oder Grenzwerttest.
 
-**Gate M2:** Ein RGBA-Bild wird lokal in ein valides, deterministisches und getestetes SVG
-mit optimierten Pfaden konvertiert.
+- [ ] **M2-01 Kanonisches Optionsmodell und Defaults einführen.**
+  - Eine Quelle speist Rust-Validierung, TypeScript, UI-Metadaten und spätere Diffs.
+  - Abnahme: Defaults und Feldnamen können nicht unbemerkt auseinanderlaufen.
+- [ ] **M2-02 Farbpräzision und Speckle-Filter durchstechen.**
+  - Abnahme: zwei definierte Werte erzeugen nachvollziehbar unterschiedliche Resultate.
+- [ ] **M2-03 `stacked` und `cutout` durchstechen.**
+  - Abnahme: Z-Reihenfolge, Löcher und Moduswechsel sind durch Fixtures getestet.
+- [ ] **M2-04 Kurvenparameter durchstechen.**
+  - Corner, Splice, Segmentlänge und Kurven an/aus typisiert anbieten.
+  - Abnahme: Pixel-Art- und Kurven-Fixtures reagieren erwartungsgemäß.
+- [ ] **M2-05 Path-Offset ohne `transform` optimieren.**
+  - Parser und Offset erst mit kleinen Rust-Tests entwickeln.
+  - Abnahme: gerenderte Geometrie bleibt gleich; redundantes `transform` entfällt.
+- [ ] **M2-06 Präzision und Zahlenformatierung durchstechen.**
+  - 0–6 Stellen, Rundung, `-0` und Nullen kanonisch behandeln.
+  - Abnahme: Golden-Tests und UI-Auswahl sind grün.
+- [ ] **M2-07 Relative Kommandos und H/V durchstechen.**
+  - Abnahme: Engine wählt deterministisch die kürzere valide Darstellung.
+- [ ] **M2-08 Optimizer an/aus mit echter Ersparnis anzeigen.**
+  - Stats aus der Engine, keine Regex-Auswertung im UI.
+  - Abnahme: Footer zeigt Bytevergleich bei visuell identischem Ergebnis.
+- [ ] **M2-09 Visuelle Qualitätsfixtures integrieren.**
+  - Logo, Icon, Illustration und Foto über `resvg`/`tiny-skia` prüfen.
+  - Abnahme: dokumentierte Fehlerschwellen und deterministische Golden-Artefakte.
 
-## M3 — Optionale native Formen
+**Gate M2:** Die Kernparameter wirken sichtbar und getestet. Der Optimizer ist messbar, kann
+abgeschaltet werden und verändert die gerenderte Geometrie nicht unzulässig.
 
-- [ ] **M3-01 Gemeinsames Kontur- und Erkennungsergebnis modellieren.**
-  - Konfidenz, Geometrie, Farbe, Alpha und Z-Reihenfolge.
-- [ ] **M3-02 Kreisdetektor implementieren und testen.**
-- [ ] **M3-03 Ellipsendetektor implementieren und testen.**
-- [ ] **M3-04 Rechteckdetektor einschließlich Rotation implementieren und testen.**
-- [ ] **M3-05 Liniendetektor implementieren und testen.**
-- [ ] **M3-06 Polygonerkennung mit Douglas-Peucker implementieren und testen.**
-- [ ] **M3-07 Selektive Detektor-Kette integrieren.**
-  - Nur aktivierte Typen ausführen; eindeutige Priorität und stabile Ergebnisse.
-- [ ] **M3-08 Reststrategie `path` implementieren.**
-  - Abnahme: Freiform bleibt vollständig als Pfad erhalten.
-- [ ] **M3-09 Reststrategien `ignore` und `raster` implementieren.**
-  - Hybrid-Ausgabe eindeutig markieren und korrekt einbetten.
-- [ ] **M3-10 Native SVG-Assembly und Shape-Statistiken ergänzen.**
-  - Abnahme: synthetische Fixtures enthalten erwartete native Tags.
-- [ ] **M3-11 Falsch-positive Erkennung messen.**
-  - Schwellen anhand gemischter Fixtures dokumentieren und Defaults begründen.
+## M3 — Größen, Presets und zusätzliche Ausgaben
 
-**Gate M3:** Jeder Formtyp kann einzeln aktiviert werden; Freiformen und unsichere Treffer
-verwenden zuverlässig die gewählte Reststrategie.
+- [ ] **M3-01 Drehen und Spiegeln als nicht destruktiven Slice liefern.**
+  - Abnahme: Original bleibt erhalten; Konvertierung nutzt sichtbar transformierte RGBA-Daten.
+- [ ] **M3-02 Prozentuale Größenänderung durchstechen.**
+  - Typisierte Prozentwerte und sichtbare Zielmaße.
+  - Abnahme: Down- und Upscale behalten standardmäßig das Seitenverhältnis.
+- [ ] **M3-03 Eigene Maße und Größenpresets durchstechen.**
+  - Icons sowie HD, FHD, QHD und UHD.
+  - Abnahme: UI, tatsächliche Canvasmaße und Run-Statistik stimmen überein.
+- [ ] **M3-04 Built-in-Presets Ende zu Ende liefern.**
+  - Icon, Logo, Illustration, Photo und Pixel Art mit exakt dokumentierten Werten.
+  - Abnahme: manuelle Änderung schaltet sichtbar auf „Benutzerdefiniert“.
+- [ ] **M3-05 Eigene Presets lokal speichern und löschen.**
+  - Nur Settings, keine großen Bild- oder Run-Daten in `localStorage`.
+  - Abnahme: Reload erhält das Preset und validiert importierte Werte.
+- [ ] **M3-06 PNG-Export aus einem Run liefern.**
+  - Abnahme: gerasterte Maße und Alpha stimmen mit der Auswahl überein.
+- [ ] **M3-07 WebP-Export mit Qualitätssteuerung liefern.**
+  - Abnahme: Browserfähigkeit wird erkannt; fehlende Unterstützung wird erklärt.
+- [ ] **M3-08 Ersten CLI-Slice ergänzen.**
+  - Ein Input, ein Output und Default-Konvertierung über dieselbe Core-API.
+  - Abnahme: CLI- und WASM-Default erzeugen semantisch identische SVGs.
 
-## M4 — Basis-Webanwendung und Export
+**Gate M3:** Größe, Preset und Export sind nachvollziehbar; Web und CLI verwenden dieselbe
+Engine ohne duplizierte Konvertierungslogik.
 
-- [ ] **M4-01 Zentralen App-Zustand und Services implementieren.**
-  - Keine doppelte Zustandsquelle zwischen UI und späterem WebMCP.
-- [ ] **M4-02 Datei- und Drag-and-Drop-Import implementieren.**
-  - Browserfähigkeiten erkennen; Format- und Größenfehler erklären.
-- [ ] **M4-03 Unveränderliches Original und Transformationen implementieren.**
-  - Drehen, Spiegeln und Reset.
-- [ ] **M4-04 Größenmodell implementieren.**
-  - Unverändert, Prozent, eigene Maße, Icons, HD/FHD/QHD/UHD.
-  - Abnahme: Seitenverhältnis und tatsächliche Pixelmaße sind korrekt.
-- [ ] **M4-05 WASM-Konvertierung in einen Worker verlagern.**
-  - Fortschritt/Busy, Fehler und Abbruch behandeln; WASM-Ressourcen freigeben.
-- [ ] **M4-06 Parametersteuerung aus kanonischen Metadaten rendern.**
-  - Formerkennung und Reststrategie verständlich erklären.
-- [ ] **M4-07 Built-in- und eigene Presets implementieren.**
-  - Manuelle Änderung setzt „Benutzerdefiniert“; Persistenz ohne große Run-Daten.
-- [ ] **M4-08 Canvas/SVG-Anzeige mit Zoom, Pan, Fit und 1:1 implementieren.**
-- [ ] **M4-09 View-Tabs für SVG, verarbeitetes Bild und Original implementieren.**
-- [ ] **M4-10 Footer-Statistiken und transparente Warnungen implementieren.**
-- [ ] **M4-11 SVG-, PNG- und WebP-Export implementieren.**
-  - Browserfähigkeiten und Qualitätsparameter beachten.
-- [ ] **M4-12 SVG-Code kopieren und sichere Dateinamen implementieren.**
-- [ ] **M4-13 Basis-Fehlerzustände und responsive Bedienung testen.**
+## M4 — Native Formen als optionale vertikale Slices
 
-**Gate M4:** Ein Nutzer kann ein Bild laden, konfigurieren, konvertieren, prüfen und in den
-Pflichtformaten exportieren.
+- [ ] **M4-01 Formerkennungsrahmen mit sicherem Pfad-Fallback liefern.**
+  - Globaler Schalter, aktivierte Typen und `remainder_strategy=path` typisieren.
+  - Abnahme: ausgeschaltete Erkennung ist byteidentisch zur bisherigen Ausgabe.
+- [ ] **M4-02 Kreise Ende zu Ende erkennen.**
+  - Synthetisches Fixture, Schwellwert, UI-Schalter, `<circle>` und Statistik.
+- [ ] **M4-03 Rechtecke einschließlich Rotation Ende zu Ende erkennen.**
+  - Abnahme: Rechteckfixture wird nativ; Freiform bleibt Pfad.
+- [ ] **M4-04 Ellipsen Ende zu Ende erkennen.**
+  - Abnahme: Kreis und Ellipse werden bei Grenzfällen stabil unterschieden.
+- [ ] **M4-05 Linien Ende zu Ende erkennen.**
+  - Abnahme: Seitenverhältnis wirkt sichtbar und ist validiert.
+- [ ] **M4-06 Polygone Ende zu Ende erkennen.**
+  - Douglas-Peucker-Epsilon typisiert durchreichen.
+  - Abnahme: Dreieck wird nativ; komplexe Freiform fällt zurück.
+- [ ] **M4-07 Selektive Detektorkette und Priorität absichern.**
+  - Abnahme: nur aktivierte Typen laufen; gemischte Fixtures bleiben deterministisch.
+- [ ] **M4-08 Reststrategie `ignore` liefern.**
+  - Deutliche UI-Warnung; Abnahme: nur bewusst nicht erkannte Inhalte fehlen.
+- [ ] **M4-09 Reststrategie `raster` als Hybrid-SVG liefern.**
+  - Abnahme: Ausgabe ist korrekt eingebettet und sichtbar als Hybrid gekennzeichnet.
+- [ ] **M4-10 Falsch-positive Erkennung messen und Defaults festlegen.**
+  - Abnahme: dokumentierter Fixture-Satz begründet die Standardschwellen.
+
+**Gate M4:** Jeder Formtyp ist einzeln steuerbar und sichtbar getestet. Der sichere Default
+bleibt Pfad; Hybrid- und Ignore-Ausgaben sind unmissverständlich.
 
 ## M5 — History und A/B-Vergleich
 
-- [ ] **M5-01 Unveränderliches Run-Modell und maximale History implementieren.**
-- [ ] **M5-02 Thumbnails und Run-Karten implementieren.**
-- [ ] **M5-03 Einstellungen eines Runs vollständig wiederherstellen.**
-  - Abnahme: erneuter Run ist bei unverändertem Input byte-identisch.
-- [ ] **M5-04 A/B-Auswahl einschließlich Original implementieren.**
-- [ ] **M5-05 Overlay-Slider über den vollen Bereich 0–100 % implementieren.**
-- [ ] **M5-06 Synchronen Zoom und Pan implementieren.**
-- [ ] **M5-07 Gecachte Lupe mit korrekter A/B-Grenze implementieren.**
-- [ ] **M5-08 Parameter-Diff aus kanonischem Schema implementieren.**
-  - Gleiche Werte und nur Unterschiede umschaltbar.
-- [ ] **M5-09 A/B-Infokarten und Exporte implementieren.**
-- [ ] **M5-10 Auto-A-Verhalten nach neuem Run festlegen und testen.**
-- [ ] **M5-11 Browser-End-to-End-Test für den Kernvergleich erstellen.**
-  - Abnahme: Änderung genau eines Parameters erscheint genau einmal im Diff.
+- [ ] **M5-01 Ersten Run unveränderlich in der History zeigen.**
+  - Settings, Statistik, Thumbnail, Run-ID und Zeitstempel.
+  - Abnahme: maximal zehn Einträge, ohne große Binärdaten in `localStorage`.
+- [ ] **M5-02 Einstellungen eines Runs wiederherstellen.**
+  - Abnahme: Restore und erneuter Run liefern bei gleichem Input identische SVG-Bytes.
+- [ ] **M5-03 Zwei Runs oder Original als A und B wählen.**
+  - Abnahme: Auswahl ist sichtbar, stabil und tastaturbedienbar.
+- [ ] **M5-04 Overlay-Slider über 0–100 Prozent liefern.**
+  - Abnahme: beide Grenzen und die Mitte zeigen korrekte, deckungsgleiche Inhalte.
+- [ ] **M5-05 Parameter-Diff durchstechen.**
+  - Kanonisches Schema verwenden; gleiche Werte und „nur Unterschiede“ anbieten.
+  - Abnahme: Änderung eines Parameters erscheint genau einmal.
+- [ ] **M5-06 A/B-Infokarten und Downloads liefern.**
+  - Abnahme: jede Seite exportiert den tatsächlich ausgewählten Run.
+- [ ] **M5-07 Synchronen Zoom und Pan liefern.**
+  - Abnahme: A und B verlieren bei Transformationen nicht ihre Deckung.
+- [ ] **M5-08 Gecachte Lupe liefern.**
+  - Abnahme: Seite und Beschriftung wechseln an der Slider-Grenze korrekt.
+- [ ] **M5-09 Auto-A nach einem neuen Run liefern.**
+  - Abnahme: bestehende Auswahl verschiebt sich deterministisch und verständlich.
+- [ ] **M5-10 Kritischen Browser-End-to-End-Test sichern.**
+  - Bild laden, zwei Runs erzeugen, einen Parameter vergleichen und beide exportieren.
 
-**Gate M5:** Zwei Runs lassen sich visuell und parametrisch zuverlässig vergleichen; ihre
-Einstellungen und Dateien sind direkt erreichbar.
+**Gate M5:** Der Vergleichsworkflow ist vollständig nutzbar und erklärt visuell wie
+parametrisch, warum sich zwei Ergebnisse unterscheiden.
 
 ## M6 — Nicht destruktive Vorverarbeitung und KI
 
-- [ ] **M6-01 Preprocessing-Pipeline und Versionierung der Eingaben implementieren.**
-- [ ] **M6-02 Helligkeit, Kontrast, Blur und Threshold implementieren.**
-- [ ] **M6-03 Bilaterales Denoise implementieren und performance-testen.**
-- [ ] **M6-04 Konventionelles 2×/4×/8×-Upscaling integrieren.**
-- [ ] **M6-05 Aktuelle Transformers.js-Version und Modelle erneut lizenzprüfen und pinnen.**
-  - **BLOCKER** für Modellintegration, nicht für M0–M5.
-- [ ] **M6-06 Zentrale Modell-Registry als Zustandsautomat implementieren.**
-  - Promise-Deduplizierung, Retry, echter Fortschritt, Backend-Anzeige und Dispose.
-- [ ] **M6-07 Cache- und Speicheranzeige robust implementieren.**
-- [ ] **M6-08 MODNet-Hintergrundentfernung implementieren.**
-  - Threshold und Edge-Sharpness; Alpha-Ränder testen.
-- [ ] **M6-09 SAM-Modell laden und Embeddings cachen.**
-- [ ] **M6-10 Smart-Select-UI mit positiven/negativen Punkten implementieren.**
-- [ ] **M6-11 Maske invertieren, löschen, anwenden und beenden implementieren.**
-- [ ] **M6-12 KI-Ergebnisse als neue nicht destruktive Eingaben historisieren.**
-- [ ] **M6-13 Optionalen KI-Upscaler bewerten.**
-  - Nur aufnehmen, wenn Lizenz, Modellgröße und Demo-Nutzen überzeugen.
+- [ ] **M6-01 Helligkeit als ersten Preprocessing-Slice liefern.**
+  - Versionierte Eingabe, Vorschau, Anwenden und Reset; Original bleibt unverändert.
+- [ ] **M6-02 Kontrast, Blur und Threshold einzeln durchstechen.**
+  - Jeder Effekt beginnt mit einem kleinen Pixeltest.
+- [ ] **M6-03 Bilaterales Denoise liefern.**
+  - Abnahme: messbarer Effekt und akzeptable Laufzeit auf einem definierten Fixture.
+- [ ] **M6-04 Konventionelles 2×/4×/8×-Upscaling liefern.**
+  - Abnahme: Interpolation, tatsächliche Maße und Speichern in der Eingabe-History stimmen.
+- [ ] **M6-05 Transformers.js und Modelle aktuell prüfen — BLOCKER für KI-Slices.**
+  - Versionen, Revisionen, Lizenzen, Größe und kommerzielle Nutzbarkeit dokumentieren.
+- [ ] **M6-06 Modell-Registry zuerst mit einem Fake-Loader liefern.**
+  - Zustände, Promise-Deduplizierung, Retry, Fortschritt und Dispose testgetrieben entwickeln.
+- [ ] **M6-07 MODNet-Hintergrundentfernung durchstechen.**
+  - Backend und echter Fortschritt sichtbar; Threshold und Edge-Sharpness.
+  - Abnahme: Alpha-Ränder erfüllen definierte Fixture-Erwartungen.
+- [ ] **M6-08 Cache- und Speicherverwaltung liefern.**
+  - Abnahme: Operationen werden awaited, rückgemeldet und hängen nie im Ladezustand.
+- [ ] **M6-09 SAM mit einem positiven Punkt durchstechen.**
+  - Modell, Embedding, sichtbarer Marker, Maske und Anwenden Ende zu Ende.
+- [ ] **M6-10 Positive und negative Mehrfachpunkte liefern.**
+  - Abnahme: mindestens zwei positive und ein negativer Punkt verfeinern die Maske.
+- [ ] **M6-11 Invertieren, Löschen und Beenden liefern.**
+  - Abnahme: Modell- und Maskenzustand bleiben konsistent und Ressourcen werden freigegeben.
+- [ ] **M6-12 KI-Ergebnisse in den normalen Run-Workflow integrieren.**
+  - Abnahme: freigestelltes Objekt wird konvertiert, verglichen und exportiert.
 
-**Gate M6:** Modellzustände können nicht hängen; BG-Remove und Mehrpunkt-SAM funktionieren
-lokal mit sichtbarem Backend und nachvollziehbaren Fehlern.
+**Gate M6:** Vorverarbeitung ist nicht destruktiv. Modellzustände können nicht hängen;
+BG-Remove und Mehrpunkt-SAM funktionieren lokal mit ehrlichem Status.
 
-## M7 — WebMCP-Steuerung
+## M7 — WebMCP-Steuerung als progressive Slices
 
 - [ ] **M7-01 Aktuellen WebMCP-Entwurf und Ziel-Chrome erneut verifizieren.**
-  - `document.modelContext`, Flags/Origin-Trial und Sicherheitsanforderungen dokumentieren.
-- [ ] **M7-02 Tool-Strategie und versionierte Schemas festschreiben.**
-  - Fähigkeiten, Zustand, Konfiguration, Run, Vergleich, Restore und Export.
-- [ ] **M7-03 WebMCP-Adapter mit Feature Detection implementieren.**
-  - Ohne API keine Fehler und keine Einschränkung der normalen UI.
-- [ ] **M7-04 Nur lesende Tools implementieren.**
-  - `get_capabilities`, `get_state`, `list_runs`.
-- [ ] **M7-05 Konfigurations- und Konvertierungstools implementieren.**
-  - Dieselben Validatoren und Services wie die UI verwenden.
-- [ ] **M7-06 Vergleichs- und Restore-Tools implementieren.**
-  - Strukturierte Diffs zurückgeben und sichtbare UI aktualisieren.
-- [ ] **M7-07 Export-Tool mit klaren Seiteneffekten implementieren.**
-  - Nur vorhandene Runs; Format- und Browserfehler strukturiert melden.
-- [ ] **M7-08 Tool-Sicherheit und Prompt-Injection-Grenzen testen.**
-  - Keine Bildtexte oder Dateimetadaten in Tool-Beschreibungen übernehmen.
-  - Eingaben begrenzen und Outputs als potenziell nicht vertrauenswürdig markieren.
-- [ ] **M7-09 UI-/Tool-Zustandssynchronität testen.**
-  - Menschliche und agentische Änderungen erscheinen sofort auf beiden Wegen.
-- [ ] **M7-10 Agentischen End-to-End-Ablauf testen.**
-  - Agent wählt lokal erzeugtes Bild im sichtbaren Browser aus.
-  - Agent setzt Preset/Größe, erzeugt zwei Runs, vergleicht und exportiert SVG.
-- [ ] **M7-11 WebMCP-Demo-Fallback dokumentieren.**
-  - Falls Zielbrowser die API nicht bereitstellt, bleibt UI-Aktuierung nachvollziehbar.
+  - `document.modelContext`, Aktivierung und Sicherheit mit Primärquellen dokumentieren.
+- [ ] **M7-02 `get_capabilities` als ersten Tool-Slice liefern.**
+  - Feature Detection, enge Schemaantwort und kein Fehler ohne WebMCP-Unterstützung.
+- [ ] **M7-03 `get_state` und `list_runs` liefern.**
+  - Nur lesen; sichtbarer UI-Zustand bleibt einzige Quelle der Wahrheit.
+- [ ] **M7-04 `configure_conversion` durchstechen.**
+  - Dieselben typisierten Validatoren wie die UI; sichtbare UI aktualisiert sich sofort.
+- [ ] **M7-05 `convert_current_image` durchstechen.**
+  - Abnahme: Agenten-Run erscheint wie ein menschlicher Run in UI und History.
+- [ ] **M7-06 Vergleich und Restore durchstechen.**
+  - `compare_runs` und `restore_run_settings` liefern strukturierte Diffs.
+- [ ] **M7-07 `export_run` mit klarem Seiteneffekt liefern.**
+  - Abnahme: nur existierende Runs und unterstützte Formate; Fehler strukturiert.
+- [ ] **M7-08 Tool-Sicherheitsgrenzen testen.**
+  - Keine Bildtexte oder Dateimetadaten in Beschreibungen; Eingaben strikt begrenzen.
+- [ ] **M7-09 Mensch-/Agent-Zustandssynchronität Ende zu Ende testen.**
+- [ ] **M7-10 Vollständige Agenten-Demo testen.**
+  - Agent wählt ein lokal erzeugtes Bild sichtbar aus, konfiguriert zwei Runs, vergleicht und
+    exportiert SVG.
+- [ ] **M7-11 UI-Fallback ohne WebMCP dokumentieren und testen.**
 
-**Gate M7:** Ein unterstützter Browser-Agent kann den sichtbaren Kernablauf zuverlässig über
-strukturierte Tools steuern; die normale Anwendung bleibt unabhängig davon vollständig.
+**Gate M7:** Ein unterstützter Browser-Agent steuert den sichtbaren Kernworkflow zuverlässig.
+Ohne WebMCP bleibt die Anwendung vollständig nutzbar.
 
 ## M8 — Politur, Rechtliches und Einreichung
 
 - [ ] **M8-01 Lizenzentscheidung P0-04 umsetzen.**
-  - `LICENSE.md`, Quellheader, README und UI-Footer.
-- [ ] **M8-02 `THIRD_PARTY_LICENSES.md` vollständig erzeugen und prüfen.**
+  - `LICENSE.md`, Quellheader, README und UI-Footer in einem Lizenz-Slice.
+- [ ] **M8-02 Drittanbieter-Lizenzen vollständig inventarisieren.**
   - Rust, JavaScript, Modelle und adaptierte Algorithmen.
-- [ ] **M8-03 Datenschutz- und Netzwerkverhalten dokumentieren und testen.**
-- [ ] **M8-04 Lizenzfreie Beispielbilder und Golden-Fixtures hinzufügen.**
-- [ ] **M8-05 Tastatur, Screenreader-Grundlagen und Kontrast prüfen.**
-- [ ] **M8-06 Große und beschädigte Eingaben, Speichergrenzen und Abbruch testen.**
-- [ ] **M8-07 Performance-Budgets messen und dokumentieren.**
-  - WASM-Größe, Startzeit, Konvertierungszeit, Lupe und Modellbedarf.
-- [ ] **M8-08 Statisches Deployment mit Sicherheitsheadern einrichten.**
-- [ ] **M8-09 README mit Build, Architektur, Screenshots und Grenzen fertigstellen.**
+- [ ] **M8-03 Datenschutz- und Netzwerkverhalten prüfen.**
+  - Abnahme: keine unerwarteten Requests, Uploads, Telemetrie oder externen Fonts.
+- [ ] **M8-04 Lizenzfreie Beispielbilder und Golden-Fixtures liefern.**
+- [ ] **M8-05 Tastatur und Screenreader-Kernpfade prüfen.**
+- [ ] **M8-06 Große, beschädigte und speicherintensive Eingaben absichern.**
+- [ ] **M8-07 Performance-Budgets messen.**
+  - WASM-Größe, Start, Konvertierung, A/B-Lupe und Modelle.
+- [ ] **M8-08 Statisches Deployment mit Sicherheitsheadern liefern.**
+- [ ] **M8-09 README mit Build, Architektur, Grenzen und Screenshots fertigstellen.**
 - [ ] **M8-10 Demo-Drehbuch automatisiert und manuell proben.**
-- [ ] **M8-11 Release-Checkliste und reproduzierbaren Tag erstellen.**
+- [ ] **M8-11 Reproduzierbaren Release-Tag erstellen.**
 
-**Gate M8 / Definition of Done:** Alle vorherigen Gates sind erfüllt, die Lizenz ist geklärt,
-ein frischer Checkout baut reproduzierbar und der vollständige Demo-Ablauf funktioniert ohne
-manuelle Reparaturschritte.
+**Gate M8 / Definition of Done:** Alle vorherigen Gates sind erfüllt. Ein frischer Checkout
+baut reproduzierbar, alle Qualitätsprüfungen sind grün und die Demo läuft ohne Reparaturen.
 
 ## Kür nach Definition of Done
 
-- [ ] **K-01 Run-Matrix für einen variierten Parameter.**
+- [ ] **K-01 Run-Matrix für genau einen variierten Parameter.**
 - [ ] **K-02 Preset-Import und -Export.**
-- [ ] **K-03 Einstellungen als URL-Permalink ohne Bilddaten.**
+- [ ] **K-03 Settings-Permalink ohne Bilddaten.**
 - [ ] **K-04 Experimentelle Gradientenerkennung.**
 - [ ] **K-05 Zusätzliche Browser-Rasterformate.**
 - [ ] **K-06 KI-Upscaling mit geprüftem Modell.**

@@ -7,8 +7,8 @@ Das Repository wird als Rust-Workspace mit separater Web-Anwendung aufgebaut:
 - `img2svg-core`: deterministische, plattformunabhängige Engine ohne Browserabhängigkeit.
 - `img2svg-wasm`: schmale `wasm-bindgen`-Schnittstelle und serialisierbare Resultate.
 - `img2svg-cli`: optionale native CLI, die dieselbe Core-API verwendet.
-- `web`: Vite + TypeScript ohne schweres UI-Framework; UI, Canvas, Worker, History, Exporte,
-  Modellverwaltung und WebMCP.
+- `web`: Vite + TypeScript 7.0.2 ohne schweres UI-Framework; UI, Canvas, Worker, History,
+  Exporte, Modellverwaltung und WebMCP.
 
 Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-Details.
 
@@ -134,6 +134,9 @@ Modelle sind ausgeschlossen.
 
 ## 9. Teststrategie
 
+- Neue Funktionen entstehen als kleine vertikale Slices nach Red–Green–Refactor.
+- Während eines Slices läuft zuerst der kleinste aussagekräftige Test; breite Suites folgen
+  vor dem Commit und an Meilenstein-Gates.
 - Rust-Unit-Tests für Optionen, Detektoren, Parser und Optimizer.
 - Golden-Tests für kanonische SVG-Ausgabe.
 - Pixelvergleich über `resvg`/`tiny-skia` für repräsentative Fixtures.
@@ -143,11 +146,15 @@ Modelle sind ausgeschlossen.
 - WebMCP-End-to-End-Test im unterstützten Chrome-Build.
 - Manueller Demo-Smoke-Test vor Release.
 
+Alle handgeschriebenen Quell- und Testdateien bleiben unter 1000 physischen Zeilen. Ein
+automatischer Check erzwingt diese Grenze. Weitere verbindliche Regeln stehen in
+`docs/ENGINEERING_STANDARDS.md`.
+
 ## 10. Build und Auslieferung
 
 - Rust-Formatierung und Clippy mit Warnungen als Fehler.
 - WASM-Build über `wasm-pack --target web` und anschließende Optimierung.
-- Web-Build über Vite mit reproduzierbaren Lockfiles.
+- Web-Build über Vite und exakt gepinntes TypeScript 7.0.2 mit reproduzierbarem Lockfile.
 - Statische Auslieferung mit strenger Content Security Policy, soweit KI-Modellquellen dies
   zulassen.
 - Abhängigkeits- und Lizenzbericht für Rust, JavaScript und Modelle.
