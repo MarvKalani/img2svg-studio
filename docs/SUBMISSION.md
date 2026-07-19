@@ -20,7 +20,7 @@ Official references:
 | Tagline | A local-first raster-to-SVG lab that turns tuning into reproducible evidence. |
 | Track | Developer Tools |
 | Demo | `https://studio.img2.download` — publication pending |
-| Repository | owner must provide final public URL |
+| Repository | `https://github.com/MarvKalani/img2svg-studio` — publication pending |
 | Video | owner must provide public YouTube URL |
 | Codex `/feedback` Session ID | owner must generate from this primary build task |
 | License | owner decision pending; Apache-2.0 recommended |

@@ -32,6 +32,7 @@ describe("submission documents", () => {
     expect(readme).toContain("No account, API key or paid service is required");
     expect(submission).toContain("public YouTube");
     expect(submission).toContain("Codex `/feedback` Session ID");
+    expect(submission).toContain("https://github.com/MarvKalani/img2svg-studio");
     expect(submission).toContain("## Pre-existing work disclosure");
     expect(submission).toContain("Apache-2.0 recommended");
   });

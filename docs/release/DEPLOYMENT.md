@@ -5,6 +5,9 @@ Target: `https://studio.img2.download`
 Status on 19 July 2026: the production build and local preview acceptance pass. Publication is
 waiting for the GitHub repository and Cloudflare zone access.
 
+The local `origin` is prepared for `https://github.com/MarvKalani/img2svg-studio.git`; the target
+does not exist publicly yet and no push is claimed before account authentication succeeds.
+
 Direct Chrome 150 acceptance opened `/workspace`, emitted four native SVG shapes, created two
 runs, showed their one parameter difference, downloaded a 336-byte SVG and survived a reload with
 an empty warning and error log. The automated gate below additionally verifies response headers,
