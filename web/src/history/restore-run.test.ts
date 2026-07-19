@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { defaultConversionOptions } from "../conversion/conversion-options";
+import { ImageVersionKind } from "../image/image-version";
 import { createHistoryStore, type NewConversionRun } from "./history-store";
 import { restoreSelectedRunOptions } from "./restore-run";
 
@@ -43,6 +44,7 @@ function runInput(
     ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
+    inputVersion: { id: 1, kind: ImageVersionKind.Original },
     lineCount: 0,
     options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },
     pathCount: 1,

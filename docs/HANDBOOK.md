@@ -301,6 +301,19 @@ beendet die Auswahl und lässt Eingabebild sowie Conversion-History unverändert
 Embedding, Decoder und PNG-Erzeugung bleiben im Browser; Netzwerkzugriffe dienen ausschließlich
 dem bewusst gestarteten, revisionsgebundenen Modelldownload.
 
+### KI-Ergebnis konvertieren und Original wiederherstellen
+
+„Anwenden“ übernimmt ein MODNet- oder Smart-Select-Ergebnis als „KI-Ergebnis · V…“. Das
+Original bleibt im Arbeitsspeicher und ist über „Original wiederherstellen“ erreichbar. Jede
+Konvertierung speichert genau die dabei aktive Eingabeversion im Run. History-Karten zeigen sie
+an; im A/B-Vergleich erscheint „Eingabe“ als Parameterunterschied zwischen Original und
+KI-Ergebnis.
+
+Run-Auswahl und A/B-Downloads verwenden weiterhin den zum Run gehörenden Namen und SVG-Stand.
+Das Wiederherstellen des Originals beendet eine aktive Vergleichsansicht, zeigt das Raster wieder
+an und verändert vorhandene Runs nicht. Eine weitere Konvertierung des Originals erzeugt einen
+neuen Run mit derselben Originalversion.
+
 Gleichzeitige Lade- oder Entladebefehle für dasselbe Modell teilen sich eine Operation. Dadurch
 wird ein Modell einmal initialisiert und sein `dispose()` beim Entladen einmal ausgeführt.
 

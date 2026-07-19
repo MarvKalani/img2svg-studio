@@ -1,25 +1,57 @@
-import type { ImageStore } from "../image/image-store";
-import type { NewConversionRun } from "../history/history-store";
+import type { ImageStore, LoadedImage } from "../image/image-store";
+import type { ConversionRun, NewConversionRun } from "../history/history-store";
 import { toConversionFailure } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
 import { convertImage } from "./conversion-service";
 import { parseSvgDocument, readSvgMetrics } from "./svg-document";
 
+export const ConversionAttemptCode = {
+  ConversionFailed: "conversion-failed",
+  NoImage: "no-image",
+} as const;
+
+export type ConversionAttempt =
+  | { readonly ok: true; readonly run: ConversionRun }
+  | {
+      readonly code: (typeof ConversionAttemptCode)[keyof typeof ConversionAttemptCode];
+      readonly message: string;
+      readonly ok: false;
+    };
+
+export interface ConversionController {
+  convert(): Promise<ConversionAttempt>;
+}
+
 export function initializeConversion(
   imageStore: ImageStore,
   readOptions: () => ConversionOptions,
-  recordRun: (run: NewConversionRun) => void,
-): void {
+  recordRun: (run: NewConversionRun) => ConversionRun,
+): ConversionController {
   const elements = readConversionElements();
+  let activeConversion: Promise<ConversionAttempt> | undefined;
 
-  elements.button.addEventListener("click", () => {
+  const convert = (): Promise<ConversionAttempt> => {
     const loadedImage = imageStore.current();
     if (!loadedImage) {
-      return;
+      return Promise.resolve({
+        code: ConversionAttemptCode.NoImage,
+        message: "Es ist kein Eingabebild geladen.",
+        ok: false,
+      });
     }
+    if (activeConversion) {
+      return activeConversion;
+    }
+    activeConversion = runConversion(elements, loadedImage, readOptions, recordRun).finally(() => {
+      activeConversion = undefined;
+    });
+    return activeConversion;
+  };
 
-    void runConversion(elements, loadedImage.file, readOptions, recordRun);
+  elements.button.addEventListener("click", () => {
+    void convert();
   });
+  return Object.freeze({ convert });
 }
 
 interface ConversionElements {
@@ -34,10 +66,11 @@ interface ConversionElements {
 
 async function runConversion(
   elements: ConversionElements,
-  file: File,
+  loadedImage: LoadedImage,
   readOptions: () => ConversionOptions,
-  recordRun: (run: NewConversionRun) => void,
-): Promise<void> {
+  recordRun: (run: NewConversionRun) => ConversionRun,
+): Promise<ConversionAttempt> {
+  const { file } = loadedImage;
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Konvertiere …";
   elements.error.hidden = true;
@@ -53,6 +86,7 @@ async function runConversion(
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
+    elements.downloadButton.dataset.sourceFileName = file.name;
     elements.statusImage.textContent = completedStatus(
       metrics.circleCount,
       metrics.ellipseCount,
@@ -60,17 +94,25 @@ async function runConversion(
       metrics.polygonCount,
       metrics.rectangleCount,
     );
-    recordRun({
+    const run = recordRun({
       durationMilliseconds: Math.max(0, Date.now() - startedAtMilliseconds),
       fileName: file.name,
+      inputVersion: loadedImage.version,
       ...metrics,
       options,
       svg,
     });
+    return { ok: true, run };
   } catch (error) {
-    elements.error.textContent = toConversionFailure(error).message;
+    const failure = toConversionFailure(error);
+    elements.error.textContent = failure.message;
     elements.error.hidden = false;
     elements.statusImage.textContent = "Konvertierung fehlgeschlagen";
+    return {
+      code: ConversionAttemptCode.ConversionFailed,
+      message: failure.message,
+      ok: false,
+    };
   } finally {
     elements.button.disabled = false;
     elements.buttonLabel.textContent = "Konvertieren";

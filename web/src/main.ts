@@ -27,6 +27,7 @@ const historyController = initializeHistory(
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
 let smartSelect: ReturnType<typeof initializeSmartSelect>;
 const imageLoader = initializeImageLoader(imageStore, (image) => {
+  historyController.clearComparison();
   optionsController.showSourceDimensions(image);
   backgroundRemoval.imageLoaded();
   smartSelect.imageLoaded();
@@ -34,6 +35,6 @@ const imageLoader = initializeImageLoader(imageStore, (image) => {
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
 initializeConversion(imageStore, optionsController.current, historyController.record);
-initializeSvgDownload(imageStore);
+initializeSvgDownload();
 initializeModelManager(modelRegistry);
 document.documentElement.dataset.appReady = "true";

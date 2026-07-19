@@ -362,6 +362,13 @@ Geometrie. Punkte akkumulieren, während eine Inferenz läuft keine konkurrieren
 Invertieren ändert nur die sichtbare und anzuwendende Polarität. Anwenden nullt den Alpha-Kanal
 außerhalb der gewählten Maske; Verwerfen berührt weder `ImageStore` noch History.
 
+`ImageStore` vergibt monoton steigende, typisierte Eingabeversionen und hält das Original neben
+höchstens einer aktuellen KI-Ableitung. Ersetzen oder Wiederherstellen gibt nicht mehr benötigte
+Object-URLs genau einmal frei. Jeder `ConversionRun` friert seine `ImageVersion` gemeinsam mit
+SVG, Dateiname und Optionen ein. Der Run-Vergleich ergänzt die schema-basierte Parametertabelle
+um „Eingabe“; Einzel- und A/B-Downloads lesen den Dateinamen aus dem angezeigten Run statt aus der
+inzwischen möglicherweise gewechselten Eingabe.
+
 `model-artifact-cache.ts` lädt ausschließlich die manifestierten revisionsgebundenen URLs mit dem
 Abortsignal des Versuchs. Jeder Cache- und Netzwerk-Response wird vor der Verwendung gegen
 Bytezahl und SHA-256 geprüft. Ein abweichender Cache-Eintrag wird gelöscht und einmal frisch

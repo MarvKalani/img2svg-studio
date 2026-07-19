@@ -82,14 +82,15 @@ Jede erfolgreiche Konvertierung erzeugt einen unveränderlichen Run mit stabiler
 Zeitstempel. Die Session-History hält höchstens zehn Runs im Arbeitsspeicher.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
-seiner Einstellungen verwendet werden.
+seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder
+KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechseln unabhängig.
 
 ## 6. A/B-Vergleich
 
 - Zwei Runs werden tastaturbedienbar als A und B markiert.
 - Ein Slider beschneidet beide Ergebnisse deckungsgleich von 0 bis 100 Prozent.
 - Unterschiedliche Maße werden in derselben Vergleichs-ViewBox normalisiert.
-- Eine schema-basierte Tabelle zeigt beide Parameterwerte.
+- Eine schema-basierte Tabelle zeigt Eingabeversion und beide Parameterwerte.
 - „Nur Unterschiede“ zeigt jeden abweichenden Parameter genau einmal.
 - Download A und Download B exportieren bytegenau den jeweils ausgewählten Run.
 

@@ -9,6 +9,7 @@ export interface ComparedRuns {
 
 export interface CompareSelection {
   assign(slot: CompareSlot, run: ConversionRun): ComparedRuns;
+  clear(): ComparedRuns;
   current(): ComparedRuns;
 }
 
@@ -23,6 +24,10 @@ export function createCompareSelection(): CompareSelection {
         [otherSlot]: comparedRuns[otherSlot]?.id === run.id ? undefined : comparedRuns[otherSlot],
         [slot]: run,
       });
+      return comparedRuns;
+    },
+    clear: () => {
+      comparedRuns = Object.freeze({});
       return comparedRuns;
     },
     current: () => comparedRuns,

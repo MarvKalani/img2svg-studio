@@ -2,10 +2,11 @@ import { parseSvgDocument } from "../conversion/svg-document";
 import { downloadSvgFile, svgFileName } from "../conversion/svg-download";
 import type { ConversionRun } from "../history/history-store";
 import type { ComparedRuns, CompareSelection, CompareSlot } from "./compare-selection";
-import { compareConversionSettings } from "./diff-settings";
+import { compareRunSettings } from "./compare-run-settings";
 
 export interface CompareController {
   assign(slot: CompareSlot, run: ConversionRun): void;
+  clear(): void;
   current(): ComparedRuns;
 }
 
@@ -28,9 +29,9 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
       return;
     }
 
-    const rows = compareConversionSettings(
-      comparedRuns.a.options,
-      comparedRuns.b.options,
+    const rows = compareRunSettings(
+      comparedRuns.a,
+      comparedRuns.b,
       elements.onlyDifferences.checked,
     );
     elements.settingsBody.replaceChildren(...rows.map(settingRow));
@@ -69,6 +70,10 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
       selection.assign(slot, run);
       render();
     },
+    clear: () => {
+      selection.clear();
+      render();
+    },
     current: selection.current,
   };
 }
@@ -84,7 +89,7 @@ function downloadComparedRun(run: ConversionRun | undefined, slot: CompareSlot):
   });
 }
 
-function settingRow(setting: ReturnType<typeof compareConversionSettings>[number]): HTMLElement {
+function settingRow(setting: ReturnType<typeof compareRunSettings>[number]): HTMLElement {
   const row = document.createElement("div");
   row.setAttribute("role", "row");
   row.dataset.settingKey = setting.key;

@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-06 — KI-Ergebnis in Conversion und Vergleich übernehmen
-
-**Ergebnis:** Ein angewendetes MODNet- oder SAM-Ergebnis wird zur versionierten Eingabe des
-normalen Workflows und kann konvertiert, in der History verglichen und exportiert werden;
-das Original bleibt wiederherstellbar.
-
-```gherkin
-Given eine KI-Maske wurde auf das geladene Bild angewendet
-When der Nutzer konvertiert und den neuen Run mit dem vorherigen vergleicht
-Then verwendet nur der neue Run die versionierte KI-Eingabe
-And Original, beide Runs, Parameter-Diff und Downloads bleiben konsistent
-```
-
-**Ausführbare Abnahme:** `web/e2e/ai-conversion-workflow.spec.ts` mit
-`npm --prefix web run test:e2e -- ai-conversion-workflow.spec.ts`.
-
-**Dokumentation:** Handbuch-Ende-zu-Ende-Ablauf und Grenzen.
-
 ## MCP-01 — Aktuellen WebMCP-Vertrag verifizieren und Fähigkeiten anbieten
 
 **Ergebnis:** Die aktuelle Chrome-Schnittstelle wird mit Primärquellen bestätigt. In Chrome

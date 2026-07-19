@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { defaultConversionOptions } from "../conversion/conversion-options";
+import { ImageVersionKind } from "../image/image-version";
 import { createHistoryStore, type NewConversionRun } from "./history-store";
 
 describe("history store", () => {
@@ -45,6 +46,7 @@ function runInput(runNumber: number): NewConversionRun {
     ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
+    inputVersion: { id: 1, kind: ImageVersionKind.Original },
     lineCount: 0,
     options: { ...defaultConversionOptions },
     pathCount: 1,

@@ -1,21 +1,26 @@
-import type { ImageStore } from "../image/image-store";
+export interface SvgDownloadController {
+  download(): boolean;
+}
 
-export function initializeSvgDownload(imageStore: ImageStore): void {
+export function initializeSvgDownload(): SvgDownloadController {
   const button = requireElement("#download-svg", HTMLButtonElement);
   const output = requireElement("#svg-output", HTMLElement);
 
-  button.addEventListener("click", () => {
+  const download = (): boolean => {
     const svg = output.querySelector("svg");
-    const loadedImage = imageStore.current();
-    if (!svg || !loadedImage) {
-      return;
+    const sourceFileName = button.dataset.sourceFileName;
+    if (!svg || !sourceFileName) {
+      return false;
     }
 
     downloadSvgFile({
       bytes: new XMLSerializer().serializeToString(svg),
-      fileName: svgFileName(loadedImage.file.name),
+      fileName: svgFileName(sourceFileName),
     });
-  });
+    return true;
+  };
+  button.addEventListener("click", download);
+  return Object.freeze({ download });
 }
 
 export interface SvgDownloadFile {

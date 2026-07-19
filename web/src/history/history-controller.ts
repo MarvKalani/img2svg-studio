@@ -3,10 +3,16 @@ import type { ConversionOptions } from "../conversion/conversion-options";
 import type { CompareController } from "../compare/compare-controller";
 import type { CompareSlot } from "../compare/compare-selection";
 import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-store";
+import { formatImageVersion } from "../image/image-version";
 import { restoreSelectedRunOptions } from "./restore-run";
 
 export interface HistoryController {
-  record(input: NewConversionRun): void;
+  assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
+  clearComparison(): void;
+  record(input: NewConversionRun): ConversionRun;
+  runs(): readonly ConversionRun[];
+  select(runId: number): ConversionRun | undefined;
+  selected(): ConversionRun | undefined;
 }
 
 export function initializeHistory(
@@ -28,7 +34,31 @@ export function initializeHistory(
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
+    elements.downloadButton.dataset.sourceFileName = run.fileName;
     elements.statusImage.textContent = `Run ${String(run.id)} ausgewählt · ${String(run.widthPixels)} × ${String(run.heightPixels)} SVG`;
+  };
+
+  const clearComparison = (): void => {
+    compareController.clear();
+    render();
+  };
+
+  const select = (runId: number): ConversionRun | undefined => {
+    const selected = store.select(runId);
+    if (selected) {
+      clearComparison();
+      showRun(selected);
+    }
+    return selected;
+  };
+
+  const assignComparison = (slot: CompareSlot, runId: number): ConversionRun | undefined => {
+    const run = store.runs().find((candidate) => candidate.id === runId);
+    if (run) {
+      compareController.assign(slot, run);
+      render();
+    }
+    return run;
   };
 
   const render = (): void => {
@@ -43,15 +73,10 @@ export function initializeHistory(
           comparedRuns.a?.id === run.id,
           comparedRuns.b?.id === run.id,
           () => {
-            const selected = store.select(run.id);
-            if (selected) {
-              showRun(selected);
-              render();
-            }
+            select(run.id);
           },
           (slot) => {
-            compareController.assign(slot, run);
-            render();
+            assignComparison(slot, run.id);
             focusCompareButton(elements.content, run.id, slot);
           },
         ),
@@ -62,10 +87,16 @@ export function initializeHistory(
   };
 
   return {
+    assignComparison,
+    clearComparison,
     record: (input) => {
-      store.add(input);
+      const run = store.add(input);
       render();
+      return run;
     },
+    runs: store.runs,
+    select,
+    selected: store.selected,
   };
 }
 
@@ -94,7 +125,7 @@ function runItem(
   const title = document.createElement("strong");
   title.textContent = `Run ${String(run.id)}`;
   const dimensions = document.createElement("span");
-  dimensions.textContent = `${String(run.widthPixels)} × ${String(run.heightPixels)}`;
+  dimensions.textContent = `${String(run.widthPixels)} × ${String(run.heightPixels)} · ${formatImageVersion(run.inputVersion)}`;
   const metrics = document.createElement("small");
   metrics.textContent = `${shapeMetrics(run)} · ${String(run.durationMilliseconds)} ms`;
 

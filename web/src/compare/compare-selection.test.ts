@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { defaultConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
+import { ImageVersionKind } from "../image/image-version";
 import { createCompareSelection } from "./compare-selection";
 
 describe("compare selection", () => {
@@ -23,6 +24,15 @@ describe("compare selection", () => {
 
     expect(selection.assign("b", firstRun)).toEqual({ a: undefined, b: firstRun });
   });
+
+  test("Given two compared runs, when the input image changes, then both slots are cleared", () => {
+    const selection = createCompareSelection();
+    selection.assign("a", run(1));
+    selection.assign("b", run(2));
+
+    expect(selection.clear()).toEqual({});
+    expect(selection.current()).toEqual({});
+  });
 });
 
 function run(id: number): ConversionRun {
@@ -33,6 +43,7 @@ function run(id: number): ConversionRun {
     fileName: "circle.png",
     heightPixels: 256,
     id,
+    inputVersion: { id: 1, kind: ImageVersionKind.Original },
     lineCount: 0,
     options: defaultConversionOptions,
     pathCount: 1,

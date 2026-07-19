@@ -1,4 +1,5 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
+import type { ImageVersion } from "../image/image-version";
 
 export interface NewConversionRun {
   circleCount: number;
@@ -6,6 +7,7 @@ export interface NewConversionRun {
   ellipseCount: number;
   fileName: string;
   heightPixels: number;
+  inputVersion: ImageVersion;
   lineCount: number;
   options: ConversionOptions;
   pathCount: number;
@@ -39,6 +41,7 @@ export function createHistoryStore(): HistoryStore {
       const run: ConversionRun = Object.freeze({
         ...input,
         id: nextRunId,
+        inputVersion: Object.freeze({ ...input.inputVersion }),
         options: Object.freeze({
           ...input.options,
           shapeDetection: Object.freeze({
