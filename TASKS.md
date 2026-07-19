@@ -18,9 +18,14 @@ Für jeden Implementierungstask übernimmt der Orchestrator die Abnahme:
 3. Den Test aus dem erwarteten Grund fehlschlagen sehen (**Red**).
 4. Nur den beschriebenen Slice implementieren (**Green**), danach bei Bedarf vereinfachen.
 5. Den angegebenen Abnahmebefehl und alle vom Diff betroffenen Qualitätsprüfungen ausführen.
-6. UI-Verhalten zusätzlich im echten Browser prüfen, wenn der Task sichtbares Verhalten ändert.
-7. Handbuch und betroffene Verträge auf den tatsächlich gelieferten Stand bringen.
-8. Den Task aus dieser Datei löschen und den vollständigen Slice gemeinsam committen.
+6. Den gebauten Stand **immer im echten Google Chrome** öffnen und den betroffenen Ablauf sowie
+   den bisherigen Kernworkflow direkt bedienen. Playwright ersetzt diese Abnahme nicht.
+7. Konsole, sichtbaren Zustand, Tastaturweg und unerwartete Netzwerkzugriffe im Chrome-Durchlauf
+   prüfen; bei WebMCP zusätzlich registrierte Tools und deren sichtbare Wirkung kontrollieren.
+8. Fällt ein Mangel auf, bleibt der Task an seiner Position. Der Orchestrator ergänzt
+   Reproduktion, Sollverhalten und einen Regressionstest und führt denselben Slice erneut durch.
+9. Erst nach mangelfreier Chrome-Abnahme Handbuch und betroffene Verträge aktualisieren.
+10. Den Task aus dieser Datei löschen und den vollständigen Slice gemeinsam committen.
 
 Ein Task gilt erst nach diesem Review als fertig. Der Commit-Betreff folgt
 `type(TASK-ID): imperative summary`. Der Commit-Text dokumentiert Ergebnis, ausgeführte
@@ -28,9 +33,11 @@ Abnahme und Dokumentationsänderungen. Es werden keine dauerhaft roten Tests com
 
 ```text
 Outcome:
-- Geliefertes Verhalten und bewusste Nicht-Ziele
+- Geliefertes Verhalten
 Acceptance:
 - Exakter Befehl mit Ergebnis
+Chrome Acceptance:
+- Chrome-Version, geprüfter Ablauf und beobachtetes Ergebnis
 Documentation:
 - Aktualisierte Handbuch- und Vertragsabschnitte
 ```
@@ -52,12 +59,16 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 - KISS, SINE, EVA, typisierte Domänenwerte und minimale Diffs gemäß
   [`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md).
-- Keine handgeschriebene Quell- oder Testdatei überschreitet 1000 Zeilen.
-- Keine Warnungen in Formatierung, Lint, Typecheck, Rust-Clippy oder Tests.
-- Keine Bild-Uploads, Telemetrie, Tracker oder externen Fonts.
+- Handgeschriebene Quell- und Testdateien haben maximal 1000 Zeilen.
+- Formatierung, Lint, Typecheck, Rust-Clippy und Tests laufen warnungsfrei.
+- Netzwerkverkehr besteht nur aus statischen App-Ressourcen und bewusst gestarteten
+  Modell-Downloads; Bildverarbeitung bleibt lokal.
 - Neue Abhängigkeiten sind exakt gepinnt, lizenziert und für den aktuellen Slice notwendig.
-- `docs/HANDBOOK.md` beschreibt nur funktionierendes Verhalten, keine Absichtserklärungen.
+- `docs/HANDBOOK.md` beschreibt den funktionierenden Produktstand.
+- Jeder Task enthält einen direkten Chrome-Durchlauf zusätzlich zu den automatisierten Tests.
 - Ein sichtbarer Task erfüllt Tastatur- und verständliche Fehlerzustände in seinem Scope.
+- Ein in Chrome entdeckter Mangel erweitert nur die Abnahme des aktuellen Tasks; er rechtfertigt
+  weder einen halbfertigen Commit noch das Vorziehen anderer Slices.
 
 ---
 
@@ -68,7 +79,7 @@ HTML/CSS-Oberfläche mit Kopfzeile, Parameterleiste links, Arbeitsfläche, Diff-
 History unten und Statuszeile.
 
 **Scope:** Vite, exakt TypeScript `7.0.2`, Vitest und Playwright mit npm-Lockfile; semantische
-Landmarks; sichtbare Platzhalterzustände. Noch keine Bildverarbeitung oder Rust-Struktur.
+Landmarks und sichtbare Platzhalterzustände.
 
 ```gherkin
 Given ein frischer Browser öffnet img2svg Studio
@@ -98,8 +109,6 @@ And eine künstlich zu große handgeschriebene Quelldatei wird vom Zeilenlimit a
 **Ausführbare Abnahme:** `scripts/check-source-lines.test.ts` und `scripts/ci-workflow.test.ts`;
 `npm test -- scripts/check-source-lines.test.ts scripts/ci-workflow.test.ts` sowie
 `npm run check` im Repository-Root.
-
-**Nicht im Scope:** Deployment, Secrets, automatische Releases.
 
 **Dokumentation:** README-Build/Test-Anleitung und technische Build-Spezifikation.
 
@@ -137,9 +146,6 @@ And der transparente Fixture-Hintergrund bleibt transparent
 **Ausführbare Abnahme:** `crates/img2svg-core/tests/default_conversion.rs` mit
 `cargo test -p img2svg-core --test default_conversion`; Browservertrag in
 `web/e2e/convert-image.spec.ts` mit `npm --prefix web run test:e2e -- convert-image.spec.ts`.
-
-**Nicht im Scope:** native Formerkennung, zusätzliche Exporte, Worker-Pool oder vorsorgliche
-Performance-Optimierung.
 
 **Dokumentation:** Handbuch-Konvertierung, Engine-/WASM-Vertrag und lokale Build-Anleitung.
 
@@ -180,8 +186,6 @@ And das neue Ergebnis enthält genau diese Einstellungen und eine nachvollziehba
 `npm --prefix web test -- conversion-options.test.ts` und `npm --prefix web run test:e2e --
 change-parameters.spec.ts`.
 
-**Nicht im Scope:** vollständiger visioncortex-Parameterkatalog, freie Zielmaße, Presets.
-
 **Dokumentation:** Handbuch-Parameter und kanonische Defaults in der technischen Spezifikation.
 
 ## HISTORY-01 — Unveränderliche Conversion-Runs unten anzeigen
@@ -199,8 +203,6 @@ And das Auswählen eines Runs zeigt dessen SVG ohne seine gespeicherten Werte zu
 **Ausführbare Abnahme:** `web/src/history/history-store.test.ts` mit
 `npm --prefix web test -- history-store.test.ts` und `web/e2e/history.spec.ts` mit
 `npm --prefix web run test:e2e -- history.spec.ts`.
-
-**Nicht im Scope:** Persistieren großer Run-Artefakte in `localStorage`.
 
 **Dokumentation:** Handbuch „Verlauf“ einschließlich Begrenzung und gespeicherter Metadaten.
 
@@ -395,8 +397,6 @@ And ein unvollständiger oder nicht kommerziell nutzbarer Eintrag wird abgelehnt
 `npm --prefix web test -- model-manifest.test.ts`; zusätzlich manuelle Quellenprüfung mit
 Primärlinks in `docs/THIRD_PARTY.md`.
 
-**Nicht im Scope:** Modell-Download oder Inferenz.
-
 **Dokumentation:** Drittanbieter-/Modellinventar und technische KI-Spezifikation.
 
 ## AI-02 — KI-Manager mit deterministischem Fake-Loader liefern
@@ -493,9 +493,10 @@ And Original, beide Runs, Parameter-Diff und Downloads bleiben konsistent
 
 ## MCP-01 — Aktuellen WebMCP-Vertrag verifizieren und Fähigkeiten anbieten
 
-**Ergebnis:** Die aktuelle Chrome-Schnittstelle wird mit Primärquellen bestätigt. Ein schmaler
-Adapter registriert `get_capabilities` per Feature Detection und lässt die UI ohne WebMCP
-vollständig funktionieren.
+**Ergebnis:** Die aktuelle Chrome-Schnittstelle wird mit Primärquellen bestätigt. In Chrome
+149 oder neuer sind `#enable-webmcp-testing` und `#devtools-webmcp-support` aktiviert. Ein
+schmaler Adapter registriert `get_capabilities` per Feature Detection und lässt die UI ohne
+WebMCP vollständig funktionieren.
 
 ```gherkin
 Given ein Browser mit oder ohne unterstützte WebMCP-Schnittstelle
@@ -507,8 +508,16 @@ And ein nicht unterstützter Browser behält eine fehlerfreie vollständig bedie
 **Ausführbare Abnahme:** `web/src/webmcp/webmcp-adapter.test.ts` mit unterstütztem und fehlendem
 API-Fake sowie `web/e2e/webmcp-fallback.spec.ts`; `npm --prefix web test --
 webmcp-adapter.test.ts` und `npm --prefix web run test:e2e -- webmcp-fallback.spec.ts`.
+Anschließend bestätigt der Orchestrator im echten Chrome `document.modelContext`, den
+registrierten Toolnamen und den fehlerfreien UI-Fallback bei deaktivierter API.
 
 **Dokumentation:** Quellen, Ziel-Chrome, Aktivierung, Sicherheitsgrenzen und UI-Fallback.
+
+**Bedingter Ersatz:** Erst wenn WebMCP trotz unterstützter Chrome-Version, aktivierter Flags,
+korrekter Origin-/Permissions-Konfiguration und behobener eigener Fehler nicht durch den
+Browser-Agenten nutzbar ist, wird MCP-02 vor Arbeitsbeginn durch einen Apps-SDK-Slice ersetzt.
+Dieser baut einen ChatGPT-kompatiblen MCP-Server und eine iframe-UI auf denselben typisierten
+Anwendungsdiensten. Damit entsteht ein alternativer Agentenkanal in ChatGPT.
 
 ## MCP-02 — Parameter konfigurieren und sichtbare Konvertierung ausführen
 
@@ -525,8 +534,39 @@ And der erzeugte Run erscheint mit identischem Vertrag in Ansicht und History
 **Ausführbare Abnahme:** `web/src/webmcp/conversion-tools.test.ts` und
 `web/e2e/webmcp-conversion.spec.ts`; `npm --prefix web test -- conversion-tools.test.ts` und
 `npm --prefix web run test:webmcp -- webmcp-conversion.spec.ts` im dokumentierten Ziel-Browser.
+Der Orchestrator ruft beide Tools zusätzlich direkt über den verbundenen Chrome-Agenten auf
+und bestätigt, dass Parameter, Ergebnis und History im sichtbaren Tab synchron reagieren.
 
 **Dokumentation:** Handbuch-Agentenablauf, Tool-Schemas und strukturierte Fehler.
+
+## MCP-03 — Den Vorgänger `img2.download` vollständig über WebMCP bedienen
+
+**Ergebnis:** Der bestehende Vorgänger auf `https://img2.download` liefert die nötigen
+Origin-/Permissions-Header. Ein kleiner getrennter Adapter bildet jedes vorhandene sichtbare
+Converter-Kommando auf ein eng typisiertes WebMCP-Werkzeug ab und verwendet den vorhandenen
+Anwendungszustand der Seite.
+
+```gherkin
+Given ein lokales Bild wurde im bestehenden Converter auf https://img2.download bestätigt
+When ein Browser-Agent dessen vollständigen sichtbaren Ablauf über WebMCP ausführt
+Then reagieren alle vorhandenen Converter-Funktionen sichtbar und konsistent
+And jedes vorhandene UI-Kommando ist genau einem registrierten WebMCP-Werkzeug zugeordnet
+```
+
+**Ausführbare Abnahme:** `integrations/img2-download/tool-capability-map.test.ts` vergleicht die
+vorhandenen UI-Kommandos mit dem Tool-Inventar; `web/e2e/predecessor-webmcp.spec.ts` prüft den
+vollständigen Produktionsablauf. `npm --prefix web test --
+../integrations/img2-download/tool-capability-map.test.ts` und
+`npm --prefix web run test:webmcp -- predecessor-webmcp.spec.ts` müssen grün sein. Der
+Orchestrator prüft zusätzlich im echten Chrome 150 oder neuer Response-Header, registrierte
+Toolnamen, sichtbare Zustandsänderungen, Download und fehlerfreie Konsole auf der
+Produktionsdomain.
+
+**Vorbedingung:** Das Quellprojekt oder der deploybare Asset-Pfad des Vorgängers ist lokal oder
+über GitHub verfügbar.
+
+**Dokumentation:** Vollständiges Vorgänger-Tool-Inventar, lokale Dateiübergabe, Hosting-Header
+und Agentenablauf.
 
 ## RELEASE-01 — Devpost-Teilnahme, Lizenz und GitHub-Zugriff festlegen
 
@@ -543,7 +583,8 @@ And das Projekt ist dem richtigen Devpost-Event beigetreten
 
 **Abnahmenachweis:** `LICENSE`, Git-Remote, erfolgreicher Push und unangemeldeter Browsercheck;
 bei privatem Repository bestätigter Zugriff für beide in `docs/SUBMISSION.md` genannten
-Judge-Adressen. Kein künstlicher Test oder leerer Commit für externe Aktionen.
+Judge-Adressen. Externe Aktionen werden als Nachweis dokumentiert; Repository-Änderungen
+erhalten den zugehörigen Commit.
 
 **Dokumentation:** README, Drittanbieterinventar, UI-Footer und Submission-Checkliste.
 
@@ -556,7 +597,7 @@ beschädigte sowie zu große Eingaben; ein Netzwerkaudit findet nur explizite Mo
 Given ein frischer Browser und der vollständige Demoablauf
 When er per Tastatur, mit beschädigter Datei und unter Netzwerkbeobachtung ausgeführt wird
 Then bleiben Fokus, Fehlermeldungen und Bedienbarkeit nachvollziehbar
-And es gibt keine Uploads, Telemetrie, Tracker oder unerwartete Drittanfragen
+And Netzwerkverkehr besteht nur aus App-Ressourcen und bewusst gestarteten Modell-Downloads
 ```
 
 **Ausführbare Abnahme:** `web/e2e/release-audit.spec.ts`, Accessibility-Scan und manueller
@@ -567,8 +608,9 @@ Checkprotokoll wird in `docs/release/RELEASE_AUDIT.md` festgehalten.
 
 ## RELEASE-03 — Öffentliche statische Demo reproduzierbar deployen
 
-**Ergebnis:** Ein Produktionsbuild läuft kostenlos und ohne Login unter einer stabilen HTTPS-URL
-mit nötigen Sicherheitsheadern und funktioniert in einem frischen Ziel-Browser.
+**Ergebnis:** Ein Produktionsbuild läuft kostenlos und ohne Login auf
+`https://studio.img2.download` mit nötigen Sicherheitsheadern und funktioniert in einem
+frischen Ziel-Browser.
 
 ```gherkin
 Given die öffentliche Demo-URL wird ohne bestehende Sitzung geöffnet

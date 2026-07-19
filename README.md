@@ -4,7 +4,9 @@ img2svg Studio wird eine vollständig clientseitige Web-Anwendung zur kontrollie
 Umwandlung von Rasterbildern in hochwertige, nachvollziehbare SVGs. Der Schwerpunkt liegt
 nicht nur auf der Konvertierung, sondern auf einem experimentellen Workflow: Einstellungen
 variieren, Ergebnisse in einer History vergleichen, Parameterunterschiede verstehen und den
-gesamten Ablauf optional durch einen Browser-Agenten über WebMCP steuern.
+gesamten Ablauf optional durch einen Browser-Agenten über WebMCP steuern. Die produktive
+Abnahme des neuen Studios ist auf `https://studio.img2.download` vorgesehen. Der bestehende
+Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter.
 
 ## Projektstatus
 
@@ -14,14 +16,14 @@ Implementierung.
 
 ## Leitprinzipien
 
-- Bilder bleiben lokal im Browser; es gibt kein Anwendungs-Backend und keine Telemetrie.
+- Bildverarbeitung bleibt lokal; Netzwerkzugriffe dienen statischen Ressourcen und bewusst
+  gestarteten Modell-Downloads.
 - Rust/WebAssembly übernimmt die deterministische Vektorisierung.
 - `visioncortex` liefert die bewährte Grundlage für Clustering und Kontur-Tracing.
 - Native SVG-Formen sind eine optionale, pro Formtyp steuerbare Verbesserung.
 - Nicht erkannte Inhalte bleiben als SVG-Pfade erhalten.
-- History und A/B-Vergleich sind Kernfunktionen, keine nachträglichen Extras.
-- WebMCP wird als progressive Erweiterung implementiert; die Anwendung bleibt ohne WebMCP
-  vollständig bedienbar.
+- History und A/B-Vergleich bilden den Kernworkflow.
+- WebMCP ergänzt die vollständig bedienbare Browseroberfläche progressiv.
 
 ## Verbindliche Projektdokumente
 

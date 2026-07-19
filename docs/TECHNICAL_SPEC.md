@@ -96,8 +96,11 @@ Die komplexen Konvertierungsaktionen verwenden die imperative API. Deklarative A
 können ergänzend für stabile Standardformulare eingesetzt werden, dürfen aber keine doppelte
 Geschäftslogik erzeugen.
 
-Das Submission-MVP registriert nur `get_capabilities`, `configure_conversion` und
-`convert_current_image`. Jedes Tool besitzt:
+Der erste WebMCP-Slice registriert `get_capabilities`, `configure_conversion` und
+`convert_current_image`. Der vollständige Produktvertrag ergänzt Workspace-Zustand, History,
+A/B-Auswahl, Export, KI-Modellverwaltung und die beiden KI-Aktionen. Eine typisierte Capability
+Map ordnet jedes sichtbare Application Command genau einem UI- und einem WebMCP-Einstieg zu.
+Jedes Tool besitzt:
 
 - einen stabilen, aktionsorientierten Namen.
 - eine eindeutige Beschreibung ohne Inhalte aus Nutzerbildern.
@@ -105,8 +108,47 @@ Das Submission-MVP registriert nur `get_capabilities`, `configure_conversion` un
 - strukturierte Erfolgs- und Fehlerresultate.
 - passende Hinweise für nur lesende und zustandsändernde Aktionen, soweit unterstützt.
 
-Da WebMCP einen sichtbaren Browserkontext benötigt, umfasst der End-to-End-Test einen echten
-Tab. Die Integration bleibt austauschbar, wenn sich der Entwurf ändert.
+Lokale Entwicklung und Abnahme verwenden Chrome 149 oder neuer mit
+`chrome://flags/#enable-webmcp-testing`. Für die sichtbare Kontrolle registrierter Tools und
+Aufrufe wird zusätzlich `chrome://flags/#devtools-webmcp-support` aktiviert. WebMCP benötigt
+einen sichtbaren Tab, einen origin-isolierten Dokumentkontext und die `tools` Permissions
+Policy. Die Abnahme prüft die Werkzeuge nicht nur gegen API-Fakes, sondern ruft sie über den
+verbundenen Chrome-Agenten auf und kontrolliert dieselbe sichtbare UI.
+
+Die produktive Abnahme des neuen Studios läuft auf `https://studio.img2.download`. Die
+Hosting-Konfiguration sendet für das App-Dokument `Origin-Agent-Cluster: ?1` und
+`Permissions-Policy: tools=(self)`. Ein Production-Smoke-Test prüft Header, Tool-Inventar und
+den sichtbaren Ende-zu-Ende-Ablauf im Ziel-Chrome. Lokale Bilder werden über die
+browserbestätigte Dateiübergabe in den aktiven Tab übernommen; alle folgenden Produktaktionen
+laufen über dieselben Application Services.
+
+Der bestehende Vorgänger auf `https://img2.download` bleibt eine getrennte Anwendung. Sein
+WebMCP-Adapter lebt als kleine Integration mit eigenem Capability-Inventar und eigenem
+Production-Smoke-Test. Dadurch wird keine DOM- oder Zustandslogik zwischen Vorgänger und
+img2svg Studio vermischt.
+
+Primärquellen:
+
+- <https://developer.chrome.com/docs/ai/webmcp>
+- <https://developer.chrome.com/blog/new-in-devtools-149>
+
+### Apps-SDK-Rückfallweg
+
+Ein eigener Implementierungsfehler löst keinen Architekturwechsel aus. Erst wenn WebMCP in
+einer unterstützten und korrekt konfigurierten Chrome-Version nachweislich nicht für den
+Browser-Agenten nutzbar ist, wird der WebMCP-Aktionsslice durch eine ChatGPT-App ersetzt.
+
+Der funktionale Ersatz verwendet einen HTTP-erreichbaren MCP-Server, dessen Tools dieselben
+typisierten Application Services ansprechen, sowie eine UI im ChatGPT-iframe über die MCP Apps
+Bridge. Die Agentensteuerung wechselt damit von der lokalen Browserseite in die ChatGPT-Surface.
+Serverbetrieb, HTTPS und Datei-/Datenschutzfluss werden dann als eigener Slice getestet und
+dokumentiert. Beide Wege verwenden dieselben Application Services.
+
+Primärquellen:
+
+- <https://developers.openai.com/apps-sdk/build/mcp-server>
+- <https://developers.openai.com/apps-sdk/build/chatgpt-ui>
+- <https://developers.openai.com/apps-sdk/deploy>
 
 ## 8. KI-Modelle
 

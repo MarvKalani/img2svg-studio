@@ -6,9 +6,8 @@ img2svg Studio ist eine statisch auslieferbare Single-Page-Anwendung. Sie konver
 Rasterbilder in SVG, hält mehrere Ergebnisse im Verlauf, vergleicht zwei Varianten und kann
 optionale Browser-KI sowie WebMCP explizit zuschalten.
 
-Diese Spezifikation beschreibt ausschließlich den Umfang der Build-Week-Einreichung. Nur
-Verhalten, das in `TASKS.md` steht, getestet ist und im Handbuch als verfügbar bezeichnet wird,
-darf in Demo, README oder Submission als vorhanden beworben werden.
+`TASKS.md`, ausführbare Tests und Handbuch bilden gemeinsam den verbindlichen Umfang der
+Build-Week-Einreichung.
 
 Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
 
@@ -18,9 +17,9 @@ Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
 - Dateiauswahl und Drag-and-drop verwenden dieselbe validierte Decodergrenze.
 - Das unveränderte Original bleibt für die gesamte Sitzung verfügbar.
 - Beschädigte, zu große und nicht unterstützte Dateien erzeugen verständliche Fehler.
-- Bilder werden nicht an ein Anwendungs-Backend übertragen.
-- Es gibt keine Telemetrie, Tracker oder externen Fonts.
-- Netzwerkzugriffe für KI-Modelle beginnen nur nach sichtbarer Nutzeraktion.
+- Bildverarbeitung und Bilddaten bleiben im Browser.
+- Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
+- KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
 
 ## 3. Oberfläche
 
@@ -62,8 +61,8 @@ Parameter-Diff und WebMCP. Ungültige Werte werden abgelehnt und nie still korri
 ### 4.3 Optionale native Formen
 
 Die Formerkennung ist explizit zuschaltbar. Unterstützt werden Kreis, Rechteck, Ellipse, Linie
-und Polygon. Formtypen können einzeln aktiviert werden. Nicht ausreichend sicher erkannte
-Konturen bleiben als Pfad erhalten; Inhalte werden weder verworfen noch als Raster eingebettet.
+und Polygon. Formtypen können einzeln aktiviert werden. Jede übrige Kontur bleibt als Pfad
+erhalten.
 
 Die Ground-Truth-Fixtures definieren erwarteten SVG-Elementtyp, Geometrie, Farbe, Reihenfolge
 und eine Geometrietoleranz von 2 Pixeln. Die gemischte Szene muss deterministisch bleiben und
@@ -79,8 +78,7 @@ darf keine Kontur doppelt ausgeben.
 - Transparenzstatus und nicht fatale Warnungen.
 
 Jede erfolgreiche Konvertierung erzeugt einen unveränderlichen Run mit stabiler ID und
-Zeitstempel. Die Session-History enthält höchstens zehn Runs und persistiert keine großen
-Bild- oder SVG-Artefakte ungeprüft in `localStorage`.
+Zeitstempel. Die Session-History hält höchstens zehn Runs im Arbeitsspeicher.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden.
@@ -116,41 +114,50 @@ die Registry gelangen.
 
 ## 8. WebMCP
 
-WebMCP ist eine progressive Erweiterung hinter Feature Detection. Das MVP bietet:
+WebMCP ist eine progressive Erweiterung hinter Feature Detection. Das MVP bietet eng
+typisierte Werkzeuge für den sichtbaren Produktablauf:
 
 - `get_capabilities`: unterstützte Kernfunktionen lesen.
+- `get_workspace_state`: Einstellungen, aktuellen Run, History, A/B-Auswahl und Modellzustände
+  lesen.
 - `configure_conversion`: dieselben drei Parameter mit denselben Validatoren setzen.
 - `convert_current_image`: den normalen sichtbaren Conversion-Service ausführen.
+- `select_history_run`, `select_comparison_a` und `select_comparison_b`: History und Vergleich
+  sichtbar steuern.
+- `download_selected_svg`: exakt den sichtbaren ausgewählten Run exportieren.
+- `load_model`, `retry_model` und `unload_model`: denselben KI-Manager bedienen.
+- `apply_background_removal` und `apply_smart_selection`: KI-Ergebnisse als versionierte
+  Eingabe in den normalen Workflow übernehmen.
 
 Mensch und Agent verwenden dieselben Application Services und denselben sichtbaren Zustand.
-Ohne unterstützte WebMCP-Schnittstelle bleibt die gesamte Benutzeroberfläche funktionsfähig.
-Werkzeugbeschreibungen enthalten keine Bildinhalte; Eingaben und strukturierte Fehler sind eng
-begrenzt.
+Lokale Bilder gelangen über die browserbestätigte Dateiübergabe in den Tab. Danach ist jede
+beworbene zustandsändernde UI-Funktion durch das zugehörige WebMCP-Werkzeug erreichbar. Eine
+ausführbare Capability Map hält UI-Kommandos und Tool-Registrierung deckungsgleich.
+Die Benutzeroberfläche funktioniert unabhängig von der WebMCP-Unterstützung. Statische
+Werkzeugbeschreibungen sowie eng begrenzte Eingaben und Fehler schützen den Bildkontext.
+
+Die Produktionsabnahme des neuen Studios läuft auf `https://studio.img2.download`. Die Domain liefert
+`Origin-Agent-Cluster: ?1` und `Permissions-Policy: tools=(self)` und registriert die Werkzeuge
+im sichtbaren Dokumentkontext.
+
+Die Produktabnahme erfolgt in Chrome 149 oder neuer mit aktivierter WebMCP-Testfunktion. Sollte
+der korrekt implementierte WebMCP-Kanal dort nachweislich nicht durch den Browser-Agenten
+nutzbar sein, darf eine ChatGPT-App mit Apps SDK und MCP-Server denselben Agenten-Anwendungsfall
+übernehmen. Oberfläche, Server- und Dateifluss dieser Alternative werden vor der Einreichung
+sichtbar dokumentiert und erneut in Chrome abgenommen.
 
 ## 9. Ausgabe
 
 SVG ist das einzige Ausgabeformat des Submission-MVP. Der Download entspricht bytegenau dem
 angezeigten oder auf Seite A/B gewählten Run und verwendet einen nachvollziehbaren Dateinamen.
 
-## 10. Bewusste Nicht-Ziele
-
-Nicht Bestandteil der Einreichung sind:
-
-- Cloud-Speicher, Nutzerkonto, serverseitige Verarbeitung oder Zusammenarbeit.
-- PNG-/WebP-Export, CLI und weitere Rasterformate über die Browserdekodierung hinaus.
-- eigene Presets, freie Zielmaße, Drehung, Spiegelung und zusätzliche Vorverarbeitungsfilter.
-- eigener SVG-Path-Optimizer, alternative Reststrategien und Gradientenerkennung.
-- synchrones Zoom/Pan, Lupe und dauerhafte Run-Persistenz.
-- KI-Upscaling oder weitere KI-Modelle.
-
-Diese Punkte werden weder als vorhanden noch als spätere Projektphase beworben.
-
-## 11. Qualitätsanforderungen
+## 10. Qualitätsanforderungen
 
 - Ein frischer Checkout baut und testet reproduzierbar mit committed Lockfiles.
 - TypeScript ist exakt auf `7.0.2` gepinnt und läuft strikt.
 - Rust-Formatierung und Clippy sowie Typecheck, Lint und Tests sind warnungsfrei.
-- Keine handgeschriebene Quell- oder Testdatei überschreitet 1000 Zeilen.
+- Handgeschriebene Quell- und Testdateien haben maximal 1000 Zeilen.
 - Die UI bleibt während längerer WASM- und KI-Arbeit bedienbar.
-- Keine stillen Fallbacks ändern Qualität, Datenschutz, Lizenz oder Modellbackend.
+- Fallbacks sind sichtbar und erhalten die dokumentierten Qualitäts-, Datenschutz-, Lizenz-
+  und Modellbackend-Verträge.
 - Jeder beworbene Ablauf ist durch ausführbare Abnahme und echten Browser-Smoke-Test belegt.

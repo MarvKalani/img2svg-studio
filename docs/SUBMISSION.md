@@ -79,23 +79,19 @@ Funktionen.
 5. Wenige repräsentative Parameter links, die wirklich bis in das Ergebnis wirken.
 6. KI-Manager mit einem realen Modell: bei Bedarf laden, Fortschritt zeigen, entladen und bei
    Fehlern erneut versuchen. Für den MVP wird MODNet vor SAM priorisiert.
-7. WebMCP-Kern für Fähigkeiten, Konfiguration und Konvertierung.
-8. Öffentliche statische Demo mit einem kleinen Beispielbild.
+7. Vollständige WebMCP-Steuerung des sichtbaren Workflows.
+8. Öffentliche statische Demo auf `https://studio.img2.download` mit einem kleinen Beispielbild.
 9. Englisches README, englische Submission-Beschreibung und Demo-Video.
 
 ### Weitere Slices vor der Einreichung
 
-Es gibt keine Entwicklungsphase nach der Deadline, die noch in die Bewertung einfließt. Nach
-dem MVP-Kern folgen deshalb innerhalb derselben Submission Period:
+Der bewertbare Produktstand wird vollständig vor der Deadline geliefert. Nach dem MVP-Kern
+folgen innerhalb derselben Submission Period:
 
 - vollständige geplante Shape-Palette mit strukturellen Ground-Truth-Tests.
 - SAM Smart Select und die weiteren als Submission-Funktion beworbenen KI-Werkzeuge.
 - vollständige Modell-Registry einschließlich Download, Retry, Backend, Cache und Entladen.
 - alle weiteren Funktionen aus der verbindlichen offenen Taskliste.
-
-Presets, weitere Exportformate, CLI, eigener PathOptimizer und zusätzliche Vorverarbeitung
-gehören nicht zum Submission-MVP und werden nicht beworben. Das ist keine „Phase 2“, sondern
-eine verbindliche Begrenzung der eingereichten Version.
 
 ## Einreichungsreihenfolge
 
@@ -109,7 +105,7 @@ eine verbindliche Begrenzung der eingereichten Version.
 8. Devpost-Entwurf vollständig ausfüllen und spätestens mehrere Stunden vor Frist absenden.
 9. Eingereichte Links in einem nicht angemeldeten Browser gegenprüfen.
 
-## Nicht durch Code lösbare Schritte
+## Eigentümeraktionen
 
 Diese Schritte benötigen den Projekteigner oder eine bestätigte angemeldete Sitzung:
 

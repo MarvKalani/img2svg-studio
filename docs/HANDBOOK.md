@@ -80,8 +80,13 @@ Smart Select folgt danach innerhalb des Einreichungsumfangs.
 ## WebMCP
 
 In einem unterstützten Browser kann ein Agent dieselben sichtbaren Anwendungsdienste verwenden
-wie ein Mensch. Der Submission-Umfang enthält Werkzeuge zum Lesen der Fähigkeiten,
-Konfigurieren der Konvertierung und Starten eines sichtbaren Runs.
+wie ein Mensch. Auf `https://studio.img2.download` bestätigt der Nutzer die lokale Dateiübergabe.
+Danach kann der Agent Einstellungen und Workspace lesen, konvertieren, History und A/B bedienen,
+SVG exportieren sowie KI-Modelle und KI-Aktionen steuern. Jede Aktion bleibt unmittelbar in der
+Oberfläche sichtbar.
+
+Der bestehende Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter für
+seinen eigenen sichtbaren Converter-Ablauf.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
@@ -93,10 +98,9 @@ sondern auch SVG-Elementtyp und Geometrie innerhalb einer definierten Toleranz.
 
 ## Datenschutz
 
-- keine Bild-Uploads an ein Anwendungs-Backend.
-- keine Telemetrie und keine Tracker.
-- keine externen Fonts.
-- Netzwerkzugriffe für KI-Modelle nur nach sichtbarer Nutzeraktion.
+- Bildverarbeitung bleibt lokal im Browser.
+- Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
+- KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
 
 ## Dokumentationspflege
 
@@ -115,3 +119,8 @@ bleiben als dauerhafter Nachweis erhalten.
 
 Screenshots und Beispiele werden aktualisiert, sobald der jeweilige Ablauf tatsächlich
 funktioniert. Veraltete Anleitungen bleiben nicht als historische Beschreibung im Handbuch.
+
+Jede Funktion wird vor ihrer Aufnahme in dieses Handbuch direkt im echten Google Chrome
+abgenommen. Automatisierte Tests allein reichen nicht. Ein dabei erkannter Mangel hält den Task
+offen, erhält einen Regressionstest und wird erneut geprüft; erst danach werden Task und
+Handbuch abgeschlossen.

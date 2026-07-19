@@ -44,17 +44,11 @@ img2svg Studio verbindet fünf Bausteine:
 - Einstellungen und Ergebnisse so darstellen, dass ihre Wirkung verständlich wird.
 - Native SVG-Formen kontrolliert einsetzen, ohne die robuste Pfad-Ausgabe zu gefährden.
 - Eine proportionale Zielgröße und wenige tatsächlich wirksame Parameter unterstützen.
-- WebMCP als echte Produktschnittstelle mit stabilen Schemas und klaren Rückgaben anbieten.
-- Eine überzeugende Hackathon-Demo ohne Serverabhängigkeit ermöglichen.
-
-## Nicht-Ziele des ersten Releases
-
-- Kein Cloud-Speicher, Nutzerkonto oder serverseitiger Job-Runner.
-- Kein kollaborativer Mehrbenutzerbetrieb.
-- Kein eigener ML-Shape-Klassifikator.
-- Keine Garantie, jedes existierende Rasterformat unabhängig vom Browser zu dekodieren.
-- Kein unsichtbarer oder headless WebMCP-Betrieb; der Browser-Tab bleibt Teil des Ablaufs.
-- Keine Preset-Bibliothek, zusätzlichen Exportformate, CLI oder KI-Upscaler.
+- WebMCP auf `https://studio.img2.download` als vollständige Produktschnittstelle mit stabilen
+  Schemas und klaren Rückgaben anbieten.
+- Den bestehenden Vorgänger auf `https://img2.download` über einen getrennten Adapter ebenfalls
+  vollständig per WebMCP bedienen.
+- Eine überzeugende statisch deploybare Hackathon-Demo ermöglichen.
 
 ## Demo-Erzählung
 
@@ -63,13 +57,14 @@ img2svg Studio verbindet fünf Bausteine:
 3. Beide Varianten werden mit Slider und Parameter-Diff verglichen.
 4. Bei einem Icon ersetzt die optionale Formerkennung geeignete Pfade durch native Formen.
 5. Ein Browser-Agent konfiguriert und startet denselben sichtbaren Ablauf über WebMCP.
-6. Abschlussbotschaft: Kein Bild wurde an ein Anwendungs-Backend übertragen.
+6. Abschlussbotschaft: Die Bildverarbeitung blieb lokal im Browser.
 
 ## Erfolgskriterien
 
 - Ein neuer Nutzer kann ohne Dokumentation einen ersten Run erzeugen und herunterladen.
 - Eine Änderung zwischen zwei Runs ist in der Diff-Tabelle eindeutig nachvollziehbar.
 - Gleiche Eingaben erzeugen im Test byte-identische SVGs.
-- Ein WebMCP-fähiger Browser-Agent kann einen geladenen Input sichtbar konfigurieren und
-  konvertieren.
+- Ein WebMCP-fähiger Browser-Agent kann auf `https://studio.img2.download` nach der bestätigten
+  lokalen Dateiübergabe den sichtbaren Workflow konfigurieren, konvertieren, vergleichen,
+  mit KI bearbeiten und exportieren.
 - Der vollständige Demo-Ablauf funktioniert reproduzierbar auf dem Zielbrowser.

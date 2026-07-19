@@ -98,6 +98,19 @@ Vertragssprache, keine zusätzliche Laufzeit: TypeScript nutzt Vitest oder Playw
 nutzt native Tests. So bleiben Szenario und Testcode eine einzige ausführbare Wahrheit ohne
 doppelte Step Definitions.
 
+### Direkte Chrome-Abnahme
+
+Automatisierte Tests sind Voraussetzung, aber keine Produktabnahme. Der Orchestrator öffnet
+jeden gebauten Slice zusätzlich im echten Google Chrome und bedient den betroffenen Ablauf
+sowie einen angemessenen Kernworkflow direkt. Dabei werden sichtbares Verhalten, Tastaturweg,
+Konsole und unerwartete Netzwerkanfragen geprüft. Ein Chromium-Lauf von Playwright ersetzt
+diesen Schritt nicht.
+
+Entdeckt Chrome einen Mangel, wird der Task weder gelöscht noch committed. Der Mangel wird mit
+Reproduktion und Sollverhalten in der Taskkarte ergänzt, zuerst als Regressionstest codiert und
+im selben Slice nachgebessert. Abnahme und Review beginnen danach erneut. Erst eine mangelfreie
+Wiederholung darf im Commit-Text unter `Chrome Acceptance` dokumentiert werden.
+
 ## 4. EVA — Eingabe, Verarbeitung, Ausgabe
 
 Code trennt die drei Phasen sichtbar:
@@ -189,8 +202,9 @@ Eine Datei wird nach Verantwortung und Verhalten geteilt, nicht willkürlich nac
 - Der Commit-Betreff folgt `type(TASK-ID): imperative summary`, beispielsweise
   `feat(CONV-02): render default SVG conversion`.
 - Der Commit-Text hält mindestens `Outcome`, `Acceptance` mit ausgeführten Befehlen und
-  `Documentation` fest. Bei einem rein externen Schritt nennt er stattdessen den prüfbaren
-  Nachweis; externe Aktionen erzwingen keinen leeren Commit.
+  `Chrome Acceptance` mit Version und geprüftem Ablauf sowie `Documentation` fest. Bei einem
+  rein externen Schritt nennt er stattdessen den prüfbaren Nachweis; externe Aktionen erzwingen
+  keinen leeren Commit.
 - Wird ein Task zu groß für einen kohärenten Commit, wird der Task vor der Implementierung in
   kleinere Slices geteilt.
 - Externe Aktionen ohne Repository-Änderung erhalten keinen künstlichen leeren Commit.
@@ -228,6 +242,7 @@ Ein Slice ist fertig, wenn:
   Testausnahme beschrieben ist.
 - die kleinste vollständige Implementierung vorliegt.
 - relevante Tests, Formatierung, Typprüfung und Lints ohne Warnungen laufen.
+- der betroffene Ablauf und der Kernworkflow im echten Chrome mangelfrei abgenommen wurden.
 - keine eigene Quell- oder Testdatei 1000 Zeilen überschreitet.
 - der Diff nur notwendige Änderungen enthält.
 - Namen, Typen und Kommentare diesen Regeln entsprechen.
