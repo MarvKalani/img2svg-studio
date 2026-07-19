@@ -51,6 +51,12 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 `ConversionResult` enthält SVG, Maße, wirksame Einstellungen, Laufzeit, Dateigröße,
 Shape-Zählungen, Pfadanzahl, Transparenz und nicht fatale Warnungen.
 
+Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
+Dateiname, Zielmaße, Pfadanzahl und Laufzeit. Run und Options-Snapshot werden eingefroren; die
+Rückgabe der Liste ist ebenfalls eine eingefrorene Kopie. IDs sind innerhalb der Sitzung
+monoton steigend. Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet
+die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular.
+
 ## 4. Engine-Module
 
 Vorgesehene Core-Module:
@@ -129,6 +135,10 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
+
+`historyController` rendert aus dem Store ausschließlich die zehn Karten und projiziert einen
+ausgewählten SVG-Snapshot zurück in die Arbeitsfläche. Er schreibt keine alten Optionen in das
+Formular; diese explizite Aktion bleibt dem Restore-Slice vorbehalten.
 
 ### Qualitätsgate
 

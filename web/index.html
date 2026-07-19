@@ -227,10 +227,12 @@
               <h2 id="history-title">Verlauf</h2>
               <span>Varianten erscheinen nach der ersten Konvertierung.</span>
             </div>
-            <div class="history-empty">
-              <span class="history-empty-icon" aria-hidden="true">＋</span>
-              <strong>Der Verlauf ist noch leer</strong>
-              <span>Lade ein Bild und erstelle deine erste SVG-Variante.</span>
+            <div id="history-content" class="history-list">
+              <div class="history-empty">
+                <span class="history-empty-icon" aria-hidden="true">＋</span>
+                <strong>Der Verlauf ist noch leer</strong>
+                <span>Lade ein Bild und erstelle deine erste SVG-Variante.</span>
+              </div>
             </div>
           </section>
         </main>
@@ -238,7 +240,7 @@
 
       <footer class="statusbar" role="status" aria-label="Anwendungsstatus">
         <span id="status-image"><strong>Bereit</strong> für ein lokales Bild</span>
-        <span>0 Varianten</span>
+        <span id="status-variant-count">0 Varianten</span>
         <span>Keine Netzwerkübertragung</span>
       </footer>
     </div>

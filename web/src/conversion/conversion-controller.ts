@@ -1,15 +1,14 @@
 import type { ImageStore } from "../image/image-store";
-import {
-  ConversionFailure,
-  ConversionFailureCode,
-  toConversionFailure,
-} from "./conversion-failure";
+import type { NewConversionRun } from "../history/history-store";
+import { toConversionFailure } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
 import { convertImage } from "./conversion-service";
+import { parseSvgDocument, readSvgMetrics } from "./svg-document";
 
 export function initializeConversion(
   imageStore: ImageStore,
   readOptions: () => ConversionOptions,
+  recordRun: (run: NewConversionRun) => void,
 ): void {
   const elements = readConversionElements();
 
@@ -19,7 +18,7 @@ export function initializeConversion(
       return;
     }
 
-    void runConversion(elements, loadedImage.file, readOptions);
+    void runConversion(elements, loadedImage.file, readOptions, recordRun);
   });
 }
 
@@ -37,6 +36,7 @@ async function runConversion(
   elements: ConversionElements,
   file: File,
   readOptions: () => ConversionOptions,
+  recordRun: (run: NewConversionRun) => void,
 ): Promise<void> {
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Konvertiere …";
@@ -44,12 +44,23 @@ async function runConversion(
   elements.statusImage.textContent = "Konvertierung läuft lokal …";
 
   try {
-    const svg = await convertImage(file, readOptions());
-    elements.output.replaceChildren(parseSvg(svg));
+    const options = readOptions();
+    const startedAtMilliseconds = Date.now();
+    const svg = await convertImage(file, options);
+    const renderedSvg = parseSvgDocument(svg);
+    const metrics = readSvgMetrics(renderedSvg);
+    elements.output.replaceChildren(renderedSvg);
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
     elements.statusImage.textContent = "Konvertierung abgeschlossen · SVG lokal erzeugt";
+    recordRun({
+      durationMilliseconds: Math.max(0, Date.now() - startedAtMilliseconds),
+      fileName: file.name,
+      ...metrics,
+      options,
+      svg,
+    });
   } catch (error) {
     elements.error.textContent = toConversionFailure(error).message;
     elements.error.hidden = false;
@@ -58,15 +69,6 @@ async function runConversion(
     elements.button.disabled = false;
     elements.buttonLabel.textContent = "Konvertieren";
   }
-}
-
-function parseSvg(svg: string): Element {
-  const parsedDocument = new DOMParser().parseFromString(svg, "image/svg+xml");
-  const root = parsedDocument.documentElement;
-  if (root.localName !== "svg" || root.namespaceURI !== "http://www.w3.org/2000/svg") {
-    throw new ConversionFailure(ConversionFailureCode.InvalidSvg);
-  }
-  return document.importNode(root, true);
 }
 
 function readConversionElements(): ConversionElements {

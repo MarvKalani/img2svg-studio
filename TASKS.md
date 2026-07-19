@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## HISTORY-01 — Unveränderliche Conversion-Runs unten anzeigen
-
-**Ergebnis:** Jede erfolgreiche Konvertierung erzeugt genau einen unveränderlichen Run. Die
-History unten zeigt höchstens zehn Karten mit Run-ID, Thumbnail, Maßen, Pfadanzahl und Laufzeit.
-
-```gherkin
-Given ein Bild ist geladen
-When der Nutzer elf erfolgreiche Konvertierungen ausführt
-Then enthält die History die zehn neuesten unveränderlichen Runs in eindeutiger Reihenfolge
-And das Auswählen eines Runs zeigt dessen SVG ohne seine gespeicherten Werte zu verändern
-```
-
-**Ausführbare Abnahme:** `web/src/history/history-store.test.ts` mit
-`npm --prefix web test -- history-store.test.ts` und `web/e2e/history.spec.ts` mit
-`npm --prefix web run test:e2e -- history.spec.ts`.
-
-**Dokumentation:** Handbuch „Verlauf“ einschließlich Begrenzung und gespeicherter Metadaten.
-
 ## HISTORY-02 — Einstellungen eines Runs wiederherstellen
 
 **Ergebnis:** „Einstellungen übernehmen“ kopiert die validierten Parameter eines alten Runs in

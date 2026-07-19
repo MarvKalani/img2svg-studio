@@ -17,7 +17,8 @@ angezeigt. Der Konvertieren-Button übergibt ihre RGBA-Pixel lokal an den Rust-/
 zeigt das deterministische SVG in der Arbeitsfläche an. Das angezeigte Ergebnis kann bytegenau
 als `.svg` heruntergeladen werden; typisierte Fehler lassen den letzten erfolgreichen Stand
 weiter nutzbar. Farbpräzision, Speckle-Filter und proportionale Zielgröße sind als erste echte
-Parameter vollständig bis in die Engine verbunden.
+Parameter vollständig bis in die Engine verbunden. Die zehn neuesten unveränderlichen Runs
+erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezeigt werden.
 
 ## Lokal starten
 

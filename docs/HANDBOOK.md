@@ -117,8 +117,19 @@ wenn er im Browser getestet wurde.
 
 ## Verlauf und A/B-Vergleich
 
-Jede Konvertierung erzeugt einen unveränderlichen Run mit SVG, Einstellungen und Statistiken.
-Der Verlauf zeigt die letzten Runs als Karten. Zwei Karten können als A und B markiert werden.
+Jede erfolgreiche Konvertierung erzeugt genau einen unveränderlichen Run. Der Verlauf zeigt die
+zehn neuesten Runs von neu nach alt als horizontal bedienbare Karten. Jede Karte enthält:
+
+- die fortlaufende Run-ID.
+- eine echte SVG-Miniatur.
+- Zielmaße, Pfadanzahl und gemessene Laufzeit.
+
+Das Auswählen einer Karte zeigt ihr gespeichertes SVG wieder in „A · Variante“. Die aktuell
+eingestellten Regler bleiben dabei unverändert; das gezielte Wiederherstellen alter Einstellungen
+folgt als eigener Bedienvorgang. Nach dem elften Lauf wird nur der älteste Run aus der sichtbaren
+Session-History entfernt.
+
+Zwei Karten können im nächsten Vergleichsschritt als A und B markiert werden.
 
 Der Vergleich soll:
 
