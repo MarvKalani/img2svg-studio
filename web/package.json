@@ -6,8 +6,9 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "dev": "vite --host 127.0.0.1",
-    "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc -b"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

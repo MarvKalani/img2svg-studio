@@ -9,9 +9,7 @@ test("Given a fresh browser, when the start page loads, then the complete studio
   await page.goto("/");
 
   await expect(page.getByRole("banner")).toContainText("img2svg Studio");
-  await expect(
-    page.getByRole("complementary", { name: "Konvertierungsparameter" }),
-  ).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Konvertierungsparameter" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Arbeitsfläche" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Parameterunterschiede" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Verlauf" })).toBeVisible();

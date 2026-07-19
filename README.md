@@ -19,17 +19,26 @@ Interaktionen folgen in den nächsten vertikalen Slices.
 Voraussetzung ist Node.js 22.14 oder neuer.
 
 ```bash
-cd web
 npm ci
-npm run dev
+npm run dev --workspace=img2svg-studio-web
 ```
 
 Der Entwicklungsserver zeigt die Anwendung unter `http://127.0.0.1:5173`.
 
 ```bash
 npm run build
-npm run test:e2e -- app-shell.spec.ts
+npm run test:e2e --workspace=img2svg-studio-web -- app-shell.spec.ts
 ```
+
+## Qualitätsprüfung
+
+```bash
+npm run check
+```
+
+Dieser Befehl prüft Formatierung, Lint, das 1000-Zeilen-Limit, TypeScript, schnelle Tests und
+den Produktionsbuild. Sobald `Cargo.toml` vorhanden ist, kommen `cargo fmt --check` und Clippy
+automatisch hinzu. GitHub Actions führt exakt denselben Befehl aus.
 
 ## Leitprinzipien
 

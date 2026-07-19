@@ -72,25 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## APP-02 — Lokale Qualitätsprüfung und CI identisch machen
-
-**Ergebnis:** Ein einziger lokaler Befehl prüft Formatierung, Lint, Typecheck, schnelle Tests,
-Rust-Formatierung/Clippy sobald Rust existiert und das 1000-Zeilen-Limit; GitHub Actions führt
-denselben Befehl aus.
-
-```gherkin
-Given der aktuelle Checkout enthält gültigen Projektcode
-When der vollständige Check lokal oder in CI ausgeführt wird
-Then laufen dieselben Prüfschritte ohne Warnung erfolgreich
-And eine künstlich zu große handgeschriebene Quelldatei wird vom Zeilenlimit abgelehnt
-```
-
-**Ausführbare Abnahme:** `scripts/check-source-lines.test.ts` und `scripts/ci-workflow.test.ts`;
-`npm test -- scripts/check-source-lines.test.ts scripts/ci-workflow.test.ts` sowie
-`npm run check` im Repository-Root.
-
-**Dokumentation:** README-Build/Test-Anleitung und technische Build-Spezifikation.
-
 ## CONV-01 — Rasterbild lokal laden und anzeigen
 
 **Ergebnis:** Dateiauswahl und Drag-and-drop dekodieren PNG, JPEG oder WebP im Browser, zeigen

@@ -91,6 +91,14 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
 
+### Qualitätsgate
+
+`npm run check` im Repository-Root ist der einzige vollständige lokale Gate. Er führt `oxfmt`,
+`oxlint`, die ausführbare 1000-Zeilen-Prüfung, beide TypeScript-Projekte, schnelle Vitest-Suiten
+und den Produktionsbuild aus. Sobald ein Rust-Workspace existiert, folgen `cargo fmt --check`
+und Clippy mit als Fehler behandelten Warnungen. `.github/workflows/check.yml` installiert das
+committete Lockfile und ruft denselben Befehl auf.
+
 ## 7. WebMCP-Integration
 
 WebMCP ist im Juli 2026 ein Entwurf und eine progressive Browserfunktion. Die Integration

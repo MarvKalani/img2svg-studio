@@ -39,13 +39,16 @@ Die Oberfläche besteht aus:
 ### Lokal öffnen
 
 ```bash
-cd web
 npm ci
-npm run dev
+npm run dev --workspace=img2svg-studio-web
 ```
 
 Anschließend ist die Oberfläche unter `http://127.0.0.1:5173` erreichbar. Der aktuelle Stand
 funktioniert auf breiten und schmalen Viewports ohne horizontales Seitenüberlaufen.
+
+Vor einem Commit prüft `npm run check` im Repository-Root Formatierung, Lint, Zeilenlimit,
+TypeScript, schnelle Tests und Produktionsbuild. Die Rust-Prüfungen werden mit dem ersten
+`Cargo.toml` Bestandteil desselben Befehls.
 
 ## Geplanter Grundablauf
 
