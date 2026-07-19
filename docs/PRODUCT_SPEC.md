@@ -97,8 +97,8 @@ KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechse
 ## 7. KI-Manager
 
 Die zentrale Modell-Registry besitzt die Zustände `not-loaded`, `downloading`, `initializing`,
-`ready` und `error`. Die UI zeigt Modell, Aufgabe, feste Revision, Größe, Lizenz, tatsächliches
-Backend und echten Bytefortschritt.
+`ready`, `unloading` und `error`. Die UI zeigt Modell, Aufgabe, feste Revision, Größe, Lizenz,
+tatsächliches Backend und echten Bytefortschritt.
 
 Verbindliche Werkzeuge:
 

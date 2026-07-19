@@ -1,115 +1,130 @@
 # img2svg Studio
 
-img2svg Studio wird eine vollständig clientseitige Web-Anwendung zur kontrollierten
-Umwandlung von Rasterbildern in hochwertige, nachvollziehbare SVGs. Der Schwerpunkt liegt
-nicht nur auf der Konvertierung, sondern auf einem experimentellen Workflow: Einstellungen
-variieren, Ergebnisse in einer History vergleichen, Parameterunterschiede verstehen und den
-gesamten Ablauf optional durch einen Browser-Agenten über WebMCP steuern. Die produktive
-Abnahme des neuen Studios ist auf `https://studio.img2.download` vorgesehen. Der bestehende
-Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter.
+**A local-first raster-to-SVG lab for turning visual tuning into reproducible evidence.**
 
-## Projektstatus
+[Target demo](https://studio.img2.download) · [Architecture](docs/ARCHITECTURE.md) ·
+[User guide](docs/HANDBOOK.md) · [Submission notes](docs/SUBMISSION.md)
 
-Die responsive Studio-Oberfläche läuft lokal. Sie zeigt Kopfzeile, Parameterleiste,
-A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. PNG-, JPEG- und
-WebP-Bilder lassen sich lokal auswählen oder ablegen und werden mit ihren echten Maßen
-angezeigt. Der Konvertieren-Button übergibt ihre RGBA-Pixel lokal an den Rust-/WASM-Core und
-zeigt das deterministische SVG in der Arbeitsfläche an. Das angezeigte Ergebnis kann bytegenau
-als `.svg` heruntergeladen werden; typisierte Fehler lassen den letzten erfolgreichen Stand
-weiter nutzbar. Farbpräzision, Speckle-Filter und proportionale Zielgröße sind als erste echte
-Parameter vollständig bis in die Engine verbunden. Die zehn neuesten unveränderlichen Runs
-erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezeigt werden. Die
-validierten Einstellungen eines ausgewählten Runs lassen sich übernehmen und erzeugen bei
-gleichem Bild erneut ein byteidentisches SVG. Zwei Runs lassen sich tastaturbedienbar als A und B
-markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-Geometrie
-überblenden. Eine schema-basierte Tabelle filtert echte Parameterunterschiede; getrennte A/B-
-Downloads exportieren exakt die gespeicherten Run-SVGs. Ein globaler Formerkennungsschalter und
-fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette. Für eindeutige Flächen sind
-`<circle>`, `<rect>`, `<ellipse>`, `<line>` und dreipunktige `<polygon>`-Elemente mit sichtbaren
-Statistiken implementiert. Gemischte Szenen verwenden eine kanonische Element- und Z-Reihenfolge;
-byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert. Der KI-Manager zeigt
-die beiden gepinnten Browsermodelle mit Größe und Lizenz und führt Laden, sichtbaren Fehler,
-Retry, Initialisierung, Bereitschaft und Entladen über eine typisierte Registry aus. MODNet lädt
-erst nach Nutzeraktion mit echtem Bytefortschritt, nutzt WebGPU mit WASM-Fallback und erzeugt die
-lokale Alpha-Freistellung als neues PNG. Modellabrufe sind abbrechbar, Artefakte werden gegen
-Größe und SHA-256 geprüft, und Entladen wartet auf laufende Inferenz vor der Freigabe.
+> Deployment of the public demo is the remaining release gate. Until it is live, use the local
+> production-preview command below.
 
-## Lokal starten
+![img2svg Studio workspace](docs/screenshots/app-shell.png)
 
-Voraussetzung ist Node.js 22.14 oder neuer.
+## Why it exists
+
+Raster-to-vector conversion is usually a black box: change a slider, lose the previous result,
+and guess whether the output improved. img2svg Studio makes the experiment explicit. Every
+conversion becomes an immutable run, two runs can be compared as A and B, and the exact parameter
+differences remain visible next to the artwork.
+
+The complete image pipeline runs in the browser. Images are not uploaded. Optional AI models are
+downloaded only after a visible user action and then run locally through WebGPU or WASM.
+
+## What works
+
+- Local PNG, JPEG and WebP input up to 25 MiB, including drag and drop.
+- Deterministic Rust/WebAssembly vectorization with path fallback.
+- Optional native SVG recognition for circles, rectangles, ellipses, lines and triangles.
+- Ten immutable conversion runs with thumbnails, metrics and restorable settings.
+- Layer-aligned A/B comparison, a filtered parameter-difference table and exact per-run downloads.
+- Local MODNet background removal with verified, abortable model downloads and WebGPU/WASM fallback.
+- Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
+- Versioned AI results that can be converted, compared and restored to the original image.
+- Thirteen typed WebMCP tools that operate the same visible application services as the UI.
+- Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
+
+![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
+
+## Try the production build locally
+
+Requirements: Node.js 22.14 or newer and Google Chrome 150 or newer.
 
 ```bash
 npm ci
-npm run dev --workspace=img2svg-studio-web
+npm --prefix web run test:demo
 ```
 
-Der Entwicklungsserver zeigt die Anwendung unter `http://127.0.0.1:5173`.
+That command builds the static application, starts a production preview and runs the judge path in
+real Google Chrome: direct navigation, image load, two conversions, A/B comparison, SVG export,
+reload, security headers, console errors and unexpected network traffic.
+
+For interactive use:
 
 ```bash
 npm run build
-npm run test:e2e --workspace=img2svg-studio-web -- app-shell.spec.ts
+npm --prefix web run preview -- --host 127.0.0.1 --port 4173
 ```
 
-## Qualitätsprüfung
+Open `http://127.0.0.1:4173` and choose **Beispiel laden** for the bundled geometric example. You
+can also choose any fixture from `fixtures/shape-recognition/input/`.
+
+## Quality gate
 
 ```bash
 npm run check
 ```
 
-Dieser Befehl prüft Formatierung, Lint, das 1000-Zeilen-Limit, TypeScript, schnelle Tests,
-Produktionsbuild, `cargo fmt --check` und Clippy. GitHub Actions führt exakt denselben Befehl
-aus.
-
-Der Web-Build verwendet die versionierten WASM-Bindings. Änderungen am Rust-Core regenerieren
-sie mit Rust 1.91 oder neuer, dem Ziel `wasm32-unknown-unknown` und `wasm-pack` 0.15.0:
+The gate checks formatting, lint, the 1,000-line source limit, TypeScript, Vitest, the production
+build, Rust formatting and Clippy. Browser contracts are separate so their intent stays explicit:
 
 ```bash
-rustup target add wasm32-unknown-unknown
-npm run build:wasm
+npm --prefix web run test:e2e
+npm --prefix web run test:demo
 ```
 
-## Leitprinzipien
+## Architecture
 
-- Bildverarbeitung bleibt lokal; Netzwerkzugriffe dienen statischen Ressourcen und bewusst
-  gestarteten Modell-Downloads.
-- Rust/WebAssembly übernimmt die deterministische Vektorisierung.
-- `visioncortex` liefert die bewährte Grundlage für Clustering und Kontur-Tracing.
-- Native SVG-Formen sind eine optionale, pro Formtyp steuerbare Verbesserung.
-- Nicht erkannte Inhalte bleiben als SVG-Pfade erhalten.
-- History und A/B-Vergleich bilden den Kernworkflow.
-- WebMCP ergänzt die vollständig bedienbare Browseroberfläche progressiv.
+The UI and all WebMCP tools call the same typed controllers. Conversion moves RGBA bytes through a
+Web Worker into a small WASM boundary and the Rust engine. AI model sessions stay behind a lifecycle
+registry that owns download verification, cancellation, inference barriers and disposal. See the
+[architecture overview](docs/ARCHITECTURE.md) for the complete flow.
 
-## Verbindliche Projektdokumente
+Core technology:
 
-- [Projektidee](docs/PROJECT_BRIEF.md)
-- [Produktspezifikation](docs/PRODUCT_SPEC.md)
-- [Technische Spezifikation](docs/TECHNICAL_SPEC.md)
-- [Drittanbieter- und Modellinventar](docs/THIRD_PARTY.md)
-- [Engineering-Standards](docs/ENGINEERING_STANDARDS.md)
-- [Fortlaufendes Handbuch](docs/HANDBOOK.md)
-- [Build-Week-Einreichungsplan](docs/SUBMISSION.md)
-- [Entscheidungsprotokoll](docs/DECISIONS.md)
-- [Offene Umsetzungstasks](TASKS.md)
+- TypeScript 7, Vite 8 and browser-native HTML/CSS.
+- Rust 1.91 or newer, WebAssembly and `visioncortex`/VTracer tracing.
+- Transformers.js with revision-pinned MODNet and SlimSAM ONNX artifacts.
+- The current WebMCP imperative API through `document.modelContext`, with a full UI fallback.
 
-## Repository-Struktur
+## Built with Codex and GPT-5.6
+
+This studio was built during OpenAI Build Week with Codex running GPT-5.6 Sol as the primary
+engineering partner. We worked in small vertical slices: write an executable Given–When–Then
+contract, watch it fail, implement the smallest coherent behavior, simplify it, test it in Chrome,
+update the handbook and commit the completed slice.
+
+Codex accelerated the work that normally fragments across disciplines: turning the approved UI
+mockup into a responsive product, designing typed TypeScript/Rust boundaries, generating geometric
+ground-truth fixtures, auditing dormant `visioncortex` shape algorithms, integrating two real
+browser models, tracking the changing WebMCP contract, and continuously testing accessibility,
+privacy and deterministic output. The decisive design choice was to expose one set of application
+services to both humans and agents instead of building a second hidden automation path.
+
+The dated commit history and the primary Codex build thread distinguish this work from the existing
+`img2.download` predecessor. That predecessor is a separate product; this repository contains the
+new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
+
+## Privacy and current limits
+
+- No image, mask or generated SVG leaves the browser.
+- There is no telemetry, tracker or account requirement.
+- Model files are the only intentional cross-origin requests and start only on demand.
+- History is in memory and contains the ten newest runs; reloading starts a fresh workspace.
+- SlimSAM requires WebGPU. MODNet falls back to WASM when WebGPU is unavailable.
+- WebMCP is progressive: unsupported browsers retain the complete manual UI.
+
+## Repository map
 
 ```text
-img2svg/
-├── crates/
-│   ├── img2svg-core/     # Plattformunabhängige Engine
-│   └── img2svg-wasm/     # wasm-bindgen-Schnittstelle
-├── web/                  # Vite + TypeScript, UI und WebMCP
-├── docs/                 # Produkt-, Technik- und Entscheidungsdokumentation
-├── fixtures/             # Kleine, lizenzfreie Testmotive
-└── TASKS.md              # Priorisierte Arbeitsliste mit Abnahmekriterien
+crates/         Rust vectorization engine and WASM boundary
+web/            TypeScript application, browser models and WebMCP
+fixtures/       Small original geometric and AI test images
+integrations/   Drop-in WebMCP adapter for img2.download
+docs/           Product, engineering, release and submission evidence
 ```
 
-Die Implementierung erfolgt testgetrieben in kleinen vertikalen Slices. Eigene Quell- und
-Testdateien dürfen 1000 Zeilen nicht überschreiten; minimale, sachbezogene Git-Diffs sind
-verbindlich.
+## License
 
-## Lizenz
-
-Die finale Projektlizenz ist noch zu bestätigen. Die Ausgangsspezifikation sieht BSL 1.1
-vor; falls die Hackathon-Regeln eine OSI-Lizenz verlangen, ist Apache 2.0 vorgesehen. Bis
-zur dokumentierten Entscheidung wird kein widersprüchlicher Lizenztext veröffentlicht.
+The repository owner is selecting the final project license before publication. Third-party code
+and model licenses are documented in [THIRD_PARTY.md](docs/THIRD_PARTY.md). Do not treat this
+pre-submission working tree as granting a project license until the root `LICENSE` file is added.

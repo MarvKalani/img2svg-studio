@@ -1,116 +1,162 @@
-# OpenAI Build Week — Einreichungsplan
+# OpenAI Build Week submission
 
-Stand der Prüfung: 19. Juli 2026, 13:27 CEST.
+Last reviewed: 19 July 2026
 
-## Frist
+The submission closes on **21 July 2026 at 5:00 PM Pacific Time**, which is **22 July
+2026 at 02:00 CEST**. Devpost does not allow content changes after the deadline.
 
-Die Submission Period endet am **21. Juli 2026 um 17:00 Pacific Time**. In Berlin entspricht
-das **22. Juli 2026 um 02:00 CEST**. Nach Ende der Frist kann die Einreichung nicht mehr
-inhaltlich geändert werden.
+Official references:
 
-Offizielle Quellen:
+- [OpenAI Build Week](https://openai.com/build-week/)
+- [Devpost challenge](https://openai.devpost.com/)
+- [Official rules](https://openai.devpost.com/rules)
+- [Submission FAQ](https://openai.devpost.com/details/faqs)
 
-- <https://openai.com/build-week/>
-- <https://openai.devpost.com/>
-- <https://openai.devpost.com/rules>
+## Submission identity
 
-## Empfohlener Track
+| Field | Value |
+| --- | --- |
+| Project | img2svg Studio |
+| Tagline | A local-first raster-to-SVG lab that turns tuning into reproducible evidence. |
+| Track | Developer Tools |
+| Demo | `https://studio.img2.download` — publication pending |
+| Repository | owner must provide final public URL |
+| Video | owner must provide public YouTube URL |
+| Codex `/feedback` Session ID | owner must generate from this primary build task |
+| License | owner decision pending; Apache-2.0 recommended |
 
-**Developer Tools** passt am besten: img2svg Studio ist ein lokales Werkzeug für Entwickler,
-Designer und Browser-Agenten. WebMCP, reproduzierbare Konvertierung und der experimentelle
-A/B-Workflow sind in diesem Track leichter als technische Produktleistung zu erklären.
+## Ready-to-paste Devpost description
 
-Die Einreichung darf nur einen Track wählen. Der Projekteigner bestätigt die finale Auswahl.
+### Inspiration
 
-## Pflichtbestandteile
+Raster-to-vector conversion is usually a black box. You change a setting, lose the previous
+result, and judge quality from memory. We wanted a converter that behaves like a small visual lab:
+every experiment is reproducible, its parameters are visible, and humans and browser agents can
+operate the same product without sending private source images to a server.
 
-- Ein funktionierendes Projekt, das während der Submission Period mit Codex und GPT-5.6
-  gebaut oder wesentlich erweitert wurde.
-- Auswahl genau einer Kategorie.
-- Englische Projektbeschreibung mit Funktionen und Arbeitsweise.
-- Öffentlich sichtbares YouTube-Demovideo unter drei Minuten.
-- Audio im Video, das das Produkt sowie den konkreten Einsatz von Codex und GPT-5.6 erklärt.
-- URL zu einem öffentlichen Repository mit passender Lizenz oder zu einem privaten Repository,
-  das mit `testing@devpost.com` und `build-week-event@openai.com` geteilt wurde.
-- README mit Setup, Beispielmaterial, Ausführung und Testweg.
-- README-Abschnitt über Zusammenarbeit mit Codex, beschleunigte Arbeit und wichtige Produkt-,
-  Engineering- und Designentscheidungen.
-- `/feedback` Codex Session ID des Threads, in dem der Großteil der Kernfunktion gebaut wurde.
-- Für Developer Tools: Installationsanleitung, unterstützte Plattformen und ein Testweg ohne
-  lokalen Neubau, vorzugsweise eine frei zugängliche statische Demo.
-- Alle Submission-Materialien auf Englisch oder mit vollständiger englischer Übersetzung.
+### What it does
 
-## Regelrelevante Nachweise
+img2svg Studio loads PNG, JPEG and WebP images locally and converts them into deterministic SVG in
+the browser. Each conversion becomes an immutable run in a visual history. Users can assign two
+runs to A and B, move a layer-aligned comparison slider, inspect only the parameters that differ,
+restore old settings, and download the exact SVG associated with either run.
 
-Der aktuelle Git-Verlauf beginnt innerhalb der Submission Period. Für jeden Code- und
-Dokumentations-Slice entsteht genau ein sauberer Commit. Das liefert den verlangten datierten
-Nachweis der während des Hackathons entstandenen Arbeit.
+The Rust/WebAssembly engine traces arbitrary contours and can emit native circles, rectangles,
+ellipses, lines and triangles when geometric evidence is strong. Ambiguous content safely remains
+an SVG path.
 
-Zusätzlich werden im README dokumentiert:
+Two optional AI workflows also stay local. MODNet removes a background, and SlimSAM Smart Select
+refines a mask from positive and negative points. Models download only after an explicit action,
+their files are checked by size and SHA-256, and they can be cancelled, retried and unloaded. An
+applied AI result becomes a versioned conversion input while the original remains restorable.
 
-- Verwendung von GPT-5.6 Sol in Codex.
-- Red–Green–Refactor und vertikale Slices.
-- Entscheidungen zu `visioncortex`, WebMCP, Determinismus und lokalem Datenschutz.
-- klare Trennung eigener Arbeit von Open-Source-Abhängigkeiten.
+Chrome's WebMCP imperative API exposes thirteen narrow tools for workspace inspection, parameter
+changes, conversion, history, A/B selection, downloads and model actions. Those tools call the same
+typed controllers as the visible UI, so agent actions remain visible and manual operation still
+works when WebMCP is unavailable.
 
-Der Großteil der Kernimplementierung sollte in diesem Codex-Thread bleiben, damit eine
-aussagekräftige `/feedback` Session ID eingereicht werden kann.
+### How we built it
 
-## Bewertung
+The static UI uses TypeScript 7 and Vite. Conversion runs in a Web Worker, crosses a small WASM
+boundary, and executes in a Rust core built on the `visioncortex` tracing foundation used by
+VTracer. MODNet and SlimSAM run through Transformers.js with WebGPU and a MODNet WASM fallback.
+There is no backend, image upload, account or telemetry path.
 
-Die vier Kriterien sind gleich gewichtet:
+We built the Studio during OpenAI Build Week with Codex and GPT-5.6 Sol. Each feature was delivered
+as a vertical test-driven slice: an executable Given–When–Then contract, the smallest coherent
+implementation, direct browser review, documentation and a focused commit. Codex connected work
+that normally spans product, design, frontend, Rust, model integration and QA: it turned the UI
+mockup into the product, designed typed boundaries, generated geometric ground truth, audited
+dormant shape algorithms, integrated real model lifecycles, tracked the evolving WebMCP API and
+ran deterministic, accessibility and privacy audits.
 
-- Technische Umsetzung und ernsthafter Einsatz von Codex.
-- Vollständiges, kohärentes Design und Nutzererlebnis.
-- Glaubwürdiger Nutzen für eine konkrete Zielgruppe.
-- Kreativität und Eigenständigkeit der Idee.
+### Challenges
 
-Der kritische Umfang priorisiert deshalb ein kleines vollständiges Produkt vor vielen halben
-Funktionen.
+Reliable native shape recognition was harder than merely calling existing algorithms. We measured
+the dormant `visioncortex` shape helpers against positive and negative fixtures and retained only
+the behavior that improved real output. The same evidence-first approach prevented hollow rings,
+triangles and rectangles from being misclassified.
 
-## Kritischer Produktumfang vor der Frist
+Browser model lifecycle was the second hard boundary: large downloads, cache corruption,
+cancellation, inference already in flight and GPU resource disposal all had to produce one simple
+user-facing state machine. WebMCP also changed during the build from the older navigator surface to
+`document.modelContext`, so the adapter is deliberately small and feature-detected.
 
-### Muss funktionieren
+### Accomplishments
 
-1. Erkennbare Converter-Oberfläche: Parameter links, Bildfläche in der Mitte, History unten.
-2. Bild laden, lokal in SVG konvertieren, anzeigen und herunterladen.
-3. Mehrere Runs in der unteren History auswählen und zwischen ihnen wechseln.
-4. Zwei Runs als A und B vergleichen und unterschiedliche Parameter hervorheben.
-5. Wenige repräsentative Parameter links, die wirklich bis in das Ergebnis wirken.
-6. KI-Manager mit einem realen Modell: bei Bedarf laden, Fortschritt zeigen, entladen und bei
-   Fehlern erneut versuchen. Für den MVP wird MODNet vor SAM priorisiert.
-7. Vollständige WebMCP-Steuerung des sichtbaren Workflows.
-8. Öffentliche statische Demo auf `https://studio.img2.download` mit einem kleinen Beispielbild.
-9. Englisches README, englische Submission-Beschreibung und Demo-Video.
+- A complete local conversion → history → A/B → export workflow.
+- Deterministic Rust/WASM output with structural ground-truth tests.
+- Two real, unloadable in-browser AI workflows rather than simulated model cards.
+- One visible application-service layer shared by UI and WebMCP.
+- Zero Axe violations in the audited core path and no cross-origin conversion traffic.
+- A reproducible production-demo test that runs against local preview or the public URL.
 
-### Weitere Slices vor der Einreichung
+### What we learned
 
-Der bewertbare Produktstand wird vollständig vor der Deadline geliefert. Nach dem MVP-Kern
-folgen innerhalb derselben Submission Period:
+“Local-first” is more than avoiding an upload endpoint: model URLs, caches, object-URL ownership,
+workers and agent tools all need explicit boundaries. We also learned that a trustworthy SVG tool
+benefits more from observable experiments and safe fallbacks than from promising perfect automatic
+recognition.
 
-- vollständige geplante Shape-Palette mit strukturellen Ground-Truth-Tests.
-- SAM Smart Select und die weiteren als Submission-Funktion beworbenen KI-Werkzeuge.
-- vollständige Modell-Registry einschließlich Download, Retry, Backend, Cache und Entladen.
-- alle weiteren Funktionen aus der verbindlichen offenen Taskliste.
+### What's next
 
-## Einreichungsreihenfolge
+After Build Week, we want to persist workspaces locally, add more measurable output-quality metrics
+and use the same shared-controller pattern to extend agent-assisted batch experimentation.
 
-1. Sofort bei Devpost registrieren und „Join Hackathon“ abschließen.
-2. GitHub-Repository und Lizenz festlegen, Remote hinzufügen und `main` pushen.
-3. Kritischen Produktpfad in sauberen Slice-Commits umsetzen.
-4. Statische Demo veröffentlichen und aus einem frischen Browser testen.
-5. Englisches README und Submission-Texte finalisieren.
-6. Demo-Video früh aufnehmen, öffentlich zu YouTube laden und Link prüfen.
-7. `/feedback` Session ID dieses Kernthreads erzeugen.
-8. Devpost-Entwurf vollständig ausfüllen und spätestens mehrere Stunden vor Frist absenden.
-9. Eingereichte Links in einem nicht angemeldeten Browser gegenprüfen.
+## Judge path
 
-## Eigentümeraktionen
+No account or paid access is required.
 
-Diese Schritte benötigen den Projekteigner oder eine bestätigte angemeldete Sitzung:
+1. Open `https://studio.img2.download` in Google Chrome 150 or newer.
+2. Choose **Beispiel laden** to open the bundled geometric fixture without a file dialog.
+3. Enable **Native shapes** and choose **Convert**.
+4. Change **Color precision** and convert again.
+5. Assign Run 1 to A and Run 2 to B, then inspect the single differing parameter.
+6. Download SVG B.
+7. Optional: load MODNet or SlimSAM from the AI Manager. This intentionally downloads a pinned
+   model artifact; normal conversion itself remains offline.
 
-- Devpost-Konto, Teilnahme und Zustimmung zu den offiziellen Regeln.
-- finale Track- und Lizenzentscheidung.
-- Freigabe des GitHub-Repositorys.
-- Veröffentlichung des YouTube-Videos.
-- endgültiges Absenden der Devpost-Einreichung.
+Local fallback:
+
+```bash
+npm ci
+npm --prefix web run test:demo
+```
+
+## Pre-existing work disclosure
+
+`img2.download` is a separate pre-existing converter owned by the project author. The new
+img2svg Studio application, Rust/WASM engine, history and A/B workflow, in-browser AI workflows,
+tests and documentation in this repository were built during the submission period with Codex and
+GPT-5.6. The `integrations/img2-download/` directory is a small new WebMCP adapter prepared for the
+older product and is clearly separated from the Studio.
+
+The dated Git history and the primary Codex build task provide the implementation record required
+for an existing-project disclosure.
+
+## Final checklist
+
+### Product and evidence
+
+- [x] Production build succeeds.
+- [x] Local production-preview judge path passes in Google Chrome.
+- [x] Accessibility, damaged/oversized input and network audits pass automatically.
+- [x] Third-party code and model inventory exists.
+- [x] Direct manual Chrome acceptance is recorded for every completed product slice.
+- [ ] Public demo passes `IMG2SVG_DEMO_BASE_URL=https://studio.img2.download npm --prefix web run test:demo`.
+
+### Owner actions
+
+- [ ] Join the OpenAI Build Week event on Devpost and confirm eligibility.
+- [ ] Confirm the Developer Tools track.
+- [ ] Choose the final project license.
+- [ ] Create or approve the GitHub repository and push `main`.
+- [ ] Connect the repository to Cloudflare Pages and attach `studio.img2.download`.
+- [ ] Generate the `/feedback` Session ID from this primary Codex build task.
+- [ ] Record the English demo, keep it below three minutes and publish it publicly on YouTube.
+- [ ] Paste the final links into Devpost and submit before the deadline.
+- [ ] Open demo, repository and YouTube links in a signed-out browser after submission.
+
+If the repository is private, it must be shared with `testing@devpost.com` and
+`build-week-event@openai.com`; a public repository with an explicit license is the recommended,
+lower-friction judge path.

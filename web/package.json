@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc -b && vite build",
+    "capture:screenshots": "npm run build && playwright test --config=playwright.screenshots.config.ts",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
