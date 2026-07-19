@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-01 — Verwendbare Browsermodelle verbindlich festlegen
-
-**Ergebnis:** MODNet- und SAM-Modell, Revision, Dateigröße, Lizenz, Quelle, Eingabe-/Ausgabeform
-und kompatible Transformers.js-/ONNX-Runtime werden mit Primärquellen festgelegt.
-
-```gherkin
-Given ein Modell soll im veröffentlichten Produkt angeboten werden
-When sein Registry-Eintrag validiert wird
-Then besitzt er feste Revision, erwartete Dateien, Prüfsummen, Größe und zulässige Lizenz
-And ein unvollständiger oder nicht kommerziell nutzbarer Eintrag wird abgelehnt
-```
-
-**Ausführbare Abnahme:** Registry-Schematest `web/src/ai/model-manifest.test.ts` mit
-`npm --prefix web test -- model-manifest.test.ts`; zusätzlich manuelle Quellenprüfung mit
-Primärlinks in `docs/THIRD_PARTY.md`.
-
-**Dokumentation:** Drittanbieter-/Modellinventar und technische KI-Spezifikation.
-
 ## AI-02 — KI-Manager mit deterministischem Fake-Loader liefern
 
 **Ergebnis:** Die UI zeigt pro Modell `not-loaded`, `downloading`, `initializing`, `ready` und

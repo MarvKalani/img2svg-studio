@@ -278,18 +278,21 @@ Primärquellen:
 
 ## 8. KI-Modelle
 
-Die Modell-Registry ist die einzige Quelle der Wahrheit. Parallelaufrufe teilen dasselbe
-Lade-Promise. Fehler führen immer in einen sichtbaren `error`-Zustand mit Retry. `dispose()`
-und Embedding-Caches werden beim Entladen berücksichtigt.
+`web/src/ai/model-manifest.ts` ist die einzige Quelle der Wahrheit für veröffentlichte
+Browsermodelle. Jeder Eintrag enthält vollständige Hub-Revision, erwartete Artefakte mit Bytezahl
+und SHA-256, kommerziell nutzbare Lizenz, Tensorformen sowie Runtime und erlaubte Backends. Die
+Validierung läuft beim Modulimport und lehnt unvollständige oder nicht freigegebene Einträge ab.
 
-Defaultmodelle laut Ausgangsspezifikation:
+Die gemeinsame Runtime ist `@huggingface/transformers` 4.2.0 mit dem darin gepinnten
+`onnxruntime-web` 1.26.0-dev.20260416-b7804b056c. MODNet nutzt den revisionsgebundenen
+FP32-Graphen für `float32[1,3,H,W] → float32[1,1,H,W]` über WebGPU mit WASM-Fallback. SlimSAM 77
+Uniform nutzt den FP16-Vision-Encoder und den FP16-Prompt-/Mask-Decoder über WebGPU. Punkt- und
+Labeltensoren erzeugen drei postprozessierte Masken in Originalgröße und zugehörige IoU-Werte.
 
-- MODNet für Hintergrundentfernung.
-- SAM 1 für Smart Select.
-
-Modellname, konkrete Revision, tatsächliche Lizenz und Transformers.js-Version werden erst
-nach erneuter Quellenprüfung im Implementierungs-Task gepinnt. Nicht kommerziell lizenzierte
-Modelle sind ausgeschlossen.
+Der spätere Modell-Manager verwendet ausschließlich diese validierten Definitionen. Parallelaufrufe
+teilen dasselbe Lade-Promise. Fehler führen immer in einen sichtbaren `error`-Zustand mit Retry.
+`dispose()` und Embedding-Caches werden beim Entladen berücksichtigt. Vollständige Quellen,
+Lizenzketten, Größen und Prüfsummen stehen in `docs/THIRD_PARTY.md`.
 
 ## 9. Teststrategie
 

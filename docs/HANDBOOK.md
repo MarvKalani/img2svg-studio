@@ -262,6 +262,12 @@ KI-Modelle werden nicht automatisch geladen. Der KI-Manager zeigt pro Modell:
 - verwendetes Backend, beispielsweise WebGPU oder WASM.
 - Aktionen zum Laden, Wiederholen und Entladen.
 
+Die validierte Registry legt MODNet Portrait Matting mit 24,69 MiB für Hintergrundentfernung und
+SlimSAM 77 Uniform mit 19,76 MiB für Smart Select fest. Beide Modelle und ihre Ursprungsprojekte
+stehen unter Apache-2.0. MODNet ist für WebGPU mit WASM-Fallback vorgesehen; SlimSAM verwendet
+zwei FP16-Graphen über WebGPU. Revision, Einzeldateien und Prüfsummen sind im
+Drittanbieter-Inventar festgehalten.
+
 Entladen muss Modell-Session, GPU-/WASM-Ressourcen und zugehörige Caches tatsächlich
 freigeben. MODNet für Hintergrundentfernung wird als erstes reales Modell integriert; SAM
 Smart Select folgt danach innerhalb des Einreichungsumfangs.

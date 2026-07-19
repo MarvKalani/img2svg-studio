@@ -79,6 +79,7 @@ npm run build:wasm
 - [Projektidee](docs/PROJECT_BRIEF.md)
 - [Produktspezifikation](docs/PRODUCT_SPEC.md)
 - [Technische Spezifikation](docs/TECHNICAL_SPEC.md)
+- [Drittanbieter- und Modellinventar](docs/THIRD_PARTY.md)
 - [Engineering-Standards](docs/ENGINEERING_STANDARDS.md)
 - [Fortlaufendes Handbuch](docs/HANDBOOK.md)
 - [Build-Week-Einreichungsplan](docs/SUBMISSION.md)
