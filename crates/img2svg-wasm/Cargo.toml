@@ -1,0 +1,13 @@
+[package]
+name = "img2svg-wasm"
+edition.workspace = true
+publish = false
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+img2svg-core = { path = "../img2svg-core" }
+wasm-bindgen.workspace = true

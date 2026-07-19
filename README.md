@@ -13,7 +13,8 @@ Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter.
 Die responsive Studio-Oberfläche läuft lokal. Sie zeigt Kopfzeile, Parameterleiste,
 A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. PNG-, JPEG- und
 WebP-Bilder lassen sich lokal auswählen oder ablegen und werden mit ihren echten Maßen
-angezeigt. Die SVG-Konvertierung folgt im nächsten vertikalen Slice.
+angezeigt. Der Konvertieren-Button übergibt ihre RGBA-Pixel lokal an den Rust-/WASM-Core und
+zeigt das deterministische SVG in der Arbeitsfläche an.
 
 ## Lokal starten
 
@@ -37,9 +38,17 @@ npm run test:e2e --workspace=img2svg-studio-web -- app-shell.spec.ts
 npm run check
 ```
 
-Dieser Befehl prüft Formatierung, Lint, das 1000-Zeilen-Limit, TypeScript, schnelle Tests und
-den Produktionsbuild. Sobald `Cargo.toml` vorhanden ist, kommen `cargo fmt --check` und Clippy
-automatisch hinzu. GitHub Actions führt exakt denselben Befehl aus.
+Dieser Befehl prüft Formatierung, Lint, das 1000-Zeilen-Limit, TypeScript, schnelle Tests,
+Produktionsbuild, `cargo fmt --check` und Clippy. GitHub Actions führt exakt denselben Befehl
+aus.
+
+Der Web-Build verwendet die versionierten WASM-Bindings. Änderungen am Rust-Core regenerieren
+sie mit Rust 1.91 oder neuer, dem Ziel `wasm32-unknown-unknown` und `wasm-pack` 0.15.0:
+
+```bash
+rustup target add wasm32-unknown-unknown
+npm run build:wasm
+```
 
 ## Leitprinzipien
 

@@ -62,7 +62,7 @@
 
           <button id="convert-button" class="convert-button" type="button" disabled>
             <span aria-hidden="true">✦</span>
-            Konvertieren
+            <span id="convert-button-label">Konvertieren</span>
           </button>
 
           <section class="control-panel">
@@ -142,6 +142,12 @@
                   alt=""
                   hidden
                 />
+                <div
+                  id="svg-output"
+                  class="workspace-svg-output"
+                  data-testid="svg-output"
+                  hidden
+                ></div>
                 <div id="workspace-empty" class="preview-placeholder">
                   <svg viewBox="0 0 140 140" aria-hidden="true">
                     <path d="M70 14 118 42v56l-48 28-48-28V42Z" />

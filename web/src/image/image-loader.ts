@@ -1,8 +1,8 @@
 import { SupportedImageMimeType, decodeImage, type DecodedImage } from "./decode-image";
+import type { ImageStore } from "./image-store";
 
-export function initializeImageLoader(): void {
+export function initializeImageLoader(imageStore: ImageStore): void {
   const elements = readImageLoaderElements();
-  let activePreviewUrl: string | undefined;
 
   const loadImage = async (file: File): Promise<void> => {
     const result = await decodeImage(file);
@@ -11,10 +11,7 @@ export function initializeImageLoader(): void {
       return;
     }
 
-    if (activePreviewUrl) {
-      URL.revokeObjectURL(activePreviewUrl);
-    }
-    activePreviewUrl = result.image.previewUrl;
+    imageStore.replace(file, result.image);
     showDecodedImage(elements, result.image);
   };
 
@@ -42,11 +39,7 @@ export function initializeImageLoader(): void {
     }
   });
 
-  window.addEventListener("beforeunload", () => {
-    if (activePreviewUrl) {
-      URL.revokeObjectURL(activePreviewUrl);
-    }
-  });
+  window.addEventListener("beforeunload", () => imageStore.dispose());
 }
 
 interface ImageLoaderElements {
@@ -60,6 +53,7 @@ interface ImageLoaderElements {
   sourceThumbnail: HTMLImageElement;
   selectButton: HTMLButtonElement;
   statusImage: HTMLElement;
+  svgOutput: HTMLElement;
   workspaceImage: HTMLImageElement;
   workspacePlaceholder: HTMLElement;
 }
@@ -76,6 +70,7 @@ function readImageLoaderElements(): ImageLoaderElements {
     sourceThumbnail: requireElement("#source-thumbnail", HTMLImageElement),
     selectButton: requireElement("#image-select-button", HTMLButtonElement),
     statusImage: requireElement("#status-image", HTMLElement),
+    svgOutput: requireElement("#svg-output", HTMLElement),
     workspaceImage: requireElement("#workspace-raster-preview", HTMLImageElement),
     workspacePlaceholder: requireElement("#workspace-empty", HTMLElement),
   };
@@ -94,6 +89,8 @@ function showDecodedImage(elements: ImageLoaderElements, image: DecodedImage): v
   elements.sourceName.textContent = image.fileName;
   elements.sourceMetadata.textContent = `${dimensions} · ${format}`;
   elements.workspacePlaceholder.hidden = true;
+  elements.svgOutput.replaceChildren();
+  elements.svgOutput.hidden = true;
   elements.workspaceImage.src = image.previewUrl;
   elements.workspaceImage.alt = `Geladenes Rasterbild ${image.fileName}`;
   elements.workspaceImage.hidden = false;

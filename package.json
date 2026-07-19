@@ -8,12 +8,13 @@
   "type": "module",
   "scripts": {
     "build": "npm run build --workspace=img2svg-studio-web",
+    "build:wasm": "wasm-pack build crates/img2svg-wasm --target web --out-dir ../../web/src/wasm-pkg --release",
     "check": "npm run format:check && npm run lint && npm run check:lines && npm run typecheck && npm run test:all && npm run build && npm run check:rust",
     "check:lines": "tsx scripts/check-source-lines.ts",
     "check:rust": "tsx scripts/check-rust.ts",
     "format": "oxfmt --write .github scripts web/index.html web/src web/e2e web/*.ts *.json",
     "format:check": "oxfmt --check .github scripts web/index.html web/src web/e2e web/*.ts *.json",
-    "lint": "oxlint --deny-warnings scripts web/src web/e2e web/*.ts",
+    "lint": "oxlint --deny-warnings --ignore-pattern 'web/src/wasm-pkg/**' scripts web/src web/e2e web/*.ts",
     "test": "vitest run",
     "test:all": "npm test && npm test --workspace=img2svg-studio-web",
     "typecheck": "tsc -b tsconfig.json web/tsconfig.json"

@@ -6,7 +6,6 @@
 /node_modules/
 /web/node_modules/
 /web/dist/
-/web/src/wasm-pkg/
 
 # WASM build output
 /pkg/

@@ -72,25 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## CONV-02 — Rasterbild real und deterministisch in SVG konvertieren
-
-**Ergebnis:** Rust-Core und schmale WASM-Grenze konvertieren validiertes RGBA mit
-`visioncortex`; der Button „Konvertieren“ zeigt das echte SVG in der Arbeitsfläche.
-
-```gherkin
-Given das geladene Kreis-Fixture und kanonische Standardeinstellungen
-When der Nutzer Konvertieren ausführt
-Then rendert die Anwendung ein valides SVG mit 256 mal 256 ViewBox
-And zwei identische Konvertierungen liefern byteidentische SVG-Ausgaben
-And der transparente Fixture-Hintergrund bleibt transparent
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/default_conversion.rs` mit
-`cargo test -p img2svg-core --test default_conversion`; Browservertrag in
-`web/e2e/convert-image.spec.ts` mit `npm --prefix web run test:e2e -- convert-image.spec.ts`.
-
-**Dokumentation:** Handbuch-Konvertierung, Engine-/WASM-Vertrag und lokale Build-Anleitung.
-
 ## CONV-03 — Angezeigtes SVG herunterladen und Fehler beherrschen
 
 **Ergebnis:** Der Nutzer lädt exakt das aktuell angezeigte SVG herunter. Enginefehler werden

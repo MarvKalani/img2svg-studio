@@ -62,6 +62,17 @@ error         öffentliche Fehlertypen
 `visioncortex` wird als Abhängigkeit verwendet, nicht kopiert. Herkunft, Version und Lizenz
 werden dokumentiert. Übernommene oder adaptierte Algorithmen erhalten konkrete Hinweise.
 
+Der implementierte Basiskontrakt lautet
+`convert_rgba(rgba, width, height) -> Result<String, ConversionError>`. Er validiert positive
+Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel einen
+deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
+stabiler Reihenfolge. Die WASM-Grenze akzeptiert `Uint8Array` und zwei `u32`-Maße und liefert
+den SVG-String oder einen JavaScript-Fehler. Spätere Resultatmetadaten erweitern diesen Vertrag,
+ohne die Engine an den Browser zu koppeln.
+
+`visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
+MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.
+
 ## 5. Determinismus
 
 - Stabile Reihenfolge für Cluster, Konturen, Attribute und Statistiken.
@@ -81,7 +92,12 @@ semantisches HTML/CSS. `web/index.html` enthält die sichtbaren Landmarks und
 `createImageBitmap`. Der Browser-Port erzeugt erst nach erfolgreicher Dekodierung eine lokale
 Objekt-URL. `image-loader.ts` verbindet Dateiauswahl und Drop mit derselben Funktion, ersetzt
 die sichtbare Vorschau atomar und gibt die vorherige Objekt-URL beim nächsten gültigen Bild
-oder vor dem Verlassen frei.
+oder vor dem Verlassen über den kleinen `imageStore` frei.
+
+`conversionService` liest RGBA über ein kurzlebiges Canvas und überträgt dessen Buffer ohne
+Kopie an einen dedizierten Worker. Der Worker initialisiert das generierte WASM, ruft den
+Rust-Core auf und wird nach genau einem Ergebnis beendet. Der Controller validiert das
+zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt.
 
 Die UI verwendet kleine Feature-Module und zentrale Application Services:
 
@@ -100,7 +116,7 @@ abweichenden Schattenzustand.
 
 `npm run check` im Repository-Root ist der einzige vollständige lokale Gate. Er führt `oxfmt`,
 `oxlint`, die ausführbare 1000-Zeilen-Prüfung, beide TypeScript-Projekte, schnelle Vitest-Suiten
-und den Produktionsbuild aus. Sobald ein Rust-Workspace existiert, folgen `cargo fmt --check`
+und den Produktionsbuild aus. Für den vorhandenen Rust-Workspace folgen `cargo fmt --check`
 und Clippy mit als Fehler behandelten Warnungen. `.github/workflows/check.yml` installiert das
 committete Lockfile und ruft denselben Befehl auf.
 
@@ -209,8 +225,11 @@ automatischer Check erzwingt diese Grenze. Weitere verbindliche Regeln stehen in
 ## 10. Build und Auslieferung
 
 - Rust-Formatierung und Clippy mit Warnungen als Fehler.
-- WASM-Build über `wasm-pack --target web` und anschließende Optimierung.
+- WASM-Build über `npm run build:wasm`, intern `wasm-pack 0.15.0 --target web --release`, und
+  anschließende Optimierung.
 - Web-Build über Vite und exakt gepinntes TypeScript 7.0.2 mit reproduzierbarem Lockfile.
+- Versionierte generierte WASM-Bindings, damit der Web-Build keinen Rust-Toolchain-Download
+  voraussetzt; Rust-Änderungen regenerieren sie bewusst im selben Diff.
 - Statische Auslieferung mit strenger Content Security Policy, soweit KI-Modellquellen dies
   zulassen.
 - Abhängigkeits- und Lizenzbericht für Rust, JavaScript und Modelle.

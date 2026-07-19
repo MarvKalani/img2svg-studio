@@ -1,0 +1,9 @@
+[package]
+name = "img2svg-core"
+edition.workspace = true
+publish = false
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+visioncortex.workspace = true
