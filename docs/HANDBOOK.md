@@ -83,6 +83,11 @@ Beschädigte Dateien, andere Formate und Dateien über 25 MB zeigen einen verst�
 Eine bereits geladene gültige Vorschau bleibt dabei erhalten. Beim Laden eines neuen gültigen
 Bildes wird die vorherige Objekt-URL freigegeben.
 
+Die Kernbedienung ist mit der Tastatur möglich: `Tab` bewegt den sichtbaren Fokus, Leertaste
+oder Eingabetaste löst die fokussierte Aktion aus, und Pfeiltasten ändern native Regler. Nach
+einem Eingabefehler bleibt der zuletzt gültige Workspace bedienbar; eine gültige PNG-, JPEG-
+oder WebP-Datei kann unmittelbar erneut gewählt werden.
+
 ## Konvertieren
 
 Nach dem Laden aktiviert sich „Konvertieren“. Der Browser liest die RGBA-Pixel lokal aus und
@@ -385,6 +390,9 @@ innerhalb der dort definierten 2-Pixel-Toleranz.
 - Bildverarbeitung bleibt lokal im Browser.
 - Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
 - KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
+- Der automatisierte Netzwerkaudit erlaubt bei lokaler Conversion keine Cross-Origin-Anfrage;
+  nach einer expliziten Modellaktion sind ausschließlich revisionsgebundene Modellartefakte
+  und deren Weiterleitungen zulässig.
 
 ## Dokumentationspflege
 

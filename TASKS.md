@@ -125,24 +125,6 @@ erhalten den zugehörigen Commit.
 
 **Dokumentation:** README, Drittanbieterinventar, UI-Footer und Submission-Checkliste.
 
-## RELEASE-02 — Datenschutz, Robustheit und Barrierefreiheit auditieren
-
-**Ergebnis:** Kernworkflow ist tastaturbedienbar, verständlich beschriftet und robust gegen
-beschädigte sowie zu große Eingaben; ein Netzwerkaudit findet nur explizite Modell-Downloads.
-
-```gherkin
-Given ein frischer Browser und der vollständige Demoablauf
-When er per Tastatur, mit beschädigter Datei und unter Netzwerkbeobachtung ausgeführt wird
-Then bleiben Fokus, Fehlermeldungen und Bedienbarkeit nachvollziehbar
-And Netzwerkverkehr besteht nur aus App-Ressourcen und bewusst gestarteten Modell-Downloads
-```
-
-**Ausführbare Abnahme:** `web/e2e/release-audit.spec.ts`, Accessibility-Scan und manueller
-Browser-/Netzwerkcheck; `npm --prefix web run test:e2e -- release-audit.spec.ts`. Das
-Checkprotokoll wird in `docs/release/RELEASE_AUDIT.md` festgehalten.
-
-**Dokumentation:** Handbuch-Fehlerhilfe, Datenschutz und bekannte Eingabegrenzen.
-
 ## RELEASE-03 — Öffentliche statische Demo reproduzierbar deployen
 
 **Ergebnis:** Ein Produktionsbuild läuft kostenlos und ohne Login auf
