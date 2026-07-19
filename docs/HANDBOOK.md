@@ -196,7 +196,19 @@ gegebenenfalls Deckkraft aus. Der Fixture-Kreis wird als `cx="128"`, `cy="128"`,
 
 Die Ground-Truth-Abnahme erlaubt höchstens 2 Pixel Abweichung je Geometriewert. Intern sind
 Seitenverhältnis und Flächenfüllung bewusst enger begrenzt; passt eine Kontur nicht eindeutig,
-bleibt sie ein Pfad. Rechteck, Ellipse, Linie und Polygon folgen in eigenen geprüften Slices.
+bleibt sie ein Pfad.
+
+### Native Rechtecke
+
+Ist „Rechteck“ aktiv, gibt die Engine kompakte, vollständig gefüllte rechteckige Cluster als
+`<rect>` mit Position, Breite, Höhe, dominanter Originalfarbe und gegebenenfalls Deckkraft aus.
+Das Fixture wird als `x="64"`, `y="80"`, `width="128"`, `height="96"` und `fill="#22C55E"`
+ausgegeben; Status und History zeigen „1 Rechteck“ und keinen Pfad.
+
+Die Flächenabweichung darf intern höchstens zwei Prozent betragen. Sehr schmale gefüllte Cluster
+bleiben für die spätere Linienerkennung erhalten; nicht rechteckige Konturen wie das
+Dreieck-Fixture fallen sicher auf einen Pfad zurück. Ellipse, Linie und Polygon folgen in eigenen
+geprüften Slices.
 
 ## KI-Manager
 
@@ -229,8 +241,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
 Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
-sicheren Pfad-Fallback. Die Kreisabnahme liest das gemeinsame Manifest, prüft Elementtyp, Farbe,
-Statistik und jeden Geometriewert innerhalb der dort definierten 2-Pixel-Toleranz.
+sicheren Pfad-Fallback. Kreis- und Rechteckabnahme lesen das gemeinsame Manifest und prüfen
+Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
+2-Pixel-Toleranz.
 
 ## Datenschutz
 

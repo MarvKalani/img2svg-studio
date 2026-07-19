@@ -116,6 +116,11 @@ function shapeMetrics(run: ConversionRun): string {
   if (run.circleCount > 0) {
     metrics.push(`${String(run.circleCount)} ${run.circleCount === 1 ? "Kreis" : "Kreise"}`);
   }
+  if (run.rectangleCount > 0) {
+    metrics.push(
+      `${String(run.rectangleCount)} ${run.rectangleCount === 1 ? "Rechteck" : "Rechtecke"}`,
+    );
+  }
   return metrics.join(" · ");
 }
 

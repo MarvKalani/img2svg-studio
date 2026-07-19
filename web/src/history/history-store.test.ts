@@ -46,6 +46,7 @@ function runInput(runNumber: number): NewConversionRun {
     heightPixels: 256,
     options: { ...defaultConversionOptions },
     pathCount: 1,
+    rectangleCount: 0,
     svg: `<svg data-run="${String(runNumber)}"></svg>`,
     widthPixels: 256,
   };

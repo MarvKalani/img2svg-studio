@@ -53,7 +53,7 @@ async function runConversion(
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
-    elements.statusImage.textContent = completedStatus(metrics.circleCount);
+    elements.statusImage.textContent = completedStatus(metrics.circleCount, metrics.rectangleCount);
     recordRun({
       durationMilliseconds: Math.max(0, Date.now() - startedAtMilliseconds),
       fileName: file.name,
@@ -71,10 +71,18 @@ async function runConversion(
   }
 }
 
-function completedStatus(circleCount: number): string {
-  const nativeCircleStatus =
-    circleCount > 0 ? ` · ${String(circleCount)} ${circleCount === 1 ? "Kreis" : "Kreise"}` : "";
-  return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeCircleStatus}`;
+function completedStatus(circleCount: number, rectangleCount: number): string {
+  const nativeShapes = [];
+  if (circleCount > 0) {
+    nativeShapes.push(`${String(circleCount)} ${circleCount === 1 ? "Kreis" : "Kreise"}`);
+  }
+  if (rectangleCount > 0) {
+    nativeShapes.push(
+      `${String(rectangleCount)} ${rectangleCount === 1 ? "Rechteck" : "Rechtecke"}`,
+    );
+  }
+  const nativeShapeStatus = nativeShapes.length > 0 ? ` · ${nativeShapes.join(" · ")}` : "";
+  return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeShapeStatus}`;
 }
 
 function readConversionElements(): ConversionElements {

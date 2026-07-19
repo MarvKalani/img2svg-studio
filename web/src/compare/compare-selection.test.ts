@@ -34,6 +34,7 @@ function run(id: number): ConversionRun {
     id,
     options: defaultConversionOptions,
     pathCount: 1,
+    rectangleCount: 0,
     svg: "<svg></svg>",
     widthPixels: 256,
   });

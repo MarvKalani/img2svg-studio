@@ -44,6 +44,7 @@ function runInput(
     heightPixels: 256,
     options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },
     pathCount: 1,
+    rectangleCount: 0,
     svg: "<svg></svg>",
     widthPixels: 256,
   };

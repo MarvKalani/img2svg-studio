@@ -4,6 +4,7 @@ export interface SvgMetrics {
   circleCount: number;
   heightPixels: number;
   pathCount: number;
+  rectangleCount: number;
   widthPixels: number;
 }
 
@@ -27,6 +28,7 @@ export function readSvgMetrics(svg: Element): SvgMetrics {
     circleCount: svg.querySelectorAll("circle").length,
     heightPixels,
     pathCount: svg.querySelectorAll("path").length,
+    rectangleCount: svg.querySelectorAll("rect").length,
     widthPixels,
   };
 }

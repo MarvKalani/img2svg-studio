@@ -72,23 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-03 — Rechtecke als native SVG-Elemente erkennen
-
-**Ergebnis:** Das Rechteck-Fixture wird als `<rect>` innerhalb der Manifesttoleranz ausgegeben;
-nicht rechteckige Konturen bleiben Pfade.
-
-```gherkin
-Given das Rechteck-Fixture und nur die Rechteckerkennung sind aktiv
-When das Bild konvertiert wird
-Then enthält das SVG genau ein natives Rechteck mit erwarteter Geometrie und Farbe
-And eine Freiformkontur wird nicht fälschlich als Rechteck ausgegeben
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_rectangle.rs` mit
-`cargo test -p img2svg-core --test detect_rectangle`.
-
-**Dokumentation:** Handbuch „Native Rechtecke“.
-
 ## SHAPE-04 — Ellipsen von Kreisen unterscheiden
 
 **Ergebnis:** Das Ellipsen-Fixture wird als `<ellipse>` ausgegeben; Kreisgrenzfälle bleiben bei

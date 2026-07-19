@@ -7,6 +7,7 @@ export interface NewConversionRun {
   heightPixels: number;
   options: ConversionOptions;
   pathCount: number;
+  rectangleCount: number;
   svg: string;
   widthPixels: number;
 }

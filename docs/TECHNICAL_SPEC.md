@@ -40,8 +40,8 @@ Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt si
 `ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
 Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
 Typen vorgewählt sind. TypeScript erzeugt die Typauswahl aus `nativeShapeSchema`; Rust prüft die
-aktivierten Typen in derselben stabilen Reihenfolge. Die Kreiserkennung ist implementiert;
-noch nicht implementierte oder nicht eindeutig erkannte Konturen bleiben Pfade.
+aktivierten Typen in derselben stabilen Reihenfolge. Kreis- und Rechteckerkennung sind
+implementiert; noch nicht implementierte oder nicht eindeutig erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -52,12 +52,12 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 - WebMCP-Inputschema.
 
 Der Rust-`ConversionResult` enthält den SVG-String und typisierte Shape-Zählungen. Die Web-App
-ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße, Pfad- und Kreisanzahl sowie
-den unveränderlichen Options-Snapshot des History-Runs.
+ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße, Pfad-, Kreis- und
+Rechteckanzahl sowie den unveränderlichen Options-Snapshot des History-Runs.
 
 Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
-Dateiname, Zielmaße, Pfad- und Kreisanzahl sowie Laufzeit. Run und Options-Snapshot sowie die
-zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung
+Dateiname, Zielmaße, Pfad-, Kreis- und Rechteckanzahl sowie Laufzeit. Run und Options-Snapshot
+sowie die zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung
 monoton steigend. Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet
 die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular.
 
@@ -98,6 +98,12 @@ begrenzen False Positives. Die Geometrie folgt deterministisch aus dem Begrenzun
 nicht erfüllte Bedingung führt ohne Teilresultat zum vorhandenen Pfad zurück. Der Test liest PNG
 und Sollwerte direkt aus dem gemeinsamen Fixture-Manifest und erlaubt die dort festgelegten zwei
 Pixel Geometrietoleranz.
+
+Der Rechteckdetektor fordert höchstens zwei Prozent Abweichung zwischen Cluster- und
+Begrenzungsrahmenfläche. Ein Verhältnis der kürzeren zur längeren Seite unter 0,1 wird bewusst
+abgelehnt, damit linienartige Cluster dem späteren Liniendetektor vorbehalten bleiben. Position
+und Maße folgen direkt aus dem Begrenzungsrahmen; Farbe, Deckkraft, Skalierung und Zahlenformat
+verwenden dieselben deterministischen Hilfen wie der Kreis.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.

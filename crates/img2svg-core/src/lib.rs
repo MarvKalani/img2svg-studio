@@ -21,6 +21,8 @@ const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
 const MINIMUM_NATIVE_SHAPE_SPAN_PIXELS: f64 = 4.0;
 const MAXIMUM_CIRCLE_ASPECT_ERROR: f64 = 0.03;
 const MAXIMUM_CIRCLE_AREA_ERROR: f64 = 0.08;
+const MAXIMUM_RECTANGLE_AREA_ERROR: f64 = 0.02;
+const MINIMUM_RECTANGLE_ASPECT_RATIO: f64 = 0.1;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConversionErrorCode {
@@ -469,11 +471,37 @@ fn detect_native_shape(
 fn detect_shape(shape: NativeShapeKind, candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
     match shape {
         NativeShapeKind::Circle => detect_circle(candidate),
-        NativeShapeKind::Rectangle
-        | NativeShapeKind::Ellipse
-        | NativeShapeKind::Line
-        | NativeShapeKind::Polygon => None,
+        NativeShapeKind::Rectangle => detect_rectangle(candidate),
+        NativeShapeKind::Ellipse | NativeShapeKind::Line | NativeShapeKind::Polygon => None,
     }
+}
+
+fn detect_rectangle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
+    let width = f64::from(candidate.rect.width());
+    let height = f64::from(candidate.rect.height());
+    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
+        return None;
+    }
+
+    let expected_area = width * height;
+    let area_error = (candidate.area as f64 - expected_area).abs() / expected_area;
+    let aspect_ratio = width.min(height) / width.max(height);
+    // Thin filled clusters remain available for the dedicated line detector instead of becoming rectangles.
+    if area_error > MAXIMUM_RECTANGLE_AREA_ERROR || aspect_ratio < MINIMUM_RECTANGLE_ASPECT_RATIO {
+        return None;
+    }
+
+    Some(DetectedShape {
+        kind: NativeShapeKind::Rectangle,
+        svg: svg_rectangle(
+            f64::from(candidate.rect.left),
+            f64::from(candidate.rect.top),
+            width,
+            height,
+            dominant_color(candidate),
+            candidate.scale_percent,
+        ),
+    })
 }
 
 fn detect_circle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
@@ -530,16 +558,8 @@ fn svg_circle(
     color: Color,
     scale_percent: u16,
 ) -> String {
-    let opacity = if color.a < 255 {
-        format!(" fill-opacity=\"{}\"", format_opacity(color.a))
-    } else {
-        String::new()
-    };
-    let transform = if scale_percent == 100 {
-        String::new()
-    } else {
-        format!(" transform=\"scale({})\"", scale_factor(scale_percent))
-    };
+    let opacity = shape_opacity(color);
+    let transform = shape_scale_transform(scale_percent);
     format!(
         "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"{}\"{opacity}{transform}/>",
         format_svg_number(center_x),
@@ -547,6 +567,42 @@ fn svg_circle(
         format_svg_number(radius),
         color.to_hex_string()
     )
+}
+
+fn svg_rectangle(
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+    color: Color,
+    scale_percent: u16,
+) -> String {
+    let opacity = shape_opacity(color);
+    let transform = shape_scale_transform(scale_percent);
+    format!(
+        "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"{opacity}{transform}/>",
+        format_svg_number(x),
+        format_svg_number(y),
+        format_svg_number(width),
+        format_svg_number(height),
+        color.to_hex_string()
+    )
+}
+
+fn shape_opacity(color: Color) -> String {
+    if color.a < 255 {
+        format!(" fill-opacity=\"{}\"", format_opacity(color.a))
+    } else {
+        String::new()
+    }
+}
+
+fn shape_scale_transform(scale_percent: u16) -> String {
+    if scale_percent == 100 {
+        String::new()
+    } else {
+        format!(" transform=\"scale({})\"", scale_factor(scale_percent))
+    }
 }
 
 fn format_svg_number(value: f64) -> String {
