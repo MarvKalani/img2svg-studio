@@ -143,6 +143,12 @@ Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schre
 Formularwerte und rendert ihre abgeleiteten Zielmaße neu; Store, SVG und Bildzustand bleiben
 unverändert.
 
+`compareSelection` hält je einen unveränderlichen Run-Verweis für A und B. Die Zuweisung desselben
+Runs in den anderen Platz entfernt ihn aus dem bisherigen Platz. `compareController` rendert erst
+bei zwei vollständigen Plätzen. Jeder native SVG-Snapshot liegt in einer äußeren ViewBox
+`0 0 1 1` mit `xMidYMid meet`; beide Layer füllen denselben Canvas. Der 0–100-Regler setzt
+komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
+
 ### Qualitätsgate
 
 `npm run check` im Repository-Root ist der einzige vollständige lokale Gate. Er führt `oxfmt`,

@@ -437,6 +437,71 @@ a:focus-visible {
   background: #eef2f3;
 }
 
+.comparison-stage.compare-active > .preview-pane,
+.comparison-stage.compare-active > .comparison-divider {
+  display: none;
+}
+
+.compare-output {
+  position: absolute;
+  inset: 0;
+  color: #0c1d28;
+  background: radial-gradient(circle at center, #fff 0, #f5f7f7 62%, #e6ecef 100%);
+}
+
+.compare-output .compare-label-a,
+.compare-output .compare-label-b {
+  position: absolute;
+  top: 1rem;
+}
+
+.compare-output .compare-label-a {
+  left: 1rem;
+}
+
+.compare-output .compare-label-b {
+  right: 1rem;
+}
+
+.compare-canvas {
+  position: absolute;
+  inset: 3.8rem 1rem 4.3rem;
+}
+
+.compare-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.compare-layer svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.compare-slider {
+  position: absolute;
+  right: 50%;
+  bottom: 0.85rem;
+  display: grid;
+  grid-template-columns: auto minmax(12rem, 24rem) 4rem;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(90%, 34rem);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #c8d3d8;
+  border-radius: 0.45rem;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 0.2rem 0.65rem rgb(0 0 0 / 15%);
+  transform: translateX(50%);
+}
+
+.compare-slider span,
+.compare-slider output {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .preview-pane {
   position: relative;
   padding: 1rem;
@@ -636,7 +701,6 @@ a:focus-visible {
   display: grid;
   grid-template-columns: 3.5rem minmax(5rem, 1fr);
   grid-template-rows: auto auto auto;
-  flex: 0 0 11.5rem;
   gap: 0.1rem 0.55rem;
   min-height: 6rem;
   padding: 0.55rem;
@@ -645,6 +709,33 @@ a:focus-visible {
   color: #d8e1e6;
   background: #102837;
   text-align: left;
+}
+
+.history-item {
+  display: grid;
+  flex: 0 0 11.5rem;
+  gap: 0.35rem;
+}
+
+.history-compare-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.history-compare-actions button {
+  padding: 0.25rem;
+  border: 1px solid #355163;
+  border-radius: 0.35rem;
+  color: #a9bbc5;
+  background: #102837;
+  font-weight: 700;
+}
+
+.history-compare-actions button[aria-pressed="true"] {
+  border-color: #35d6f5;
+  color: #06202d;
+  background: #35d6f5;
 }
 
 .history-card[aria-pressed="true"] {

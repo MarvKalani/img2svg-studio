@@ -20,7 +20,9 @@ weiter nutzbar. Farbpräzision, Speckle-Filter und proportionale Zielgröße sin
 Parameter vollständig bis in die Engine verbunden. Die zehn neuesten unveränderlichen Runs
 erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezeigt werden. Die
 validierten Einstellungen eines ausgewählten Runs lassen sich übernehmen und erzeugen bei
-gleichem Bild erneut ein byteidentisches SVG.
+gleichem Bild erneut ein byteidentisches SVG. Zwei Runs lassen sich tastaturbedienbar als A und B
+markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-Geometrie
+überblenden.
 
 ## Lokal starten
 

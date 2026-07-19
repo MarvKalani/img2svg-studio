@@ -1,5 +1,7 @@
 import { parseSvgDocument } from "../conversion/svg-document";
 import type { ConversionOptions } from "../conversion/conversion-options";
+import type { CompareController } from "../compare/compare-controller";
+import type { CompareSlot } from "../compare/compare-selection";
 import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-store";
 import { restoreSelectedRunOptions } from "./restore-run";
 
@@ -10,6 +12,7 @@ export interface HistoryController {
 export function initializeHistory(
   store: HistoryStore,
   applyOptions: (options: ConversionOptions) => void,
+  compareController: CompareController,
 ): HistoryController {
   const elements = readElements();
 
@@ -31,15 +34,27 @@ export function initializeHistory(
   const render = (): void => {
     const runs = store.runs();
     const selectedRunId = store.selected()?.id;
+    const comparedRuns = compareController.current();
     elements.content.replaceChildren(
       ...runs.map((run) =>
-        runCard(run, run.id === selectedRunId, () => {
-          const selected = store.select(run.id);
-          if (selected) {
-            showRun(selected);
+        runItem(
+          run,
+          run.id === selectedRunId,
+          comparedRuns.a?.id === run.id,
+          comparedRuns.b?.id === run.id,
+          () => {
+            const selected = store.select(run.id);
+            if (selected) {
+              showRun(selected);
+              render();
+            }
+          },
+          (slot) => {
+            compareController.assign(slot, run);
             render();
-          }
-        }),
+            focusCompareButton(elements.content, run.id, slot);
+          },
+        ),
       ),
     );
     elements.variantCount.textContent = `${String(runs.length)} ${runs.length === 1 ? "Variante" : "Varianten"}`;
@@ -54,7 +69,16 @@ export function initializeHistory(
   };
 }
 
-function runCard(run: ConversionRun, selected: boolean, selectRun: () => void): HTMLButtonElement {
+function runItem(
+  run: ConversionRun,
+  selected: boolean,
+  comparedAsA: boolean,
+  comparedAsB: boolean,
+  selectRun: () => void,
+  compareRun: (slot: CompareSlot) => void,
+): HTMLElement {
+  const item = document.createElement("article");
+  item.className = "history-item";
   const button = document.createElement("button");
   button.type = "button";
   button.className = "history-card";
@@ -76,7 +100,42 @@ function runCard(run: ConversionRun, selected: boolean, selectRun: () => void): 
 
   button.append(thumbnail, title, dimensions, metrics);
   button.addEventListener("click", selectRun);
+
+  const actions = document.createElement("div");
+  actions.className = "history-compare-actions";
+  actions.append(
+    compareButton(run, "a", comparedAsA, compareRun),
+    compareButton(run, "b", comparedAsB, compareRun),
+  );
+  item.append(button, actions);
+  return item;
+}
+
+function compareButton(
+  run: ConversionRun,
+  slot: CompareSlot,
+  assigned: boolean,
+  compareRun: (slot: CompareSlot) => void,
+): HTMLButtonElement {
+  const button = document.createElement("button");
+  const label = slot.toUpperCase();
+  button.type = "button";
+  button.textContent = label;
+  button.setAttribute("aria-label", `Run ${String(run.id)} als ${label} setzen`);
+  button.setAttribute("aria-pressed", String(assigned));
+  button.dataset.compareRunId = String(run.id);
+  button.dataset.compareSlot = slot;
+  button.addEventListener("click", () => compareRun(slot));
   return button;
+}
+
+function focusCompareButton(content: HTMLElement, runId: number, slot: CompareSlot): void {
+  const button = content.querySelector(
+    `[data-compare-run-id="${String(runId)}"][data-compare-slot="${slot}"]`,
+  );
+  if (button instanceof HTMLButtonElement) {
+    button.focus();
+  }
 }
 
 interface HistoryElements {

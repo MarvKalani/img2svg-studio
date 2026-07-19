@@ -165,7 +165,7 @@
         <main class="workspace">
           <section class="comparison" aria-labelledby="workspace-title">
             <h1 id="workspace-title" class="visually-hidden">Arbeitsfläche</h1>
-            <div class="comparison-stage">
+            <div id="comparison-stage" class="comparison-stage">
               <article class="preview-pane">
                 <span class="preview-label">A · Variante</span>
                 <button id="download-svg" class="download-button" type="button" hidden>
@@ -207,6 +207,35 @@
                   <span>Wähle später zwei Runs aus dem Verlauf.</span>
                 </div>
               </article>
+
+              <div id="compare-output" class="compare-output" hidden>
+                <span id="compare-label-a" class="preview-label compare-label-a"></span>
+                <span id="compare-label-b" class="preview-label compare-label-b"></span>
+                <div class="compare-canvas" data-testid="compare-canvas">
+                  <div
+                    id="compare-layer-a"
+                    class="compare-layer"
+                    data-testid="compare-layer-a"
+                  ></div>
+                  <div
+                    id="compare-layer-b"
+                    class="compare-layer"
+                    data-testid="compare-layer-b"
+                  ></div>
+                </div>
+                <label class="compare-slider">
+                  <span>Überblendung</span>
+                  <input
+                    id="compare-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="50"
+                    aria-label="Anteil Variante B"
+                  />
+                  <output id="compare-slider-value" for="compare-slider">50 % B</output>
+                </label>
+              </div>
             </div>
           </section>
 

@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## COMPARE-01 — Zwei Runs als A und B überblenden
-
-**Ergebnis:** Zwei History-Runs können tastaturbedienbar als A und B markiert werden. Ein
-0–100-Prozent-Slider überblendet beide deckungsgleich in derselben ViewBox.
-
-```gherkin
-Given zwei Runs mit verschiedenen Ergebnissen sind als A und B ausgewählt
-When der Vergleichsregler auf 0, 50 und 100 Prozent bewegt wird
-Then zeigt die gemeinsame Arbeitsfläche nur A, beide halbiert und nur B
-And unterschiedliche Run-Maße verschieben die beiden Ebenen nicht gegeneinander
-```
-
-**Ausführbare Abnahme:** `web/src/compare/compare-selection.test.ts` und visueller
-Browservertrag `web/e2e/compare-runs.spec.ts`; `npm --prefix web test --
-compare-selection.test.ts` und `npm --prefix web run test:e2e -- compare-runs.spec.ts`.
-
-**Dokumentation:** Handbuch „A/B-Vergleich“ und aktualisierter Screenshot.
-
 ## COMPARE-02 — Parameterunterschiede und A/B-Downloads anzeigen
 
 **Ergebnis:** Unter A/B erscheint eine schema-basierte Tabelle, die standardmäßig nur echte

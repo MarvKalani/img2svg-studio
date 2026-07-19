@@ -132,14 +132,22 @@ dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei glei
 gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. Nach dem elften Lauf wird
 nur der älteste Run aus der sichtbaren Session-History entfernt.
 
-Zwei Karten können im nächsten Vergleichsschritt als A und B markiert werden.
+Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ den Run in den
+jeweiligen Vergleichsplatz. Derselbe Run belegt nie beide Plätze; eine neue Zuweisung verschiebt
+ihn eindeutig. Sobald A und B gesetzt sind, zeigt die gemeinsame Arbeitsfläche beide SVGs
+deckungsgleich. Die Labels nennen die zugeordneten Run-IDs.
 
-Der Vergleich soll:
+Der Regler „Überblendung“ bestimmt den sichtbaren Anteil von B:
 
-- beide Ergebnisse deckungsgleich darstellen.
-- per Slider zwischen A und B wechseln.
-- unterschiedliche Parameter hervorheben.
-- Downloads für beide ausgewählten Runs anbieten.
+- 0 Prozent zeigt nur A.
+- 50 Prozent zeigt beide Ebenen mit halber Deckkraft.
+- 100 Prozent zeigt nur B.
+
+Beide Ebenen verwenden eine gemeinsame normalisierte ViewBox und erhalten darin die native
+ViewBox des Runs seitenverhältnistreu. Deshalb bleiben auch unterschiedlich skalierte Runs
+zentriert und deckungsgleich, ohne Kreisformen zu verzerren. Die aktuellen Eingabeeinstellungen
+werden durch A/B-Zuweisungen nicht verändert. Parameterunterschiede und getrennte Downloads
+folgen als nächste Vergleichsfunktionen.
 
 ## Parameter
 

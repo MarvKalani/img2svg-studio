@@ -1,4 +1,6 @@
 import "./styles.css";
+import { initializeCompare } from "./compare/compare-controller";
+import { createCompareSelection } from "./compare/compare-selection";
 import { initializeConversion } from "./conversion/conversion-controller";
 import { initializeConversionOptions } from "./conversion/conversion-options-controller";
 import { initializeSvgDownload } from "./conversion/svg-download";
@@ -9,7 +11,12 @@ import { createHistoryStore } from "./history/history-store";
 
 const imageStore = createImageStore();
 const optionsController = initializeConversionOptions();
-const historyController = initializeHistory(createHistoryStore(), optionsController.apply);
+const compareController = initializeCompare(createCompareSelection());
+const historyController = initializeHistory(
+  createHistoryStore(),
+  optionsController.apply,
+  compareController,
+);
 initializeImageLoader(imageStore, optionsController.showSourceDimensions);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload(imageStore);
