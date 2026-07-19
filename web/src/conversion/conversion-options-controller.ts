@@ -7,6 +7,7 @@ import {
 } from "./conversion-options";
 
 export interface ConversionOptionsController {
+  apply(options: ConversionOptions): void;
   current(): ConversionOptions;
   showSourceDimensions(image: DecodedImage): void;
 }
@@ -45,6 +46,13 @@ export function initializeConversionOptions(): ConversionOptionsController {
   render();
 
   return {
+    apply: (options) => {
+      const validatedOptions = createConversionOptions(options);
+      elements.colorPrecision.value = String(validatedOptions.colorPrecision);
+      elements.filterSpeckle.value = String(validatedOptions.filterSpeckle);
+      elements.scalePercent.value = String(validatedOptions.scalePercent);
+      render();
+    },
     current,
     showSourceDimensions: (image) => {
       sourceDimensions = image;

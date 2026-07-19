@@ -598,6 +598,16 @@ a:focus-visible {
   font-size: 0.75rem;
 }
 
+.restore-run-button {
+  margin-left: auto;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid #3e6d83;
+  border-radius: 0.35rem;
+  color: #cce7f0;
+  background: #102d3e;
+  font-weight: 700;
+}
+
 .history-empty {
   display: flex;
   flex-direction: column;

@@ -18,7 +18,9 @@ zeigt das deterministische SVG in der Arbeitsfläche an. Das angezeigte Ergebnis
 als `.svg` heruntergeladen werden; typisierte Fehler lassen den letzten erfolgreichen Stand
 weiter nutzbar. Farbpräzision, Speckle-Filter und proportionale Zielgröße sind als erste echte
 Parameter vollständig bis in die Engine verbunden. Die zehn neuesten unveränderlichen Runs
-erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezeigt werden.
+erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezeigt werden. Die
+validierten Einstellungen eines ausgewählten Runs lassen sich übernehmen und erzeugen bei
+gleichem Bild erneut ein byteidentisches SVG.
 
 ## Lokal starten
 

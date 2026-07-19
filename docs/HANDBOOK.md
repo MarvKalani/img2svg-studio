@@ -125,9 +125,12 @@ zehn neuesten Runs von neu nach alt als horizontal bedienbare Karten. Jede Karte
 - Zielmaße, Pfadanzahl und gemessene Laufzeit.
 
 Das Auswählen einer Karte zeigt ihr gespeichertes SVG wieder in „A · Variante“. Die aktuell
-eingestellten Regler bleiben dabei unverändert; das gezielte Wiederherstellen alter Einstellungen
-folgt als eigener Bedienvorgang. Nach dem elften Lauf wird nur der älteste Run aus der sichtbaren
-Session-History entfernt.
+eingestellten Regler bleiben dabei unverändert. „Einstellungen übernehmen“ kopiert anschließend
+die drei validierten Parameter des ausgewählten Runs in die Eingabemaske und berechnet die
+Zielmaße neu. Das geladene Originalbild, der ausgewählte Run und sein angezeigtes SVG bleiben
+dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei gleichem Bild und
+gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. Nach dem elften Lauf wird
+nur der älteste Run aus der sichtbaren Session-History entfernt.
 
 Zwei Karten können im nächsten Vergleichsschritt als A und B markiert werden.
 
@@ -137,7 +140,6 @@ Der Vergleich soll:
 - per Slider zwischen A und B wechseln.
 - unterschiedliche Parameter hervorheben.
 - Downloads für beide ausgewählten Runs anbieten.
-- Einstellungen eines älteren Runs wiederherstellen können.
 
 ## Parameter
 

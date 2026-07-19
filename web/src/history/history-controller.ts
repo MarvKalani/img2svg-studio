@@ -1,12 +1,24 @@
 import { parseSvgDocument } from "../conversion/svg-document";
+import type { ConversionOptions } from "../conversion/conversion-options";
 import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-store";
+import { restoreSelectedRunOptions } from "./restore-run";
 
 export interface HistoryController {
   record(input: NewConversionRun): void;
 }
 
-export function initializeHistory(store: HistoryStore): HistoryController {
+export function initializeHistory(
+  store: HistoryStore,
+  applyOptions: (options: ConversionOptions) => void,
+): HistoryController {
   const elements = readElements();
+
+  elements.restoreButton.addEventListener("click", () => {
+    const restoredOptions = restoreSelectedRunOptions(store, applyOptions);
+    if (restoredOptions) {
+      elements.statusImage.textContent = `Einstellungen von Run ${String(store.selected()?.id)} übernommen`;
+    }
+  });
 
   const showRun = (run: ConversionRun): void => {
     elements.output.replaceChildren(parseSvgDocument(run.svg));
@@ -31,6 +43,7 @@ export function initializeHistory(store: HistoryStore): HistoryController {
       ),
     );
     elements.variantCount.textContent = `${String(runs.length)} ${runs.length === 1 ? "Variante" : "Varianten"}`;
+    elements.restoreButton.hidden = runs.length === 0;
   };
 
   return {
@@ -71,6 +84,7 @@ interface HistoryElements {
   downloadButton: HTMLButtonElement;
   output: HTMLElement;
   rasterPreview: HTMLImageElement;
+  restoreButton: HTMLButtonElement;
   statusImage: HTMLElement;
   variantCount: HTMLElement;
 }
@@ -81,6 +95,7 @@ function readElements(): HistoryElements {
     downloadButton: requireElement("#download-svg", HTMLButtonElement),
     output: requireElement("#svg-output", HTMLElement),
     rasterPreview: requireElement("#workspace-raster-preview", HTMLImageElement),
+    restoreButton: requireElement("#restore-run-options", HTMLButtonElement),
     statusImage: requireElement("#status-image", HTMLElement),
     variantCount: requireElement("#status-variant-count", HTMLElement),
   };

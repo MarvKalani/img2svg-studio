@@ -138,7 +138,10 @@ abweichenden Schattenzustand.
 
 `historyController` rendert aus dem Store ausschließlich die zehn Karten und projiziert einen
 ausgewählten SVG-Snapshot zurück in die Arbeitsfläche. Er schreibt keine alten Optionen in das
-Formular; diese explizite Aktion bleibt dem Restore-Slice vorbehalten.
+Formular. `restoreSelectedRunOptions` validiert den ausgewählten Snapshot erneut und reicht eine
+Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schreibt nur die drei
+Formularwerte und rendert ihre abgeleiteten Zielmaße neu; Store, SVG und Bildzustand bleiben
+unverändert.
 
 ### Qualitätsgate
 

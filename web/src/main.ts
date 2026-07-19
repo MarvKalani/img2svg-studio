@@ -9,7 +9,7 @@ import { createHistoryStore } from "./history/history-store";
 
 const imageStore = createImageStore();
 const optionsController = initializeConversionOptions();
-const historyController = initializeHistory(createHistoryStore());
+const historyController = initializeHistory(createHistoryStore(), optionsController.apply);
 initializeImageLoader(imageStore, optionsController.showSourceDimensions);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload(imageStore);

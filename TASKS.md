@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## HISTORY-02 — Einstellungen eines Runs wiederherstellen
-
-**Ergebnis:** „Einstellungen übernehmen“ kopiert die validierten Parameter eines alten Runs in
-die Eingabemaske, ohne den Run oder das Originalbild zu verändern.
-
-```gherkin
-Given zwei Runs besitzen unterschiedliche Einstellungen
-When der Nutzer die Einstellungen des älteren Runs übernimmt und erneut konvertiert
-Then zeigt die Eingabemaske exakt dessen Einstellungen
-And der neue Run liefert bei gleichem Bild byteidentische SVG-Ausgabe zum älteren Run
-```
-
-**Ausführbare Abnahme:** `web/src/history/restore-run.test.ts` und
-`web/e2e/restore-run.spec.ts`; `npm --prefix web test -- restore-run.test.ts` und
-`npm --prefix web run test:e2e -- restore-run.spec.ts`.
-
-**Dokumentation:** Handbuch „Einstellungen wiederherstellen“.
-
 ## COMPARE-01 — Zwei Runs als A und B überblenden
 
 **Ergebnis:** Zwei History-Runs können tastaturbedienbar als A und B markiert werden. Ein
