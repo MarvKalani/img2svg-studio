@@ -1,337 +1,620 @@
-# Umsetzungsliste
+# Offene Umsetzungstasks
 
-## Arbeitsweise
+Diese Datei enthält ausschließlich noch offene Arbeit bis zur Build-Week-Einreichung am
+**22. Juli 2026, 02:00 CEST**. Die Reihenfolge ist verbindlich, sofern ein Task keine
+ausdrücklich genannte Abhängigkeit besitzt. Erledigte Tasks werden im zugehörigen
+Abschluss-Commit vollständig aus dieser Datei gelöscht; Commit, Tests und Handbuch bilden
+danach den dauerhaften Nachweis.
 
-Die verbindlichen Qualitätsregeln stehen in
-[`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md). Für jeden Task gilt:
+`RELEASE-01` und die Eigentümeranteile aus `RELEASE-05` dürfen parallel erledigt werden,
+sobald die nötigen Angaben vorliegen; sie halten die autonome Implementierungsqueue nicht an.
 
-- als kleinster sinnvoller vertikaler Slice umsetzen.
-- Verhalten zuerst mit dem schnellsten aussagekräftigen Test beschreiben.
-- lösungsorientiert die beste reversible Annahme wählen und den Slice bis zur Abnahme bringen.
-- in der Reihenfolge „make it work, make it right, make it fast“ arbeiten.
-- nur den aktuellen Slice implementieren; keine vorgezogenen Erweiterungen.
-- EVA-Grenzen und typisierte Domänenwerte verwenden.
-- nur notwendige Git-Diffs erzeugen und fremde Änderungen unangetastet lassen.
-- keine handgeschriebene Quell- oder Testdatei mit mehr als 1000 Zeilen zulassen.
-- relevante schnelle Checks vor jedem Commit, vollständige Checks an jedem Gate ausführen.
-- Handbuch und betroffene Projektdokumente im selben Commit aktualisieren.
-- genau einen verständlichen Commit pro abgeschlossenem Slice mit Task-ID im Betreff erstellen.
+## Verbindlicher Taskablauf
 
-## Statuslegende
+Für jeden Implementierungstask übernimmt der Orchestrator die Abnahme:
 
-- `[ ]` offen
-- `[x]` abgeschlossen
-- **BLOCKER** verlangt eine Entscheidung, bevor der genannte Folgeschritt abgeschlossen wird.
+1. Scope, Vorbedingungen und vorhandenen Git-Diff prüfen.
+2. Das unten definierte Gherkin-Szenario als kleinsten ausführbaren Test in Code schreiben.
+3. Den Test aus dem erwarteten Grund fehlschlagen sehen (**Red**).
+4. Nur den beschriebenen Slice implementieren (**Green**), danach bei Bedarf vereinfachen.
+5. Den angegebenen Abnahmebefehl und alle vom Diff betroffenen Qualitätsprüfungen ausführen.
+6. UI-Verhalten zusätzlich im echten Browser prüfen, wenn der Task sichtbares Verhalten ändert.
+7. Handbuch und betroffene Verträge auf den tatsächlich gelieferten Stand bringen.
+8. Den Task aus dieser Datei löschen und den vollständigen Slice gemeinsam committen.
 
-## P0 — Verbindliche Projektbasis
+Ein Task gilt erst nach diesem Review als fertig. Der Commit-Betreff folgt
+`type(TASK-ID): imperative summary`. Der Commit-Text dokumentiert Ergebnis, ausgeführte
+Abnahme und Dokumentationsänderungen. Es werden keine dauerhaft roten Tests committed.
 
-- [x] **P0-01 Projektbrief konsolidieren.**
-  - Abnahme: Problem, Lösung, Ziele, Nicht-Ziele und Demo sind dokumentiert.
-- [x] **P0-02 Produkt- und Technikgrundlage konsolidieren.**
-  - Abnahme: spätere Entscheidungen ersetzen widersprüchliche Ausgangspunkte sichtbar.
-- [x] **P0-03 Vertikal geschnittene Taskliste anlegen.**
-  - Abnahme: jeder Implementierungstask liefert ein prüfbares Ende-zu-Ende-Verhalten.
-- [ ] **P0-04 Hackathon-Regeln und Projektlizenz bestätigen — BLOCKER für Release.**
-  - Entscheidung in D-009 dokumentieren.
-  - Abnahme: `LICENSE.md`, README, UI-Footer und Quellheader sind widerspruchsfrei.
-- [x] **P0-05 Engineering-Standards festschreiben.**
-  - Abnahme: KISS, SINE, EVA, TDD, minimale Diffs und Dateilimit sind verbindlich.
-- [x] **P0-06 TypeScript-Version entscheiden.**
-  - Abnahme: TypeScript 7.0.2 ist als stabile, exakt zu pinnende Version dokumentiert.
-- [x] **P0-07 Offizielle Build-Week-Anforderungen prüfen.**
-  - Abnahme: Frist, Pflichtmaterialien, Codex-Nachweis und Testzugang sind dokumentiert.
-- [x] **P0-08 Fortlaufendes Produkthandbuch anlegen.**
-  - Abnahme: jeder Slice muss Handbuch- und Vertragsdokumentation bewusst mitprüfen.
+```text
+Outcome:
+- Geliefertes Verhalten und bewusste Nicht-Ziele
+Acceptance:
+- Exakter Befehl mit Ergebnis
+Documentation:
+- Aktualisierte Handbuch- und Vertragsabschnitte
+```
 
-## OpenAI Build Week — kritischer Pfad
+Gherkin ist die lesbare Vertragssprache. Ausgeführt wird der Vertrag direkt in der passenden
+schnellen Testschicht:
 
-Deadline: **22. Juli 2026, 02:00 CEST**. Diese Liste priorisiert die Submission; die
-vollständige Roadmap darunter bleibt vor derselben Deadline bestehen. Der kritische Pfad legt
-die Reihenfolge fest, nicht eine spätere Entwicklungsphase.
+- Vitest für TypeScript-Logik und DOM-nahe Komponenten.
+- Rust-Tests für Engine und SVG-Verträge.
+- Playwright nur für sichtbare kritische Browserabläufe.
 
-- [ ] **BW-01 Devpost-Teilnahme bestätigen — Aktion des Projekteigners.**
-  - Devpost-Konto, „Join Hackathon“ und Teilnahmeberechtigung prüfen.
-- [ ] **BW-02 GitHub-Repository, Sichtbarkeit und Lizenz festlegen.**
-  - Abnahme: Remote ist gesetzt, `main` gepusht und der Zugriff für Judges geklärt.
-- [ ] **BW-03 M0-Gate vollständig erreichen.**
-- [ ] **BW-04 Sichtbaren Converter-Kern liefern.**
-  - Bild laden, minimal real konvertieren, SVG anzeigen und herunterladen.
-  - Layout: Parameter links, Arbeitsfläche mittig, zunächst leere History unten.
-- [ ] **BW-05 History unten funktionsfähig machen.**
-  - Mehrere Runs zeigen, auswählen und wieder anzeigen; maximal notwendige Metadaten.
-- [ ] **BW-06 A/B und Parameter-Diff liefern.**
-  - Zwei History-Runs umschalten, visuell vergleichen und nur echte Unterschiede markieren.
-- [ ] **BW-07 Wenige echte Parameter links durchstechen.**
-  - Kanonische Defaults plus zwei oder drei demo-relevante Regler statt vollständigem Katalog.
-- [ ] **BW-08 KI-Manager mit MODNet liefern.**
-  - Ein Registry-Zustandsautomat, echter Fortschritt, Retry, Backend-Anzeige und Dispose.
-  - Modell nur auf Nutzeraktion laden und nach Entladen Ressourcen freigeben.
-- [ ] **BW-09 WebMCP-Kern liefern.**
-  - M7-01, M7-02, M7-04 und M7-05 mit sichtbarer UI-Synchronität.
-- [ ] **BW-10 Öffentliche statische Demo bereitstellen.**
-  - Abnahme: funktioniert kostenlos und ohne Login in einem frischen Browser.
-- [ ] **BW-11 Englische Submission-Unterlagen fertigstellen.**
-  - README, Projektbeschreibung, Testanleitung, Codex-/GPT-5.6-Nachweis und Lizenzen.
-- [ ] **BW-12 Demovideo unter drei Minuten veröffentlichen — gemeinsame Aktion.**
-  - Öffentliches YouTube-Video mit englischem Audio oder vollständiger Übersetzung.
-- [ ] **BW-13 `/feedback` Session ID und Devpost-Submission absenden — gemeinsame Aktion.**
-  - Alle Links unangemeldet testen; mehrere Stunden Puffer vor der Frist behalten.
-- [ ] **BW-14 Beworbenen Funktionsumfang vollständig auditieren.**
-  - Jede in Video, README oder Submission genannte Funktion ist vor der Deadline umgesetzt,
-    getestet und deployed; unfertige optionale Ideen werden nicht als vorhanden dargestellt.
+Eine zusätzliche Cucumber-Laufzeit und doppelte Step Definitions werden nicht eingeführt.
+Vitest- und Playwright-Testnamen verwenden `Given … when … then …`; Rust-Testnamen bilden
+dies als `given_..._when_..._then_...` ab.
 
-## M0 — Gerüst und erster vertikaler System-Slice
+## Globale Abnahmeregeln
 
-- [ ] **M0-01 Minimalen Workspace anlegen.**
-  - Rust-Crates `img2svg-core` und `img2svg-wasm` sowie `web` mit Vite anlegen.
-  - `img2svg-cli` erst mit seinem ersten nutzbaren Slice ergänzen.
-  - TypeScript exakt als `7.0.2` ohne Versionsbereich pinnen.
-  - Abnahme: leere Rust- und Web-Builds laufen mit committed Lockfiles.
-- [ ] **M0-02 Schnellste Testschleifen einrichten.**
-  - Rust-Unit-Test und TypeScript-Unit-Test mit kleinen gezielten Befehlen ermöglichen.
-  - Abnahme: beide einzelnen Testzyklen starten lokal in wenigen Sekunden.
-- [ ] **M0-03 Engine-Version Ende zu Ende anzeigen.**
-  - Test zuerst: Rust-Version → WASM-Binding → TypeScript-Service → sichtbarer UI-Status.
-  - Nur die für diesen Weg nötige Struktur erzeugen.
-  - Abnahme: Browser zeigt die echte Engine-Version; Vertrags- und UI-Test sind grün.
-- [ ] **M0-04 Lokale Qualitätsgates hinzufügen.**
-  - Formatierung, Clippy, Typecheck, Lint, schnelle Tests und 1000-Zeilen-Prüfung.
-  - Abnahme: ein kurzer `check`-Befehl schlägt bei Warnung oder zu großer Quelldatei fehl.
-- [ ] **M0-05 CI für denselben reproduzierbaren Check einrichten.**
-  - Keine Deployment-Schritte oder Secrets.
-  - Abnahme: frischer Checkout besteht exakt die lokal dokumentierten Prüfungen.
+Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
-**Gate M0:** Rust, WASM und Web bauen reproduzierbar. Der Browser zeigt die Rust-Version.
-Alle schnellen Qualitätsgates sind grün.
+- KISS, SINE, EVA, typisierte Domänenwerte und minimale Diffs gemäß
+  [`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md).
+- Keine handgeschriebene Quell- oder Testdatei überschreitet 1000 Zeilen.
+- Keine Warnungen in Formatierung, Lint, Typecheck, Rust-Clippy oder Tests.
+- Keine Bild-Uploads, Telemetrie, Tracker oder externen Fonts.
+- Neue Abhängigkeiten sind exakt gepinnt, lizenziert und für den aktuellen Slice notwendig.
+- `docs/HANDBOOK.md` beschreibt nur funktionierendes Verhalten, keine Absichtserklärungen.
+- Ein sichtbarer Task erfüllt Tastatur- und verständliche Fehlerzustände in seinem Scope.
 
-## M1 — Erstes wirklich nutzbares SVG
+---
 
-- [ ] **M1-01 Bild laden und unverändert anzeigen.**
-  - PNG, JPEG und WebP über Browser-Decoding in typisiertes RGBA überführen.
-  - Fehlerhafte und nicht unterstützte Dateien sichtbar ablehnen.
-  - Abnahme: Drop und Dateiwahl zeigen dasselbe Testbild mit korrekten Maßen.
-- [ ] **M1-02 Default-Konvertierung Ende zu Ende liefern.**
-  - Test zuerst: bekanntes RGBA-Fixture erzeugt deterministisches, valides SVG.
-  - Minimalen `visioncortex`-Adapter, WASM-Aufruf, Konvertieren-Button und SVG-Ansicht bauen.
-  - Abnahme: ein geladenes Fixture wird im Browser sichtbar als SVG gerendert.
-- [ ] **M1-03 SVG herunterladen.**
-  - Export-Service erst für den aktuellen Run und SVG implementieren.
-  - Abnahme: Download entspricht bytegenau dem angezeigten SVG.
-- [ ] **M1-04 Fehler vom Rust-Core bis in die UI führen.**
-  - Ungültige Maße, RGBA-Länge und Enginefehler typisieren.
-  - Abnahme: kein Panic; UI zeigt verständliche Meldung und bleibt bedienbar.
-- [ ] **M1-05 Transparenz Ende zu Ende erhalten.**
-  - Testfixture mit transparenten und teiltransparenten Pixeln verwenden.
-  - Abnahme: Ergebnis rendert erwartetes Alpha und zeigt ein Alpha-Badge.
-- [ ] **M1-06 Determinismus als Systemtest sichern.**
-  - Abnahme: zwei Browser-/WASM-Runs mit gleichem Input liefern identische SVG-Bytes.
+## APP-01 — Ausführbare Studio-Oberfläche aufbauen
 
-**Gate M1:** Ein Nutzer lädt ein Bild, konvertiert es lokal, sieht das SVG und lädt exakt
-dieses Ergebnis herunter.
+**Ergebnis:** Ein lokaler Entwicklungsserver zeigt den akzeptierten UI-Entwurf als responsive
+HTML/CSS-Oberfläche mit Kopfzeile, Parameterleiste links, Arbeitsfläche, Diff-Bereich, leerer
+History unten und Statuszeile.
 
-## M2 — Qualität kontrollierbar machen
+**Scope:** Vite, exakt TypeScript `7.0.2`, Vitest und Playwright mit npm-Lockfile; semantische
+Landmarks; sichtbare Platzhalterzustände. Noch keine Bildverarbeitung oder Rust-Struktur.
 
-Jeder Parameter-Slice reicht vom typisierten Optionswert über WASM und Engine bis zur
-sichtbaren UI und enthält mindestens einen Wirkungs- oder Grenzwerttest.
+```gherkin
+Given ein frischer Browser öffnet img2svg Studio
+When die Startseite vollständig geladen ist
+Then sind Parameterleiste, Arbeitsfläche, Diff-Bereich, leere History und Status sichtbar
+And die Seite besitzt weder horizontales Überlaufen noch eine JavaScript-Fehlermeldung
+```
 
-- [ ] **M2-01 Kanonisches Optionsmodell und Defaults einführen.**
-  - Eine Quelle speist Rust-Validierung, TypeScript, UI-Metadaten und spätere Diffs.
-  - Abnahme: Defaults und Feldnamen können nicht unbemerkt auseinanderlaufen.
-- [ ] **M2-02 Farbpräzision und Speckle-Filter durchstechen.**
-  - Abnahme: zwei definierte Werte erzeugen nachvollziehbar unterschiedliche Resultate.
-- [ ] **M2-03 `stacked` und `cutout` durchstechen.**
-  - Abnahme: Z-Reihenfolge, Löcher und Moduswechsel sind durch Fixtures getestet.
-- [ ] **M2-04 Kurvenparameter durchstechen.**
-  - Corner, Splice, Segmentlänge und Kurven an/aus typisiert anbieten.
-  - Abnahme: Pixel-Art- und Kurven-Fixtures reagieren erwartungsgemäß.
-- [ ] **M2-05 Path-Offset ohne `transform` optimieren.**
-  - Parser und Offset erst mit kleinen Rust-Tests entwickeln.
-  - Abnahme: gerenderte Geometrie bleibt gleich; redundantes `transform` entfällt.
-- [ ] **M2-06 Präzision und Zahlenformatierung durchstechen.**
-  - 0–6 Stellen, Rundung, `-0` und Nullen kanonisch behandeln.
-  - Abnahme: Golden-Tests und UI-Auswahl sind grün.
-- [ ] **M2-07 Relative Kommandos und H/V durchstechen.**
-  - Abnahme: Engine wählt deterministisch die kürzere valide Darstellung.
-- [ ] **M2-08 Optimizer an/aus mit echter Ersparnis anzeigen.**
-  - Stats aus der Engine, keine Regex-Auswertung im UI.
-  - Abnahme: Footer zeigt Bytevergleich bei visuell identischem Ergebnis.
-- [ ] **M2-09 Visuelle Qualitätsfixtures integrieren.**
-  - Logo, Icon, Illustration und Foto über `resvg`/`tiny-skia` prüfen.
-  - Abnahme: dokumentierte Fehlerschwellen und deterministische Golden-Artefakte.
+**Ausführbare Abnahme:** `web/e2e/app-shell.spec.ts` mit
+`npm --prefix web run test:e2e -- app-shell.spec.ts`; zusätzlich `npm --prefix web run build`.
 
-**Gate M2:** Die Kernparameter wirken sichtbar und getestet. Der Optimizer ist messbar, kann
-abgeschaltet werden und verändert die gerenderte Geometrie nicht unzulässig.
+**Dokumentation:** Handbuch-Status, lokaler Start und UI-Screenshot aktualisieren.
 
-## M3 — Größen, Presets und zusätzliche Ausgaben
+## APP-02 — Lokale Qualitätsprüfung und CI identisch machen
 
-- [ ] **M3-01 Drehen und Spiegeln als nicht destruktiven Slice liefern.**
-  - Abnahme: Original bleibt erhalten; Konvertierung nutzt sichtbar transformierte RGBA-Daten.
-- [ ] **M3-02 Prozentuale Größenänderung durchstechen.**
-  - Typisierte Prozentwerte und sichtbare Zielmaße.
-  - Abnahme: Down- und Upscale behalten standardmäßig das Seitenverhältnis.
-- [ ] **M3-03 Eigene Maße und Größenpresets durchstechen.**
-  - Icons sowie HD, FHD, QHD und UHD.
-  - Abnahme: UI, tatsächliche Canvasmaße und Run-Statistik stimmen überein.
-- [ ] **M3-04 Built-in-Presets Ende zu Ende liefern.**
-  - Icon, Logo, Illustration, Photo und Pixel Art mit exakt dokumentierten Werten.
-  - Abnahme: manuelle Änderung schaltet sichtbar auf „Benutzerdefiniert“.
-- [ ] **M3-05 Eigene Presets lokal speichern und löschen.**
-  - Nur Settings, keine großen Bild- oder Run-Daten in `localStorage`.
-  - Abnahme: Reload erhält das Preset und validiert importierte Werte.
-- [ ] **M3-06 PNG-Export aus einem Run liefern.**
-  - Abnahme: gerasterte Maße und Alpha stimmen mit der Auswahl überein.
-- [ ] **M3-07 WebP-Export mit Qualitätssteuerung liefern.**
-  - Abnahme: Browserfähigkeit wird erkannt; fehlende Unterstützung wird erklärt.
-- [ ] **M3-08 Ersten CLI-Slice ergänzen.**
-  - Ein Input, ein Output und Default-Konvertierung über dieselbe Core-API.
-  - Abnahme: CLI- und WASM-Default erzeugen semantisch identische SVGs.
+**Ergebnis:** Ein einziger lokaler Befehl prüft Formatierung, Lint, Typecheck, schnelle Tests,
+Rust-Formatierung/Clippy sobald Rust existiert und das 1000-Zeilen-Limit; GitHub Actions führt
+denselben Befehl aus.
 
-**Gate M3:** Größe, Preset und Export sind nachvollziehbar; Web und CLI verwenden dieselbe
-Engine ohne duplizierte Konvertierungslogik.
+```gherkin
+Given der aktuelle Checkout enthält gültigen Projektcode
+When der vollständige Check lokal oder in CI ausgeführt wird
+Then laufen dieselben Prüfschritte ohne Warnung erfolgreich
+And eine künstlich zu große handgeschriebene Quelldatei wird vom Zeilenlimit abgelehnt
+```
 
-## M4 — Native Formen als optionale vertikale Slices
+**Ausführbare Abnahme:** `scripts/check-source-lines.test.ts` und `scripts/ci-workflow.test.ts`;
+`npm test -- scripts/check-source-lines.test.ts scripts/ci-workflow.test.ts` sowie
+`npm run check` im Repository-Root.
 
-- [x] **M4-00 Ground-Truth-Fixtures für die Formerkennung anlegen.**
-  - Kreis, Ellipse, Rechteck, Linie, Polygon und gemischte Szene als Rastereingaben.
-  - Abnahme: Manifest definiert erwartete SVG-Elemente und Geometrie mit 2-px-Toleranz.
-- [ ] **M4-01 Formerkennungsrahmen mit sicherem Pfad-Fallback liefern.**
-  - Globaler Schalter, aktivierte Typen und `remainder_strategy=path` typisieren.
-  - Abnahme: ausgeschaltete Erkennung ist byteidentisch zur bisherigen Ausgabe.
-- [ ] **M4-02 Kreise Ende zu Ende erkennen.**
-  - Synthetisches Fixture, Schwellwert, UI-Schalter, `<circle>` und Statistik.
-- [ ] **M4-03 Rechtecke einschließlich Rotation Ende zu Ende erkennen.**
-  - Abnahme: Rechteckfixture wird nativ; Freiform bleibt Pfad.
-- [ ] **M4-04 Ellipsen Ende zu Ende erkennen.**
-  - Abnahme: Kreis und Ellipse werden bei Grenzfällen stabil unterschieden.
-- [ ] **M4-05 Linien Ende zu Ende erkennen.**
-  - Abnahme: Seitenverhältnis wirkt sichtbar und ist validiert.
-- [ ] **M4-06 Polygone Ende zu Ende erkennen.**
-  - Douglas-Peucker-Epsilon typisiert durchreichen.
-  - Abnahme: Dreieck wird nativ; komplexe Freiform fällt zurück.
-- [ ] **M4-07 Selektive Detektorkette und Priorität absichern.**
-  - Abnahme: nur aktivierte Typen laufen; gemischte Fixtures bleiben deterministisch.
-- [ ] **M4-08 Reststrategie `ignore` liefern.**
-  - Deutliche UI-Warnung; Abnahme: nur bewusst nicht erkannte Inhalte fehlen.
-- [ ] **M4-09 Reststrategie `raster` als Hybrid-SVG liefern.**
-  - Abnahme: Ausgabe ist korrekt eingebettet und sichtbar als Hybrid gekennzeichnet.
-- [ ] **M4-10 Falsch-positive Erkennung messen und Defaults festlegen.**
-  - Abnahme: dokumentierter Fixture-Satz begründet die Standardschwellen.
+**Nicht im Scope:** Deployment, Secrets, automatische Releases.
 
-**Gate M4:** Jeder Formtyp ist einzeln steuerbar und sichtbar getestet. Der sichere Default
-bleibt Pfad; Hybrid- und Ignore-Ausgaben sind unmissverständlich.
+**Dokumentation:** README-Build/Test-Anleitung und technische Build-Spezifikation.
 
-## M5 — History und A/B-Vergleich
+## CONV-01 — Rasterbild lokal laden und anzeigen
 
-- [ ] **M5-01 Ersten Run unveränderlich in der History zeigen.**
-  - Settings, Statistik, Thumbnail, Run-ID und Zeitstempel.
-  - Abnahme: maximal zehn Einträge, ohne große Binärdaten in `localStorage`.
-- [ ] **M5-02 Einstellungen eines Runs wiederherstellen.**
-  - Abnahme: Restore und erneuter Run liefern bei gleichem Input identische SVG-Bytes.
-- [ ] **M5-03 Zwei Runs oder Original als A und B wählen.**
-  - Abnahme: Auswahl ist sichtbar, stabil und tastaturbedienbar.
-- [ ] **M5-04 Overlay-Slider über 0–100 Prozent liefern.**
-  - Abnahme: beide Grenzen und die Mitte zeigen korrekte, deckungsgleiche Inhalte.
-- [ ] **M5-05 Parameter-Diff durchstechen.**
-  - Kanonisches Schema verwenden; gleiche Werte und „nur Unterschiede“ anbieten.
-  - Abnahme: Änderung eines Parameters erscheint genau einmal.
-- [ ] **M5-06 A/B-Infokarten und Downloads liefern.**
-  - Abnahme: jede Seite exportiert den tatsächlich ausgewählten Run.
-- [ ] **M5-07 Synchronen Zoom und Pan liefern.**
-  - Abnahme: A und B verlieren bei Transformationen nicht ihre Deckung.
-- [ ] **M5-08 Gecachte Lupe liefern.**
-  - Abnahme: Seite und Beschriftung wechseln an der Slider-Grenze korrekt.
-- [ ] **M5-09 Auto-A nach einem neuen Run liefern.**
-  - Abnahme: bestehende Auswahl verschiebt sich deterministisch und verständlich.
-- [ ] **M5-10 Kritischen Browser-End-to-End-Test sichern.**
-  - Bild laden, zwei Runs erzeugen, einen Parameter vergleichen und beide exportieren.
+**Ergebnis:** Dateiauswahl und Drag-and-drop dekodieren PNG, JPEG oder WebP im Browser, zeigen
+Vorschau und echte Maße und lehnen beschädigte oder nicht unterstützte Dateien verständlich ab.
 
-**Gate M5:** Der Vergleichsworkflow ist vollständig nutzbar und erklärt visuell wie
-parametrisch, warum sich zwei Ergebnisse unterscheiden.
+```gherkin
+Given das Kreis-Fixture liegt als 256 mal 256 Pixel großes PNG vor
+When es per Dateiauswahl oder Drag-and-drop geladen wird
+Then zeigt die Arbeitsfläche dasselbe lokale Bild mit 256 mal 256 Pixeln
+And es wird kein Bildinhalt über das Netzwerk übertragen
+```
 
-## M6 — Nicht destruktive Vorverarbeitung und KI
+**Ausführbare Abnahme:** `web/e2e/load-image.spec.ts` mit
+`npm --prefix web run test:e2e -- load-image.spec.ts`; Decoder-Grenzfälle in
+`web/src/image/decode-image.test.ts` mit `npm --prefix web test -- decode-image.test.ts`.
 
-- [ ] **M6-01 Helligkeit als ersten Preprocessing-Slice liefern.**
-  - Versionierte Eingabe, Vorschau, Anwenden und Reset; Original bleibt unverändert.
-- [ ] **M6-02 Kontrast, Blur und Threshold einzeln durchstechen.**
-  - Jeder Effekt beginnt mit einem kleinen Pixeltest.
-- [ ] **M6-03 Bilaterales Denoise liefern.**
-  - Abnahme: messbarer Effekt und akzeptable Laufzeit auf einem definierten Fixture.
-- [ ] **M6-04 Konventionelles 2×/4×/8×-Upscaling liefern.**
-  - Abnahme: Interpolation, tatsächliche Maße und Speichern in der Eingabe-History stimmen.
-- [ ] **M6-05 Transformers.js und Modelle aktuell prüfen — BLOCKER für KI-Slices.**
-  - Versionen, Revisionen, Lizenzen, Größe und kommerzielle Nutzbarkeit dokumentieren.
-- [ ] **M6-06 Modell-Registry zuerst mit einem Fake-Loader liefern.**
-  - Zustände, Promise-Deduplizierung, Retry, Fortschritt und Dispose testgetrieben entwickeln.
-- [ ] **M6-07 MODNet-Hintergrundentfernung durchstechen.**
-  - Backend und echter Fortschritt sichtbar; Threshold und Edge-Sharpness.
-  - Abnahme: Alpha-Ränder erfüllen definierte Fixture-Erwartungen.
-- [ ] **M6-08 Cache- und Speicherverwaltung liefern.**
-  - Abnahme: Operationen werden awaited, rückgemeldet und hängen nie im Ladezustand.
-- [ ] **M6-09 SAM mit einem positiven Punkt durchstechen.**
-  - Modell, Embedding, sichtbarer Marker, Maske und Anwenden Ende zu Ende.
-- [ ] **M6-10 Positive und negative Mehrfachpunkte liefern.**
-  - Abnahme: mindestens zwei positive und ein negativer Punkt verfeinern die Maske.
-- [ ] **M6-11 Invertieren, Löschen und Beenden liefern.**
-  - Abnahme: Modell- und Maskenzustand bleiben konsistent und Ressourcen werden freigegeben.
-- [ ] **M6-12 KI-Ergebnisse in den normalen Run-Workflow integrieren.**
-  - Abnahme: freigestelltes Objekt wird konvertiert, verglichen und exportiert.
+**Dokumentation:** Handbuch „Bild laden“, unterstützte Formate und Fehlerfälle.
 
-**Gate M6:** Vorverarbeitung ist nicht destruktiv. Modellzustände können nicht hängen;
-BG-Remove und Mehrpunkt-SAM funktionieren lokal mit ehrlichem Status.
+## CONV-02 — Rasterbild real und deterministisch in SVG konvertieren
 
-## M7 — WebMCP-Steuerung als progressive Slices
+**Ergebnis:** Rust-Core und schmale WASM-Grenze konvertieren validiertes RGBA mit
+`visioncortex`; der Button „Konvertieren“ zeigt das echte SVG in der Arbeitsfläche.
 
-- [ ] **M7-01 Aktuellen WebMCP-Entwurf und Ziel-Chrome erneut verifizieren.**
-  - `document.modelContext`, Aktivierung und Sicherheit mit Primärquellen dokumentieren.
-- [ ] **M7-02 `get_capabilities` als ersten Tool-Slice liefern.**
-  - Feature Detection, enge Schemaantwort und kein Fehler ohne WebMCP-Unterstützung.
-- [ ] **M7-03 `get_state` und `list_runs` liefern.**
-  - Nur lesen; sichtbarer UI-Zustand bleibt einzige Quelle der Wahrheit.
-- [ ] **M7-04 `configure_conversion` durchstechen.**
-  - Dieselben typisierten Validatoren wie die UI; sichtbare UI aktualisiert sich sofort.
-- [ ] **M7-05 `convert_current_image` durchstechen.**
-  - Abnahme: Agenten-Run erscheint wie ein menschlicher Run in UI und History.
-- [ ] **M7-06 Vergleich und Restore durchstechen.**
-  - `compare_runs` und `restore_run_settings` liefern strukturierte Diffs.
-- [ ] **M7-07 `export_run` mit klarem Seiteneffekt liefern.**
-  - Abnahme: nur existierende Runs und unterstützte Formate; Fehler strukturiert.
-- [ ] **M7-08 Tool-Sicherheitsgrenzen testen.**
-  - Keine Bildtexte oder Dateimetadaten in Beschreibungen; Eingaben strikt begrenzen.
-- [ ] **M7-09 Mensch-/Agent-Zustandssynchronität Ende zu Ende testen.**
-- [ ] **M7-10 Vollständige Agenten-Demo testen.**
-  - Agent wählt ein lokal erzeugtes Bild sichtbar aus, konfiguriert zwei Runs, vergleicht und
-    exportiert SVG.
-- [ ] **M7-11 UI-Fallback ohne WebMCP dokumentieren und testen.**
+```gherkin
+Given das geladene Kreis-Fixture und kanonische Standardeinstellungen
+When der Nutzer Konvertieren ausführt
+Then rendert die Anwendung ein valides SVG mit 256 mal 256 ViewBox
+And zwei identische Konvertierungen liefern byteidentische SVG-Ausgaben
+And der transparente Fixture-Hintergrund bleibt transparent
+```
 
-**Gate M7:** Ein unterstützter Browser-Agent steuert den sichtbaren Kernworkflow zuverlässig.
-Ohne WebMCP bleibt die Anwendung vollständig nutzbar.
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/default_conversion.rs` mit
+`cargo test -p img2svg-core --test default_conversion`; Browservertrag in
+`web/e2e/convert-image.spec.ts` mit `npm --prefix web run test:e2e -- convert-image.spec.ts`.
 
-## M8 — Politur, Rechtliches und Einreichung
+**Nicht im Scope:** native Formerkennung, zusätzliche Exporte, Worker-Pool oder vorsorgliche
+Performance-Optimierung.
 
-- [ ] **M8-01 Lizenzentscheidung P0-04 umsetzen.**
-  - `LICENSE.md`, Quellheader, README und UI-Footer in einem Lizenz-Slice.
-- [ ] **M8-02 Drittanbieter-Lizenzen vollständig inventarisieren.**
-  - Rust, JavaScript, Modelle und adaptierte Algorithmen.
-- [ ] **M8-03 Datenschutz- und Netzwerkverhalten prüfen.**
-  - Abnahme: keine unerwarteten Requests, Uploads, Telemetrie oder externen Fonts.
-- [ ] **M8-04 Lizenzfreie Beispielbilder und Golden-Fixtures liefern.**
-- [ ] **M8-05 Tastatur und Screenreader-Kernpfade prüfen.**
-- [ ] **M8-06 Große, beschädigte und speicherintensive Eingaben absichern.**
-- [ ] **M8-07 Performance-Budgets messen.**
-  - WASM-Größe, Start, Konvertierung, A/B-Lupe und Modelle.
-- [ ] **M8-08 Statisches Deployment mit Sicherheitsheadern liefern.**
-- [ ] **M8-09 README mit Build, Architektur, Grenzen und Screenshots fertigstellen.**
-- [ ] **M8-10 Demo-Drehbuch automatisiert und manuell proben.**
-- [ ] **M8-11 Reproduzierbaren Release-Tag erstellen.**
+**Dokumentation:** Handbuch-Konvertierung, Engine-/WASM-Vertrag und lokale Build-Anleitung.
 
-**Gate M8 / Definition of Done:** Alle vorherigen Gates sind erfüllt. Ein frischer Checkout
-baut reproduzierbar, alle Qualitätsprüfungen sind grün und die Demo läuft ohne Reparaturen.
+## CONV-03 — Angezeigtes SVG herunterladen und Fehler beherrschen
 
-## Kür nach Definition of Done
+**Ergebnis:** Der Nutzer lädt exakt das aktuell angezeigte SVG herunter. Enginefehler werden
+typisiert bis in die UI geführt; die Oberfläche bleibt danach bedienbar.
 
-- [ ] **K-01 Run-Matrix für genau einen variierten Parameter.**
-- [ ] **K-02 Preset-Import und -Export.**
-- [ ] **K-03 Settings-Permalink ohne Bilddaten.**
-- [ ] **K-04 Experimentelle Gradientenerkennung.**
-- [ ] **K-05 Zusätzliche Browser-Rasterformate.**
-- [ ] **K-06 KI-Upscaling mit geprüftem Modell.**
+```gherkin
+Given eine erfolgreiche Konvertierung wird angezeigt
+When der Nutzer SVG herunterladen wählt
+Then entsprechen die heruntergeladenen Bytes exakt dem angezeigten SVG
+And ein nachfolgender ungültiger Engine-Aufruf zeigt einen verständlichen Fehler ohne Panic
+```
+
+**Ausführbare Abnahme:** `web/e2e/download-svg.spec.ts` sowie Rust-Grenzfälle in
+`crates/img2svg-core/tests/conversion_errors.rs`; `npm --prefix web run test:e2e --
+download-svg.spec.ts` und `cargo test -p img2svg-core --test conversion_errors`.
+
+**Dokumentation:** Handbuch „SVG herunterladen“ und öffentliche Fehlertypen.
+
+## PARAM-01 — Wenige echte Konvertierungsparameter durchstechen
+
+**Ergebnis:** Farbpräzision, Speckle-Filter und proportionale Zielgröße besitzen typisierte
+Grenzen und kanonische Defaults und wirken von der linken UI über WASM bis zur Engine.
+
+```gherkin
+Given dasselbe geladene Fixture wurde mit den Standardwerten konvertiert
+When Farbpräzision, Speckle-Filter oder Zielgröße auf einen anderen gültigen Wert gesetzt werden
+Then zeigt die UI den validierten Wert und die tatsächlichen Zielmaße
+And das neue Ergebnis enthält genau diese Einstellungen und eine nachvollziehbare Wirkung
+```
+
+**Ausführbare Abnahme:** Rust-Wirkungstest
+`crates/img2svg-core/tests/conversion_options.rs`, Schema-Vertrag
+`web/src/conversion/conversion-options.test.ts` und Browsertest
+`web/e2e/change-parameters.spec.ts`; `cargo test -p img2svg-core --test conversion_options`,
+`npm --prefix web test -- conversion-options.test.ts` und `npm --prefix web run test:e2e --
+change-parameters.spec.ts`.
+
+**Nicht im Scope:** vollständiger visioncortex-Parameterkatalog, freie Zielmaße, Presets.
+
+**Dokumentation:** Handbuch-Parameter und kanonische Defaults in der technischen Spezifikation.
+
+## HISTORY-01 — Unveränderliche Conversion-Runs unten anzeigen
+
+**Ergebnis:** Jede erfolgreiche Konvertierung erzeugt genau einen unveränderlichen Run. Die
+History unten zeigt höchstens zehn Karten mit Run-ID, Thumbnail, Maßen, Pfadanzahl und Laufzeit.
+
+```gherkin
+Given ein Bild ist geladen
+When der Nutzer elf erfolgreiche Konvertierungen ausführt
+Then enthält die History die zehn neuesten unveränderlichen Runs in eindeutiger Reihenfolge
+And das Auswählen eines Runs zeigt dessen SVG ohne seine gespeicherten Werte zu verändern
+```
+
+**Ausführbare Abnahme:** `web/src/history/history-store.test.ts` mit
+`npm --prefix web test -- history-store.test.ts` und `web/e2e/history.spec.ts` mit
+`npm --prefix web run test:e2e -- history.spec.ts`.
+
+**Nicht im Scope:** Persistieren großer Run-Artefakte in `localStorage`.
+
+**Dokumentation:** Handbuch „Verlauf“ einschließlich Begrenzung und gespeicherter Metadaten.
+
+## HISTORY-02 — Einstellungen eines Runs wiederherstellen
+
+**Ergebnis:** „Einstellungen übernehmen“ kopiert die validierten Parameter eines alten Runs in
+die Eingabemaske, ohne den Run oder das Originalbild zu verändern.
+
+```gherkin
+Given zwei Runs besitzen unterschiedliche Einstellungen
+When der Nutzer die Einstellungen des älteren Runs übernimmt und erneut konvertiert
+Then zeigt die Eingabemaske exakt dessen Einstellungen
+And der neue Run liefert bei gleichem Bild byteidentische SVG-Ausgabe zum älteren Run
+```
+
+**Ausführbare Abnahme:** `web/src/history/restore-run.test.ts` und
+`web/e2e/restore-run.spec.ts`; `npm --prefix web test -- restore-run.test.ts` und
+`npm --prefix web run test:e2e -- restore-run.spec.ts`.
+
+**Dokumentation:** Handbuch „Einstellungen wiederherstellen“.
+
+## COMPARE-01 — Zwei Runs als A und B überblenden
+
+**Ergebnis:** Zwei History-Runs können tastaturbedienbar als A und B markiert werden. Ein
+0–100-Prozent-Slider überblendet beide deckungsgleich in derselben ViewBox.
+
+```gherkin
+Given zwei Runs mit verschiedenen Ergebnissen sind als A und B ausgewählt
+When der Vergleichsregler auf 0, 50 und 100 Prozent bewegt wird
+Then zeigt die gemeinsame Arbeitsfläche nur A, beide halbiert und nur B
+And unterschiedliche Run-Maße verschieben die beiden Ebenen nicht gegeneinander
+```
+
+**Ausführbare Abnahme:** `web/src/compare/compare-selection.test.ts` und visueller
+Browservertrag `web/e2e/compare-runs.spec.ts`; `npm --prefix web test --
+compare-selection.test.ts` und `npm --prefix web run test:e2e -- compare-runs.spec.ts`.
+
+**Dokumentation:** Handbuch „A/B-Vergleich“ und aktualisierter Screenshot.
+
+## COMPARE-02 — Parameterunterschiede und A/B-Downloads anzeigen
+
+**Ergebnis:** Unter A/B erscheint eine schema-basierte Tabelle, die standardmäßig nur echte
+Parameterunterschiede zeigt. Downloads exportieren jeweils den tatsächlich gewählten Run.
+
+```gherkin
+Given A und B unterscheiden sich nur in der Farbpräzision
+When der Nutzer nur Unterschiede anzeigen lässt
+Then enthält die Tabelle genau eine Zeile mit beiden Farbpräzisionswerten
+And die Downloads A und B entsprechen bytegenau den jeweiligen Runs
+```
+
+**Ausführbare Abnahme:** `web/src/compare/diff-settings.test.ts` und
+`web/e2e/compare-downloads.spec.ts`; `npm --prefix web test -- diff-settings.test.ts` und
+`npm --prefix web run test:e2e -- compare-downloads.spec.ts`.
+
+**Dokumentation:** Handbuch „Parameter-Diff“ und Downloadverhalten.
+
+## SHAPE-01 — Formerkennung sicher und abschaltbar einführen
+
+**Ergebnis:** Ein typisierter globaler Schalter und aktivierte Formtypen steuern eine
+Detektorkette. Der sichere Rest bleibt ein Pfad; ausgeschaltete Erkennung ändert keinen Byte.
+
+```gherkin
+Given ein Fixture wird mit deaktivierter Formerkennung konvertiert
+When derselbe Input erneut mit deaktivierter Formerkennung verarbeitet wird
+Then ist die Ausgabe byteidentisch zur bisherigen Pfadausgabe
+And unbekannte Konturen bleiben bei aktivierter Erkennung als Pfad erhalten
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/shape_detection_fallback.rs` mit
+`cargo test -p img2svg-core --test shape_detection_fallback`; UI-Schema in
+`web/src/conversion/shape-options.test.ts` mit `npm --prefix web test --
+shape-options.test.ts`.
+
+**Dokumentation:** Handbuch-Schalter, Fallback und technischer Detektorvertrag.
+
+## SHAPE-02 — Kreise als native SVG-Elemente erkennen
+
+**Ergebnis:** Das vorhandene Kreis-PNG erzeugt bei aktivierter Kreiserkennung ein `<circle>`
+mit Mittelpunkt, Radius und Farbe innerhalb der Manifesttoleranz; die Statistik zählt es.
+
+```gherkin
+Given das Kreis-Fixture und nur die Kreiserkennung sind aktiv
+When das Bild konvertiert wird
+Then enthält das SVG genau einen nativen Kreis innerhalb von 2 Pixel Geometrietoleranz
+And die Formerkennungsstatistik meldet genau einen Kreis
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_circle.rs` liest
+`fixtures/shape-recognition/manifest.json`; `cargo test -p img2svg-core --test detect_circle`.
+
+**Dokumentation:** Handbuch „Native Kreise“ und bekannte Toleranz.
+
+## SHAPE-03 — Rechtecke als native SVG-Elemente erkennen
+
+**Ergebnis:** Das Rechteck-Fixture wird als `<rect>` innerhalb der Manifesttoleranz ausgegeben;
+nicht rechteckige Konturen bleiben Pfade.
+
+```gherkin
+Given das Rechteck-Fixture und nur die Rechteckerkennung sind aktiv
+When das Bild konvertiert wird
+Then enthält das SVG genau ein natives Rechteck mit erwarteter Geometrie und Farbe
+And eine Freiformkontur wird nicht fälschlich als Rechteck ausgegeben
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_rectangle.rs` mit
+`cargo test -p img2svg-core --test detect_rectangle`.
+
+**Dokumentation:** Handbuch „Native Rechtecke“.
+
+## SHAPE-04 — Ellipsen von Kreisen unterscheiden
+
+**Ergebnis:** Das Ellipsen-Fixture wird als `<ellipse>` ausgegeben; Kreisgrenzfälle bleiben bei
+gleicher X-/Y-Ausdehnung `<circle>`.
+
+```gherkin
+Given Ellipsen- und Kreis-Fixture werden mit beiden Detektoren konvertiert
+When die native Form gewählt wird
+Then wird die Ellipse als ellipse und der Kreis als circle innerhalb der Toleranz ausgegeben
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_ellipse.rs` mit
+`cargo test -p img2svg-core --test detect_ellipse`.
+
+**Dokumentation:** Handbuch „Native Ellipsen“ und Unterscheidungsregel.
+
+## SHAPE-05 — Linien als native SVG-Elemente erkennen
+
+**Ergebnis:** Das Linien-Fixture erzeugt eine native `<line>` mit erwarteten Endpunkten,
+Strichfarbe und -breite; kompakte Freiformen bleiben Pfade.
+
+```gherkin
+Given das Linien-Fixture und nur die Linienerkennung sind aktiv
+When das Bild konvertiert wird
+Then enthält das SVG genau eine native Linie innerhalb der Manifesttoleranz
+And die Statistik meldet genau eine Linie
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_line.rs` mit
+`cargo test -p img2svg-core --test detect_line`.
+
+**Dokumentation:** Handbuch „Native Linien“.
+
+## SHAPE-06 — Polygone als native SVG-Elemente erkennen
+
+**Ergebnis:** Das Dreieck-Fixture erzeugt ein `<polygon>` innerhalb der Toleranz. Ein typisiertes
+Vereinfachungs-Epsilon begrenzt die Kontur; komplexe Freiformen fallen auf Pfade zurück.
+
+```gherkin
+Given das Dreieck-Fixture und nur die Polygonerkennung sind aktiv
+When das Bild konvertiert wird
+Then enthält das SVG genau ein natives Polygon mit drei erwarteten Punkten
+And eine Kontur außerhalb des Epsilon-Grenzwerts bleibt ein Pfad
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_polygon.rs` mit
+`cargo test -p img2svg-core --test detect_polygon`.
+
+**Dokumentation:** Handbuch „Native Polygone“ und Epsilon-Verhalten.
+
+## SHAPE-07 — Gemischte Formen deterministisch ausgeben
+
+**Ergebnis:** Die gemischte Szene hält Detektorreihenfolge, Elementanzahl und Z-Reihenfolge
+stabil und meldet keine Form doppelt.
+
+```gherkin
+Given alle unterstützten Formdetektoren und das Mixed-Fixture sind aktiv
+When die Szene zweimal konvertiert wird
+Then stimmen native Elementtypen, Geometrien, Anzahl und Reihenfolge mit dem Manifest überein
+And beide SVG-Ausgaben sind byteidentisch
+```
+
+**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_mixed_shapes.rs` und
+`web/e2e/shape-recognition.spec.ts`; `cargo test -p img2svg-core --test detect_mixed_shapes`
+und `npm --prefix web run test:e2e -- shape-recognition.spec.ts`.
+
+**Dokumentation:** Handbuch-Formerkennung und aktualisierte unterstützte Formen.
+
+## AI-01 — Verwendbare Browsermodelle verbindlich festlegen
+
+**Ergebnis:** MODNet- und SAM-Modell, Revision, Dateigröße, Lizenz, Quelle, Eingabe-/Ausgabeform
+und kompatible Transformers.js-/ONNX-Runtime werden mit Primärquellen festgelegt.
+
+```gherkin
+Given ein Modell soll im veröffentlichten Produkt angeboten werden
+When sein Registry-Eintrag validiert wird
+Then besitzt er feste Revision, erwartete Dateien, Prüfsummen, Größe und zulässige Lizenz
+And ein unvollständiger oder nicht kommerziell nutzbarer Eintrag wird abgelehnt
+```
+
+**Ausführbare Abnahme:** Registry-Schematest `web/src/ai/model-manifest.test.ts` mit
+`npm --prefix web test -- model-manifest.test.ts`; zusätzlich manuelle Quellenprüfung mit
+Primärlinks in `docs/THIRD_PARTY.md`.
+
+**Nicht im Scope:** Modell-Download oder Inferenz.
+
+**Dokumentation:** Drittanbieter-/Modellinventar und technische KI-Spezifikation.
+
+## AI-02 — KI-Manager mit deterministischem Fake-Loader liefern
+
+**Ergebnis:** Die UI zeigt pro Modell `not-loaded`, `downloading`, `initializing`, `ready` und
+`error`, dedupliziert paralleles Laden und bietet Retry sowie Entladen über eine typisierte
+Registry.
+
+```gherkin
+Given ein nicht geladenes Modell und ein kontrollierter Fake-Loader
+When Laden zweimal parallel ausgelöst wird und der erste Versuch fehlschlägt
+Then existiert nur ein Ladevorgang, der Fehler ist sichtbar und Retry erreicht ready
+And Entladen ruft dispose genau einmal auf und endet in not-loaded
+```
+
+**Ausführbare Abnahme:** `web/src/ai/model-registry.test.ts` mit
+`npm --prefix web test -- model-registry.test.ts`; DOM-Vertrag in
+`web/src/ai/model-manager.test.ts` mit `npm --prefix web test -- model-manager.test.ts`.
+
+**Dokumentation:** Handbuch „KI-Manager“, Zustände und Nutzeraktionen.
+
+## AI-03 — MODNet laden und Hintergrund lokal entfernen
+
+**Ergebnis:** Erst nach Nutzeraktion lädt das festgelegte MODNet mit echtem Bytefortschritt,
+zeigt WebGPU/WASM-Backend und erzeugt lokal ein neues RGBA-Bild mit Alpha-Maske.
+
+```gherkin
+Given ein Bild mit Vordergrund und ein noch nicht geladenes MODNet
+When der Nutzer Hintergrund entfernen ausführt
+Then werden Downloadfortschritt und tatsächliches Backend sichtbar
+And das Ergebnis erfüllt die festgelegten Alpha-Erwartungen ohne Bild-Upload
+```
+
+**Ausführbare Abnahme:** Adaptertests `web/src/ai/modnet-adapter.test.ts` mit kleinem Fixture und
+Browsertest `web/e2e/remove-background.spec.ts`; `npm --prefix web test --
+modnet-adapter.test.ts` und `npm --prefix web run test:ai -- remove-background.spec.ts`.
+Die Netzwerkassertion erlaubt nur die festgelegten Modellartefakte.
+
+**Dokumentation:** Handbuch-BG-Remove, Modellgröße, Backend und erstmaliger Download.
+
+## AI-04 — Modellressourcen zuverlässig freigeben und Fehler erholen
+
+**Ergebnis:** Entladen wartet auf Inferenz, beendet Session, Tensoren und Caches und meldet den
+tatsächlichen Endzustand. Abbruch, Offlinefehler und beschädigte Cache-Daten bleiben retrybar.
+
+```gherkin
+Given ein geladenes oder gerade verwendetes Modell
+When Entladen oder ein Ladefehler eintritt
+Then endet keine Operation dauerhaft in downloading oder initializing
+And alle besessenen Ressourcen werden einmal freigegeben und ein Retry bleibt möglich
+```
+
+**Ausführbare Abnahme:** `web/src/ai/model-lifecycle.test.ts` und
+`web/e2e/model-lifecycle.spec.ts`; `npm --prefix web test -- model-lifecycle.test.ts` und
+`npm --prefix web run test:e2e -- model-lifecycle.spec.ts`.
+
+**Dokumentation:** Handbuch-Fehlerbehebung und technische Ressourceninvarianten.
+
+## AI-05 — SAM-Auswahl mit positiven und negativen Punkten liefern
+
+**Ergebnis:** Nach explizitem Modelldownload kann der Nutzer mindestens zwei positive und einen
+negativen Punkt setzen, die Maske verfeinern, invertieren, anwenden oder verwerfen.
+
+```gherkin
+Given SAM ist geladen und ein lokales Bild wird angezeigt
+When zwei positive und ein negativer Auswahlpunkt gesetzt werden
+Then zeigt die Arbeitsfläche Punkte und aktualisierte Maske deckungsgleich
+And Anwenden erzeugt RGBA, während Verwerfen Original und History unverändert lässt
+```
+
+**Ausführbare Abnahme:** `web/src/ai/sam-selection.test.ts` mit
+`npm --prefix web test -- sam-selection.test.ts`; realer Adapter- und Browserablauf in
+`web/e2e/smart-select.spec.ts` mit `npm --prefix web run test:ai -- smart-select.spec.ts`.
+
+**Dokumentation:** Handbuch „Smart Select“, Punktbedeutung, Anwenden und Beenden.
+
+## AI-06 — KI-Ergebnis in Conversion und Vergleich übernehmen
+
+**Ergebnis:** Ein angewendetes MODNet- oder SAM-Ergebnis wird zur versionierten Eingabe des
+normalen Workflows und kann konvertiert, in der History verglichen und exportiert werden;
+das Original bleibt wiederherstellbar.
+
+```gherkin
+Given eine KI-Maske wurde auf das geladene Bild angewendet
+When der Nutzer konvertiert und den neuen Run mit dem vorherigen vergleicht
+Then verwendet nur der neue Run die versionierte KI-Eingabe
+And Original, beide Runs, Parameter-Diff und Downloads bleiben konsistent
+```
+
+**Ausführbare Abnahme:** `web/e2e/ai-conversion-workflow.spec.ts` mit
+`npm --prefix web run test:e2e -- ai-conversion-workflow.spec.ts`.
+
+**Dokumentation:** Handbuch-Ende-zu-Ende-Ablauf und Grenzen.
+
+## MCP-01 — Aktuellen WebMCP-Vertrag verifizieren und Fähigkeiten anbieten
+
+**Ergebnis:** Die aktuelle Chrome-Schnittstelle wird mit Primärquellen bestätigt. Ein schmaler
+Adapter registriert `get_capabilities` per Feature Detection und lässt die UI ohne WebMCP
+vollständig funktionieren.
+
+```gherkin
+Given ein Browser mit oder ohne unterstützte WebMCP-Schnittstelle
+When img2svg Studio startet und get_capabilities aufgerufen wird
+Then liefert ein unterstützter Browser ein eng typisiertes Fähigkeitsresultat
+And ein nicht unterstützter Browser behält eine fehlerfreie vollständig bedienbare UI
+```
+
+**Ausführbare Abnahme:** `web/src/webmcp/webmcp-adapter.test.ts` mit unterstütztem und fehlendem
+API-Fake sowie `web/e2e/webmcp-fallback.spec.ts`; `npm --prefix web test --
+webmcp-adapter.test.ts` und `npm --prefix web run test:e2e -- webmcp-fallback.spec.ts`.
+
+**Dokumentation:** Quellen, Ziel-Chrome, Aktivierung, Sicherheitsgrenzen und UI-Fallback.
+
+## MCP-02 — Parameter konfigurieren und sichtbare Konvertierung ausführen
+
+**Ergebnis:** `configure_conversion` verwendet dieselben Validatoren wie die UI und aktualisiert
+sichtbar die Parameter. `convert_current_image` erzeugt denselben Runpfad wie der Button.
+
+```gherkin
+Given ein Bild ist geladen und WebMCP ist verfügbar
+When ein Agent gültige Parameter setzt und convert_current_image aufruft
+Then zeigt die UI sofort dieselben validierten Werte
+And der erzeugte Run erscheint mit identischem Vertrag in Ansicht und History
+```
+
+**Ausführbare Abnahme:** `web/src/webmcp/conversion-tools.test.ts` und
+`web/e2e/webmcp-conversion.spec.ts`; `npm --prefix web test -- conversion-tools.test.ts` und
+`npm --prefix web run test:webmcp -- webmcp-conversion.spec.ts` im dokumentierten Ziel-Browser.
+
+**Dokumentation:** Handbuch-Agentenablauf, Tool-Schemas und strukturierte Fehler.
+
+## RELEASE-01 — Devpost-Teilnahme, Lizenz und GitHub-Zugriff festlegen
+
+**Benötigte Eigentümerentscheidung:** Devpost-Teilnahme bestätigen sowie Repository-URL,
+öffentlich oder privat und Projektlizenz festlegen. Empfohlener Default ist ein öffentliches
+Repository mit Apache-2.0-Lizenz; die Entscheidung bleibt beim Rechteinhaber.
+
+```gherkin
+Given ein Judge öffnet das eingereichte Repository ohne Entwicklerzugang
+When Lizenz, Hauptbranch und dokumentierter Setup-Pfad geprüft werden
+Then ist der erlaubte Nutzungsumfang eindeutig und der zu bewertende Commit erreichbar
+And das Projekt ist dem richtigen Devpost-Event beigetreten
+```
+
+**Abnahmenachweis:** `LICENSE`, Git-Remote, erfolgreicher Push und unangemeldeter Browsercheck;
+bei privatem Repository bestätigter Zugriff für beide in `docs/SUBMISSION.md` genannten
+Judge-Adressen. Kein künstlicher Test oder leerer Commit für externe Aktionen.
+
+**Dokumentation:** README, Drittanbieterinventar, UI-Footer und Submission-Checkliste.
+
+## RELEASE-02 — Datenschutz, Robustheit und Barrierefreiheit auditieren
+
+**Ergebnis:** Kernworkflow ist tastaturbedienbar, verständlich beschriftet und robust gegen
+beschädigte sowie zu große Eingaben; ein Netzwerkaudit findet nur explizite Modell-Downloads.
+
+```gherkin
+Given ein frischer Browser und der vollständige Demoablauf
+When er per Tastatur, mit beschädigter Datei und unter Netzwerkbeobachtung ausgeführt wird
+Then bleiben Fokus, Fehlermeldungen und Bedienbarkeit nachvollziehbar
+And es gibt keine Uploads, Telemetrie, Tracker oder unerwartete Drittanfragen
+```
+
+**Ausführbare Abnahme:** `web/e2e/release-audit.spec.ts`, Accessibility-Scan und manueller
+Browser-/Netzwerkcheck; `npm --prefix web run test:e2e -- release-audit.spec.ts`. Das
+Checkprotokoll wird in `docs/release/RELEASE_AUDIT.md` festgehalten.
+
+**Dokumentation:** Handbuch-Fehlerhilfe, Datenschutz und bekannte Eingabegrenzen.
+
+## RELEASE-03 — Öffentliche statische Demo reproduzierbar deployen
+
+**Ergebnis:** Ein Produktionsbuild läuft kostenlos und ohne Login unter einer stabilen HTTPS-URL
+mit nötigen Sicherheitsheadern und funktioniert in einem frischen Ziel-Browser.
+
+```gherkin
+Given die öffentliche Demo-URL wird ohne bestehende Sitzung geöffnet
+When das Kreis-Fixture geladen, konvertiert, verglichen und exportiert wird
+Then funktioniert der Kernablauf ohne lokale Reparatur oder kostenpflichtigen Zugang
+And Reload und direkte Start-URL liefern weiterhin die Anwendung
+```
+
+**Ausführbare Abnahme:** `web/e2e/deployed-demo.spec.ts`; `npm --prefix web run build`,
+`npm --prefix web run test:e2e -- deployed-demo.spec.ts` gegen den Preview-Server und
+`IMG2SVG_DEMO_BASE_URL=<Produktions-URL> npm --prefix web run test:e2e --
+deployed-demo.spec.ts` gegen die veröffentlichte Demo.
+
+**Dokumentation:** README-Demo-/Deployment-Link und Submission-Testanleitung.
+
+## RELEASE-04 — Englische Einreichungsunterlagen fertigstellen
+
+**Ergebnis:** README und Devpost-Text erklären Problem, Lösung, Architektur, lokalen Datenschutz,
+Codex-/GPT-5.6-Zusammenarbeit, Setup, Tests, Grenzen, Lizenz und freien Demo-Zugang auf Englisch.
+
+```gherkin
+Given ein Judge kennt das Projekt nicht
+When ausschließlich README, Devpost-Text und verlinkte Demo verwendet werden
+Then kann er Nutzen, Bedienung, technischen Beitrag und Codex-Einsatz nachvollziehen
+And jeder beworbene Funktionssatz ist durch einen grünen Test und die Demo belegt
+```
+
+**Abnahmenachweis:** Link-/Sprachprüfung, `npm ci && npm run check` in einem frischen Checkout
+und Funktionsaudit gegen Handbuch und Testliste.
+
+**Dokumentation:** README, `docs/SUBMISSION.md`, Architekturübersicht und finale Screenshots.
+
+## RELEASE-05 — Demovideo und Devpost-Einreichung abschließen
+
+**Gemeinsame Aktion:** Der Orchestrator erstellt Drehbuch, Shotlist und Prüfprotokoll; der
+Projekteigner bestätigt Veröffentlichung, `/feedback`-Session-ID und endgültiges Absenden.
+
+```gherkin
+Given Demo, Repository und Einreichungstext sind final geprüft
+When das öffentliche Video und alle Devpost-Felder unangemeldet geöffnet werden
+Then dauert das Video weniger als drei Minuten und erklärt Codex/GPT-5.6 hörbar auf Englisch
+And Demo, Repository, Session-ID, Lizenzen und Testzugang sind vollständig erreichbar
+```
+
+**Abnahmenachweis:** öffentliches YouTube-Video, unangemeldeter Linkcheck, gespeicherte
+Submission-Vorschau und Eigentümerbestätigung vor dem Absenden. Externe Aktionen werden nicht
+durch künstliche Code-Tests ersetzt.
+
+**Dokumentation:** finale Submission-Checkliste, Demo-Drehbuch und Release-Commit/Tag.

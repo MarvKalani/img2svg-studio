@@ -6,9 +6,8 @@ Das Repository wird als Rust-Workspace mit separater Web-Anwendung aufgebaut:
 
 - `img2svg-core`: deterministische, plattformunabhängige Engine ohne Browserabhängigkeit.
 - `img2svg-wasm`: schmale `wasm-bindgen`-Schnittstelle und serialisierbare Resultate.
-- `img2svg-cli`: optionale native CLI, die dieselbe Core-API verwendet.
 - `web`: Vite + TypeScript 7.0.2 ohne schweres UI-Framework; UI, Canvas, Worker, History,
-  Exporte, Modellverwaltung und WebMCP.
+  SVG-Export, Modellverwaltung und WebMCP.
 
 Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-Details.
 
@@ -19,27 +18,22 @@ Datei / Drop
   → Browser-Decoder
   → unveränderliches Original-RGBA
   → Transformation und Zielgröße
-  → optionale Vorverarbeitung
+  → optional angewendete KI-Maske
   → RGBA + validierte ConversionOptions an WASM-Worker
   → Clustering und Tracing
   → optionale Erkennung ausgewählter Formen
-  → PathOptimizer und SVG-Assembly
+  → deterministische SVG-Assembly
   → ConversionResult { svg, stats, warnings }
   → History / Anzeige / Export / A-B
 ```
 
-CPU-intensive WASM-Aufrufe laufen außerhalb des UI-Threads, sobald das Gerüst stabil ist.
+CPU-intensive WASM-Aufrufe laufen in einem Web Worker, damit die Bedienoberfläche während der
+Konvertierung reaktionsfähig bleibt.
 
 ## 3. Zentrale Domänenmodelle
 
-`ConversionOptions` enthält mindestens:
-
-- Farb-Clustering: Präzision, Speckle-Filter, Hierarchie, Gradientenschritt.
-- Kurven: Ecken-, Splice- und Segmentparameter sowie Kurven an/aus.
-- Output: Dezimalpräzision, relative Koordinaten, Optimierung.
-- Formerkennung: global an/aus, aktivierte Typen und Schwellenwerte.
-- Reststrategie: `path`, `ignore` oder `raster`.
-- Zielgröße und Resampling-Strategie werden in der Web-Pipeline festgehalten.
+`ConversionOptions` enthält Farbpräzision, Speckle-Filter, proportionale Zielgröße sowie den
+globalen Formerkennungsschalter und aktivierte Formtypen. Nicht erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -49,8 +43,8 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 - History-Diff.
 - WebMCP-Inputschema.
 
-`ConversionResult` enthält SVG, Maße, Laufzeitstatistiken, Shape-Zählungen, Pfadanzahl,
-Transparenz, Optimizer-Vergleich und nicht fatale Warnungen.
+`ConversionResult` enthält SVG, Maße, wirksame Einstellungen, Laufzeit, Dateigröße,
+Shape-Zählungen, Pfadanzahl, Transparenz und nicht fatale Warnungen.
 
 ## 4. Engine-Module
 
@@ -58,12 +52,8 @@ Vorgesehene Core-Module:
 
 ```text
 config        Validierung und Defaults
-color         Farb- und Alpha-Hilfen
 clustering    Adapter um visioncortex
-contours      Kontur- und Maskenmodelle
 detect        Kreis, Ellipse, Rechteck, Linie, Polygon
-path          interne Pfadrepräsentation und Parser
-optimize      kanonische, größenoptimierte Pfadausgabe
 svg           deterministische Assembly und Escaping
 pipeline      Orchestrierung und Statistik
 error         öffentliche Fehlertypen
@@ -76,7 +66,7 @@ werden dokumentiert. Übernommene oder adaptierte Algorithmen erhalten konkrete 
 
 - Stabile Reihenfolge für Cluster, Konturen, Attribute und Statistiken.
 - Keine iteration-order-abhängigen Hashmaps in serialisierter Ausgabe.
-- Kanonische Float- und Farbformatierung.
+- Kanonische Zahlen- und Farbformatierung.
 - Feste Rundungsregeln, keine locale-abhängige Ausgabe.
 - Fixtures testen zwei identische Runs auf String-Gleichheit.
 - Build-Metadaten dürfen nicht ungefragt in den SVG-String gelangen.
@@ -87,9 +77,9 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 
 - `imageService`: Laden, Dekodieren, Transformation und Größenänderung.
 - `conversionService`: Worker, WASM-Lebenszyklus und Abbruch.
-- `settingsStore`: validierte Einstellungen und Presets.
+- `settingsStore`: validierte Einstellungen.
 - `historyStore`: unveränderliche Runs und A/B-Auswahl.
-- `exportService`: SVG und Browser-Rasterformate.
+- `exportService`: bytegenauer SVG-Download.
 - `modelRegistry`: Zustandsautomat und deduplizierte Modell-Ladevorgänge.
 - `webMcpAdapter`: Tool-Registrierung und Mapping auf dieselben Services.
 
@@ -106,7 +96,8 @@ Die komplexen Konvertierungsaktionen verwenden die imperative API. Deklarative A
 können ergänzend für stabile Standardformulare eingesetzt werden, dürfen aber keine doppelte
 Geschäftslogik erzeugen.
 
-Jedes Tool besitzt:
+Das Submission-MVP registriert nur `get_capabilities`, `configure_conversion` und
+`convert_current_image`. Jedes Tool besitzt:
 
 - einen stabilen, aktionsorientierten Namen.
 - eine eindeutige Beschreibung ohne Inhalte aus Nutzerbildern.
@@ -135,13 +126,18 @@ Modelle sind ausgeschlossen.
 ## 9. Teststrategie
 
 - Neue Funktionen entstehen als kleine vertikale Slices nach Red–Green–Refactor.
+- Die Abnahme beginnt als Given–When–Then-Szenario in `TASKS.md` und wird vor der
+  Implementierung direkt als ausführbarer Test codiert.
+- Vitest deckt schnelle TypeScript-Verträge ab, Rusts eigener Testrunner die Engine und
+  Playwright nur sichtbare kritische Browserabläufe; eine zusätzliche Cucumber-Laufzeit wird
+  nicht verwendet.
 - Während eines Slices läuft zuerst der kleinste aussagekräftige Test; breite Suites folgen
   vor dem Commit und an Meilenstein-Gates.
-- Rust-Unit-Tests für Optionen, Detektoren, Parser und Optimizer.
+- Rust-Unit-Tests für Optionen, Detektoren und SVG-Assembly.
 - Golden-Tests für kanonische SVG-Ausgabe.
 - Pixelvergleich über `resvg`/`tiny-skia` für repräsentative Fixtures.
 - Property-/Grenzwerttests für ungültige Dimensionen und Parameter.
-- TypeScript-Tests für Stores, Diff, Presets, Größen und Tool-Schemas.
+- TypeScript-Tests für Stores, Diff, Größen und Tool-Schemas.
 - Browser-Tests für Upload, Run, History, A/B, Export und Fehlerzustände.
 - WebMCP-End-to-End-Test im unterstützten Chrome-Build.
 - Manueller Demo-Smoke-Test vor Release.

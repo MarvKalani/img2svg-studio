@@ -19,10 +19,10 @@ sind die Auswirkungen einzelner Einstellungen für nicht technische Nutzer kaum 
 img2svg Studio verbindet fünf Bausteine:
 
 1. Eine robuste, deterministische Pfad-Vektorisierung auf Basis von `visioncortex`.
-2. Einen eigenen PathOptimizer und eine eigene SVG-Zusammenstellung.
-3. Optional aktivierbare native SVG-Formen wie `<circle>`, `<rect>` oder `<line>`.
-4. Eine History mit A/B-Slider und automatischer Parameter-Diff-Tabelle.
-5. Eine WebMCP-Schnittstelle, über die Browser-Agenten denselben sichtbaren Workflow
+2. Optional aktivierbare native SVG-Formen wie `<circle>`, `<rect>` oder `<line>`.
+3. Eine History mit A/B-Slider und automatischer Parameter-Diff-Tabelle.
+4. Lokale Browser-KI für Hintergrundentfernung und Objektauswahl.
+5. Eine WebMCP-Schnittstelle, über die Browser-Agenten denselben sichtbaren Kernworkflow
    zuverlässig ausführen können.
 
 ## Zielgruppen
@@ -43,7 +43,7 @@ img2svg Studio verbindet fünf Bausteine:
 - Byte-identische SVG-Ausgabe bei gleicher Eingabe und gleichen Einstellungen erzeugen.
 - Einstellungen und Ergebnisse so darstellen, dass ihre Wirkung verständlich wird.
 - Native SVG-Formen kontrolliert einsetzen, ohne die robuste Pfad-Ausgabe zu gefährden.
-- Standardgrößen, eigene Pixelmaße und prozentuale Skalierung unterstützen.
+- Eine proportionale Zielgröße und wenige tatsächlich wirksame Parameter unterstützen.
 - WebMCP als echte Produktschnittstelle mit stabilen Schemas und klaren Rückgaben anbieten.
 - Eine überzeugende Hackathon-Demo ohne Serverabhängigkeit ermöglichen.
 
@@ -54,15 +54,15 @@ img2svg Studio verbindet fünf Bausteine:
 - Kein eigener ML-Shape-Klassifikator.
 - Keine Garantie, jedes existierende Rasterformat unabhängig vom Browser zu dekodieren.
 - Kein unsichtbarer oder headless WebMCP-Betrieb; der Browser-Tab bleibt Teil des Ablaufs.
-- Kein KI-Upscaler vor Abschluss des stabilen Kern- und Vergleichsworkflows.
+- Keine Preset-Bibliothek, zusätzlichen Exportformate, CLI oder KI-Upscaler.
 
 ## Demo-Erzählung
 
-1. Ein Bild wird lokal geöffnet und mit einem passenden Preset konvertiert.
+1. Ein Bild wird lokal geöffnet und mit den Standardeinstellungen konvertiert.
 2. Eine zweite Variante verändert genau einen gut sichtbaren Parameter.
-3. Beide Varianten werden mit Slider, Lupe und Parameter-Diff verglichen.
+3. Beide Varianten werden mit Slider und Parameter-Diff verglichen.
 4. Bei einem Icon ersetzt die optionale Formerkennung geeignete Pfade durch native Formen.
-5. Ein Browser-Agent wiederholt den Ablauf über WebMCP und lädt das gewählte Ergebnis herunter.
+5. Ein Browser-Agent konfiguriert und startet denselben sichtbaren Ablauf über WebMCP.
 6. Abschlussbotschaft: Kein Bild wurde an ein Anwendungs-Backend übertragen.
 
 ## Erfolgskriterien
@@ -70,6 +70,6 @@ img2svg Studio verbindet fünf Bausteine:
 - Ein neuer Nutzer kann ohne Dokumentation einen ersten Run erzeugen und herunterladen.
 - Eine Änderung zwischen zwei Runs ist in der Diff-Tabelle eindeutig nachvollziehbar.
 - Gleiche Eingaben erzeugen im Test byte-identische SVGs.
-- Ein WebMCP-fähiger Browser-Agent kann einen geladenen Input konfigurieren, konvertieren,
-  vergleichen und exportieren.
+- Ein WebMCP-fähiger Browser-Agent kann einen geladenen Input sichtbar konfigurieren und
+  konvertieren.
 - Der vollständige Demo-Ablauf funktioniert reproduzierbar auf dem Zielbrowser.

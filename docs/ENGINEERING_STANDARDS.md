@@ -62,7 +62,7 @@ Jeder Slice:
 1. besitzt ein beobachtbares Ergebnis und klare Abnahmekriterien.
 2. beginnt und endet in einem lauffähigen Zustand.
 3. enthält nur die dafür notwendigen Änderungen.
-4. aktualisiert Taskstatus und relevante Dokumentation.
+4. aktualisiert relevante Dokumentation und entfernt den abgenommenen Task aus `TASKS.md`.
 5. wird als eigener, verständlicher Commit gesichert.
 
 Fundamentale Gerüstarbeit ist erlaubt, wenn sie unmittelbar den ersten vertikalen Slice trägt.
@@ -90,6 +90,13 @@ Regressionstest.
 
 Tests prüfen Verhalten, nicht interne Implementierungsdetails. Große Snapshots werden nur
 verwendet, wenn das Artefakt selbst der Vertrag ist, etwa eine kanonische SVG-Ausgabe.
+
+Jeder offene Implementierungstask besitzt vor Arbeitsbeginn ein lesbares
+Given–When–Then-Szenario. Der Orchestrator gießt dieses Szenario zu Beginn des Slices in den
+schnellsten ausführbaren Test und bestätigt den erwarteten Red-Zustand. Gherkin ist dabei die
+Vertragssprache, keine zusätzliche Laufzeit: TypeScript nutzt Vitest oder Playwright, Rust
+nutzt native Tests. So bleiben Szenario und Testcode eine einzige ausführbare Wahrheit ohne
+doppelte Step Definitions.
 
 ## 4. EVA — Eingabe, Verarbeitung, Ausgabe
 
@@ -180,7 +187,10 @@ Eine Datei wird nach Verantwortung und Verhalten geteilt, nicht willkürlich nac
 - Vor dem Commit werden Diff, neue Dateien und Löschungen vollständig geprüft.
 - Ein Commit enthält genau einen Slice oder eine klar abgegrenzte Dokumentationsentscheidung.
 - Der Commit-Betreff folgt `type(TASK-ID): imperative summary`, beispielsweise
-  `feat(M1-02): render default SVG conversion`.
+  `feat(CONV-02): render default SVG conversion`.
+- Der Commit-Text hält mindestens `Outcome`, `Acceptance` mit ausgeführten Befehlen und
+  `Documentation` fest. Bei einem rein externen Schritt nennt er stattdessen den prüfbaren
+  Nachweis; externe Aktionen erzwingen keinen leeren Commit.
 - Wird ein Task zu groß für einen kohärenten Commit, wird der Task vor der Implementierung in
   kleinere Slices geteilt.
 - Externe Aktionen ohne Repository-Änderung erhalten keinen künstlichen leeren Commit.
@@ -221,7 +231,8 @@ Ein Slice ist fertig, wenn:
 - keine eigene Quell- oder Testdatei 1000 Zeilen überschreitet.
 - der Diff nur notwendige Änderungen enthält.
 - Namen, Typen und Kommentare diesen Regeln entsprechen.
-- Taskstatus und betroffene Verträge aktuell sind.
+- Taskliste und betroffene Verträge aktuell sind.
+- der abgenommene Task nicht mehr in `TASKS.md` steht.
 - Handbuch und relevante Projektdokumente den tatsächlich gelieferten Stand beschreiben.
 - der Commit auch ohne Chatverlauf verständlich ist.
 - der Slice den vereinbarten MVP-Nutzen tatsächlich Ende zu Ende liefert.

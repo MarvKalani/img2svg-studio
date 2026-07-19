@@ -18,7 +18,7 @@ Implementierung.
 - Rust/WebAssembly übernimmt die deterministische Vektorisierung.
 - `visioncortex` liefert die bewährte Grundlage für Clustering und Kontur-Tracing.
 - Native SVG-Formen sind eine optionale, pro Formtyp steuerbare Verbesserung.
-- Nicht erkannte Inhalte bleiben standardmäßig als optimierte SVG-Pfade erhalten.
+- Nicht erkannte Inhalte bleiben als SVG-Pfade erhalten.
 - History und A/B-Vergleich sind Kernfunktionen, keine nachträglichen Extras.
 - WebMCP wird als progressive Erweiterung implementiert; die Anwendung bleibt ohne WebMCP
   vollständig bedienbar.
@@ -32,7 +32,7 @@ Implementierung.
 - [Fortlaufendes Handbuch](docs/HANDBOOK.md)
 - [Build-Week-Einreichungsplan](docs/SUBMISSION.md)
 - [Entscheidungsprotokoll](docs/DECISIONS.md)
-- [Umsetzungsliste](TASKS.md)
+- [Offene Umsetzungstasks](TASKS.md)
 
 ## Geplante Repository-Struktur
 
@@ -40,15 +40,14 @@ Implementierung.
 img2svg/
 ├── crates/
 │   ├── img2svg-core/     # Plattformunabhängige Engine
-│   ├── img2svg-wasm/     # wasm-bindgen-Schnittstelle
-│   └── img2svg-cli/      # Optionale native CLI
+│   └── img2svg-wasm/     # wasm-bindgen-Schnittstelle
 ├── web/                  # Vite + TypeScript, UI und WebMCP
 ├── docs/                 # Produkt-, Technik- und Entscheidungsdokumentation
 ├── fixtures/             # Kleine, lizenzfreie Testmotive
 └── TASKS.md              # Priorisierte Arbeitsliste mit Abnahmekriterien
 ```
 
-Die Build-Anleitung wird mit dem lauffähigen Gerüst in Meilenstein M0 ergänzt.
+Die Build-Anleitung wird mit dem lauffähigen Gerüst in Task APP-01 ergänzt.
 
 Die Implementierung erfolgt testgetrieben in kleinen vertikalen Slices. Eigene Quell- und
 Testdateien dürfen 1000 Zeilen nicht überschreiten; minimale, sachbezogene Git-Diffs sind

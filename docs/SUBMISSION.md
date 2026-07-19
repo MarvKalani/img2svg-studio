@@ -91,11 +91,11 @@ dem MVP-Kern folgen deshalb innerhalb derselben Submission Period:
 - vollständige geplante Shape-Palette mit strukturellen Ground-Truth-Tests.
 - SAM Smart Select und die weiteren als Submission-Funktion beworbenen KI-Werkzeuge.
 - vollständige Modell-Registry einschließlich Download, Retry, Backend, Cache und Entladen.
-- CLI und zusätzliche Rasterformate, sofern sie in Submission oder Demo genannt werden.
-- alle weiteren Funktionen, die wir der Jury als Bestandteil des Projekts präsentieren.
+- alle weiteren Funktionen aus der verbindlichen offenen Taskliste.
 
-Optionale Ideen, die bis zur Frist nicht fertig sind, werden nicht als vorhandene Funktion
-beworben. Das ist keine „Phase 2“, sondern eine ehrliche Begrenzung der eingereichten Version.
+Presets, weitere Exportformate, CLI, eigener PathOptimizer und zusätzliche Vorverarbeitung
+gehören nicht zum Submission-MVP und werden nicht beworben. Das ist keine „Phase 2“, sondern
+eine verbindliche Begrenzung der eingereichten Version.
 
 ## Einreichungsreihenfolge
 

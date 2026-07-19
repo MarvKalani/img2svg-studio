@@ -24,8 +24,8 @@ Der verbindliche erste UI-Entwurf liegt unter
 
 Die Oberfläche besteht aus:
 
-- einer Kopfzeile mit Ansichten und Zoom.
-- einer linken Seitenleiste für Bild, Preset, Größe, Parameter und KI-Werkzeuge.
+- einer Kopfzeile mit Ansichten und Status.
+- einer linken Seitenleiste für Bild, Größe, Parameter und KI-Werkzeuge.
 - einer großen Arbeitsfläche für Original, SVG und A/B-Vergleich.
 - einer Parameter-Diff-Tabelle unter dem Vergleich.
 - einem Verlauf mit Conversion-Runs am unteren Rand.
@@ -34,7 +34,7 @@ Die Oberfläche besteht aus:
 ## Geplanter Grundablauf
 
 1. Bild per Drag-and-drop oder Dateiauswahl laden.
-2. Preset, Zielgröße und wenige relevante Parameter wählen.
+2. Zielgröße und wenige relevante Parameter wählen.
 3. „Konvertieren“ ausführen.
 4. Ergebnis prüfen und als SVG herunterladen.
 5. Parameter ändern und einen weiteren Run erzeugen.
@@ -80,8 +80,8 @@ Smart Select folgt danach innerhalb des Einreichungsumfangs.
 ## WebMCP
 
 In einem unterstützten Browser kann ein Agent dieselben sichtbaren Anwendungsdienste verwenden
-wie ein Mensch. Vorgesehen sind Werkzeuge für Fähigkeiten, Zustand, Konfiguration,
-Konvertierung, Verlauf, Vergleich, Restore und Export.
+wie ein Mensch. Der Submission-Umfang enthält Werkzeuge zum Lesen der Fähigkeiten,
+Konfigurieren der Konvertierung und Starten eines sichtbaren Runs.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
@@ -107,6 +107,11 @@ Jeder repo-wirksame Slice prüft dieses Handbuch:
 - Produkt- oder Architekturentscheidung geändert: Entscheidungsprotokoll im selben Commit
   aktualisieren.
 - kein Dokumentationsbedarf: im Review bewusst bestätigen, statt ihn still zu übergehen.
+
+`TASKS.md` enthält nur offene Arbeit. Vor der Implementierung wird das dortige
+Given–When–Then-Szenario als ausführbarer Test angelegt. Nach bestandener Orchestrator-Abnahme
+wird der Task im selben Commit aus der Liste entfernt; Commit-Beschreibung, Test und Handbuch
+bleiben als dauerhafter Nachweis erhalten.
 
 Screenshots und Beispiele werden aktualisiert, sobald der jeweilige Ablauf tatsächlich
 funktioniert. Veraltete Anleitungen bleiben nicht als historische Beschreibung im Handbuch.

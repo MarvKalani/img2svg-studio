@@ -12,26 +12,26 @@ oder Nutzerkonten. Optionale Modell-Downloads sind sichtbar und werden separat b
 
 ## D-002 — `visioncortex` als Fundament
 
-**Status:** entschieden
+**Status:** entschieden; Submission-Umfang durch D-020 präzisiert
 
 Clustering und rohes Tracing verwenden `visioncortex` als reguläre Abhängigkeit. Die eigene
-Leistung liegt in Konfiguration, Detektoren, PathOptimizer, SVG-Assembly, Vergleichsworkflow,
-KI-Werkzeugen, WebMCP und UI. Abhängigkeit und Lizenz werden transparent genannt.
+Leistung liegt in typisierter Konfiguration, Detektoren, deterministischer SVG-Assembly,
+Vergleichsworkflow, KI-Werkzeugen, WebMCP und UI. Abhängigkeit und Lizenz werden transparent
+genannt. Ein eigener PathOptimizer ist nicht Bestandteil des Submission-MVP.
 
 ## D-003 — Formerkennung als optionale Schicht
 
 **Status:** entschieden; ersetzt die starre Trennung in Pure und Smart
 
 Die robuste Pfad-Pipeline bleibt immer verfügbar. Native Formen werden global und pro Typ
-aktiviert. Presetnamen dürfen „Smart“ verwenden, die Engine modelliert jedoch einzelne
-Fähigkeiten statt zweier unflexibler Welten.
+aktiviert. Die Engine modelliert einzelne Fähigkeiten statt zweier unflexibler Modi.
 
 ## D-004 — Sichere Reststrategie
 
-**Status:** entschieden
+**Status:** durch D-020 für den Submission-MVP ersetzt
 
-Nicht erkannte Inhalte bleiben standardmäßig optimierte Pfade. `ignore` und eingebettetes
-Raster sind explizite Alternativen; Hybrid-SVGs werden sichtbar gekennzeichnet.
+Nicht erkannte Inhalte bleiben immer Pfade. `ignore` und eingebettetes Raster gehören nicht
+zum Submission-Umfang.
 
 ## D-005 — Web-Stack
 
@@ -43,10 +43,10 @@ werden, falls das UI dadurch nachweislich schwerer wartbar wird.
 
 ## D-006 — Rust-Workspace
 
-**Status:** entschieden
+**Status:** entschieden; CLI durch D-020 entfernt
 
-Core, WASM-Binding und CLI werden getrennte Crates. Die Core-Engine bleibt browserunabhängig
-und wird von WASM und CLI gleichermaßen verwendet.
+Core und WASM-Binding werden getrennte Crates. Die Core-Engine bleibt browserunabhängig. Eine
+CLI gehört nicht zum Submission-MVP.
 
 ## D-007 — WebMCP als progressive Erweiterung
 
@@ -58,11 +58,10 @@ Ein sichtbarer Browser-Tab gehört zum vorgesehenen Agentenablauf.
 
 ## D-008 — Größenmodell
 
-**Status:** entschieden
+**Status:** durch D-020 für den Submission-MVP ersetzt
 
-Unverändert, Prozent, eigene Maße, Icon-Presets und HD/FHD/QHD/UHD sind Teil des Produkts.
-Das Seitenverhältnis ist standardmäßig gesperrt. KI-Upscaling folgt erst nach einem stabilen
-konventionellen Resampling.
+Die Submission unterstützt unveränderte Größe und proportionale Skalierung von 10 bis 400
+Prozent. Freie Maße, Größenpresets und KI-Upscaling werden nicht beworben.
 
 ## D-009 — Lizenz des eigenen Projekts
 
@@ -74,12 +73,11 @@ müssen die konkreten Regeln und die Entscheidung des Lizenzgebers dokumentiert 
 
 ## D-010 — Binäre Eingabe für Browser-Agenten
 
-**Status:** entschieden für MVP
+**Status:** entschieden; Toolumfang durch D-020 präzisiert
 
 Lokale Bilddateien werden über die sichtbare Datei-/Drop-Oberfläche geladen. WebMCP übernimmt
-Konfiguration, Konvertierung, Vergleich und Export nach dem Laden. Dadurch bleiben binäre
-Daten außerhalb großer JSON-Tool-Aufrufe. Ein Agent kann eine lokal erzeugte Datei über den
-Browser auswählen.
+Konfiguration und Konvertierung nach dem Laden. Dadurch bleiben binäre Daten außerhalb großer
+JSON-Tool-Aufrufe. Vergleich und Export bleiben im Submission-MVP sichtbare Nutzeraktionen.
 
 ## D-011 — TypeScript 7 als Web-Compiler
 
@@ -159,7 +157,28 @@ und Entscheidungen werden im selben Commit wie die zugehörige Änderung nachgef
 ist erst abgeschlossen, wenn `docs/HANDBOOK.md` und die betroffenen Projektdokumente den
 tatsächlich gelieferten Stand beschreiben.
 
+## D-019 — Gherkin-Vertrag ohne separate Cucumber-Laufzeit
+
+**Status:** entschieden
+
+`TASKS.md` enthält ausschließlich offene Arbeit. Jeder Implementierungstask definiert ein
+Given–When–Then-Szenario, das der Orchestrator vor der Implementierung in Vitest, Playwright
+oder einen nativen Rust-Test überführt und zunächst rot sieht. Separate `.feature`-Dateien und
+Step Definitions werden vermieden, weil sie denselben Vertrag doppelt pflegen und den schnellen
+TDD-Zyklus verlängern würden. Nach grüner Abnahme wird der Task im Abschluss-Commit aus der
+Liste gelöscht; Commit-Text, Test und Dokumentation bilden den dauerhaften Nachweis.
+
+## D-020 — Taskliste und Produktvertrag bilden denselben Submission-Umfang
+
+**Status:** entschieden
+
+Die frühere Roadmap enthielt über den fokussierten Hackathon-MVP hinaus unter anderem Presets,
+Rasterexporte, CLI, eigene Pfadoptimierung und zusätzliche Vorverarbeitung. Diese Funktionen
+werden nicht in eine hypothetische Phase nach der Einreichung verschoben und auch nicht
+beworben. Verbindlich sind ausschließlich die offenen Slices in `TASKS.md`; Produkt- und
+Technikspezifikation beschreiben denselben Umfang. Neue Funktionen benötigen vor der
+Implementierung einen eigenen vollständigen Taskvertrag.
+
 ## Noch zu klären
 
 - Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?
-- Welche zusätzlichen Rasterexporte sind neben PNG und WebP im Zielbrowser sinnvoll?
