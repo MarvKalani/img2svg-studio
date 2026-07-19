@@ -130,6 +130,16 @@ wesentlichen Unklarheiten wird die beste reversible Lösung gewählt und umgeset
 hypothetisch bessere Architektur stoppt keinen funktionierenden Slice. Optimiert wird erst
 nach Messung und nur, wenn der Engpass MVP oder Demo beeinträchtigt.
 
+## D-016 — MVP priorisiert die sichtbare Converter-Erfahrung
+
+**Status:** entschieden
+
+Vor vollständiger Engine-Tiefe entsteht die erkennbare Produktvorstellung: Parameter links,
+Arbeitsfläche mittig sowie History und A/B-Vergleich unten. Wenige echte Parameter beweisen
+den Parameter-Diff. Der KI-Manager integriert zuerst ein reales, bedarfsgeladenes MODNet-Modell
+mit Fortschritt, Retry und Entladen. Weitere Modelle, SAM, vollständige Shape-Erkennung und
+Parameterbreite folgen erst nach dem funktionierenden MVP.
+
 ## Noch zu klären
 
 - Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?

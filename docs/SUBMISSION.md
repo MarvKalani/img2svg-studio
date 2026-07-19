@@ -72,20 +72,22 @@ Funktionen.
 
 ### Muss funktionieren
 
-1. Rust/WASM/Web-Gerüst mit TypeScript 7 und Qualitätsgates.
+1. Erkennbare Converter-Oberfläche: Parameter links, Bildfläche in der Mitte, History unten.
 2. Bild laden, lokal in SVG konvertieren, anzeigen und herunterladen.
-3. Deterministische Ausgabe und eigener messbarer Optimizer-Grundslice.
-4. Mindestens zwei Runs mit History und Parameter-Diff im A/B-Vergleich.
-5. Mindestens ein überzeugender nativer Shape-Slice, vorzugsweise Kreis.
-6. WebMCP-Kern für Fähigkeiten, Konfiguration und Konvertierung.
-7. Öffentliche statische Demo mit einem kleinen Beispielbild.
-8. Englisches README, englische Submission-Beschreibung und Demo-Video.
+3. Mehrere Runs in der unteren History auswählen und zwischen ihnen wechseln.
+4. Zwei Runs als A und B vergleichen und unterschiedliche Parameter hervorheben.
+5. Wenige repräsentative Parameter links, die wirklich bis in das Ergebnis wirken.
+6. KI-Manager mit einem realen Modell: bei Bedarf laden, Fortschritt zeigen, entladen und bei
+   Fehlern erneut versuchen. Für den MVP wird MODNet vor SAM priorisiert.
+7. WebMCP-Kern für Fähigkeiten, Konfiguration und Konvertierung.
+8. Öffentliche statische Demo mit einem kleinen Beispielbild.
+9. Englisches README, englische Submission-Beschreibung und Demo-Video.
 
 ### Nach der Einreichung
 
 - vollständige Shape-Palette.
-- MODNet und SAM.
-- vollständige Modell-Registry und KI-Werkzeuge.
+- SAM und weitere KI-Werkzeuge.
+- zusätzliche Modelle und erweiterte Cache-Verwaltung.
 - CLI und zusätzliche Rasterformate, sofern sie den Kern vor der Frist gefährden.
 - Run-Matrix, Gradienten und weitere Kür-Funktionen.
 
