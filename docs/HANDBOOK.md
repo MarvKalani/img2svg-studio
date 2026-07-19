@@ -408,8 +408,14 @@ npm start --workspace=img2svg-studio-mcp
 Sekunden und denselben Byteumfang begrenzt. Bild und SVG existieren nur während des einzelnen
 Toolaufrufs; es gibt keine MCP-Anwendungssitzung oder Persistenz.
 
-Die echte ChatGPT-Abnahme benötigt einen öffentlichen HTTPS-Endpunkt. Der lokale Inspector kann
-Toolschema und Fixture-Aufruf bereits vollständig prüfen; das Preview-Widget folgt in `APPS-02`.
+`get_svg_preview` übernimmt den SVG-String unverändert, rendert ihn als isolierte Bildquelle und
+zeigt Byte-, Element- und Pfadzahl. „Download SVG“ erzeugt einen Blob direkt aus demselben String;
+dadurch entsprechen Download und Vorschau bytegenau einander. Das Renderwerkzeug enthält keine
+Konvertierungslogik und akzeptiert höchstens 5 MiB SVG.
+
+Die echte ChatGPT-Abnahme benötigt einen öffentlichen HTTPS-Endpunkt. Der offizielle lokale
+Inspector prüft bereits beide Werkzeuge, die MCP-Apps-Ressource und den vollständigen
+Fixture-zu-Preview-Datenfluss.
 
 ## Formerkennungs-Fixtures
 

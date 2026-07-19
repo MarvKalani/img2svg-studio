@@ -31,7 +31,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
 - Versioned AI results that can be converted, compared and restored to the original image.
 - Thirteen typed WebMCP tools that operate the same visible application services as the UI.
-- A stateless Streamable HTTP MCP companion whose `vectorize_image` tool reuses the Rust/WASM core.
+- A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 
 ![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
@@ -74,7 +74,8 @@ can also choose any fixture from `fixtures/shape-recognition/input/`.
 
 The separate companion accepts a ChatGPT file reference or a Base64 fixture, reduces it to the
 requested palette, and runs the same Rust engine used by the browser Studio. It keeps no image,
-SVG, account, or application session.
+SVG, account, or application session. `get_svg_preview` renders the returned SVG in an MCP Apps
+widget and provides a byte-exact local download.
 
 ```bash
 npm run build --workspace=img2svg-studio-mcp

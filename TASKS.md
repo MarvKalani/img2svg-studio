@@ -123,6 +123,12 @@ aus und wiederholt die Konvertierung über die natürliche Folgeanweisung.
 
 **Vorbedingung:** `APPS-01` und ein öffentlich erreichbarer HTTPS-`/mcp`-Endpunkt.
 
+**Stand 20. Juli 2026:** Renderwerkzeug, MCP-Apps-Ressource, isolierte SVG-Bilddarstellung,
+byte-identischer Blob-Download, Größenlimit und achtzehn MCP-Workspace-Tests sind grün. Der
+offizielle Inspector listet beide Werkzeuge und die `text/html;profile=mcp-app`-Ressource und
+rendert das Test-SVG mit korrekten Statistiken. Die endgültige Widget- und Folgeprompt-Abnahme in
+Chrome/ChatGPT wartet auf den öffentlichen HTTPS-Endpunkt.
+
 **Dokumentation:** ChatGPT-Verbindung, Golden Prompts, Widget-Bedienung und Fehlerfälle.
 
 ## APPS-03 — Ein Bild über einen festen externen Pfad als 3D-SVG-Vorschau darstellen

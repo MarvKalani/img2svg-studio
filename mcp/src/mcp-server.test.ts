@@ -29,12 +29,15 @@ describe("Streamable HTTP MCP server", () => {
     const client = await connectClient();
     const tools = await client.listTools();
 
-    expect(tools.tools.map((tool) => tool.name)).toEqual(["vectorize_image"]);
-    expect(tools.tools[0]?._meta?.["openai/fileParams"]).toEqual(["image"]);
-    expect(tools.tools[0]?.annotations).toMatchObject({
+    expect(tools.tools.map((tool) => tool.name)).toEqual(["vectorize_image", "get_svg_preview"]);
+    const vectorizeTool = tools.tools.find((tool) => tool.name === "vectorize_image");
+    const previewTool = tools.tools.find((tool) => tool.name === "get_svg_preview");
+    expect(vectorizeTool?._meta?.["openai/fileParams"]).toEqual(["image"]);
+    expect(vectorizeTool?.annotations).toMatchObject({
       openWorldHint: true,
       readOnlyHint: true,
     });
+    expect(previewTool?._meta?.ui).toEqual({ resourceUri: "ui://img2svg/preview.html" });
 
     const imageBase64 = (await readFile(circleFixture)).toString("base64");
     const result = await client.callTool({
@@ -52,6 +55,36 @@ describe("Streamable HTTP MCP server", () => {
       expect.objectContaining({
         stats: expect.objectContaining({ circleCount: 1, pathCount: 0 }),
         svg: expect.stringMatching(/^<svg\b/u),
+      }),
+    );
+
+    const svg = (result.structuredContent as { svg: string }).svg;
+    const previewResult = await client.callTool({
+      arguments: { svg },
+      name: "get_svg_preview",
+    });
+    expect(previewResult.isError).not.toBe(true);
+    expect(previewResult.structuredContent).toEqual(
+      expect.objectContaining({
+        stats: { byteSize: 142, circleCount: 1, elementCount: 1, pathCount: 0 },
+        svg,
+      }),
+    );
+
+    const resources = await client.listResources();
+    expect(resources.resources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          mimeType: "text/html;profile=mcp-app",
+          uri: "ui://img2svg/preview.html",
+        }),
+      ]),
+    );
+    const widget = await client.readResource({ uri: "ui://img2svg/preview.html" });
+    expect(widget.contents[0]).toEqual(
+      expect.objectContaining({
+        mimeType: "text/html;profile=mcp-app",
+        text: expect.stringContaining('id="svg-preview"'),
       }),
     );
   });

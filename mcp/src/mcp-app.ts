@@ -1,8 +1,13 @@
-import { registerAppTool } from "@modelcontextprotocol/ext-apps/server";
+import {
+  registerAppResource,
+  registerAppTool,
+  RESOURCE_MIME_TYPE,
+} from "@modelcontextprotocol/ext-apps/server";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import { downloadImageFile, type ChatGptFileReference } from "./image-input.js";
+import { createPreviewResult, previewResourceUri, previewWidgetHtml } from "./preview-widget.js";
 import { VectorizeError, vectorizeImage } from "./vectorize-service.js";
 
 const fileReferenceSchema = z.object({
@@ -34,6 +39,22 @@ const parametersSchema = z.object({
 
 export function createImg2SvgMcpServer(): McpServer {
   const server = new McpServer({ name: "img2svg-studio", version: "0.1.0" });
+
+  registerAppResource(server, "img2svg SVG preview", previewResourceUri, {}, async () => ({
+    contents: [
+      {
+        _meta: {
+          ui: {
+            csp: { connectDomains: [], resourceDomains: [] },
+            prefersBorder: true,
+          },
+        },
+        mimeType: RESOURCE_MIME_TYPE,
+        text: previewWidgetHtml,
+        uri: previewResourceUri,
+      },
+    ],
+  }));
 
   registerAppTool(
     server,
@@ -89,6 +110,59 @@ export function createImg2SvgMcpServer(): McpServer {
         const failure = publicFailure(error);
         return {
           content: [{ text: JSON.stringify(failure), type: "text" as const }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  registerAppTool(
+    server,
+    "get_svg_preview",
+    {
+      annotations: {
+        destructiveHint: false,
+        openWorldHint: false,
+        readOnlyHint: true,
+      },
+      description:
+        "Use this after vectorize_image to render its SVG in an inline preview with an exact download button. Pass the SVG string returned by vectorize_image unchanged.",
+      inputSchema: { svg: z.string().min(1) },
+      outputSchema: {
+        stats: z.object({
+          byteSize: z.number().int().nonnegative(),
+          circleCount: z.number().int().nonnegative(),
+          elementCount: z.number().int().nonnegative(),
+          pathCount: z.number().int().nonnegative(),
+        }),
+        svg: z.string(),
+      },
+      _meta: {
+        ui: { resourceUri: previewResourceUri },
+        "openai/outputTemplate": previewResourceUri,
+        "openai/toolInvocation/invoked": "Preview ready",
+        "openai/toolInvocation/invoking": "Rendering preview…",
+      },
+    },
+    async ({ svg }) => {
+      try {
+        const result = createPreviewResult(svg);
+        return {
+          content: [{ text: "Rendered the SVG preview.", type: "text" as const }],
+          structuredContent: result,
+        };
+      } catch {
+        return {
+          content: [
+            {
+              text: JSON.stringify({
+                code: "invalid_svg",
+                message: "The SVG preview input is invalid or too large.",
+                ok: false,
+              }),
+              type: "text" as const,
+            },
+          ],
           isError: true,
         };
       }
