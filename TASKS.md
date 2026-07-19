@@ -131,17 +131,20 @@ erhalten den zugehörigen Commit.
 `https://studio.img2.download` mit nötigen Sicherheitsheadern und funktioniert in einem
 frischen Ziel-Browser.
 
+**Status 19. Juli:** Produktionsbuild, lokaler Preview-Test und direkte Chrome-150-Abnahme sind
+grün. Veröffentlichung und öffentliche Abnahme folgen nach GitHub-/Cloudflare-Zugriff; die
+Ziel-Domain hat noch keinen DNS-Eintrag.
+
 ```gherkin
 Given die öffentliche Demo-URL wird ohne bestehende Sitzung geöffnet
-When das Kreis-Fixture geladen, konvertiert, verglichen und exportiert wird
+When das geometrische Beispiel geladen, konvertiert, verglichen und exportiert wird
 Then funktioniert der Kernablauf ohne lokale Reparatur oder kostenpflichtigen Zugang
 And Reload und direkte Start-URL liefern weiterhin die Anwendung
 ```
 
-**Ausführbare Abnahme:** `web/e2e/deployed-demo.spec.ts`; `npm --prefix web run build`,
-`npm --prefix web run test:e2e -- deployed-demo.spec.ts` gegen den Preview-Server und
-`IMG2SVG_DEMO_BASE_URL=<Produktions-URL> npm --prefix web run test:e2e --
-deployed-demo.spec.ts` gegen die veröffentlichte Demo.
+**Ausführbare Abnahme:** `web/e2e/deployed-demo.spec.ts`; `npm --prefix web run test:demo`
+gegen den Preview-Server und `IMG2SVG_DEMO_BASE_URL=<Produktions-URL> npm --prefix web run
+test:demo` gegen die veröffentlichte Demo.
 
 **Dokumentation:** README-Demo-/Deployment-Link und Submission-Testanleitung.
 
