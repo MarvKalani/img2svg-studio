@@ -452,6 +452,19 @@ a:focus-visible {
   margin-left: auto;
 }
 
+.download-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #176fac;
+  border-radius: 0.35rem;
+  color: #f6fafc;
+  background: #0873c4;
+  font-weight: 700;
+}
+
 .preview-placeholder {
   position: absolute;
   inset: 3.8rem 1rem 1rem;

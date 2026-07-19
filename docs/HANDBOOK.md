@@ -92,6 +92,16 @@ Der aktuelle kanonische Lauf verwendet die Originalmaße und deterministische
 Ausgabe besitzt eine passende `viewBox`, und vollständig transparente Bildbereiche erzeugen
 kein Hintergrundelement.
 
+### SVG herunterladen
+
+Nach einer erfolgreichen Konvertierung erscheint oben rechts in „A · Variante“ die Aktion
+„SVG herunterladen“. Sie serialisiert genau das aktuell dargestellte SVG und speichert es mit
+dem Namen des Rasterbildes und der Endung `.svg`, beispielsweise `circle.svg`.
+
+Ein späterer Konvertierungsfehler zeigt seine verständliche Meldung direkt beim Eingabebild.
+Das letzte erfolgreiche SVG und dessen Download bleiben verfügbar; „Konvertieren“ ist danach
+erneut bedienbar.
+
 ## Grundablauf
 
 1. Bild per Drag-and-drop oder Dateiauswahl laden.

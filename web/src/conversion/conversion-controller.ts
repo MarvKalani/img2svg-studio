@@ -1,4 +1,9 @@
 import type { ImageStore } from "../image/image-store";
+import {
+  ConversionFailure,
+  ConversionFailureCode,
+  toConversionFailure,
+} from "./conversion-failure";
 import { convertImage } from "./conversion-service";
 
 export function initializeConversion(imageStore: ImageStore): void {
@@ -17,6 +22,7 @@ export function initializeConversion(imageStore: ImageStore): void {
 interface ConversionElements {
   button: HTMLButtonElement;
   buttonLabel: HTMLElement;
+  downloadButton: HTMLButtonElement;
   error: HTMLParagraphElement;
   output: HTMLElement;
   rasterPreview: HTMLImageElement;
@@ -34,9 +40,10 @@ async function runConversion(elements: ConversionElements, file: File): Promise<
     elements.output.replaceChildren(parseSvg(svg));
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
+    elements.downloadButton.hidden = false;
     elements.statusImage.textContent = "Konvertierung abgeschlossen · SVG lokal erzeugt";
-  } catch {
-    elements.error.textContent = "Die Konvertierung ist fehlgeschlagen. Bitte versuche es erneut.";
+  } catch (error) {
+    elements.error.textContent = toConversionFailure(error).message;
     elements.error.hidden = false;
     elements.statusImage.textContent = "Konvertierung fehlgeschlagen";
   } finally {
@@ -49,7 +56,7 @@ function parseSvg(svg: string): Element {
   const parsedDocument = new DOMParser().parseFromString(svg, "image/svg+xml");
   const root = parsedDocument.documentElement;
   if (root.localName !== "svg" || root.namespaceURI !== "http://www.w3.org/2000/svg") {
-    throw new Error("Die Engine hat kein gültiges SVG erzeugt.");
+    throw new ConversionFailure(ConversionFailureCode.InvalidSvg);
   }
   return document.importNode(root, true);
 }
@@ -58,6 +65,7 @@ function readConversionElements(): ConversionElements {
   return {
     button: requireElement("#convert-button", HTMLButtonElement),
     buttonLabel: requireElement("#convert-button-label", HTMLElement),
+    downloadButton: requireElement("#download-svg", HTMLButtonElement),
     error: requireElement("#image-error", HTMLParagraphElement),
     output: requireElement("#svg-output", HTMLElement),
     rasterPreview: requireElement("#workspace-raster-preview", HTMLImageElement),

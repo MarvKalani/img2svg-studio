@@ -29,9 +29,9 @@ export function convert_rgba(pixels, width, height) {
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
-        __wbindgen_cast_0000000000000001: function(arg0, arg1) {
-            // Cast intrinsic for `Ref(String) -> Externref`.
-            const ret = getStringFromWasm0(arg0, arg1);
+        __wbindgen_cast_0000000000000001: function(arg0) {
+            // Cast intrinsic for `F64 -> Externref`.
+            const ret = arg0;
             return ret;
         },
         __wbindgen_init_externref_table: function() {

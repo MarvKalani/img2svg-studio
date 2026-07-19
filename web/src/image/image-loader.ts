@@ -44,6 +44,7 @@ export function initializeImageLoader(imageStore: ImageStore): void {
 
 interface ImageLoaderElements {
   convertButton: HTMLButtonElement;
+  downloadButton: HTMLButtonElement;
   dropzone: HTMLElement;
   error: HTMLParagraphElement;
   fileInput: HTMLInputElement;
@@ -61,6 +62,7 @@ interface ImageLoaderElements {
 function readImageLoaderElements(): ImageLoaderElements {
   return {
     convertButton: requireElement("#convert-button", HTMLButtonElement),
+    downloadButton: requireElement("#download-svg", HTMLButtonElement),
     dropzone: requireElement("[data-testid='image-dropzone']", HTMLElement),
     error: requireElement("#image-error", HTMLParagraphElement),
     fileInput: requireElement("#image-input", HTMLInputElement),
@@ -89,6 +91,7 @@ function showDecodedImage(elements: ImageLoaderElements, image: DecodedImage): v
   elements.sourceName.textContent = image.fileName;
   elements.sourceMetadata.textContent = `${dimensions} · ${format}`;
   elements.workspacePlaceholder.hidden = true;
+  elements.downloadButton.hidden = true;
   elements.svgOutput.replaceChildren();
   elements.svgOutput.hidden = true;
   elements.workspaceImage.src = image.previewUrl;

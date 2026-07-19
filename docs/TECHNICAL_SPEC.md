@@ -66,9 +66,11 @@ Der implementierte Basiskontrakt lautet
 `convert_rgba(rgba, width, height) -> Result<String, ConversionError>`. Er validiert positive
 Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel einen
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
-stabiler Reihenfolge. Die WASM-Grenze akzeptiert `Uint8Array` und zwei `u32`-Maße und liefert
-den SVG-String oder einen JavaScript-Fehler. Spätere Resultatmetadaten erweitern diesen Vertrag,
-ohne die Engine an den Browser zu koppeln.
+stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
+`ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
+Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array` und zwei `u32`-Maße und liefert
+den SVG-String oder den stabilen numerischen Fehlercode 1, 2 oder 3. Spätere Resultatmetadaten
+erweitern diesen Vertrag, ohne die Engine an den Browser zu koppeln.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.
@@ -97,7 +99,13 @@ oder vor dem Verlassen über den kleinen `imageStore` frei.
 `conversionService` liest RGBA über ein kurzlebiges Canvas und überträgt dessen Buffer ohne
 Kopie an einen dedizierten Worker. Der Worker initialisiert das generierte WASM, ruft den
 Rust-Core auf und wird nach genau einem Ergebnis beendet. Der Controller validiert das
-zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt.
+zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die TypeScript-Domäne ergänzt
+die Enginecodes um `WorkerFailed` und `InvalidSvg`; `ConversionFailure` ordnet jedem Code genau
+eine verständliche UI-Meldung zu.
+
+Der SVG-Download serialisiert das aktuell gerenderte `svg`-Element mit `XMLSerializer`. Dadurch
+entsprechen die Blob-Bytes exakt demselben DOM-Zustand, den der Nutzer sieht. Der Downloadname
+wird ausschließlich aus dem Namen des aktuell geladenen Bildes abgeleitet.
 
 Die UI verwendet kleine Feature-Module und zentrale Application Services:
 

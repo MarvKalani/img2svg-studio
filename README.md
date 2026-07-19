@@ -14,7 +14,9 @@ Die responsive Studio-Oberfläche läuft lokal. Sie zeigt Kopfzeile, Parameterle
 A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. PNG-, JPEG- und
 WebP-Bilder lassen sich lokal auswählen oder ablegen und werden mit ihren echten Maßen
 angezeigt. Der Konvertieren-Button übergibt ihre RGBA-Pixel lokal an den Rust-/WASM-Core und
-zeigt das deterministische SVG in der Arbeitsfläche an.
+zeigt das deterministische SVG in der Arbeitsfläche an. Das angezeigte Ergebnis kann bytegenau
+als `.svg` heruntergeladen werden; typisierte Fehler lassen den letzten erfolgreichen Stand
+weiter nutzbar.
 
 ## Lokal starten
 

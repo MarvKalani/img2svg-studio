@@ -18,11 +18,28 @@ const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (1, 1, 1),
 ];
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConversionErrorCode {
+    InvalidDimensions,
+    PixelLength,
+    TransparentKeyUnavailable,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum ConversionError {
     InvalidDimensions,
     PixelLength { actual: usize, expected: usize },
     TransparentKeyUnavailable,
+}
+
+impl ConversionError {
+    pub const fn code(&self) -> ConversionErrorCode {
+        match self {
+            Self::InvalidDimensions => ConversionErrorCode::InvalidDimensions,
+            Self::PixelLength { .. } => ConversionErrorCode::PixelLength,
+            Self::TransparentKeyUnavailable => ConversionErrorCode::TransparentKeyUnavailable,
+        }
+    }
 }
 
 impl fmt::Display for ConversionError {

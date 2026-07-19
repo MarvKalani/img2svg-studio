@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## CONV-03 — Angezeigtes SVG herunterladen und Fehler beherrschen
-
-**Ergebnis:** Der Nutzer lädt exakt das aktuell angezeigte SVG herunter. Enginefehler werden
-typisiert bis in die UI geführt; die Oberfläche bleibt danach bedienbar.
-
-```gherkin
-Given eine erfolgreiche Konvertierung wird angezeigt
-When der Nutzer SVG herunterladen wählt
-Then entsprechen die heruntergeladenen Bytes exakt dem angezeigten SVG
-And ein nachfolgender ungültiger Engine-Aufruf zeigt einen verständlichen Fehler ohne Panic
-```
-
-**Ausführbare Abnahme:** `web/e2e/download-svg.spec.ts` sowie Rust-Grenzfälle in
-`crates/img2svg-core/tests/conversion_errors.rs`; `npm --prefix web run test:e2e --
-download-svg.spec.ts` und `cargo test -p img2svg-core --test conversion_errors`.
-
-**Dokumentation:** Handbuch „SVG herunterladen“ und öffentliche Fehlertypen.
-
 ## PARAM-01 — Wenige echte Konvertierungsparameter durchstechen
 
 **Ergebnis:** Farbpräzision, Speckle-Filter und proportionale Zielgröße besitzen typisierte

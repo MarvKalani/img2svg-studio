@@ -2,6 +2,7 @@ import type {
   ConversionWorkerRequest,
   ConversionWorkerResponse,
 } from "./conversion-worker-contract";
+import { ConversionFailure, ConversionFailureCode } from "./conversion-failure";
 import { readRasterPixels } from "./read-raster-pixels";
 
 export async function convertImage(file: File): Promise<string> {
@@ -26,7 +27,7 @@ function runWorker(request: ConversionWorkerRequest): Promise<string> {
         if (event.data.ok) {
           resolve(event.data.svg);
         } else {
-          reject(new Error(event.data.error));
+          reject(new ConversionFailure(event.data.failureCode));
         }
       },
       { once: true },
@@ -35,7 +36,7 @@ function runWorker(request: ConversionWorkerRequest): Promise<string> {
       "error",
       () => {
         worker.terminate();
-        reject(new Error("Der Konvertierungs-Worker ist fehlgeschlagen."));
+        reject(new ConversionFailure(ConversionFailureCode.WorkerFailed));
       },
       { once: true },
     );

@@ -1,4 +1,5 @@
 import initializeWasm, { convert_rgba } from "../wasm-pkg/img2svg_wasm";
+import { readEngineFailureCode } from "./conversion-failure";
 import type {
   ConversionWorkerRequest,
   ConversionWorkerResponse,
@@ -29,7 +30,7 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
     workerScope.postMessage({ ok: true, svg });
   } catch (error) {
     workerScope.postMessage({
-      error: error instanceof Error ? error.message : "Unbekannter Enginefehler",
+      failureCode: readEngineFailureCode(error),
       ok: false,
     });
   }
