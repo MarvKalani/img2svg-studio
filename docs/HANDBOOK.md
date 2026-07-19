@@ -254,12 +254,12 @@ genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
 
 ## KI-Manager
 
-KI-Modelle werden nicht automatisch geladen. Der KI-Manager zeigt pro Modell:
+Der KI-Manager ist in der Seitenleiste standardmäßig geöffnet und kann über seine Kopfzeile ein-
+und ausgeklappt werden. KI-Modelle starten im Zustand „Nicht geladen“. Jede Modellkarte zeigt:
 
 - Name, Aufgabe, Größe und Lizenz.
-- Zustand: nicht geladen, Download, Initialisierung, bereit oder Fehler.
-- echten Downloadfortschritt.
-- verwendetes Backend, beispielsweise WebGPU oder WASM.
+- Zustand: nicht geladen, Download mit Prozentwert, Initialisierung, bereit oder Fehler.
+- das nach der Initialisierung verwendete Backend, beispielsweise WebGPU oder WASM.
 - Aktionen zum Laden, Wiederholen und Entladen.
 
 Die validierte Registry legt MODNet Portrait Matting mit 24,69 MiB für Hintergrundentfernung und
@@ -268,9 +268,13 @@ stehen unter Apache-2.0. MODNet ist für WebGPU mit WASM-Fallback vorgesehen; Sl
 zwei FP16-Graphen über WebGPU. Revision, Einzeldateien und Prüfsummen sind im
 Drittanbieter-Inventar festgehalten.
 
-Entladen muss Modell-Session, GPU-/WASM-Ressourcen und zugehörige Caches tatsächlich
-freigeben. MODNet für Hintergrundentfernung wird als erstes reales Modell integriert; SAM
-Smart Select folgt danach innerhalb des Einreichungsumfangs.
+Der aktuelle deterministische Loader bildet den vollständigen Managerablauf lokal ab: Der erste
+Ladeversuch endet sichtbar als kontrollierter Fehler, „Erneut versuchen“ erreicht „Bereit ·
+WebGPU“, und „Entladen“ kehrt zu „Nicht geladen“ zurück. Er erzeugt dabei keinen Modellverkehr.
+Der nächste Slice ersetzt diesen Loader für MODNet durch den echten revisionsgebundenen Download.
+
+Gleichzeitige Lade- oder Entladebefehle für dasselbe Modell teilen sich eine Operation. Dadurch
+wird ein Modell einmal initialisiert und sein `dispose()` beim Entladen einmal ausgeführt.
 
 ## WebMCP
 

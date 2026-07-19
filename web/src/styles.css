@@ -408,44 +408,6 @@ a:focus-visible {
   accent-color: #35d6f5;
 }
 
-.ai-panel {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.ai-panel h2 {
-  margin-bottom: 0.1rem;
-}
-
-.manager-button,
-.model-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.model-row {
-  padding: 0.65rem;
-  border: 1px solid #294454;
-  border-radius: 0.45rem;
-  color: #cad5dc;
-  background: #122837;
-  font-size: 0.78rem;
-}
-
-.model-row small {
-  margin-left: auto;
-  color: #8399a8;
-  white-space: nowrap;
-}
-
-.model-icon {
-  color: #55dff1;
-  font-size: 1.1rem;
-}
-
 .workspace {
   display: grid;
   grid-template-rows: minmax(22rem, 1fr) auto auto;

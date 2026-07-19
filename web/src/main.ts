@@ -1,4 +1,8 @@
 import "./styles.css";
+import { createDemoModelLoader } from "./ai/demo-model-loader";
+import { browserModelManifest } from "./ai/model-manifest";
+import { initializeModelManager } from "./ai/model-manager";
+import { createModelRegistry } from "./ai/model-registry";
 import { initializeCompare } from "./compare/compare-controller";
 import { createCompareSelection } from "./compare/compare-selection";
 import { initializeConversion } from "./conversion/conversion-controller";
@@ -20,4 +24,5 @@ const historyController = initializeHistory(
 initializeImageLoader(imageStore, optionsController.showSourceDimensions);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload(imageStore);
+initializeModelManager(createModelRegistry(browserModelManifest, createDemoModelLoader()));
 document.documentElement.dataset.appReady = "true";

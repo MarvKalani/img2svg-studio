@@ -154,20 +154,17 @@
 
           <section class="control-panel ai-panel">
             <h2>KI-Werkzeuge</h2>
-            <button type="button" class="manager-button">
+            <button
+              id="model-manager-toggle"
+              type="button"
+              class="manager-button"
+              aria-controls="model-manager"
+              aria-expanded="true"
+            >
               <span>KI-Manager</span>
               <span aria-hidden="true">›</span>
             </button>
-            <div class="model-row">
-              <span class="model-icon" aria-hidden="true">◌</span>
-              <span>Hintergrund entfernen</span>
-              <small>Nicht geladen</small>
-            </div>
-            <div class="model-row">
-              <span class="model-icon" aria-hidden="true">⌁</span>
-              <span>Smart Select</span>
-              <small>Nicht geladen</small>
-            </div>
+            <div id="model-manager" class="model-manager" role="list" aria-label="KI-Modelle"></div>
           </section>
         </aside>
 

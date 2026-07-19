@@ -72,25 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## AI-02 — KI-Manager mit deterministischem Fake-Loader liefern
-
-**Ergebnis:** Die UI zeigt pro Modell `not-loaded`, `downloading`, `initializing`, `ready` und
-`error`, dedupliziert paralleles Laden und bietet Retry sowie Entladen über eine typisierte
-Registry.
-
-```gherkin
-Given ein nicht geladenes Modell und ein kontrollierter Fake-Loader
-When Laden zweimal parallel ausgelöst wird und der erste Versuch fehlschlägt
-Then existiert nur ein Ladevorgang, der Fehler ist sichtbar und Retry erreicht ready
-And Entladen ruft dispose genau einmal auf und endet in not-loaded
-```
-
-**Ausführbare Abnahme:** `web/src/ai/model-registry.test.ts` mit
-`npm --prefix web test -- model-registry.test.ts`; DOM-Vertrag in
-`web/src/ai/model-manager.test.ts` mit `npm --prefix web test -- model-manager.test.ts`.
-
-**Dokumentation:** Handbuch „KI-Manager“, Zustände und Nutzeraktionen.
-
 ## AI-03 — MODNet laden und Hintergrund lokal entfernen
 
 **Ergebnis:** Erst nach Nutzeraktion lädt das festgelegte MODNet mit echtem Bytefortschritt,

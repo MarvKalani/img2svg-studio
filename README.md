@@ -27,7 +27,9 @@ Downloads exportieren exakt die gespeicherten Run-SVGs. Ein globaler Formerkennu
 fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette. Für eindeutige Flächen sind
 `<circle>`, `<rect>`, `<ellipse>`, `<line>` und dreipunktige `<polygon>`-Elemente mit sichtbaren
 Statistiken implementiert. Gemischte Szenen verwenden eine kanonische Element- und Z-Reihenfolge;
-byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert.
+byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert. Der KI-Manager zeigt
+die beiden gepinnten Browsermodelle mit Größe und Lizenz und führt Laden, sichtbaren Fehler,
+Retry, Initialisierung, Bereitschaft und Entladen über eine typisierte Registry aus.
 
 ## Lokal starten
 

@@ -289,10 +289,24 @@ FP32-Graphen für `float32[1,3,H,W] → float32[1,1,H,W]` über WebGPU mit WASM-
 Uniform nutzt den FP16-Vision-Encoder und den FP16-Prompt-/Mask-Decoder über WebGPU. Punkt- und
 Labeltensoren erzeugen drei postprozessierte Masken in Originalgröße und zugehörige IoU-Werte.
 
-Der spätere Modell-Manager verwendet ausschließlich diese validierten Definitionen. Parallelaufrufe
+Der Modell-Manager verwendet ausschließlich diese validierten Definitionen. Parallelaufrufe
 teilen dasselbe Lade-Promise. Fehler führen immer in einen sichtbaren `error`-Zustand mit Retry.
 `dispose()` und Embedding-Caches werden beim Entladen berücksichtigt. Vollständige Quellen,
 Lizenzketten, Größen und Prüfsummen stehen in `docs/THIRD_PARTY.md`.
+
+`model-registry.ts` implementiert die disjunkte Zustandsmenge `not-loaded`, `downloading`,
+`initializing`, `ready` und `error`. Unveränderliche Snapshots enthalten ausschließlich
+Modelldefinition und sichtbaren Zustand; Runtime-Handles bleiben intern. Je Modell deduplizieren
+separate Maps aktive Lade- und Entlade-Promises. Downloadfortschritt wird auf die manifestierte
+Gesamtgröße begrenzt. Erst nach erfolgreichem `dispose()` wird der Handle entfernt und
+`not-loaded` veröffentlicht.
+
+`model-manager.ts` projiziert jeden Snapshot in eine semantische Modellkarte mit `aria-live`,
+`progress`, verständlichem Fehler und genau der im Zustand zulässigen Aktion. Der aktuelle
+`demo-model-loader.ts` durchläuft ohne Netzwerk deterministische Fortschrittswerte, lässt den
+ersten Versuch pro Modell kontrolliert fehlschlagen und liefert beim Retry einen disponierbaren
+WebGPU-Handle. Dieser Adapter hält den Zustandsvertrag stabil, bis die realen Loader ihn in den
+folgenden Slices ersetzen.
 
 ## 9. Teststrategie
 

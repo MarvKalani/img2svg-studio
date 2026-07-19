@@ -1,0 +1,99 @@
+.ai-panel {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ai-panel h2 {
+  margin-bottom: 0.1rem;
+}
+
+.manager-button,
+.model-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.model-manager {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.model-manager[hidden] {
+  display: none;
+}
+
+.model-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid #294454;
+  border-radius: 0.45rem;
+  color: #cad5dc;
+  background: #122837;
+  font-size: 0.78rem;
+}
+
+.model-heading {
+  justify-content: start;
+}
+
+.model-heading > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.model-heading small,
+.model-metadata,
+.model-status {
+  color: #8399a8;
+  font-size: 0.68rem;
+}
+
+.model-heading strong {
+  color: #dbe8ed;
+}
+
+.model-metadata,
+.model-error,
+.model-card progress {
+  grid-column: 1 / -1;
+}
+
+.model-status {
+  align-self: center;
+  color: #b8c7cf;
+  text-align: right;
+}
+
+.model-card progress {
+  width: 100%;
+  height: 0.35rem;
+  accent-color: #35d6f5;
+}
+
+.model-error {
+  margin: 0;
+  color: #ffb4a8;
+  font-size: 0.68rem;
+}
+
+.model-action {
+  grid-column: 1 / -1;
+  justify-self: end;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid #2386a3;
+  border-radius: 0.35rem;
+  color: #e9f8fb;
+  background: #126177;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.model-icon {
+  color: #55dff1;
+  font-size: 1.1rem;
+}
