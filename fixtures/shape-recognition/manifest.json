@@ -1,0 +1,111 @@
+{
+  "canvas": {
+    "widthPixels": 256,
+    "heightPixels": 256
+  },
+  "geometryTolerancePixels": 2,
+  "fixtures": [
+    {
+      "id": "circle",
+      "input": "input/circle.png",
+      "expected": [
+        {
+          "element": "circle",
+          "centerX": 128,
+          "centerY": 128,
+          "radius": 64,
+          "fill": "#0ea5e9"
+        }
+      ]
+    },
+    {
+      "id": "ellipse",
+      "input": "input/ellipse.png",
+      "expected": [
+        {
+          "element": "ellipse",
+          "centerX": 128,
+          "centerY": 128,
+          "radiusX": 80,
+          "radiusY": 48,
+          "fill": "#8b5cf6"
+        }
+      ]
+    },
+    {
+      "id": "rectangle",
+      "input": "input/rectangle.png",
+      "expected": [
+        {
+          "element": "rect",
+          "x": 64,
+          "y": 80,
+          "width": 128,
+          "height": 96,
+          "fill": "#22c55e"
+        }
+      ]
+    },
+    {
+      "id": "line",
+      "input": "input/line.png",
+      "expected": [
+        {
+          "element": "line",
+          "startX": 48,
+          "startY": 128,
+          "endX": 208,
+          "endY": 128,
+          "strokeWidth": 12,
+          "stroke": "#f97316"
+        }
+      ]
+    },
+    {
+      "id": "triangle",
+      "input": "input/triangle.png",
+      "expected": [
+        {
+          "element": "polygon",
+          "points": [[128, 48], [216, 208], [40, 208]],
+          "fill": "#ec4899"
+        }
+      ]
+    },
+    {
+      "id": "mixed",
+      "input": "input/mixed.png",
+      "expected": [
+        {
+          "element": "circle",
+          "centerX": 64,
+          "centerY": 64,
+          "radius": 28,
+          "fill": "#0ea5e9"
+        },
+        {
+          "element": "rect",
+          "x": 128,
+          "y": 36,
+          "width": 80,
+          "height": 56,
+          "fill": "#22c55e"
+        },
+        {
+          "element": "line",
+          "startX": 32,
+          "startY": 152,
+          "endX": 224,
+          "endY": 152,
+          "strokeWidth": 10,
+          "stroke": "#f97316"
+        },
+        {
+          "element": "polygon",
+          "points": [[128, 180], [184, 232], [72, 232]],
+          "fill": "#ec4899"
+        }
+      ]
+    }
+  ]
+}

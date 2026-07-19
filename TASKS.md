@@ -184,6 +184,9 @@ Engine ohne duplizierte Konvertierungslogik.
 
 ## M4 — Native Formen als optionale vertikale Slices
 
+- [x] **M4-00 Ground-Truth-Fixtures für die Formerkennung anlegen.**
+  - Kreis, Ellipse, Rechteck, Linie, Polygon und gemischte Szene als Rastereingaben.
+  - Abnahme: Manifest definiert erwartete SVG-Elemente und Geometrie mit 2-px-Toleranz.
 - [ ] **M4-01 Formerkennungsrahmen mit sicherem Pfad-Fallback liefern.**
   - Globaler Schalter, aktivierte Typen und `remainder_strategy=path` typisieren.
   - Abnahme: ausgeschaltete Erkennung ist byteidentisch zur bisherigen Ausgabe.
