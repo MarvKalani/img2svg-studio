@@ -174,6 +174,10 @@ und Funktionsaudit gegen Handbuch und Testliste.
 **Gemeinsame Aktion:** Der Orchestrator erstellt Drehbuch, Shotlist und Prüfprotokoll; der
 Projekteigner bestätigt Veröffentlichung, `/feedback`-Session-ID und endgültiges Absenden.
 
+**Status 19. Juli:** Getaktetes englisches Drehbuch, Shotlist, Take-Checkliste und technischer
+Chrome-150-Probelauf sind dokumentiert. Öffentliche Aufnahme, YouTube-Prüfung, Session-ID und
+Devpost-Abgabe bleiben gemeinsame Abschlussaktionen.
+
 ```gherkin
 Given Demo, Repository und Einreichungstext sind final geprüft
 When das öffentliche Video und alle Devpost-Felder unangemeldet geöffnet werden

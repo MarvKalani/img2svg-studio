@@ -147,6 +147,8 @@ for an existing-project disclosure.
 
 ### Owner actions
 
+Use the [timed English demo script](release/DEMO_SCRIPT.md) for the recording and final take check.
+
 - [ ] Join the OpenAI Build Week event on Devpost and confirm eligibility.
 - [ ] Confirm the Developer Tools track.
 - [ ] Choose the final project license.
