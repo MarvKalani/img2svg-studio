@@ -253,10 +253,9 @@ Die komplexen Konvertierungsaktionen verwenden die imperative API. Deklarative A
 können ergänzend für stabile Standardformulare eingesetzt werden, dürfen aber keine doppelte
 Geschäftslogik erzeugen.
 
-Der erste WebMCP-Slice registriert `get_capabilities`, `configure_conversion` und
-`convert_current_image`. Der vollständige Produktvertrag ergänzt Workspace-Zustand, History,
-A/B-Auswahl, Export, KI-Modellverwaltung und die beiden KI-Aktionen. Eine typisierte Capability
-Map ordnet jedes sichtbare Application Command genau einem UI- und einem WebMCP-Einstieg zu.
+Der erste WebMCP-Slice registriert ausschließlich `get_capabilities`. Der vollständige
+Produktvertrag ergänzt Konvertierung, Workspace-Zustand, History, A/B-Auswahl, Export,
+KI-Modellverwaltung und beide KI-Aktionen über dieselben sichtbaren Application Services.
 Jedes Tool besitzt:
 
 - einen stabilen, aktionsorientierten Namen.

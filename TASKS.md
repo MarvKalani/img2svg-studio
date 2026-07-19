@@ -72,34 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## MCP-01 — Aktuellen WebMCP-Vertrag verifizieren und Fähigkeiten anbieten
-
-**Ergebnis:** Die aktuelle Chrome-Schnittstelle wird mit Primärquellen bestätigt. In Chrome
-149 oder neuer sind `#enable-webmcp-testing` und `#devtools-webmcp-support` aktiviert. Ein
-schmaler Adapter registriert `get_capabilities` per Feature Detection und lässt die UI ohne
-WebMCP vollständig funktionieren.
-
-```gherkin
-Given ein Browser mit oder ohne unterstützte WebMCP-Schnittstelle
-When img2svg Studio startet und get_capabilities aufgerufen wird
-Then liefert ein unterstützter Browser ein eng typisiertes Fähigkeitsresultat
-And ein nicht unterstützter Browser behält eine fehlerfreie vollständig bedienbare UI
-```
-
-**Ausführbare Abnahme:** `web/src/webmcp/webmcp-adapter.test.ts` mit unterstütztem und fehlendem
-API-Fake sowie `web/e2e/webmcp-fallback.spec.ts`; `npm --prefix web test --
-webmcp-adapter.test.ts` und `npm --prefix web run test:e2e -- webmcp-fallback.spec.ts`.
-Anschließend bestätigt der Orchestrator im echten Chrome `document.modelContext`, den
-registrierten Toolnamen und den fehlerfreien UI-Fallback bei deaktivierter API.
-
-**Dokumentation:** Quellen, Ziel-Chrome, Aktivierung, Sicherheitsgrenzen und UI-Fallback.
-
-**Bedingter Ersatz:** Erst wenn WebMCP trotz unterstützter Chrome-Version, aktivierter Flags,
-korrekter Origin-/Permissions-Konfiguration und behobener eigener Fehler nicht durch den
-Browser-Agenten nutzbar ist, wird MCP-02 vor Arbeitsbeginn durch einen Apps-SDK-Slice ersetzt.
-Dieser baut einen ChatGPT-kompatiblen MCP-Server und eine iframe-UI auf denselben typisierten
-Anwendungsdiensten. Damit entsteht ein alternativer Agentenkanal in ChatGPT.
-
 ## MCP-02 — Parameter konfigurieren und sichtbare Konvertierung ausführen
 
 **Ergebnis:** `configure_conversion` verwendet dieselben Validatoren wie die UI und aktualisiert

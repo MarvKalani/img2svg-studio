@@ -14,6 +14,12 @@ import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
+import {
+  initializeWebMcp,
+  WebMcpToolName,
+  type WebMcpDocument,
+  type WebMcpRegistration,
+} from "./webmcp/webmcp-adapter";
 
 const imageStore = createImageStore();
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
@@ -37,4 +43,14 @@ smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
 initializeConversion(imageStore, optionsController.current, historyController.record);
 initializeSvgDownload();
 initializeModelManager(modelRegistry);
+let webMcpRegistration: WebMcpRegistration | undefined;
+void initializeWebMcp(document as WebMcpDocument, () => ({
+  imageLoaded: imageStore.current() !== undefined,
+  tools: [WebMcpToolName.GetCapabilities],
+  version: "1",
+})).then((registration) => {
+  webMcpRegistration = registration;
+  document.documentElement.dataset.webmcp = registration.status;
+});
+window.addEventListener("beforeunload", () => webMcpRegistration?.dispose());
 document.documentElement.dataset.appReady = "true";

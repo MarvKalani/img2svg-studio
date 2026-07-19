@@ -343,6 +343,11 @@ Danach kann der Agent Einstellungen und Workspace lesen, konvertieren, History u
 SVG exportieren sowie KI-Modelle und KI-Aktionen steuern. Jede Aktion bleibt unmittelbar in der
 Oberfläche sichtbar.
 
+Chrome 149 oder neuer benötigt für lokale Tests `#enable-webmcp-testing`; für die Toolansicht in
+DevTools zusätzlich `#devtools-webmcp-support`. Nach dem Neustart zeigt DevTools unter
+„Application · WebMCP“ die registrierten Werkzeuge und ihre Aufrufe. Chrome 150 verwendet
+`document.modelContext`; die ältere Navigator-Variante gehört nicht zum Studio.
+
 Der bestehende Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter für
 seinen eigenen sichtbaren Converter-Ablauf.
 
