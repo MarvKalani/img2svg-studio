@@ -7,15 +7,16 @@
  * @param {number} color_precision
  * @param {number} filter_speckle
  * @param {number} scale_percent
+ * @param {number} shape_detection_flags
  * @returns {string}
  */
-export function convert_rgba(pixels, width, height, color_precision, filter_speckle, scale_percent) {
+export function convert_rgba(pixels, width, height, color_precision, filter_speckle, scale_percent, shape_detection_flags) {
     let deferred3_0;
     let deferred3_1;
     try {
         const ptr0 = passArray8ToWasm0(pixels, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.convert_rgba(ptr0, len0, width, height, color_precision, filter_speckle, scale_percent);
+        const ret = wasm.convert_rgba(ptr0, len0, width, height, color_precision, filter_speckle, scale_percent, shape_detection_flags);
         var ptr2 = ret[0];
         var len2 = ret[1];
         if (ret[3]) {

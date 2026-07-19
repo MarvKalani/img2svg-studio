@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { defaultConversionOptions } from "../conversion/conversion-options";
 import { createHistoryStore, type NewConversionRun } from "./history-store";
 
 describe("history store", () => {
@@ -14,6 +15,13 @@ describe("history store", () => {
     expect(runs.map((run) => run.id)).toEqual([11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);
     expect(Object.isFrozen(runs)).toBe(true);
     expect(runs.every((run) => Object.isFrozen(run) && Object.isFrozen(run.options))).toBe(true);
+    expect(
+      runs.every(
+        (run) =>
+          Object.isFrozen(run.options.shapeDetection) &&
+          Object.isFrozen(run.options.shapeDetection.types),
+      ),
+    ).toBe(true);
   });
 
   test("Given stored runs, when an older run is selected, then its snapshot stays unchanged", () => {
@@ -35,7 +43,7 @@ function runInput(runNumber: number): NewConversionRun {
     durationMilliseconds: runNumber,
     fileName: "circle.png",
     heightPixels: 256,
-    options: { colorPrecision: 7, filterSpeckle: 4, scalePercent: 100 },
+    options: { ...defaultConversionOptions },
     pathCount: 1,
     svg: `<svg data-run="${String(runNumber)}"></svg>`,
     widthPixels: 256,

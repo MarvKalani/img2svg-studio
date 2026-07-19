@@ -37,8 +37,11 @@ Der implementierte `ConversionOptions`-Kern enthält Farbpräzision 1–8 Bit, S
 Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt sie ausschließlich
 über `createConversionOptions`. Grenztests halten beide Seiten synchron.
 
-Der globale Formerkennungsschalter und aktivierte Formtypen erweitern dieses Modell im
-Formerkennungs-Slice. Nicht erkannte Konturen bleiben Pfade.
+`ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
+Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
+Typen vorgewählt sind. TypeScript erzeugt die Typauswahl aus `nativeShapeSchema`; Rust prüft die
+aktivierten Typen in derselben stabilen Reihenfolge. Noch nicht implementierte oder nicht
+eindeutig erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -79,8 +82,9 @@ Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
 stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
 `ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
-Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße und die drei
-Optionswerte. Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
+Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die drei
+numerischen Optionswerte und ein `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
+Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
 Spätere Resultatmetadaten erweitern diesen Vertrag, ohne die Engine an den Browser zu koppeln.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
@@ -139,9 +143,9 @@ abweichenden Schattenzustand.
 `historyController` rendert aus dem Store ausschließlich die zehn Karten und projiziert einen
 ausgewählten SVG-Snapshot zurück in die Arbeitsfläche. Er schreibt keine alten Optionen in das
 Formular. `restoreSelectedRunOptions` validiert den ausgewählten Snapshot erneut und reicht eine
-Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schreibt nur die drei
-Formularwerte und rendert ihre abgeleiteten Zielmaße neu; Store, SVG und Bildzustand bleiben
-unverändert.
+Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schreibt numerische
+Werte, globalen Formerkennungszustand und Typauswahl und rendert die abgeleiteten Zielmaße neu;
+Store, SVG und Bildzustand bleiben unverändert.
 
 `compareSelection` hält je einen unveränderlichen Run-Verweis für A und B. Die Zuweisung desselben
 Runs in den anderen Platz entfernt ihn aus dem bisherigen Platz. `compareController` rendert erst
@@ -151,9 +155,9 @@ komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
 
 `compareConversionSettings` projiziert beide Options-Snapshots über eine typisierte, stabile
 Schemafolge in formatierte Tabellenzeilen. Der standardmäßig aktive Differenzfilter vergleicht
-vor der Formatierung die numerischen Werte. A/B-Downloads übergeben den ursprünglichen
-`ConversionRun.svg`-String direkt an `downloadSvgFile`; die normalisierten DOM-Layer werden nie
-serialisiert oder exportiert.
+vor der Formatierung numerische Werte und boolesche Formerkennungswerte. A/B-Downloads übergeben
+den ursprünglichen `ConversionRun.svg`-String direkt an `downloadSvgFile`; die normalisierten
+DOM-Layer werden nie serialisiert oder exportiert.
 
 ### Qualitätsgate
 

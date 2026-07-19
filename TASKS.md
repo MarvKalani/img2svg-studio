@@ -72,25 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-01 — Formerkennung sicher und abschaltbar einführen
-
-**Ergebnis:** Ein typisierter globaler Schalter und aktivierte Formtypen steuern eine
-Detektorkette. Der sichere Rest bleibt ein Pfad; ausgeschaltete Erkennung ändert keinen Byte.
-
-```gherkin
-Given ein Fixture wird mit deaktivierter Formerkennung konvertiert
-When derselbe Input erneut mit deaktivierter Formerkennung verarbeitet wird
-Then ist die Ausgabe byteidentisch zur bisherigen Pfadausgabe
-And unbekannte Konturen bleiben bei aktivierter Erkennung als Pfad erhalten
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/shape_detection_fallback.rs` mit
-`cargo test -p img2svg-core --test shape_detection_fallback`; UI-Schema in
-`web/src/conversion/shape-options.test.ts` mit `npm --prefix web test --
-shape-options.test.ts`.
-
-**Dokumentation:** Handbuch-Schalter, Fallback und technischer Detektorvertrag.
-
 ## SHAPE-02 — Kreise als native SVG-Elemente erkennen
 
 **Ergebnis:** Das vorhandene Kreis-PNG erzeugt bei aktivierter Kreiserkennung ein `<circle>`

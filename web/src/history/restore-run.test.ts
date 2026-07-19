@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import { defaultConversionOptions } from "../conversion/conversion-options";
 import { createHistoryStore, type NewConversionRun } from "./history-store";
 import { restoreSelectedRunOptions } from "./restore-run";
 
@@ -12,7 +13,11 @@ describe("restore run options", () => {
 
     const restoredOptions = restoreSelectedRunOptions(store, applyOptions);
 
-    expect(restoredOptions).toEqual({ colorPrecision: 7, filterSpeckle: 4, scalePercent: 100 });
+    expect(restoredOptions).toMatchObject({
+      colorPrecision: 7,
+      filterSpeckle: 4,
+      scalePercent: 100,
+    });
     expect(applyOptions).toHaveBeenCalledExactlyOnceWith(restoredOptions);
     expect(store.runs()).toEqual([newerRun, olderRun]);
     expect(store.selected()).toBe(olderRun);
@@ -36,7 +41,7 @@ function runInput(
     durationMilliseconds: 20,
     fileName: "circle.png",
     heightPixels: 256,
-    options: { colorPrecision, filterSpeckle, scalePercent },
+    options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },
     pathCount: 1,
     svg: "<svg></svg>",
     widthPixels: 256,

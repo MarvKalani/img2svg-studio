@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
-import type { ConversionOptions } from "../conversion/conversion-options";
+import { defaultConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
 import { compareConversionSettings } from "./diff-settings";
 
-const a: ConversionOptions = { colorPrecision: 7, filterSpeckle: 4, scalePercent: 100 };
-const b: ConversionOptions = { colorPrecision: 5, filterSpeckle: 4, scalePercent: 100 };
+const a: ConversionOptions = { ...defaultConversionOptions };
+const b: ConversionOptions = { ...defaultConversionOptions, colorPrecision: 5 };
 
 describe("conversion settings diff", () => {
   test("Given only color precision differs, when only differences are requested, then exactly that formatted row remains", () => {
@@ -15,7 +15,17 @@ describe("conversion settings diff", () => {
   test("Given two runs, when all settings are requested, then canonical schema order formats all rows", () => {
     const rows = compareConversionSettings(a, b, false);
 
-    expect(rows.map((row) => row.label)).toEqual(["Farbpräzision", "Speckle-Filter", "Zielgröße"]);
+    expect(rows.map((row) => row.label)).toEqual([
+      "Farbpräzision",
+      "Speckle-Filter",
+      "Zielgröße",
+      "Formerkennung",
+      "Kreis erkennen",
+      "Rechteck erkennen",
+      "Ellipse erkennen",
+      "Linie erkennen",
+      "Polygon erkennen",
+    ]);
     expect(Object.isFrozen(rows)).toBe(true);
     expect(rows.every(Object.isFrozen)).toBe(true);
   });

@@ -132,15 +132,24 @@
             </label>
           </section>
 
-          <section class="control-panel switch-row">
-            <div>
-              <h2>Native Formen</h2>
-              <p>Kreise und Kanten erkennen</p>
+          <section class="control-panel shape-panel">
+            <div class="switch-row">
+              <div>
+                <h2>Native Formen</h2>
+                <p>Kreise und Kanten erkennen</p>
+              </div>
+              <button
+                id="shape-detection-enabled"
+                class="switch"
+                type="button"
+                role="switch"
+                aria-checked="false"
+              >
+                <span></span>
+                <span class="visually-hidden">Native Formen aktivieren</span>
+              </button>
             </div>
-            <button class="switch" type="button" role="switch" aria-checked="false">
-              <span></span>
-              <span class="visually-hidden">Native Formen aktivieren</span>
-            </button>
+            <div id="shape-type-options" class="shape-type-options"></div>
           </section>
 
           <section class="control-panel ai-panel">

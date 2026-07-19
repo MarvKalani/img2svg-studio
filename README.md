@@ -23,7 +23,10 @@ validierten Einstellungen eines ausgewählten Runs lassen sich übernehmen und e
 gleichem Bild erneut ein byteidentisches SVG. Zwei Runs lassen sich tastaturbedienbar als A und B
 markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-Geometrie
 überblenden. Eine schema-basierte Tabelle filtert echte Parameterunterschiede; getrennte A/B-
-Downloads exportieren exakt die gespeicherten Run-SVGs.
+Downloads exportieren exakt die gespeicherten Run-SVGs. Ein globaler Formerkennungsschalter und
+fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette; der aktuelle Sicherheitsstand
+garantiert byteidentisches Abschalten und den Pfad-Fallback für jeden noch nicht freigegebenen
+Detektor.
 
 ## Lokal starten
 

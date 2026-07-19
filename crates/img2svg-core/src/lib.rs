@@ -34,10 +34,122 @@ pub enum ConversionOptionError {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeShapeKind {
+    Circle,
+    Rectangle,
+    Ellipse,
+    Line,
+    Polygon,
+}
+
+impl NativeShapeKind {
+    const ORDERED: [Self; 5] = [
+        Self::Circle,
+        Self::Rectangle,
+        Self::Ellipse,
+        Self::Line,
+        Self::Polygon,
+    ];
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct NativeShapeTypes {
+    circle: bool,
+    ellipse: bool,
+    line: bool,
+    polygon: bool,
+    rectangle: bool,
+}
+
+impl NativeShapeTypes {
+    const CIRCLE_FLAG: u32 = 1 << 0;
+    const RECTANGLE_FLAG: u32 = 1 << 1;
+    const ELLIPSE_FLAG: u32 = 1 << 2;
+    const LINE_FLAG: u32 = 1 << 3;
+    const POLYGON_FLAG: u32 = 1 << 4;
+
+    pub const fn new(
+        circle: bool,
+        rectangle: bool,
+        ellipse: bool,
+        line: bool,
+        polygon: bool,
+    ) -> Self {
+        Self {
+            circle,
+            ellipse,
+            line,
+            polygon,
+            rectangle,
+        }
+    }
+
+    pub const fn all() -> Self {
+        Self::new(true, true, true, true, true)
+    }
+
+    pub const fn from_flags(flags: u32) -> Self {
+        Self::new(
+            flags & Self::CIRCLE_FLAG != 0,
+            flags & Self::RECTANGLE_FLAG != 0,
+            flags & Self::ELLIPSE_FLAG != 0,
+            flags & Self::LINE_FLAG != 0,
+            flags & Self::POLYGON_FLAG != 0,
+        )
+    }
+
+    pub const fn is_enabled(self, shape: NativeShapeKind) -> bool {
+        match shape {
+            NativeShapeKind::Circle => self.circle,
+            NativeShapeKind::Rectangle => self.rectangle,
+            NativeShapeKind::Ellipse => self.ellipse,
+            NativeShapeKind::Line => self.line,
+            NativeShapeKind::Polygon => self.polygon,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ShapeDetectionOptions {
+    enabled: bool,
+    types: NativeShapeTypes,
+}
+
+impl ShapeDetectionOptions {
+    const ENABLED_FLAG: u32 = 1 << 5;
+
+    pub const fn new(enabled: bool, types: NativeShapeTypes) -> Self {
+        Self { enabled, types }
+    }
+
+    pub const fn enabled(self) -> bool {
+        self.enabled
+    }
+
+    pub const fn types(self) -> NativeShapeTypes {
+        self.types
+    }
+
+    pub const fn from_flags(flags: u32) -> Self {
+        Self::new(
+            flags & Self::ENABLED_FLAG != 0,
+            NativeShapeTypes::from_flags(flags),
+        )
+    }
+}
+
+impl Default for ShapeDetectionOptions {
+    fn default() -> Self {
+        Self::new(false, NativeShapeTypes::all())
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ConversionOptions {
     color_precision: u8,
     filter_speckle: u16,
     scale_percent: u16,
+    shape_detection: ShapeDetectionOptions,
 }
 
 impl ConversionOptions {
@@ -63,6 +175,7 @@ impl ConversionOptions {
                 .map_err(|_| ConversionOptionError::FilterSpeckle)?,
             scale_percent: u16::try_from(scale_percent)
                 .map_err(|_| ConversionOptionError::ScalePercent)?,
+            shape_detection: ShapeDetectionOptions::default(),
         })
     }
 
@@ -77,6 +190,15 @@ impl ConversionOptions {
     pub const fn scale_percent(self) -> u16 {
         self.scale_percent
     }
+
+    pub const fn shape_detection(self) -> ShapeDetectionOptions {
+        self.shape_detection
+    }
+
+    pub const fn with_shape_detection(mut self, shape_detection: ShapeDetectionOptions) -> Self {
+        self.shape_detection = shape_detection;
+        self
+    }
 }
 
 impl Default for ConversionOptions {
@@ -85,6 +207,7 @@ impl Default for ConversionOptions {
             color_precision: 7,
             filter_speckle: 4,
             scale_percent: 100,
+            shape_detection: ShapeDetectionOptions::default(),
         }
     }
 }
@@ -205,12 +328,15 @@ pub fn convert_rgba_with_options(
         );
         let (path_data, offset) = compound_path.to_svg_string(true, PointF64::default(), Some(2));
         if !path_data.is_empty() {
-            paths.push(svg_path(
-                &path_data,
-                cluster.residue_color(),
-                offset,
-                options.scale_percent,
-            ));
+            let fallback_path = || {
+                svg_path(
+                    &path_data,
+                    cluster.residue_color(),
+                    offset,
+                    options.scale_percent,
+                )
+            };
+            paths.push(detect_native_shape(options.shape_detection).unwrap_or_else(fallback_path));
         }
     }
 
@@ -221,6 +347,27 @@ pub fn convert_rgba_with_options(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{target_width}\" height=\"{target_height}\" viewBox=\"0 0 {target_width} {target_height}\">{}</svg>",
         paths.join("")
     ))
+}
+
+fn detect_native_shape(options: ShapeDetectionOptions) -> Option<String> {
+    if !options.enabled() {
+        return None;
+    }
+
+    NativeShapeKind::ORDERED
+        .into_iter()
+        .filter(|shape| options.types().is_enabled(*shape))
+        .find_map(detect_shape)
+}
+
+fn detect_shape(shape: NativeShapeKind) -> Option<String> {
+    match shape {
+        NativeShapeKind::Circle
+        | NativeShapeKind::Rectangle
+        | NativeShapeKind::Ellipse
+        | NativeShapeKind::Line
+        | NativeShapeKind::Polygon => None,
+    }
 }
 
 fn scaled_dimension(dimension: usize, scale_percent: u16) -> Result<usize, ConversionError> {

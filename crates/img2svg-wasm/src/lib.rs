@@ -10,10 +10,14 @@ pub fn convert_rgba(
     color_precision: u32,
     filter_speckle: u32,
     scale_percent: u32,
+    shape_detection_flags: u32,
 ) -> Result<String, JsValue> {
     let options =
         img2svg_core::ConversionOptions::try_new(color_precision, filter_speckle, scale_percent)
-            .map_err(|_| JsValue::from_f64(4.0))?;
+            .map_err(|_| JsValue::from_f64(4.0))?
+            .with_shape_detection(img2svg_core::ShapeDetectionOptions::from_flags(
+                shape_detection_flags,
+            ));
     img2svg_core::convert_rgba_with_options(pixels, width as usize, height as usize, options)
         .map_err(|error| JsValue::from_f64(error_code_value(error.code())))
 }

@@ -1,15 +1,22 @@
 import { ConversionFailure, ConversionFailureCode } from "./conversion-failure";
+import {
+  createShapeDetectionOptions,
+  defaultShapeDetectionOptions,
+  type ShapeDetectionOptions,
+} from "./shape-options";
 
 export interface ConversionOptions {
   colorPrecision: number;
   filterSpeckle: number;
   scalePercent: number;
+  shapeDetection: ShapeDetectionOptions;
 }
 
 export interface ConversionOptionsInput {
   colorPrecision: number;
   filterSpeckle: number;
   scalePercent: number;
+  shapeDetection?: ShapeDetectionOptions;
 }
 
 export interface PixelDimensions {
@@ -21,6 +28,7 @@ export const defaultConversionOptions: Readonly<ConversionOptions> = Object.free
   colorPrecision: 7,
   filterSpeckle: 4,
   scalePercent: 100,
+  shapeDetection: defaultShapeDetectionOptions,
 });
 
 export function createConversionOptions(input: ConversionOptionsInput): ConversionOptions {
@@ -32,7 +40,14 @@ export function createConversionOptions(input: ConversionOptionsInput): Conversi
     throw new ConversionFailure(ConversionFailureCode.InvalidOptions);
   }
 
-  return { ...input };
+  return {
+    colorPrecision: input.colorPrecision,
+    filterSpeckle: input.filterSpeckle,
+    scalePercent: input.scalePercent,
+    shapeDetection: createShapeDetectionOptions(
+      input.shapeDetection ?? defaultShapeDetectionOptions,
+    ),
+  };
 }
 
 export function scaledDimensions(

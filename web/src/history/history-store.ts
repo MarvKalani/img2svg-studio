@@ -34,7 +34,13 @@ export function createHistoryStore(): HistoryStore {
       const run: ConversionRun = Object.freeze({
         ...input,
         id: nextRunId,
-        options: Object.freeze({ ...input.options }),
+        options: Object.freeze({
+          ...input.options,
+          shapeDetection: Object.freeze({
+            ...input.options.shapeDetection,
+            types: Object.freeze({ ...input.options.shapeDetection.types }),
+          }),
+        }),
       });
       nextRunId += 1;
       storedRuns.unshift(run);

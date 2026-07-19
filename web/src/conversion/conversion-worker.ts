@@ -1,5 +1,6 @@
 import initializeWasm, { convert_rgba } from "../wasm-pkg/img2svg_wasm";
 import { readEngineFailureCode } from "./conversion-failure";
+import { shapeDetectionFlags } from "./shape-options";
 import type {
   ConversionWorkerRequest,
   ConversionWorkerResponse,
@@ -29,6 +30,7 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
       request.options.colorPrecision,
       request.options.filterSpeckle,
       request.options.scalePercent,
+      shapeDetectionFlags(request.options.shapeDetection),
     );
     workerScope.postMessage({ ok: true, svg });
   } catch (error) {

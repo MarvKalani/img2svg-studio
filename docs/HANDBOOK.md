@@ -151,7 +151,8 @@ werden durch A/B-Zuweisungen nicht verändert.
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
 Werten in A und B. Ohne den Filter erscheinen Farbpräzision, Speckle-Filter und Zielgröße in
-stabiler Reihenfolge mit Einheiten.
+stabiler Reihenfolge mit Einheiten, gefolgt vom globalen Formerkennungsschalter und den fünf
+Formtypen.
 
 „SVG A“ und „SVG B“ laden jeweils den unveränderten SVG-Text des zugeordneten Runs herunter. Die
 normalisierte Vergleichsdarstellung gelangt nicht in den Export. Dateinamen enthalten Platz und
@@ -159,7 +160,7 @@ Run-ID, beispielsweise `circle-a-run-1.svg`, damit beide Ergebnisse unterscheidb
 
 ## Parameter
 
-Die drei verfügbaren Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
+Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:
 
 | Parameter | Gültiger Bereich | Standard | Wirkung |
@@ -174,6 +175,19 @@ Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort a
 
 Ungültige Werte werden als typisierter Einstellungsfehler abgelehnt. Weitere Parameter werden
 erst ergänzt, wenn derselbe vollständige Weg bis in die Engine getestet ist.
+
+## Native Formen
+
+„Native Formen“ ist standardmäßig ausgeschaltet. Kreis, Rechteck, Ellipse, Linie und Polygon sind
+vorgewählt, aber bis zum Aktivieren des globalen Schalters nicht bedienbar. Danach lassen sich die
+Typen einzeln ein- und ausschalten. Globaler Zustand und Typauswahl werden mit jedem Run
+unveränderlich gespeichert, wiederhergestellt und im A/B-Parametervergleich angezeigt.
+
+Der aktuelle Sicherheitsstand enthält die typisierte Detektorkette, aber noch keinen freigegebenen
+Formdetektor. Deshalb bleibt jede Kontur als bewährter SVG-Pfad erhalten. Bei ausgeschalteter
+Formerkennung ist die Ausgabe byteidentisch zur bisherigen Konvertierung; bei eingeschalteter
+Erkennung fällt jeder noch nicht eindeutig bewiesene Typ ebenfalls auf den Pfad zurück. Die
+einzelnen nativen Detektoren werden ab dem nächsten Slice mit den Ground-Truth-Fixtures aktiviert.
 
 ## KI-Manager
 
@@ -205,8 +219,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 ## Formerkennungs-Fixtures
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
-Linie, Polygon und eine gemischte Szene. Tests vergleichen später nicht nur gerenderte Pixel,
-sondern auch SVG-Elementtyp und Geometrie innerhalb einer definierten Toleranz.
+Linie, Polygon und eine gemischte Szene. Der Basistest beweist bereits byteidentisches Abschalten
+und sicheren Pfad-Fallback; die folgenden Tests vergleichen zusätzlich SVG-Elementtyp und
+Geometrie innerhalb der definierten Toleranz.
 
 ## Datenschutz
 

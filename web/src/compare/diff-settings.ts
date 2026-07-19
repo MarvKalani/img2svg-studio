@@ -1,24 +1,54 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
-
-type ConversionOptionKey = keyof ConversionOptions;
-
-interface ConversionSettingSchema {
-  format(value: number): string;
-  key: ConversionOptionKey;
-  label: string;
-}
+import { nativeShapeSchema } from "../conversion/shape-options";
 
 export interface ConversionSettingRow {
   readonly a: string;
   readonly b: string;
-  readonly key: ConversionOptionKey;
+  readonly key: string;
   readonly label: string;
 }
 
+interface EvaluatedSetting extends ConversionSettingRow {
+  different: boolean;
+}
+
+interface ConversionSettingSchema {
+  evaluate(a: Readonly<ConversionOptions>, b: Readonly<ConversionOptions>): EvaluatedSetting;
+}
+
 const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freeze([
-  { key: "colorPrecision", label: "Farbpräzision", format: (value) => `${String(value)} Bit` },
-  { key: "filterSpeckle", label: "Speckle-Filter", format: (value) => `${String(value)} px` },
-  { key: "scalePercent", label: "Zielgröße", format: (value) => `${String(value)} %` },
+  setting(
+    "colorPrecision",
+    "Farbpräzision",
+    (options) => options.colorPrecision,
+    (value) => `${String(value)} Bit`,
+  ),
+  setting(
+    "filterSpeckle",
+    "Speckle-Filter",
+    (options) => options.filterSpeckle,
+    (value) => `${String(value)} px`,
+  ),
+  setting(
+    "scalePercent",
+    "Zielgröße",
+    (options) => options.scalePercent,
+    (value) => `${String(value)} %`,
+  ),
+  setting(
+    "shapeDetection.enabled",
+    "Formerkennung",
+    (options) => options.shapeDetection.enabled,
+    formatBoolean,
+  ),
+  ...nativeShapeSchema.map((shape) =>
+    setting(
+      `shapeDetection.types.${shape.key}`,
+      `${shape.label} erkennen`,
+      (options) => options.shapeDetection.types[shape.key],
+      formatBoolean,
+    ),
+  ),
 ]);
 
 export function compareConversionSettings(
@@ -28,14 +58,40 @@ export function compareConversionSettings(
 ): readonly ConversionSettingRow[] {
   return Object.freeze(
     conversionSettingSchema
-      .filter((setting) => !onlyDifferences || a[setting.key] !== b[setting.key])
-      .map((setting) =>
+      .map((schema) => schema.evaluate(a, b))
+      .filter((evaluated) => !onlyDifferences || evaluated.different)
+      .map((evaluated) =>
         Object.freeze({
-          a: setting.format(a[setting.key]),
-          b: setting.format(b[setting.key]),
-          key: setting.key,
-          label: setting.label,
+          a: evaluated.a,
+          b: evaluated.b,
+          key: evaluated.key,
+          label: evaluated.label,
         }),
       ),
   );
+}
+
+function setting<Value extends number | boolean>(
+  key: string,
+  label: string,
+  read: (options: Readonly<ConversionOptions>) => Value,
+  format: (value: Value) => string,
+): ConversionSettingSchema {
+  return {
+    evaluate: (a, b) => {
+      const aValue = read(a);
+      const bValue = read(b);
+      return {
+        a: format(aValue),
+        b: format(bValue),
+        different: aValue !== bValue,
+        key,
+        label,
+      };
+    },
+  };
+}
+
+function formatBoolean(value: boolean): string {
+  return value ? "An" : "Aus";
 }

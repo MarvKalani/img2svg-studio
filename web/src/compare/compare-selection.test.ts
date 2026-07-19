@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { defaultConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import { createCompareSelection } from "./compare-selection";
 
@@ -30,7 +31,7 @@ function run(id: number): ConversionRun {
     fileName: "circle.png",
     heightPixels: 256,
     id,
-    options: Object.freeze({ colorPrecision: 7, filterSpeckle: 4, scalePercent: 100 }),
+    options: defaultConversionOptions,
     pathCount: 1,
     svg: "<svg></svg>",
     widthPixels: 256,
