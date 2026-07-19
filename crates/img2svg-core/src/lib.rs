@@ -8,6 +8,7 @@ use visioncortex::color_clusters::{HIERARCHICAL_MAX, KeyingAction, Runner, Runne
 use visioncortex::{Color, ColorImage, PathSimplifyMode, PointF64};
 
 mod shape_detection;
+mod visioncortex_shape;
 
 pub use shape_detection::{
     NativeShapeKind, NativeShapeTypes, ShapeDetectionOptions, ShapeStatistics,

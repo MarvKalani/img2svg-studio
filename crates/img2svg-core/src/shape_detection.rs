@@ -3,6 +3,7 @@ use std::f64::consts::PI;
 
 use visioncortex::{BoundingRect, Color};
 
+use crate::visioncortex_shape::confirms_circle_occupancy;
 use crate::{format_opacity, scale_factor};
 
 const MINIMUM_NATIVE_SHAPE_SPAN_PIXELS: f64 = 4.0;
@@ -309,7 +310,10 @@ fn detect_circle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
     let expected_area = PI * width * height / 4.0;
     let area_error = relative_area_error(candidate.area, expected_area);
     // Tight independent bounds favor the lossless path fallback over false native geometry.
-    if aspect_error > MAXIMUM_CIRCLE_ASPECT_ERROR || area_error > MAXIMUM_ELLIPTIC_AREA_ERROR {
+    if aspect_error > MAXIMUM_CIRCLE_ASPECT_ERROR
+        || area_error > MAXIMUM_ELLIPTIC_AREA_ERROR
+        || !confirms_circle_occupancy(candidate.indices, candidate.rect, candidate.source_width)
+    {
         return None;
     }
 

@@ -68,6 +68,7 @@ Der Core trennt Pipeline und Formerkennung, damit beide Quellen unter 1000 Zeile
 ```text
 lib.rs               Konfiguration, Pipeline, Fehler und Pfad-Fallback
 shape_detection.rs   Typen, Detektorreihenfolge, native SVG-Elemente und Statistik
+visioncortex_shape.rs schmaler Adapter für bestätigte Visioncortex-Evidenz
 ```
 
 `visioncortex` wird als Abhängigkeit verwendet, nicht kopiert. Herkunft, Version und Lizenz
@@ -91,9 +92,39 @@ Der Kreisdetektor wertet pro Cluster dessen Begrenzungsrahmen und Pixelanzahl au
 Prozent Seitenverhältnisabweichung und acht Prozent Abweichung von der erwarteten Kreisfläche
 begrenzen False Positives. Die Geometrie folgt deterministisch aus dem Begrenzungsrahmen; eine
 `BTreeMap` bestimmt die dominante Original-RGBA-Farbe unabhängig von Hash-Reihenfolgen. Eine
-nicht erfüllte Bedingung führt ohne Teilresultat zum vorhandenen Pfad zurück. Der Test liest PNG
-und Sollwerte direkt aus dem gemeinsamen Fixture-Manifest und erlaubt die dort festgelegten zwei
+nicht erfüllte Bedingung führt ohne Teilresultat zum vorhandenen Pfad zurück. Erst nach diesen
+billigen Prüfungen bildet `visioncortex_shape.rs` aus dem Cluster eine zugeschnittene
+`BinaryImage`; `Shape::is_circle()` bestätigt dessen tatsächliche Pixelbelegung. Dadurch bleibt
+ein hohler 32×32-Ring mit nur 4,5 Prozent Kreisflächenabweichung ein Pfad. Der Test liest PNG und
+Sollwerte direkt aus dem gemeinsamen Fixture-Manifest und erlaubt die dort festgelegten zwei
 Pixel Geometrietoleranz.
+
+### Visioncortex-Shape-Audit
+
+VTracer 0.6.5 verwendet Visioncortex zum Tracing, ruft dessen vorhandene Shape-Klassifikatoren
+aber nicht auf. Da `visioncortex` 0.8.10 bereits direkt und exakt gepinnt ist, wird kein Quellcode
+kopiert und kein eigener VTracer-Fork gepflegt. Ein Referenztest hält das Verhalten der vier
+öffentlichen Methoden in der Reihenfolge Kreis, Ellipse, Viereck und gleichschenkliges Dreieck
+fest:
+
+| Ground Truth | `is_circle` | `is_ellipse` | `is_quadrilateral` | `is_isosceles_triangle` |
+| --- | ---: | ---: | ---: | ---: |
+| Kreis | ja | ja | nein | nein |
+| Ellipse | nein | ja | nein | nein |
+| Rechteck | nein | nein | nein | nein |
+| Dreieck | nein | nein | ja | ja |
+
+`is_circle` liefert als zusätzliche Occupancy-Prüfung einen nachgewiesenen Nutzen und wird im
+Produktadapter verwendet. `is_ellipse` dupliziert die bereits strengere lokale Belegungsprüfung.
+`is_quadrilateral` lehnt das ideale Rechteck ab und klassifiziert das Dreieck als Viereck.
+`is_isosceles_triangle` erkennt das Fixture, liefert jedoch keine benötigten Eckpunkte und ist
+gegenüber der lokalen Kanten- und Flächenprüfung redundant. Diese drei Methoden bleiben daher
+nur vermessene Referenz und gelangen nicht in den Laufzeitpfad.
+
+Der lokale Debug-Referenzlauf auf Apple Silicon benötigte für 160 Klassifikationen 0,66 Sekunden;
+der Regressionstest setzt ein bewusst großzügiges Fünf-Sekunden-Budget. Der Produktpfad erzeugt
+die zusätzliche Binärmaske nur für Kandidaten, die bereits Kreis-Seitenverhältnis und -Fläche
+erfüllen.
 
 Der Rechteckdetektor fordert höchstens zwei Prozent Abweichung zwischen Cluster- und
 Begrenzungsrahmenfläche. Ein Verhältnis der kürzeren zur längeren Seite unter 0,1 wird bewusst

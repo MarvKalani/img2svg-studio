@@ -49,3 +49,28 @@ fn given_the_circle_fixture_when_only_circle_detection_is_enabled_then_manifest_
     assert_eq!(result.shape_statistics().lines(), 0);
     assert_eq!(result.shape_statistics().polygons(), 0);
 }
+
+#[test]
+fn given_a_hollow_square_with_circle_like_area_when_circle_detection_runs_then_it_remains_a_path() {
+    const IMAGE_SIZE: usize = 64;
+    let mut pixels = vec![0_u8; IMAGE_SIZE * IMAGE_SIZE * 4];
+    for y in 16..48 {
+        for x in 16..48 {
+            if (24..40).contains(&x) && (24..40).contains(&y) {
+                continue;
+            }
+            let pixel_start = (y * IMAGE_SIZE + x) * 4;
+            pixels[pixel_start..pixel_start + 4].copy_from_slice(&[14, 165, 233, 255]);
+        }
+    }
+    let circle_only = NativeShapeTypes::new(true, false, false, false, false);
+    let options = ConversionOptions::default()
+        .with_shape_detection(ShapeDetectionOptions::new(true, circle_only));
+
+    let result = convert_rgba_with_options_result(&pixels, IMAGE_SIZE, IMAGE_SIZE, options)
+        .expect("hollow contour should convert through the path fallback");
+
+    assert!(result.svg().contains("<path "));
+    assert!(!result.svg().contains("<circle "));
+    assert_eq!(result.shape_statistics().circles(), 0);
+}

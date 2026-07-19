@@ -72,27 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-08 — Vorhandene Visioncortex-Formerkennung gezielt nutzbar machen
-
-**Ergebnis:** Die öffentlichen `Shape`-Algorithmen aus `visioncortex` 0.8.10 für Kreis, Ellipse,
-Viereck und gleichschenkliges Dreieck sind gegen unsere Ground-Truth-Fixtures vermessen. Bewährte
-Teile verstärken die bestehende Detektorkette; erforderliche Korrekturen leben in einer kleinen,
-lizenzdokumentierten Adapter- oder Patchschicht mit ausschließlich produktiv benötigtem Code.
-
-```gherkin
-Given die vorhandenen Visioncortex-Shape-Algorithmen und unsere positiven und negativen Fixtures
-When jeder Algorithmus gegen Geometrie, Fehlklassifikation und Laufzeit geprüft wird
-Then verwendet die Engine die nachweislich bessere Erkennung mit deterministischer SVG-Ausgabe
-And Kreis, Rechteck, Ellipse, Linie, Polygon und gemischte Szenen erfüllen weiter ihre Toleranzen
-```
-
-**Ausführbare Abnahme:** Rust-Referenztests für `Shape::is_circle`, `is_ellipse`,
-`is_quadrilateral` und `is_isosceles_triangle`, bestehende Ground-Truth-/Golden-Tests sowie
-`web/e2e/shape-recognition.spec.ts` im echten Chrome-Durchlauf.
-
-**Dokumentation:** Herkunft VTracer/Visioncortex, MIT/Apache-2.0-Lizenz, Messwerte, übernommene
-Algorithmen und begründete lokale Korrekturen.
-
 ## AI-05 — SAM-Auswahl mit positiven und negativen Punkten liefern
 
 **Ergebnis:** Nach explizitem Modelldownload kann der Nutzer mindestens zwei positive und einen

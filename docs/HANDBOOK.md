@@ -194,8 +194,9 @@ gegebenenfalls Deckkraft aus. Der Fixture-Kreis wird als `cx="128"`, `cy="128"`,
 `fill="#0EA5E9"` ausgegeben. Status und History zeigen dafür „1 Kreis“ und keinen Pfad.
 
 Die Ground-Truth-Abnahme erlaubt höchstens 2 Pixel Abweichung je Geometriewert. Intern sind
-Seitenverhältnis und Flächenfüllung bewusst enger begrenzt; passt eine Kontur nicht eindeutig,
-bleibt sie ein Pfad.
+Seitenverhältnis und Flächenfüllung bewusst enger begrenzt. Eine zusätzliche Pixelbelegungsprüfung
+aus Visioncortex weist etwa einen hohlen Ring trotz kreisähnlicher Fläche zurück; passt eine
+Kontur nicht eindeutig, bleibt sie ein Pfad.
 
 ### Native Rechtecke
 
