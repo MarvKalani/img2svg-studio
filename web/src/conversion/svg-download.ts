@@ -11,21 +11,28 @@ export function initializeSvgDownload(imageStore: ImageStore): void {
       return;
     }
 
-    downloadSvg(svg, svgFileName(loadedImage.file.name));
+    downloadSvgFile({
+      bytes: new XMLSerializer().serializeToString(svg),
+      fileName: svgFileName(loadedImage.file.name),
+    });
   });
 }
 
-function downloadSvg(svg: SVGElement, fileName: string): void {
-  const bytes = new XMLSerializer().serializeToString(svg);
-  const downloadUrl = URL.createObjectURL(new Blob([bytes], { type: "image/svg+xml" }));
+export interface SvgDownloadFile {
+  bytes: string;
+  fileName: string;
+}
+
+export function downloadSvgFile(file: SvgDownloadFile): void {
+  const downloadUrl = URL.createObjectURL(new Blob([file.bytes], { type: "image/svg+xml" }));
   const link = document.createElement("a");
-  link.download = fileName;
+  link.download = file.fileName;
   link.href = downloadUrl;
   link.click();
   URL.revokeObjectURL(downloadUrl);
 }
 
-function svgFileName(sourceFileName: string): string {
+export function svgFileName(sourceFileName: string): string {
   const nameWithoutExtension = sourceFileName.replace(/\.[^.]+$/u, "");
   return `${nameWithoutExtension || "conversion"}.svg`;
 }

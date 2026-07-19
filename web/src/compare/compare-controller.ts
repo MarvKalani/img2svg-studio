@@ -1,6 +1,8 @@
 import { parseSvgDocument } from "../conversion/svg-document";
+import { downloadSvgFile, svgFileName } from "../conversion/svg-download";
 import type { ConversionRun } from "../history/history-store";
 import type { ComparedRuns, CompareSelection, CompareSlot } from "./compare-selection";
+import { compareConversionSettings } from "./diff-settings";
 
 export interface CompareController {
   assign(slot: CompareSlot, run: ConversionRun): void;
@@ -17,11 +19,31 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
     elements.sliderValue.textContent = `${String(bPercent)} % B`;
   };
 
+  const renderSettings = (): void => {
+    const comparedRuns = selection.current();
+    elements.settingsBody.replaceChildren();
+    if (!comparedRuns.a || !comparedRuns.b) {
+      elements.settingsEmpty.textContent = "Noch keine Varianten zum Vergleichen.";
+      elements.settingsEmpty.hidden = false;
+      return;
+    }
+
+    const rows = compareConversionSettings(
+      comparedRuns.a.options,
+      comparedRuns.b.options,
+      elements.onlyDifferences.checked,
+    );
+    elements.settingsBody.replaceChildren(...rows.map(settingRow));
+    elements.settingsEmpty.textContent = "Keine Parameterunterschiede.";
+    elements.settingsEmpty.hidden = rows.length > 0;
+  };
+
   const render = (): void => {
     const comparedRuns = selection.current();
     const complete = comparedRuns.a !== undefined && comparedRuns.b !== undefined;
     elements.output.hidden = !complete;
     elements.stage.classList.toggle("compare-active", complete);
+    renderSettings();
     if (!complete) {
       return;
     }
@@ -34,6 +56,13 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
   };
 
   elements.slider.addEventListener("input", renderOpacity);
+  elements.onlyDifferences.addEventListener("change", renderSettings);
+  elements.downloadA.addEventListener("click", () =>
+    downloadComparedRun(selection.current().a, "a"),
+  );
+  elements.downloadB.addEventListener("click", () =>
+    downloadComparedRun(selection.current().b, "b"),
+  );
 
   return {
     assign: (slot, run) => {
@@ -42,6 +71,33 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
     },
     current: selection.current,
   };
+}
+
+function downloadComparedRun(run: ConversionRun | undefined, slot: CompareSlot): void {
+  if (!run) {
+    return;
+  }
+
+  downloadSvgFile({
+    bytes: run.svg,
+    fileName: svgFileName(run.fileName).replace(/\.svg$/u, `-${slot}-run-${String(run.id)}.svg`),
+  });
+}
+
+function settingRow(setting: ReturnType<typeof compareConversionSettings>[number]): HTMLElement {
+  const row = document.createElement("div");
+  row.setAttribute("role", "row");
+  row.dataset.settingKey = setting.key;
+  row.dataset.testid = "diff-setting-row";
+  row.append(settingCell(setting.label), settingCell(setting.a), settingCell(setting.b));
+  return row;
+}
+
+function settingCell(value: string): HTMLElement {
+  const cell = document.createElement("span");
+  cell.setAttribute("role", "cell");
+  cell.textContent = value;
+  return cell;
 }
 
 function normalizedSvg(run: ConversionRun): SVGSVGElement {
@@ -62,11 +118,16 @@ function normalizedSvg(run: ConversionRun): SVGSVGElement {
 }
 
 interface CompareElements {
+  downloadA: HTMLButtonElement;
+  downloadB: HTMLButtonElement;
   labelA: HTMLElement;
   labelB: HTMLElement;
   layerA: HTMLElement;
   layerB: HTMLElement;
   output: HTMLElement;
+  onlyDifferences: HTMLInputElement;
+  settingsBody: HTMLElement;
+  settingsEmpty: HTMLParagraphElement;
   slider: HTMLInputElement;
   sliderValue: HTMLOutputElement;
   stage: HTMLElement;
@@ -74,11 +135,16 @@ interface CompareElements {
 
 function readElements(): CompareElements {
   return {
+    downloadA: requireElement("#download-compare-a", HTMLButtonElement),
+    downloadB: requireElement("#download-compare-b", HTMLButtonElement),
     labelA: requireElement("#compare-label-a", HTMLElement),
     labelB: requireElement("#compare-label-b", HTMLElement),
     layerA: requireElement("#compare-layer-a", HTMLElement),
     layerB: requireElement("#compare-layer-b", HTMLElement),
     output: requireElement("#compare-output", HTMLElement),
+    onlyDifferences: requireElement("#only-differences", HTMLInputElement),
+    settingsBody: requireElement("#diff-settings-body", HTMLElement),
+    settingsEmpty: requireElement("#diff-settings-empty", HTMLParagraphElement),
     slider: requireElement("#compare-slider", HTMLInputElement),
     sliderValue: requireElement("#compare-slider-value", HTMLOutputElement),
     stage: requireElement("#comparison-stage", HTMLElement),

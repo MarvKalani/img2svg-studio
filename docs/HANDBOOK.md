@@ -146,8 +146,16 @@ Der Regler „Überblendung“ bestimmt den sichtbaren Anteil von B:
 Beide Ebenen verwenden eine gemeinsame normalisierte ViewBox und erhalten darin die native
 ViewBox des Runs seitenverhältnistreu. Deshalb bleiben auch unterschiedlich skalierte Runs
 zentriert und deckungsgleich, ohne Kreisformen zu verzerren. Die aktuellen Eingabeeinstellungen
-werden durch A/B-Zuweisungen nicht verändert. Parameterunterschiede und getrennte Downloads
-folgen als nächste Vergleichsfunktionen.
+werden durch A/B-Zuweisungen nicht verändert.
+
+Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
+„Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
+Werten in A und B. Ohne den Filter erscheinen Farbpräzision, Speckle-Filter und Zielgröße in
+stabiler Reihenfolge mit Einheiten.
+
+„SVG A“ und „SVG B“ laden jeweils den unveränderten SVG-Text des zugeordneten Runs herunter. Die
+normalisierte Vergleichsdarstellung gelangt nicht in den Export. Dateinamen enthalten Platz und
+Run-ID, beispielsweise `circle-a-run-1.svg`, damit beide Ergebnisse unterscheidbar bleiben.
 
 ## Parameter
 

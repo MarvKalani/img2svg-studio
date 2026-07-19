@@ -149,6 +149,12 @@ bei zwei vollständigen Plätzen. Jeder native SVG-Snapshot liegt in einer äuß
 `0 0 1 1` mit `xMidYMid meet`; beide Layer füllen denselben Canvas. Der 0–100-Regler setzt
 komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
 
+`compareConversionSettings` projiziert beide Options-Snapshots über eine typisierte, stabile
+Schemafolge in formatierte Tabellenzeilen. Der standardmäßig aktive Differenzfilter vergleicht
+vor der Formatierung die numerischen Werte. A/B-Downloads übergeben den ursprünglichen
+`ConversionRun.svg`-String direkt an `downloadSvgFile`; die normalisierten DOM-Layer werden nie
+serialisiert oder exportiert.
+
 ### Qualitätsgate
 
 `npm run check` im Repository-Root ist der einzige vollständige lokale Gate. Er führt `oxfmt`,

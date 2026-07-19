@@ -22,7 +22,8 @@ erscheinen mit SVG-Miniatur und Messwerten im Verlauf und können wieder angezei
 validierten Einstellungen eines ausgewählten Runs lassen sich übernehmen und erzeugen bei
 gleichem Bild erneut ein byteidentisches SVG. Zwei Runs lassen sich tastaturbedienbar als A und B
 markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-Geometrie
-überblenden.
+überblenden. Eine schema-basierte Tabelle filtert echte Parameterunterschiede; getrennte A/B-
+Downloads exportieren exakt die gespeicherten Run-SVGs.
 
 ## Lokal starten
 

@@ -449,18 +449,30 @@ a:focus-visible {
   background: radial-gradient(circle at center, #fff 0, #f5f7f7 62%, #e6ecef 100%);
 }
 
-.compare-output .compare-label-a,
-.compare-output .compare-label-b {
+.compare-run-heading {
   position: absolute;
   top: 1rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
-.compare-output .compare-label-a {
+.compare-run-heading-a {
   left: 1rem;
 }
 
-.compare-output .compare-label-b {
+.compare-run-heading-b {
   right: 1rem;
+}
+
+.compare-download {
+  padding: 0.42rem 0.6rem;
+  border: 1px solid #176fac;
+  border-radius: 0.35rem;
+  color: #f6fafc;
+  background: #0873c4;
+  font-weight: 700;
 }
 
 .compare-canvas {
@@ -615,6 +627,21 @@ a:focus-visible {
   padding: 0.7rem;
 }
 
+.diff-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.diff-heading label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #a9bbc5;
+  font-size: 0.75rem;
+}
+
 .diff-panel h2,
 .history-panel h2 {
   margin: 0 0 0.5rem;
@@ -631,6 +658,13 @@ a:focus-visible {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr;
   background: #142b3b;
+}
+
+.empty-table [role="cell"] {
+  padding: 0.4rem 0.65rem;
+  border-top: 1px solid #2e495a;
+  color: #d0dbe1;
+  font-size: 0.78rem;
 }
 
 .empty-table [role="columnheader"] {

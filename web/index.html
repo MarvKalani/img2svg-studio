@@ -209,8 +209,18 @@
               </article>
 
               <div id="compare-output" class="compare-output" hidden>
-                <span id="compare-label-a" class="preview-label compare-label-a"></span>
-                <span id="compare-label-b" class="preview-label compare-label-b"></span>
+                <div class="compare-run-heading compare-run-heading-a">
+                  <span id="compare-label-a" class="preview-label"></span>
+                  <button id="download-compare-a" class="compare-download" type="button">
+                    SVG A
+                  </button>
+                </div>
+                <div class="compare-run-heading compare-run-heading-b">
+                  <button id="download-compare-b" class="compare-download" type="button">
+                    SVG B
+                  </button>
+                  <span id="compare-label-b" class="preview-label"></span>
+                </div>
                 <div class="compare-canvas" data-testid="compare-canvas">
                   <div
                     id="compare-layer-a"
@@ -240,14 +250,21 @@
           </section>
 
           <section class="diff-panel" aria-labelledby="diff-title">
-            <h2 id="diff-title">Parameterunterschiede</h2>
+            <div class="diff-heading">
+              <h2 id="diff-title">Parameterunterschiede</h2>
+              <label>
+                <input id="only-differences" type="checkbox" checked />
+                Nur Unterschiede
+              </label>
+            </div>
             <div class="empty-table" role="table" aria-label="Parametervergleich">
               <div role="row">
                 <span role="columnheader">Parameter</span>
                 <span role="columnheader">A</span>
                 <span role="columnheader">B</span>
               </div>
-              <p>Noch keine Varianten zum Vergleichen.</p>
+              <div id="diff-settings-body" role="rowgroup"></div>
+              <p id="diff-settings-empty">Noch keine Varianten zum Vergleichen.</p>
             </div>
           </section>
 

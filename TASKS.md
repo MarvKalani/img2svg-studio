@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## COMPARE-02 — Parameterunterschiede und A/B-Downloads anzeigen
-
-**Ergebnis:** Unter A/B erscheint eine schema-basierte Tabelle, die standardmäßig nur echte
-Parameterunterschiede zeigt. Downloads exportieren jeweils den tatsächlich gewählten Run.
-
-```gherkin
-Given A und B unterscheiden sich nur in der Farbpräzision
-When der Nutzer nur Unterschiede anzeigen lässt
-Then enthält die Tabelle genau eine Zeile mit beiden Farbpräzisionswerten
-And die Downloads A und B entsprechen bytegenau den jeweiligen Runs
-```
-
-**Ausführbare Abnahme:** `web/src/compare/diff-settings.test.ts` und
-`web/e2e/compare-downloads.spec.ts`; `npm --prefix web test -- diff-settings.test.ts` und
-`npm --prefix web run test:e2e -- compare-downloads.spec.ts`.
-
-**Dokumentation:** Handbuch „Parameter-Diff“ und Downloadverhalten.
-
 ## SHAPE-01 — Formerkennung sicher und abschaltbar einführen
 
 **Ergebnis:** Ein typisierter globaler Schalter und aktivierte Formtypen steuern eine
