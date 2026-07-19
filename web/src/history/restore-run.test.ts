@@ -43,6 +43,7 @@ function runInput(
     ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
+    lineCount: 0,
     options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },
     pathCount: 1,
     rectangleCount: 0,

@@ -220,7 +220,18 @@ Ellipse und Kreis verwenden dieselbe konservative Flächentoleranz. Die maximal 
 Seitenverhältnisabweichung des Kreises sind zugleich die eindeutige Typgrenze: Eine Ellipse muss
 außerhalb dieser Grenze liegen. Zusätzlich darf ihre Pixelbelegung höchstens acht Prozent von
 der idealen Ellipsenfläche abweichen; dadurch bleibt eine unregelmäßige Kontur trotz ähnlicher
-Gesamtfläche ein Pfad. Linie und Polygon folgen in eigenen geprüften Slices.
+Gesamtfläche ein Pfad.
+
+### Native Linien
+
+Ist „Linie“ aktiv, erkennt die Engine stark längliche, vollständig gefüllte horizontale und
+vertikale Cluster. Das Fixture wird als `<line>` von `x1="48"`, `y1="128"` nach `x2="208"`,
+`y2="128"` mit `stroke-width="12"` und `stroke="#F97316"` ausgegeben. Status und History zeigen
+„1 Linie“ und keinen Pfad.
+
+Die längere Seite muss mindestens viermal so groß wie die kürzere sein; die Fläche darf höchstens
+zwei Prozent vom Begrenzungsrahmen abweichen. Dadurch bleiben kompakte Formen Pfade und normale
+Rechtecke Rechtecke. Polygon folgt in einem eigenen geprüften Slice.
 
 ## KI-Manager
 
@@ -253,9 +264,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
 Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
-sicheren Pfad-Fallback. Kreis-, Rechteck- und Ellipsenabnahme lesen das gemeinsame Manifest und
-prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
-2-Pixel-Toleranz.
+sicheren Pfad-Fallback. Kreis-, Rechteck-, Ellipsen- und Linienabnahme lesen das gemeinsame
+Manifest und prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort
+definierten 2-Pixel-Toleranz.
 
 ## Datenschutz
 

@@ -124,6 +124,9 @@ function shapeMetrics(run: ConversionRun): string {
   if (run.ellipseCount > 0) {
     metrics.push(`${String(run.ellipseCount)} ${run.ellipseCount === 1 ? "Ellipse" : "Ellipsen"}`);
   }
+  if (run.lineCount > 0) {
+    metrics.push(`${String(run.lineCount)} ${run.lineCount === 1 ? "Linie" : "Linien"}`);
+  }
   return metrics.join(" · ");
 }
 

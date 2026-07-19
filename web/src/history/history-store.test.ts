@@ -45,6 +45,7 @@ function runInput(runNumber: number): NewConversionRun {
     ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
+    lineCount: 0,
     options: { ...defaultConversionOptions },
     pathCount: 1,
     rectangleCount: 0,

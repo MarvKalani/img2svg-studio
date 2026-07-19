@@ -40,8 +40,9 @@ Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt si
 `ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
 Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
 Typen vorgewählt sind. TypeScript erzeugt die Typauswahl aus `nativeShapeSchema`; Rust prüft die
-aktivierten Typen in derselben stabilen Reihenfolge. Kreis-, Rechteck- und Ellipsenerkennung sind
-implementiert; noch nicht implementierte oder nicht eindeutig erkannte Konturen bleiben Pfade.
+aktivierten Typen in derselben stabilen Reihenfolge. Kreis-, Rechteck-, Ellipsen- und
+Linienerkennung sind implementiert; noch nicht implementierte oder nicht eindeutig erkannte
+Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -53,10 +54,10 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 
 Der Rust-`ConversionResult` enthält den SVG-String und typisierte Shape-Zählungen. Die Web-App
 ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße sowie Pfad-, Kreis-,
-Rechteck- und Ellipsenanzahl und den unveränderlichen Options-Snapshot des History-Runs.
+Rechteck-, Ellipsen- und Linienanzahl und den unveränderlichen Options-Snapshot des History-Runs.
 
 Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
-Dateiname, Zielmaße, Pfad-, Kreis-, Rechteck- und Ellipsenanzahl sowie Laufzeit. Run und
+Dateiname, Zielmaße, Pfad-, Kreis-, Rechteck-, Ellipsen- und Linienanzahl sowie Laufzeit. Run und
 Options-Snapshot sowie die zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der
 Sitzung monoton steigend. Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und
 verwaltet die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular.
@@ -112,6 +113,13 @@ Kreis vor Ellipse; damit besitzt die Typgrenze genau eine Ausgabe. Eine zusätzl
 Belegungsprüfung vergleicht jedes Clusterpixel deterministisch mit der idealen Ellipse im
 Begrenzungsrahmen und erlaubt höchstens acht Prozent Abweichung. So reichen ähnliche Gesamtfläche
 und Ausdehnung einer Freiformkontur nicht für eine native Klassifizierung.
+
+Der Liniendetektor übernimmt horizontale oder vertikale Cluster ab einem Verhältnis von 4:1 und
+höchstens zwei Prozent Abweichung von der vollständig gefüllten Begrenzungsrahmenfläche. Die
+kürzere Seite wird zur Strichbreite, die Mittellinie der längeren Achse zu den Endpunkten. Sehr
+schmale Cluster sind zuvor ausdrücklich vom Rechteckdetektor ausgeschlossen. Transparenz wird als
+`stroke-opacity` ausgegeben; Skalierung und Zahlenformat bleiben mit den gefüllten Formen
+identisch.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.

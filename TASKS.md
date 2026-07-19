@@ -72,23 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-05 — Linien als native SVG-Elemente erkennen
-
-**Ergebnis:** Das Linien-Fixture erzeugt eine native `<line>` mit erwarteten Endpunkten,
-Strichfarbe und -breite; kompakte Freiformen bleiben Pfade.
-
-```gherkin
-Given das Linien-Fixture und nur die Linienerkennung sind aktiv
-When das Bild konvertiert wird
-Then enthält das SVG genau eine native Linie innerhalb der Manifesttoleranz
-And die Statistik meldet genau eine Linie
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_line.rs` mit
-`cargo test -p img2svg-core --test detect_line`.
-
-**Dokumentation:** Handbuch „Native Linien“.
-
 ## SHAPE-06 — Polygone als native SVG-Elemente erkennen
 
 **Ergebnis:** Das Dreieck-Fixture erzeugt ein `<polygon>` innerhalb der Toleranz. Ein typisiertes

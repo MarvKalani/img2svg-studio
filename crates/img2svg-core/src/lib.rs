@@ -22,7 +22,8 @@ const MINIMUM_NATIVE_SHAPE_SPAN_PIXELS: f64 = 4.0;
 const MAXIMUM_CIRCLE_ASPECT_ERROR: f64 = 0.03;
 const MAXIMUM_ELLIPTIC_AREA_ERROR: f64 = 0.08;
 const MAXIMUM_ELLIPSE_OCCUPANCY_ERROR: f64 = 0.08;
-const MAXIMUM_RECTANGLE_AREA_ERROR: f64 = 0.02;
+const MAXIMUM_FILLED_BOX_AREA_ERROR: f64 = 0.02;
+const MINIMUM_LINE_ASPECT_RATIO: f64 = 4.0;
 const MINIMUM_RECTANGLE_ASPECT_RATIO: f64 = 0.1;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -476,7 +477,8 @@ fn detect_shape(shape: NativeShapeKind, candidate: ShapeCandidate<'_>) -> Option
         NativeShapeKind::Circle => detect_circle(candidate),
         NativeShapeKind::Rectangle => detect_rectangle(candidate),
         NativeShapeKind::Ellipse => detect_ellipse(candidate),
-        NativeShapeKind::Line | NativeShapeKind::Polygon => None,
+        NativeShapeKind::Line => detect_line(candidate),
+        NativeShapeKind::Polygon => None,
     }
 }
 
@@ -491,7 +493,7 @@ fn detect_rectangle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
     let area_error = relative_area_error(candidate.area, expected_area);
     let aspect_ratio = width.min(height) / width.max(height);
     // Thin filled clusters remain available for the dedicated line detector instead of becoming rectangles.
-    if area_error > MAXIMUM_RECTANGLE_AREA_ERROR || aspect_ratio < MINIMUM_RECTANGLE_ASPECT_RATIO {
+    if area_error > MAXIMUM_FILLED_BOX_AREA_ERROR || aspect_ratio < MINIMUM_RECTANGLE_ASPECT_RATIO {
         return None;
     }
 
@@ -502,6 +504,45 @@ fn detect_rectangle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
             f64::from(candidate.rect.top),
             width,
             height,
+            dominant_color(candidate),
+            candidate.scale_percent,
+        ),
+    })
+}
+
+fn detect_line(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
+    let width = f64::from(candidate.rect.width());
+    let height = f64::from(candidate.rect.height());
+    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
+        return None;
+    }
+
+    let aspect_ratio = width.max(height) / width.min(height);
+    let expected_area = width * height;
+    if aspect_ratio < MINIMUM_LINE_ASPECT_RATIO
+        || relative_area_error(candidate.area, expected_area) > MAXIMUM_FILLED_BOX_AREA_ERROR
+    {
+        return None;
+    }
+
+    let left = f64::from(candidate.rect.left);
+    let top = f64::from(candidate.rect.top);
+    let right = f64::from(candidate.rect.right);
+    let bottom = f64::from(candidate.rect.bottom);
+    let (start_x, start_y, end_x, end_y, stroke_width) = if width > height {
+        (left, top + height / 2.0, right, top + height / 2.0, height)
+    } else {
+        (left + width / 2.0, top, left + width / 2.0, bottom, width)
+    };
+
+    Some(DetectedShape {
+        kind: NativeShapeKind::Line,
+        svg: svg_line(
+            start_x,
+            start_y,
+            end_x,
+            end_y,
+            stroke_width,
             dominant_color(candidate),
             candidate.scale_percent,
         ),
@@ -624,7 +665,7 @@ fn svg_circle(
     color: Color,
     scale_percent: u16,
 ) -> String {
-    let opacity = shape_opacity(color);
+    let opacity = fill_opacity(color);
     let transform = shape_scale_transform(scale_percent);
     format!(
         "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"{}\"{opacity}{transform}/>",
@@ -643,7 +684,7 @@ fn svg_rectangle(
     color: Color,
     scale_percent: u16,
 ) -> String {
-    let opacity = shape_opacity(color);
+    let opacity = fill_opacity(color);
     let transform = shape_scale_transform(scale_percent);
     format!(
         "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\"{opacity}{transform}/>",
@@ -663,7 +704,7 @@ fn svg_ellipse(
     color: Color,
     scale_percent: u16,
 ) -> String {
-    let opacity = shape_opacity(color);
+    let opacity = fill_opacity(color);
     let transform = shape_scale_transform(scale_percent);
     format!(
         "<ellipse cx=\"{}\" cy=\"{}\" rx=\"{}\" ry=\"{}\" fill=\"{}\"{opacity}{transform}/>",
@@ -675,9 +716,39 @@ fn svg_ellipse(
     )
 }
 
-fn shape_opacity(color: Color) -> String {
+fn svg_line(
+    start_x: f64,
+    start_y: f64,
+    end_x: f64,
+    end_y: f64,
+    stroke_width: f64,
+    color: Color,
+    scale_percent: u16,
+) -> String {
+    let opacity = stroke_opacity(color);
+    let transform = shape_scale_transform(scale_percent);
+    format!(
+        "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"{}\" stroke-width=\"{}\"{opacity}{transform}/>",
+        format_svg_number(start_x),
+        format_svg_number(start_y),
+        format_svg_number(end_x),
+        format_svg_number(end_y),
+        color.to_hex_string(),
+        format_svg_number(stroke_width)
+    )
+}
+
+fn fill_opacity(color: Color) -> String {
     if color.a < 255 {
         format!(" fill-opacity=\"{}\"", format_opacity(color.a))
+    } else {
+        String::new()
+    }
+}
+
+fn stroke_opacity(color: Color) -> String {
+    if color.a < 255 {
+        format!(" stroke-opacity=\"{}\"", format_opacity(color.a))
     } else {
         String::new()
     }

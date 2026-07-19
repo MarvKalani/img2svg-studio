@@ -33,6 +33,7 @@ function run(id: number): ConversionRun {
     fileName: "circle.png",
     heightPixels: 256,
     id,
+    lineCount: 0,
     options: defaultConversionOptions,
     pathCount: 1,
     rectangleCount: 0,

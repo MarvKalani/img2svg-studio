@@ -6,6 +6,7 @@ export interface NewConversionRun {
   ellipseCount: number;
   fileName: string;
   heightPixels: number;
+  lineCount: number;
   options: ConversionOptions;
   pathCount: number;
   rectangleCount: number;

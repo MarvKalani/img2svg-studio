@@ -56,6 +56,7 @@ async function runConversion(
     elements.statusImage.textContent = completedStatus(
       metrics.circleCount,
       metrics.ellipseCount,
+      metrics.lineCount,
       metrics.rectangleCount,
     );
     recordRun({
@@ -78,6 +79,7 @@ async function runConversion(
 function completedStatus(
   circleCount: number,
   ellipseCount: number,
+  lineCount: number,
   rectangleCount: number,
 ): string {
   const nativeShapes = [];
@@ -91,6 +93,9 @@ function completedStatus(
   }
   if (ellipseCount > 0) {
     nativeShapes.push(`${String(ellipseCount)} ${ellipseCount === 1 ? "Ellipse" : "Ellipsen"}`);
+  }
+  if (lineCount > 0) {
+    nativeShapes.push(`${String(lineCount)} ${lineCount === 1 ? "Linie" : "Linien"}`);
   }
   const nativeShapeStatus = nativeShapes.length > 0 ? ` · ${nativeShapes.join(" · ")}` : "";
   return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeShapeStatus}`;
