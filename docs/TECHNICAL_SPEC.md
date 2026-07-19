@@ -73,6 +73,11 @@ werden dokumentiert. Übernommene oder adaptierte Algorithmen erhalten konkrete 
 
 ## 6. Web-Anwendung
 
+Der erste ausführbare Slice verwendet Vite 8.1.5, TypeScript 7.0.2 und frameworkfreies
+semantisches HTML/CSS. `web/index.html` enthält die sichtbaren Landmarks und
+`web/src/styles.css` die responsive Darstellung. Der TypeScript-Einstieg bleibt bis zum ersten
+interaktiven Slice bewusst auf den Style-Import und das Bereitschaftssignal begrenzt.
+
 Die UI verwendet kleine Feature-Module und zentrale Application Services:
 
 - `imageService`: Laden, Dekodieren, Transformation und Größenänderung.

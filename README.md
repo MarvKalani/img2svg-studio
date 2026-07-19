@@ -10,9 +10,26 @@ Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter.
 
 ## Projektstatus
 
-Das Repository befindet sich in der Planungs- und Aufbauphase. Die konsolidierten
-Anforderungen und die ausführbare Taskliste bilden die verbindliche Grundlage für die
-Implementierung.
+Die responsive Studio-Oberfläche läuft lokal. Sie zeigt Kopfzeile, Parameterleiste,
+A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. Bildverarbeitung und
+Interaktionen folgen in den nächsten vertikalen Slices.
+
+## Lokal starten
+
+Voraussetzung ist Node.js 22.14 oder neuer.
+
+```bash
+cd web
+npm ci
+npm run dev
+```
+
+Der Entwicklungsserver zeigt die Anwendung unter `http://127.0.0.1:5173`.
+
+```bash
+npm run build
+npm run test:e2e -- app-shell.spec.ts
+```
 
 ## Leitprinzipien
 
@@ -36,7 +53,7 @@ Implementierung.
 - [Entscheidungsprotokoll](docs/DECISIONS.md)
 - [Offene Umsetzungstasks](TASKS.md)
 
-## Geplante Repository-Struktur
+## Repository-Struktur
 
 ```text
 img2svg/
@@ -48,8 +65,6 @@ img2svg/
 ├── fixtures/             # Kleine, lizenzfreie Testmotive
 └── TASKS.md              # Priorisierte Arbeitsliste mit Abnahmekriterien
 ```
-
-Die Build-Anleitung wird mit dem lauffähigen Gerüst in Task APP-01 ergänzt.
 
 Die Implementierung erfolgt testgetrieben in kleinen vertikalen Slices. Eigene Quell- und
 Testdateien dürfen 1000 Zeilen nicht überschreiten; minimale, sachbezogene Git-Diffs sind

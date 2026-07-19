@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Rasterbilder lokal konvertieren, Varianten vergleichen und als SVG exportieren."
+    />
+    <title>img2svg Studio</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="img2svg Studio Startseite">
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M24 3 42 13v22L24 45 6 35V13Z" />
+            <path d="m24 10 12 7v14l-12 7-12-7V17Z" />
+            <circle cx="24" cy="24" r="5" />
+          </svg>
+          <span>img2svg Studio</span>
+        </a>
+
+        <span class="privacy-badge" aria-label="Lokale Verarbeitung">
+          <span aria-hidden="true">⌾</span>
+          Lokal · kein Upload
+        </span>
+
+        <nav class="view-tabs" aria-label="Ansichtsmodus">
+          <button type="button">SVG</button>
+          <button type="button">Verarbeitet</button>
+          <button type="button">Original</button>
+          <button class="active" type="button" aria-pressed="true">A/B Vergleich</button>
+        </nav>
+
+        <div class="zoom-controls" aria-label="Zoomsteuerung">
+          <button type="button" aria-label="Verkleinern">−</button>
+          <span>100%</span>
+          <button type="button" aria-label="Vergrößern">+</button>
+        </div>
+      </header>
+
+      <div class="studio-grid">
+        <aside class="sidebar" aria-label="Konvertierungsparameter">
+          <section class="source-card" aria-label="Eingabebild">
+            <div class="source-icon" aria-hidden="true">◇</div>
+            <div>
+              <strong>Noch kein Bild</strong>
+              <span>PNG, JPEG oder WebP</span>
+            </div>
+            <button type="button">Bild wählen</button>
+          </section>
+
+          <button class="convert-button" type="button" disabled>
+            <span aria-hidden="true">✦</span>
+            Konvertieren
+          </button>
+
+          <section class="control-panel">
+            <h2>Preset &amp; Größe</h2>
+            <label>
+              <span>Preset</span>
+              <select aria-label="Preset">
+                <option>Logo</option>
+              </select>
+            </label>
+            <label>
+              <span>Zielgröße</span>
+              <select aria-label="Zielgröße">
+                <option>Original</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="control-panel">
+            <h2>Farben</h2>
+            <label class="range-label">
+              <span>Farbpräzision</span>
+              <output>7</output>
+              <input type="range" min="1" max="12" value="7" />
+            </label>
+          </section>
+
+          <section class="control-panel">
+            <h2>Kurven</h2>
+            <label class="range-label">
+              <span>Detailfilter</span>
+              <output>4 px</output>
+              <input type="range" min="0" max="12" value="4" />
+            </label>
+          </section>
+
+          <section class="control-panel switch-row">
+            <div>
+              <h2>Native Formen</h2>
+              <p>Kreise und Kanten erkennen</p>
+            </div>
+            <button class="switch" type="button" role="switch" aria-checked="false">
+              <span></span>
+              <span class="visually-hidden">Native Formen aktivieren</span>
+            </button>
+          </section>
+
+          <section class="control-panel ai-panel">
+            <h2>KI-Werkzeuge</h2>
+            <button type="button" class="manager-button">
+              <span>KI-Manager</span>
+              <span aria-hidden="true">›</span>
+            </button>
+            <div class="model-row">
+              <span class="model-icon" aria-hidden="true">◌</span>
+              <span>Hintergrund entfernen</span>
+              <small>Nicht geladen</small>
+            </div>
+            <div class="model-row">
+              <span class="model-icon" aria-hidden="true">⌁</span>
+              <span>Smart Select</span>
+              <small>Nicht geladen</small>
+            </div>
+          </section>
+        </aside>
+
+        <main class="workspace">
+          <section class="comparison" aria-labelledby="workspace-title">
+            <h1 id="workspace-title" class="visually-hidden">Arbeitsfläche</h1>
+            <div class="comparison-stage">
+              <article class="preview-pane">
+                <span class="preview-label">A · Variante</span>
+                <div class="preview-placeholder">
+                  <svg viewBox="0 0 140 140" aria-hidden="true">
+                    <path d="M70 14 118 42v56l-48 28-48-28V42Z" />
+                    <path d="M70 42 94 56v28L70 98 46 84V56Z" />
+                  </svg>
+                  <strong>Erste Variante</strong>
+                  <span>Nach der Konvertierung erscheint hier dein SVG.</span>
+                </div>
+              </article>
+
+              <div class="comparison-divider" aria-hidden="true"><span>↔</span></div>
+
+              <article class="preview-pane">
+                <span class="preview-label align-right">B · Variante</span>
+                <div class="preview-placeholder secondary">
+                  <svg viewBox="0 0 140 140" aria-hidden="true">
+                    <path d="M70 14 118 42v56l-48 28-48-28V42Z" />
+                    <path d="M70 42 94 56v28L70 98 46 84V56Z" />
+                  </svg>
+                  <strong>Zweite Variante</strong>
+                  <span>Wähle später zwei Runs aus dem Verlauf.</span>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="diff-panel" aria-labelledby="diff-title">
+            <h2 id="diff-title">Parameterunterschiede</h2>
+            <div class="empty-table" role="table" aria-label="Parametervergleich">
+              <div role="row">
+                <span role="columnheader">Parameter</span>
+                <span role="columnheader">A</span>
+                <span role="columnheader">B</span>
+              </div>
+              <p>Noch keine Varianten zum Vergleichen.</p>
+            </div>
+          </section>
+
+          <section class="history-panel" aria-labelledby="history-title">
+            <div class="section-heading">
+              <h2 id="history-title">Verlauf</h2>
+              <span>Varianten erscheinen nach der ersten Konvertierung.</span>
+            </div>
+            <div class="history-empty">
+              <span class="history-empty-icon" aria-hidden="true">＋</span>
+              <strong>Der Verlauf ist noch leer</strong>
+              <span>Lade ein Bild und erstelle deine erste SVG-Variante.</span>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="statusbar" role="status" aria-label="Anwendungsstatus">
+        <span><strong>Bereit</strong> für ein lokales Bild</span>
+        <span>0 Varianten</span>
+        <span>Keine Netzwerkübertragung</span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

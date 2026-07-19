@@ -72,27 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## APP-01 — Ausführbare Studio-Oberfläche aufbauen
-
-**Ergebnis:** Ein lokaler Entwicklungsserver zeigt den akzeptierten UI-Entwurf als responsive
-HTML/CSS-Oberfläche mit Kopfzeile, Parameterleiste links, Arbeitsfläche, Diff-Bereich, leerer
-History unten und Statuszeile.
-
-**Scope:** Vite, exakt TypeScript `7.0.2`, Vitest und Playwright mit npm-Lockfile; semantische
-Landmarks und sichtbare Platzhalterzustände.
-
-```gherkin
-Given ein frischer Browser öffnet img2svg Studio
-When die Startseite vollständig geladen ist
-Then sind Parameterleiste, Arbeitsfläche, Diff-Bereich, leere History und Status sichtbar
-And die Seite besitzt weder horizontales Überlaufen noch eine JavaScript-Fehlermeldung
-```
-
-**Ausführbare Abnahme:** `web/e2e/app-shell.spec.ts` mit
-`npm --prefix web run test:e2e -- app-shell.spec.ts`; zusätzlich `npm --prefix web run build`.
-
-**Dokumentation:** Handbuch-Status, lokaler Start und UI-Screenshot aktualisieren.
-
 ## APP-02 — Lokale Qualitätsprüfung und CI identisch machen
 
 **Ergebnis:** Ein einziger lokaler Befehl prüft Formatierung, Lint, Typecheck, schnelle Tests,

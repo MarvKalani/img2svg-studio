@@ -17,6 +17,9 @@
 /artifacts/
 /playwright-report/
 /test-results/
+/web/playwright-report/
+/web/test-results/
+*.tsbuildinfo
 
 # Local configuration
 .env

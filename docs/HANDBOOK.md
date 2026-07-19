@@ -5,8 +5,10 @@
 Dieses Handbuch wächst zusammen mit der Anwendung. Es beschreibt nur bereits entschiedene
 oder implementierte Funktionen und kennzeichnet noch nicht verfügbare Abläufe ausdrücklich.
 
-Aktueller Stand: Produktspezifikation, UI-Mockup und Test-Fixtures sind vorhanden; die
-Anwendung selbst ist noch nicht implementiert.
+Aktueller Stand: Die responsive Studio-Oberfläche ist lokal ausführbar. Kopfzeile,
+Parameterleiste, A/B-Arbeitsfläche, Parameterunterschiede, leerer Verlauf und Statuszeile sind
+sichtbar. Die Bedienelemente zeigen den vorgesehenen Zustand; Bildladen und Konvertierung
+folgen als eigene getestete Slices.
 
 ## Produktidee
 
@@ -22,6 +24,9 @@ Anforderung in den Browser geladen.
 Der verbindliche erste UI-Entwurf liegt unter
 [`docs/mockups/img2svg-ui-v1.png`](mockups/img2svg-ui-v1.png).
 
+Der in Chrome abgenommene aktuelle Stand ist hier festgehalten:
+[`docs/screenshots/app-shell.png`](screenshots/app-shell.png).
+
 Die Oberfläche besteht aus:
 
 - einer Kopfzeile mit Ansichten und Status.
@@ -30,6 +35,17 @@ Die Oberfläche besteht aus:
 - einer Parameter-Diff-Tabelle unter dem Vergleich.
 - einem Verlauf mit Conversion-Runs am unteren Rand.
 - einer schmalen Statuszeile mit Größe, Pfaden, Formen und Laufzeit.
+
+### Lokal öffnen
+
+```bash
+cd web
+npm ci
+npm run dev
+```
+
+Anschließend ist die Oberfläche unter `http://127.0.0.1:5173` erreichbar. Der aktuelle Stand
+funktioniert auf breiten und schmalen Viewports ohne horizontales Seitenüberlaufen.
 
 ## Geplanter Grundablauf
 
