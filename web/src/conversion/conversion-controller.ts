@@ -53,7 +53,7 @@ async function runConversion(
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
-    elements.statusImage.textContent = "Konvertierung abgeschlossen · SVG lokal erzeugt";
+    elements.statusImage.textContent = completedStatus(metrics.circleCount);
     recordRun({
       durationMilliseconds: Math.max(0, Date.now() - startedAtMilliseconds),
       fileName: file.name,
@@ -69,6 +69,12 @@ async function runConversion(
     elements.button.disabled = false;
     elements.buttonLabel.textContent = "Konvertieren";
   }
+}
+
+function completedStatus(circleCount: number): string {
+  const nativeCircleStatus =
+    circleCount > 0 ? ` · ${String(circleCount)} ${circleCount === 1 ? "Kreis" : "Kreise"}` : "";
+  return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeCircleStatus}`;
 }
 
 function readConversionElements(): ConversionElements {

@@ -27,6 +27,7 @@ describe("compare selection", () => {
 
 function run(id: number): ConversionRun {
   return Object.freeze({
+    circleCount: 0,
     durationMilliseconds: 10,
     fileName: "circle.png",
     heightPixels: 256,

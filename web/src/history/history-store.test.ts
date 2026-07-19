@@ -40,6 +40,7 @@ describe("history store", () => {
 
 function runInput(runNumber: number): NewConversionRun {
   return {
+    circleCount: 0,
     durationMilliseconds: runNumber,
     fileName: "circle.png",
     heightPixels: 256,

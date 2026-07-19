@@ -96,7 +96,7 @@ function runItem(
   const dimensions = document.createElement("span");
   dimensions.textContent = `${String(run.widthPixels)} × ${String(run.heightPixels)}`;
   const metrics = document.createElement("small");
-  metrics.textContent = `${String(run.pathCount)} ${run.pathCount === 1 ? "Pfad" : "Pfade"} · ${String(run.durationMilliseconds)} ms`;
+  metrics.textContent = `${shapeMetrics(run)} · ${String(run.durationMilliseconds)} ms`;
 
   button.append(thumbnail, title, dimensions, metrics);
   button.addEventListener("click", selectRun);
@@ -109,6 +109,14 @@ function runItem(
   );
   item.append(button, actions);
   return item;
+}
+
+function shapeMetrics(run: ConversionRun): string {
+  const metrics = [`${String(run.pathCount)} ${run.pathCount === 1 ? "Pfad" : "Pfade"}`];
+  if (run.circleCount > 0) {
+    metrics.push(`${String(run.circleCount)} ${run.circleCount === 1 ? "Kreis" : "Kreise"}`);
+  }
+  return metrics.join(" · ");
 }
 
 function compareButton(

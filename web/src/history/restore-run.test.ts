@@ -38,6 +38,7 @@ function runInput(
   scalePercent: number,
 ): NewConversionRun {
   return {
+    circleCount: 0,
     durationMilliseconds: 20,
     fileName: "circle.png",
     heightPixels: 256,

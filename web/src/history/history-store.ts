@@ -1,6 +1,7 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
 
 export interface NewConversionRun {
+  circleCount: number;
   durationMilliseconds: number;
   fileName: string;
   heightPixels: number;

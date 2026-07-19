@@ -1,9 +1,9 @@
 import { resolve } from "node:path";
 import { expect, test } from "@playwright/test";
 
-const circleFixturePath = resolve(
+const unknownShapeFixturePath = resolve(
   import.meta.dirname,
-  "../../fixtures/shape-recognition/input/circle.png",
+  "../../fixtures/shape-recognition/input/triangle.png",
 );
 
 test("Given shape detection controls, when disabled and enabled before conversion, then the unproved contour remains the exact path fallback", async ({
@@ -20,7 +20,7 @@ test("Given shape detection controls, when disabled and enabled before conversio
     ),
   ).toBe(true);
 
-  await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
+  await page.getByLabel("Rasterbild auswählen").setInputFiles(unknownShapeFixturePath);
   const convertButton = page.getByRole("button", { name: "Konvertieren" });
   await convertButton.click();
   const fallbackSvg = await serializedOutput(page);

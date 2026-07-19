@@ -183,11 +183,20 @@ vorgewählt, aber bis zum Aktivieren des globalen Schalters nicht bedienbar. Dan
 Typen einzeln ein- und ausschalten. Globaler Zustand und Typauswahl werden mit jedem Run
 unveränderlich gespeichert, wiederhergestellt und im A/B-Parametervergleich angezeigt.
 
-Der aktuelle Sicherheitsstand enthält die typisierte Detektorkette, aber noch keinen freigegebenen
-Formdetektor. Deshalb bleibt jede Kontur als bewährter SVG-Pfad erhalten. Bei ausgeschalteter
-Formerkennung ist die Ausgabe byteidentisch zur bisherigen Konvertierung; bei eingeschalteter
-Erkennung fällt jeder noch nicht eindeutig bewiesene Typ ebenfalls auf den Pfad zurück. Die
-einzelnen nativen Detektoren werden ab dem nächsten Slice mit den Ground-Truth-Fixtures aktiviert.
+Bei ausgeschalteter Formerkennung ist die Ausgabe byteidentisch zur bisherigen Konvertierung.
+Bei eingeschalteter Erkennung fällt jeder nicht eindeutig erkannte oder noch nicht implementierte
+Typ auf den bewährten SVG-Pfad zurück.
+
+### Native Kreise
+
+Ist „Kreis“ als einziger Typ aktiv, erkennt die Engine kompakte, nahezu quadratische
+Kreisflächen und gibt sie als `<circle>` mit Mittelpunkt, Radius, dominanter Originalfarbe und
+gegebenenfalls Deckkraft aus. Der Fixture-Kreis wird als `cx="128"`, `cy="128"`, `r="64"` und
+`fill="#0EA5E9"` ausgegeben. Status und History zeigen dafür „1 Kreis“ und keinen Pfad.
+
+Die Ground-Truth-Abnahme erlaubt höchstens 2 Pixel Abweichung je Geometriewert. Intern sind
+Seitenverhältnis und Flächenfüllung bewusst enger begrenzt; passt eine Kontur nicht eindeutig,
+bleibt sie ein Pfad. Rechteck, Ellipse, Linie und Polygon folgen in eigenen geprüften Slices.
 
 ## KI-Manager
 
@@ -219,9 +228,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 ## Formerkennungs-Fixtures
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
-Linie, Polygon und eine gemischte Szene. Der Basistest beweist bereits byteidentisches Abschalten
-und sicheren Pfad-Fallback; die folgenden Tests vergleichen zusätzlich SVG-Elementtyp und
-Geometrie innerhalb der definierten Toleranz.
+Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
+sicheren Pfad-Fallback. Die Kreisabnahme liest das gemeinsame Manifest, prüft Elementtyp, Farbe,
+Statistik und jeden Geometriewert innerhalb der dort definierten 2-Pixel-Toleranz.
 
 ## Datenschutz
 

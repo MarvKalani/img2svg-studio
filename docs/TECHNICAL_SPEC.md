@@ -40,8 +40,8 @@ Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt si
 `ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
 Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
 Typen vorgewählt sind. TypeScript erzeugt die Typauswahl aus `nativeShapeSchema`; Rust prüft die
-aktivierten Typen in derselben stabilen Reihenfolge. Noch nicht implementierte oder nicht
-eindeutig erkannte Konturen bleiben Pfade.
+aktivierten Typen in derselben stabilen Reihenfolge. Die Kreiserkennung ist implementiert;
+noch nicht implementierte oder nicht eindeutig erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -51,12 +51,13 @@ Eine kanonische Schemaquelle erzeugt oder speist:
 - History-Diff.
 - WebMCP-Inputschema.
 
-`ConversionResult` enthält SVG, Maße, wirksame Einstellungen, Laufzeit, Dateigröße,
-Shape-Zählungen, Pfadanzahl, Transparenz und nicht fatale Warnungen.
+Der Rust-`ConversionResult` enthält den SVG-String und typisierte Shape-Zählungen. Die Web-App
+ergänzt aus validiertem SVG, Eingabe und Laufzeitmessung die Zielmaße, Pfad- und Kreisanzahl sowie
+den unveränderlichen Options-Snapshot des History-Runs.
 
 Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
-Dateiname, Zielmaße, Pfadanzahl und Laufzeit. Run und Options-Snapshot werden eingefroren; die
-Rückgabe der Liste ist ebenfalls eine eingefrorene Kopie. IDs sind innerhalb der Sitzung
+Dateiname, Zielmaße, Pfad- und Kreisanzahl sowie Laufzeit. Run und Options-Snapshot sowie die
+zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung
 monoton steigend. Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet
 die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular.
 
@@ -76,8 +77,10 @@ error         öffentliche Fehlertypen
 `visioncortex` wird als Abhängigkeit verwendet, nicht kopiert. Herkunft, Version und Lizenz
 werden dokumentiert. Übernommene oder adaptierte Algorithmen erhalten konkrete Hinweise.
 
-Der implementierte Basiskontrakt lautet
-`convert_rgba(rgba, width, height) -> Result<String, ConversionError>`. Er validiert positive
+Der kompatible Basiskontrakt lautet
+`convert_rgba(rgba, width, height) -> Result<String, ConversionError>`. Die erweiterte
+Engine-Grenze `convert_rgba_with_options_result` liefert `ConversionResult` mit SVG und
+typisierten Shape-Zählungen. Sie validiert positive
 Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel einen
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
 stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
@@ -85,10 +88,21 @@ stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
 Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die drei
 numerischen Optionswerte und ein `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
 Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
-Spätere Resultatmetadaten erweitern diesen Vertrag, ohne die Engine an den Browser zu koppeln.
+Die schmale WASM-Grenze liefert weiterhin nur den SVG-String; die Web-App liest sichtbare
+Elementzählungen aus genau diesem validierten SVG und speichert sie mit dem Run.
+
+Der Kreisdetektor wertet pro Cluster dessen Begrenzungsrahmen und Pixelanzahl aus. Maximal drei
+Prozent Seitenverhältnisabweichung und acht Prozent Abweichung von der erwarteten Kreisfläche
+begrenzen False Positives. Die Geometrie folgt deterministisch aus dem Begrenzungsrahmen; eine
+`BTreeMap` bestimmt die dominante Original-RGBA-Farbe unabhängig von Hash-Reihenfolgen. Eine
+nicht erfüllte Bedingung führt ohne Teilresultat zum vorhandenen Pfad zurück. Der Test liest PNG
+und Sollwerte direkt aus dem gemeinsamen Fixture-Manifest und erlaubt die dort festgelegten zwei
+Pixel Geometrietoleranz.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.
+Die Test-only-Abhängigkeiten `png` 0.18.1, `serde` 1.0.229 und `serde_json` 1.0.150 sind ebenfalls
+exakt gepinnt und gelangen nicht in das produktive WASM.
 
 ## 5. Determinismus
 

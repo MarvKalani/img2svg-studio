@@ -19,6 +19,7 @@ test("Given two runs, when older options are restored and converted, then form a
   await page.getByRole("slider", { name: "Speckle-Filter", exact: true }).fill("12");
   await page.getByLabel("Zielgröße").selectOption("50");
   await convertButton.click();
+  await expect(page.locator('[data-run-id="2"]')).toBeVisible();
 
   await page.locator('[data-run-id="1"]').click();
   await page.getByRole("button", { name: "Einstellungen übernehmen" }).click();

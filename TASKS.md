@@ -72,23 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-02 — Kreise als native SVG-Elemente erkennen
-
-**Ergebnis:** Das vorhandene Kreis-PNG erzeugt bei aktivierter Kreiserkennung ein `<circle>`
-mit Mittelpunkt, Radius und Farbe innerhalb der Manifesttoleranz; die Statistik zählt es.
-
-```gherkin
-Given das Kreis-Fixture und nur die Kreiserkennung sind aktiv
-When das Bild konvertiert wird
-Then enthält das SVG genau einen nativen Kreis innerhalb von 2 Pixel Geometrietoleranz
-And die Formerkennungsstatistik meldet genau einen Kreis
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_circle.rs` liest
-`fixtures/shape-recognition/manifest.json`; `cargo test -p img2svg-core --test detect_circle`.
-
-**Dokumentation:** Handbuch „Native Kreise“ und bekannte Toleranz.
-
 ## SHAPE-03 — Rechtecke als native SVG-Elemente erkennen
 
 **Ergebnis:** Das Rechteck-Fixture wird als `<rect>` innerhalb der Manifesttoleranz ausgegeben;

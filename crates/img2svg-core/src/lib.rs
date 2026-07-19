@@ -1,11 +1,12 @@
 //! Deterministic browser-independent raster-to-SVG core.
 
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::f64::consts::PI;
 use std::fmt;
 
 use visioncortex::color_clusters::{HIERARCHICAL_MAX, KeyingAction, Runner, RunnerConfig};
-use visioncortex::{Color, ColorImage, PathSimplifyMode, PointF64};
+use visioncortex::{BoundingRect, Color, ColorImage, PathSimplifyMode, PointF64};
 
 const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (255, 0, 255),
@@ -17,6 +18,9 @@ const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (255, 255, 255),
     (1, 1, 1),
 ];
+const MINIMUM_NATIVE_SHAPE_SPAN_PIXELS: f64 = 4.0;
+const MAXIMUM_CIRCLE_ASPECT_ERROR: f64 = 0.03;
+const MAXIMUM_CIRCLE_AREA_ERROR: f64 = 0.08;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConversionErrorCode {
@@ -141,6 +145,67 @@ impl ShapeDetectionOptions {
 impl Default for ShapeDetectionOptions {
     fn default() -> Self {
         Self::new(false, NativeShapeTypes::all())
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct ShapeStatistics {
+    circles: usize,
+    ellipses: usize,
+    lines: usize,
+    polygons: usize,
+    rectangles: usize,
+}
+
+impl ShapeStatistics {
+    pub const fn circles(self) -> usize {
+        self.circles
+    }
+
+    pub const fn ellipses(self) -> usize {
+        self.ellipses
+    }
+
+    pub const fn lines(self) -> usize {
+        self.lines
+    }
+
+    pub const fn polygons(self) -> usize {
+        self.polygons
+    }
+
+    pub const fn rectangles(self) -> usize {
+        self.rectangles
+    }
+
+    fn record(&mut self, shape: NativeShapeKind) {
+        match shape {
+            NativeShapeKind::Circle => self.circles += 1,
+            NativeShapeKind::Rectangle => self.rectangles += 1,
+            NativeShapeKind::Ellipse => self.ellipses += 1,
+            NativeShapeKind::Line => self.lines += 1,
+            NativeShapeKind::Polygon => self.polygons += 1,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ConversionResult {
+    shape_statistics: ShapeStatistics,
+    svg: String,
+}
+
+impl ConversionResult {
+    pub fn svg(&self) -> &str {
+        &self.svg
+    }
+
+    pub const fn shape_statistics(&self) -> ShapeStatistics {
+        self.shape_statistics
+    }
+
+    pub fn into_svg(self) -> String {
+        self.svg
     }
 }
 
@@ -277,6 +342,15 @@ pub fn convert_rgba_with_options(
     height: usize,
     options: ConversionOptions,
 ) -> Result<String, ConversionError> {
+    convert_rgba_with_options_result(pixels, width, height, options).map(ConversionResult::into_svg)
+}
+
+pub fn convert_rgba_with_options_result(
+    pixels: &[u8],
+    width: usize,
+    height: usize,
+    options: ConversionOptions,
+) -> Result<ConversionResult, ConversionError> {
     let expected_length = expected_rgba_length(width, height)?;
     if pixels.len() != expected_length {
         return Err(ConversionError::PixelLength {
@@ -311,7 +385,8 @@ pub fn convert_rgba_with_options(
     .run();
 
     let view = clusters.view();
-    let mut paths = Vec::with_capacity(clusters.output_len());
+    let mut svg_elements = Vec::with_capacity(clusters.output_len());
+    let mut shape_statistics = ShapeStatistics::default();
     for &cluster_index in view.clusters_output.iter().rev() {
         let cluster = view.get_cluster(cluster_index);
         if cluster.area() < minimum_cluster_area {
@@ -328,28 +403,59 @@ pub fn convert_rgba_with_options(
         );
         let (path_data, offset) = compound_path.to_svg_string(true, PointF64::default(), Some(2));
         if !path_data.is_empty() {
-            let fallback_path = || {
-                svg_path(
+            let candidate = ShapeCandidate {
+                area: cluster.area(),
+                cluster_color: cluster.residue_color(),
+                indices: &cluster.indices,
+                pixels,
+                rect: cluster.rect,
+                scale_percent: options.scale_percent,
+            };
+            if let Some(detected_shape) = detect_native_shape(candidate, options.shape_detection) {
+                shape_statistics.record(detected_shape.kind);
+                svg_elements.push(detected_shape.svg);
+            } else {
+                svg_elements.push(svg_path(
                     &path_data,
                     cluster.residue_color(),
                     offset,
                     options.scale_percent,
-                )
-            };
-            paths.push(detect_native_shape(options.shape_detection).unwrap_or_else(fallback_path));
+                ));
+            }
         }
     }
 
     let target_width = scaled_dimension(width, options.scale_percent)?;
     let target_height = scaled_dimension(height, options.scale_percent)?;
 
-    Ok(format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{target_width}\" height=\"{target_height}\" viewBox=\"0 0 {target_width} {target_height}\">{}</svg>",
-        paths.join("")
-    ))
+    Ok(ConversionResult {
+        shape_statistics,
+        svg: format!(
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{target_width}\" height=\"{target_height}\" viewBox=\"0 0 {target_width} {target_height}\">{}</svg>",
+            svg_elements.join("")
+        ),
+    })
 }
 
-fn detect_native_shape(options: ShapeDetectionOptions) -> Option<String> {
+#[derive(Clone, Copy)]
+struct ShapeCandidate<'a> {
+    area: usize,
+    cluster_color: Color,
+    indices: &'a [u32],
+    pixels: &'a [u8],
+    rect: BoundingRect,
+    scale_percent: u16,
+}
+
+struct DetectedShape {
+    kind: NativeShapeKind,
+    svg: String,
+}
+
+fn detect_native_shape(
+    candidate: ShapeCandidate<'_>,
+    options: ShapeDetectionOptions,
+) -> Option<DetectedShape> {
     if !options.enabled() {
         return None;
     }
@@ -357,17 +463,98 @@ fn detect_native_shape(options: ShapeDetectionOptions) -> Option<String> {
     NativeShapeKind::ORDERED
         .into_iter()
         .filter(|shape| options.types().is_enabled(*shape))
-        .find_map(detect_shape)
+        .find_map(|shape| detect_shape(shape, candidate))
 }
 
-fn detect_shape(shape: NativeShapeKind) -> Option<String> {
+fn detect_shape(shape: NativeShapeKind, candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
     match shape {
-        NativeShapeKind::Circle
-        | NativeShapeKind::Rectangle
+        NativeShapeKind::Circle => detect_circle(candidate),
+        NativeShapeKind::Rectangle
         | NativeShapeKind::Ellipse
         | NativeShapeKind::Line
         | NativeShapeKind::Polygon => None,
     }
+}
+
+fn detect_circle(candidate: ShapeCandidate<'_>) -> Option<DetectedShape> {
+    let width = f64::from(candidate.rect.width());
+    let height = f64::from(candidate.rect.height());
+    if width < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS || height < MINIMUM_NATIVE_SHAPE_SPAN_PIXELS {
+        return None;
+    }
+
+    let aspect_error = (width - height).abs() / width.max(height);
+    let expected_area = PI * width * height / 4.0;
+    let area_error = (candidate.area as f64 - expected_area).abs() / expected_area;
+    // Tight independent bounds favor the lossless path fallback over false native geometry.
+    if aspect_error > MAXIMUM_CIRCLE_ASPECT_ERROR || area_error > MAXIMUM_CIRCLE_AREA_ERROR {
+        return None;
+    }
+
+    let center_x = (f64::from(candidate.rect.left) + f64::from(candidate.rect.right)) / 2.0;
+    let center_y = (f64::from(candidate.rect.top) + f64::from(candidate.rect.bottom)) / 2.0;
+    let radius = (width + height) / 4.0;
+    Some(DetectedShape {
+        kind: NativeShapeKind::Circle,
+        svg: svg_circle(
+            center_x,
+            center_y,
+            radius,
+            dominant_color(candidate),
+            candidate.scale_percent,
+        ),
+    })
+}
+
+fn dominant_color(candidate: ShapeCandidate<'_>) -> Color {
+    let mut counts = BTreeMap::<[u8; 4], usize>::new();
+    for &pixel_index in candidate.indices {
+        let start = pixel_index as usize * 4;
+        if let Some(pixel) = candidate.pixels.get(start..start + 4) {
+            let rgba = [pixel[0], pixel[1], pixel[2], pixel[3]];
+            *counts.entry(rgba).or_default() += 1;
+        }
+    }
+
+    counts
+        .into_iter()
+        .max_by_key(|(_, count)| *count)
+        .map(|(rgba, _)| Color::new_rgba(rgba[0], rgba[1], rgba[2], rgba[3]))
+        .unwrap_or(candidate.cluster_color)
+}
+
+fn svg_circle(
+    center_x: f64,
+    center_y: f64,
+    radius: f64,
+    color: Color,
+    scale_percent: u16,
+) -> String {
+    let opacity = if color.a < 255 {
+        format!(" fill-opacity=\"{}\"", format_opacity(color.a))
+    } else {
+        String::new()
+    };
+    let transform = if scale_percent == 100 {
+        String::new()
+    } else {
+        format!(" transform=\"scale({})\"", scale_factor(scale_percent))
+    };
+    format!(
+        "<circle cx=\"{}\" cy=\"{}\" r=\"{}\" fill=\"{}\"{opacity}{transform}/>",
+        format_svg_number(center_x),
+        format_svg_number(center_y),
+        format_svg_number(radius),
+        color.to_hex_string()
+    )
+}
+
+fn format_svg_number(value: f64) -> String {
+    let formatted = format!("{value:.2}");
+    formatted
+        .trim_end_matches('0')
+        .trim_end_matches('.')
+        .to_owned()
 }
 
 fn scaled_dimension(dimension: usize, scale_percent: u16) -> Result<usize, ConversionError> {
