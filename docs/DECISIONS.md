@@ -110,8 +110,8 @@ Testdatei bleibt unter 1000 Zeilen. Die ausführbaren Regeln stehen in
 
 Das Projekt wird für die OpenAI Build Week vorbereitet. Die Einreichungsfrist ist der
 21. Juli 2026 um 17:00 Pacific Time, entsprechend dem 22. Juli 2026 um 02:00 CEST. Wegen der
-kurzen Restzeit priorisiert `docs/SUBMISSION.md` einen funktionierenden vertikalen Kern vor
-dem vollständigen langfristigen Umfang.
+kurzen Restzeit priorisiert `docs/SUBMISSION.md` einen funktionierenden vertikalen Kern als
+erste Ausführungsreihenfolge.
 
 ## D-014 — Track Developer Tools
 
@@ -138,10 +138,19 @@ Vor vollständiger Engine-Tiefe entsteht die erkennbare Produktvorstellung: Para
 Arbeitsfläche mittig sowie History und A/B-Vergleich unten. Wenige echte Parameter beweisen
 den Parameter-Diff. Der KI-Manager integriert zuerst ein reales, bedarfsgeladenes MODNet-Modell
 mit Fortschritt, Retry und Entladen. Weitere Modelle, SAM, vollständige Shape-Erkennung und
-Parameterbreite folgen erst nach dem funktionierenden MVP.
+Parameterbreite folgen innerhalb der Submission Period nach dem funktionierenden MVP-Kern.
+
+## D-017 — Keine bewertbare Entwicklungsphase nach der Deadline
+
+**Status:** entschieden
+
+Die in den Regeln genannten Stufen eins und zwei sind Bewertungsstufen, keine Gelegenheit zur
+Weiterentwicklung. Nach Ende der Submission Period darf die Einreichung inhaltlich nicht mehr
+geändert werden. Jede gegenüber der Jury beworbene Funktion muss deshalb vorher funktionieren,
+getestet, dokumentiert und deployed sein. Unfertige optionale Ideen werden nicht als vorhandene
+Funktionen dargestellt.
 
 ## Noch zu klären
 
 - Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?
-- Sind MODNet und SAM Pflicht für die erste Einreichung oder ein nachgelagerter Meilenstein?
 - Welche zusätzlichen Rasterexporte sind neben PNG und WebP im Zielbrowser sinnvoll?

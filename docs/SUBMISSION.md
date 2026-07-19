@@ -83,13 +83,19 @@ Funktionen.
 8. Öffentliche statische Demo mit einem kleinen Beispielbild.
 9. Englisches README, englische Submission-Beschreibung und Demo-Video.
 
-### Nach der Einreichung
+### Weitere Slices vor der Einreichung
 
-- vollständige Shape-Palette.
-- SAM und weitere KI-Werkzeuge.
-- zusätzliche Modelle und erweiterte Cache-Verwaltung.
-- CLI und zusätzliche Rasterformate, sofern sie den Kern vor der Frist gefährden.
-- Run-Matrix, Gradienten und weitere Kür-Funktionen.
+Es gibt keine Entwicklungsphase nach der Deadline, die noch in die Bewertung einfließt. Nach
+dem MVP-Kern folgen deshalb innerhalb derselben Submission Period:
+
+- vollständige geplante Shape-Palette mit strukturellen Ground-Truth-Tests.
+- SAM Smart Select und die weiteren als Submission-Funktion beworbenen KI-Werkzeuge.
+- vollständige Modell-Registry einschließlich Download, Retry, Backend, Cache und Entladen.
+- CLI und zusätzliche Rasterformate, sofern sie in Submission oder Demo genannt werden.
+- alle weiteren Funktionen, die wir der Jury als Bestandteil des Projekts präsentieren.
+
+Optionale Ideen, die bis zur Frist nicht fertig sind, werden nicht als vorhandene Funktion
+beworben. Das ist keine „Phase 2“, sondern eine ehrliche Begrenzung der eingereichten Version.
 
 ## Einreichungsreihenfolge
 

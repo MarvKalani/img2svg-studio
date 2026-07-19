@@ -43,7 +43,8 @@ Die verbindlichen Qualitätsregeln stehen in
 ## OpenAI Build Week — kritischer Pfad
 
 Deadline: **22. Juli 2026, 02:00 CEST**. Diese Liste priorisiert die Submission; die
-vollständige Roadmap darunter bleibt bestehen.
+vollständige Roadmap darunter bleibt vor derselben Deadline bestehen. Der kritische Pfad legt
+die Reihenfolge fest, nicht eine spätere Entwicklungsphase.
 
 - [ ] **BW-01 Devpost-Teilnahme bestätigen — Aktion des Projekteigners.**
   - Devpost-Konto, „Join Hackathon“ und Teilnahmeberechtigung prüfen.
@@ -72,6 +73,9 @@ vollständige Roadmap darunter bleibt bestehen.
   - Öffentliches YouTube-Video mit englischem Audio oder vollständiger Übersetzung.
 - [ ] **BW-13 `/feedback` Session ID und Devpost-Submission absenden — gemeinsame Aktion.**
   - Alle Links unangemeldet testen; mehrere Stunden Puffer vor der Frist behalten.
+- [ ] **BW-14 Beworbenen Funktionsumfang vollständig auditieren.**
+  - Jede in Video, README oder Submission genannte Funktion ist vor der Deadline umgesetzt,
+    getestet und deployed; unfertige optionale Ideen werden nicht als vorhanden dargestellt.
 
 ## M0 — Gerüst und erster vertikaler System-Slice
 
