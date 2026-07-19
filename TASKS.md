@@ -72,27 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## PARAM-01 — Wenige echte Konvertierungsparameter durchstechen
-
-**Ergebnis:** Farbpräzision, Speckle-Filter und proportionale Zielgröße besitzen typisierte
-Grenzen und kanonische Defaults und wirken von der linken UI über WASM bis zur Engine.
-
-```gherkin
-Given dasselbe geladene Fixture wurde mit den Standardwerten konvertiert
-When Farbpräzision, Speckle-Filter oder Zielgröße auf einen anderen gültigen Wert gesetzt werden
-Then zeigt die UI den validierten Wert und die tatsächlichen Zielmaße
-And das neue Ergebnis enthält genau diese Einstellungen und eine nachvollziehbare Wirkung
-```
-
-**Ausführbare Abnahme:** Rust-Wirkungstest
-`crates/img2svg-core/tests/conversion_options.rs`, Schema-Vertrag
-`web/src/conversion/conversion-options.test.ts` und Browsertest
-`web/e2e/change-parameters.spec.ts`; `cargo test -p img2svg-core --test conversion_options`,
-`npm --prefix web test -- conversion-options.test.ts` und `npm --prefix web run test:e2e --
-change-parameters.spec.ts`.
-
-**Dokumentation:** Handbuch-Parameter und kanonische Defaults in der technischen Spezifikation.
-
 ## HISTORY-01 — Unveränderliche Conversion-Runs unten anzeigen
 
 **Ergebnis:** Jede erfolgreiche Konvertierung erzeugt genau einen unveränderlichen Run. Die

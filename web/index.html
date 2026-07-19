@@ -75,27 +75,60 @@
             </label>
             <label>
               <span>Zielgröße</span>
-              <select aria-label="Zielgröße">
-                <option>Original</option>
+              <select id="scale-percent" aria-label="Zielgröße">
+                <option value="25">25 %</option>
+                <option value="50">50 %</option>
+                <option value="75">75 %</option>
+                <option value="100" selected>Original · 100 %</option>
+                <option value="150">150 %</option>
+                <option value="200">200 %</option>
+                <option value="400">400 %</option>
               </select>
             </label>
+            <output id="target-dimensions" class="target-dimensions" aria-label="Zielmaße"
+              >—</output
+            >
           </section>
 
           <section class="control-panel">
             <h2>Farben</h2>
             <label class="range-label">
               <span>Farbpräzision</span>
-              <output>7</output>
-              <input type="range" min="1" max="12" value="7" />
+              <output
+                id="color-precision-value"
+                for="color-precision"
+                aria-label="Farbpräzision Wert"
+                >7 Bit</output
+              >
+              <input
+                id="color-precision"
+                type="range"
+                min="1"
+                max="8"
+                value="7"
+                aria-label="Farbpräzision"
+              />
             </label>
           </section>
 
           <section class="control-panel">
             <h2>Kurven</h2>
             <label class="range-label">
-              <span>Detailfilter</span>
-              <output>4 px</output>
-              <input type="range" min="0" max="12" value="4" />
+              <span>Speckle-Filter</span>
+              <output
+                id="filter-speckle-value"
+                for="filter-speckle"
+                aria-label="Speckle-Filter Wert"
+                >4 px</output
+              >
+              <input
+                id="filter-speckle"
+                type="range"
+                min="0"
+                max="1000"
+                value="4"
+                aria-label="Speckle-Filter"
+              />
             </label>
           </section>
 

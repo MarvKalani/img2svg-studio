@@ -26,6 +26,9 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
       new Uint8Array(request.rgbaBuffer),
       request.widthPixels,
       request.heightPixels,
+      request.options.colorPrecision,
+      request.options.filterSpeckle,
+      request.options.scalePercent,
     );
     workerScope.postMessage({ ok: true, svg });
   } catch (error) {

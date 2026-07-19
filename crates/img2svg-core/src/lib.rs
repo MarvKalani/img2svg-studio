@@ -23,6 +23,70 @@ pub enum ConversionErrorCode {
     InvalidDimensions,
     PixelLength,
     TransparentKeyUnavailable,
+    InvalidOptions,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConversionOptionError {
+    ColorPrecision,
+    FilterSpeckle,
+    ScalePercent,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ConversionOptions {
+    color_precision: u8,
+    filter_speckle: u16,
+    scale_percent: u16,
+}
+
+impl ConversionOptions {
+    pub fn try_new(
+        color_precision: u32,
+        filter_speckle: u32,
+        scale_percent: u32,
+    ) -> Result<Self, ConversionOptionError> {
+        if !(1..=8).contains(&color_precision) {
+            return Err(ConversionOptionError::ColorPrecision);
+        }
+        if filter_speckle > 1_000 {
+            return Err(ConversionOptionError::FilterSpeckle);
+        }
+        if !(10..=400).contains(&scale_percent) {
+            return Err(ConversionOptionError::ScalePercent);
+        }
+
+        Ok(Self {
+            color_precision: u8::try_from(color_precision)
+                .map_err(|_| ConversionOptionError::ColorPrecision)?,
+            filter_speckle: u16::try_from(filter_speckle)
+                .map_err(|_| ConversionOptionError::FilterSpeckle)?,
+            scale_percent: u16::try_from(scale_percent)
+                .map_err(|_| ConversionOptionError::ScalePercent)?,
+        })
+    }
+
+    pub const fn color_precision(self) -> u8 {
+        self.color_precision
+    }
+
+    pub const fn filter_speckle(self) -> u16 {
+        self.filter_speckle
+    }
+
+    pub const fn scale_percent(self) -> u16 {
+        self.scale_percent
+    }
+}
+
+impl Default for ConversionOptions {
+    fn default() -> Self {
+        Self {
+            color_precision: 7,
+            filter_speckle: 4,
+            scale_percent: 100,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -30,6 +94,7 @@ pub enum ConversionError {
     InvalidDimensions,
     PixelLength { actual: usize, expected: usize },
     TransparentKeyUnavailable,
+    InvalidOptions(ConversionOptionError),
 }
 
 impl ConversionError {
@@ -38,7 +103,14 @@ impl ConversionError {
             Self::InvalidDimensions => ConversionErrorCode::InvalidDimensions,
             Self::PixelLength { .. } => ConversionErrorCode::PixelLength,
             Self::TransparentKeyUnavailable => ConversionErrorCode::TransparentKeyUnavailable,
+            Self::InvalidOptions(_) => ConversionErrorCode::InvalidOptions,
         }
+    }
+}
+
+impl From<ConversionOptionError> for ConversionError {
+    fn from(error: ConversionOptionError) -> Self {
+        Self::InvalidOptions(error)
     }
 }
 
@@ -53,13 +125,35 @@ impl fmt::Display for ConversionError {
             Self::TransparentKeyUnavailable => {
                 formatter.write_str("No deterministic transparency key is available.")
             }
+            Self::InvalidOptions(option) => {
+                write!(formatter, "Invalid conversion option: {option}.")
+            }
         }
     }
 }
 
 impl Error for ConversionError {}
 
+impl fmt::Display for ConversionOptionError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::ColorPrecision => formatter.write_str("color precision"),
+            Self::FilterSpeckle => formatter.write_str("speckle filter"),
+            Self::ScalePercent => formatter.write_str("scale percent"),
+        }
+    }
+}
+
 pub fn convert_rgba(pixels: &[u8], width: usize, height: usize) -> Result<String, ConversionError> {
+    convert_rgba_with_options(pixels, width, height, ConversionOptions::default())
+}
+
+pub fn convert_rgba_with_options(
+    pixels: &[u8],
+    width: usize,
+    height: usize,
+    options: ConversionOptions,
+) -> Result<String, ConversionError> {
     let expected_length = expected_rgba_length(width, height)?;
     if pixels.len() != expected_length {
         return Err(ConversionError::PixelLength {
@@ -74,16 +168,17 @@ pub fn convert_rgba(pixels: &[u8], width: usize, height: usize) -> Result<String
         width,
     };
     let (key_color, keying_action) = prepare_transparency(&mut image)?;
+    let minimum_cluster_area = usize::from(options.filter_speckle).pow(2);
     let clusters = Runner::new(
         RunnerConfig {
             batch_size: 25_600,
             deepen_diff: 16,
             diagonal: false,
             good_max_area: width * height,
-            good_min_area: 16,
+            good_min_area: minimum_cluster_area,
             hierarchical: HIERARCHICAL_MAX,
             hollow_neighbours: 1,
-            is_same_color_a: 2,
+            is_same_color_a: i32::from(8 - options.color_precision),
             is_same_color_b: 1,
             key_color,
             keying_action,
@@ -96,6 +191,9 @@ pub fn convert_rgba(pixels: &[u8], width: usize, height: usize) -> Result<String
     let mut paths = Vec::with_capacity(clusters.output_len());
     for &cluster_index in view.clusters_output.iter().rev() {
         let cluster = view.get_cluster(cluster_index);
+        if cluster.area() < minimum_cluster_area {
+            continue;
+        }
         let compound_path = cluster.to_compound_path(
             &view,
             false,
@@ -107,14 +205,30 @@ pub fn convert_rgba(pixels: &[u8], width: usize, height: usize) -> Result<String
         );
         let (path_data, offset) = compound_path.to_svg_string(true, PointF64::default(), Some(2));
         if !path_data.is_empty() {
-            paths.push(svg_path(&path_data, cluster.residue_color(), offset));
+            paths.push(svg_path(
+                &path_data,
+                cluster.residue_color(),
+                offset,
+                options.scale_percent,
+            ));
         }
     }
 
+    let target_width = scaled_dimension(width, options.scale_percent)?;
+    let target_height = scaled_dimension(height, options.scale_percent)?;
+
     Ok(format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{width}\" height=\"{height}\" viewBox=\"0 0 {width} {height}\">{}</svg>",
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{target_width}\" height=\"{target_height}\" viewBox=\"0 0 {target_width} {target_height}\">{}</svg>",
         paths.join("")
     ))
+}
+
+fn scaled_dimension(dimension: usize, scale_percent: u16) -> Result<usize, ConversionError> {
+    dimension
+        .checked_mul(usize::from(scale_percent))
+        .and_then(|scaled| scaled.checked_add(50))
+        .map(|scaled| (scaled / 100).max(1))
+        .ok_or(ConversionError::InvalidDimensions)
 }
 
 fn expected_rgba_length(width: usize, height: usize) -> Result<usize, ConversionError> {
@@ -157,18 +271,38 @@ fn rgb_exists(image: &ColorImage, color: &Color) -> bool {
         .any(|pixel| pixel[0] == color.r && pixel[1] == color.g && pixel[2] == color.b)
 }
 
-fn svg_path(path_data: &str, color: Color, offset: PointF64) -> String {
+fn svg_path(path_data: &str, color: Color, offset: PointF64, scale_percent: u16) -> String {
     let opacity = if color.a < 255 {
         format!(" fill-opacity=\"{}\"", format_opacity(color.a))
     } else {
         String::new()
     };
+    let transform = if scale_percent == 100 {
+        format!("translate({},{})", offset.x, offset.y)
+    } else {
+        format!(
+            "scale({}) translate({},{})",
+            scale_factor(scale_percent),
+            offset.x,
+            offset.y
+        )
+    };
     format!(
-        "<path d=\"{path_data}\" fill=\"{}\"{opacity} transform=\"translate({},{})\"/>",
-        color.to_hex_string(),
-        offset.x,
-        offset.y
+        "<path d=\"{path_data}\" fill=\"{}\"{opacity} transform=\"{transform}\"/>",
+        color.to_hex_string()
     )
+}
+
+fn scale_factor(scale_percent: u16) -> String {
+    let whole = scale_percent / 100;
+    let fraction = scale_percent % 100;
+    if fraction == 0 {
+        whole.to_string()
+    } else if fraction.is_multiple_of(10) {
+        format!("{whole}.{}", fraction / 10)
+    } else {
+        format!("{whole}.{fraction:02}")
+    }
 }
 
 fn format_opacity(alpha: u8) -> String {

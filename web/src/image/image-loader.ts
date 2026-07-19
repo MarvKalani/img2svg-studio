@@ -1,7 +1,10 @@
 import { SupportedImageMimeType, decodeImage, type DecodedImage } from "./decode-image";
 import type { ImageStore } from "./image-store";
 
-export function initializeImageLoader(imageStore: ImageStore): void {
+export function initializeImageLoader(
+  imageStore: ImageStore,
+  onImageLoaded: (image: DecodedImage) => void,
+): void {
   const elements = readImageLoaderElements();
 
   const loadImage = async (file: File): Promise<void> => {
@@ -12,6 +15,7 @@ export function initializeImageLoader(imageStore: ImageStore): void {
     }
 
     imageStore.replace(file, result.image);
+    onImageLoaded(result.image);
     showDecodedImage(elements, result.image);
   };
 

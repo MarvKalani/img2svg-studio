@@ -3,12 +3,14 @@ import type {
   ConversionWorkerResponse,
 } from "./conversion-worker-contract";
 import { ConversionFailure, ConversionFailureCode } from "./conversion-failure";
+import type { ConversionOptions } from "./conversion-options";
 import { readRasterPixels } from "./read-raster-pixels";
 
-export async function convertImage(file: File): Promise<string> {
+export async function convertImage(file: File, options: ConversionOptions): Promise<string> {
   const raster = await readRasterPixels(file);
   const request: ConversionWorkerRequest = {
     heightPixels: raster.heightPixels,
+    options,
     rgbaBuffer: raster.rgba.buffer,
     widthPixels: raster.widthPixels,
   };

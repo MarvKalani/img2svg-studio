@@ -4,9 +4,13 @@ import {
   ConversionFailureCode,
   toConversionFailure,
 } from "./conversion-failure";
+import type { ConversionOptions } from "./conversion-options";
 import { convertImage } from "./conversion-service";
 
-export function initializeConversion(imageStore: ImageStore): void {
+export function initializeConversion(
+  imageStore: ImageStore,
+  readOptions: () => ConversionOptions,
+): void {
   const elements = readConversionElements();
 
   elements.button.addEventListener("click", () => {
@@ -15,7 +19,7 @@ export function initializeConversion(imageStore: ImageStore): void {
       return;
     }
 
-    void runConversion(elements, loadedImage.file);
+    void runConversion(elements, loadedImage.file, readOptions);
   });
 }
 
@@ -29,14 +33,18 @@ interface ConversionElements {
   statusImage: HTMLElement;
 }
 
-async function runConversion(elements: ConversionElements, file: File): Promise<void> {
+async function runConversion(
+  elements: ConversionElements,
+  file: File,
+  readOptions: () => ConversionOptions,
+): Promise<void> {
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Konvertiere …";
   elements.error.hidden = true;
   elements.statusImage.textContent = "Konvertierung läuft lokal …";
 
   try {
-    const svg = await convertImage(file);
+    const svg = await convertImage(file, readOptions());
     elements.output.replaceChildren(parseSvg(svg));
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;

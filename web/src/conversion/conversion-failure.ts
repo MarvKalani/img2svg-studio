@@ -2,8 +2,9 @@ export const ConversionFailureCode = {
   InvalidDimensions: 1,
   PixelLength: 2,
   TransparentKeyUnavailable: 3,
-  WorkerFailed: 4,
-  InvalidSvg: 5,
+  InvalidOptions: 4,
+  WorkerFailed: 5,
+  InvalidSvg: 6,
 } as const;
 
 export type ConversionFailureCode =
@@ -14,6 +15,7 @@ const failureMessages: Record<ConversionFailureCode, string> = {
   [ConversionFailureCode.PixelLength]: "Die Bilddaten passen nicht zu den Bildmaßen.",
   [ConversionFailureCode.TransparentKeyUnavailable]:
     "Die Transparenz dieses Bildes konnte nicht sicher verarbeitet werden.",
+  [ConversionFailureCode.InvalidOptions]: "Die Konvertierungseinstellungen sind ungültig.",
   [ConversionFailureCode.WorkerFailed]:
     "Die lokale Konvertierung ist fehlgeschlagen. Bitte versuche es erneut.",
   [ConversionFailureCode.InvalidSvg]: "Die Engine hat kein gültiges SVG erzeugt.",
@@ -34,6 +36,7 @@ export function readEngineFailureCode(error: unknown): ConversionFailureCode {
     case ConversionFailureCode.InvalidDimensions:
     case ConversionFailureCode.PixelLength:
     case ConversionFailureCode.TransparentKeyUnavailable:
+    case ConversionFailureCode.InvalidOptions:
       return error;
     default:
       return ConversionFailureCode.WorkerFailed;

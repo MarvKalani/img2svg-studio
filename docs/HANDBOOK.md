@@ -130,9 +130,21 @@ Der Vergleich soll:
 
 ## Parameter
 
-Die Seitenleiste startet bewusst mit wenigen wirksamen Parametern. Weitere Optionen werden
-erst ergänzt, wenn ihr kompletter Weg von UI über WASM bis zur Engine funktioniert und getestet
-ist. Verbindliche Werte und Defaults stehen in der Produktspezifikation.
+Die drei verfügbaren Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
+Rust-Core:
+
+| Parameter | Gültiger Bereich | Standard | Wirkung |
+|---|---:|---:|---|
+| Farbpräzision | 1–8 Bit | 7 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
+| Speckle-Filter | 0–1000 px | 4 px | entfernt kleine Farbcluster |
+| Zielgröße | 10–400 % | 100 % | skaliert SVG und ViewBox proportional |
+
+Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Prozent direkt an.
+Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort an. Ein Lauf mit
+50 Prozent aus einem 256×256-Bild erzeugt beispielsweise ein SVG mit 128×128-ViewBox.
+
+Ungültige Werte werden als typisierter Einstellungsfehler abgelehnt. Weitere Parameter werden
+erst ergänzt, wenn derselbe vollständige Weg bis in die Engine getestet ist.
 
 ## KI-Manager
 

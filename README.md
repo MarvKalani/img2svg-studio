@@ -16,7 +16,8 @@ WebP-Bilder lassen sich lokal auswählen oder ablegen und werden mit ihren echte
 angezeigt. Der Konvertieren-Button übergibt ihre RGBA-Pixel lokal an den Rust-/WASM-Core und
 zeigt das deterministische SVG in der Arbeitsfläche an. Das angezeigte Ergebnis kann bytegenau
 als `.svg` heruntergeladen werden; typisierte Fehler lassen den letzten erfolgreichen Stand
-weiter nutzbar.
+weiter nutzbar. Farbpräzision, Speckle-Filter und proportionale Zielgröße sind als erste echte
+Parameter vollständig bis in die Engine verbunden.
 
 ## Lokal starten
 

@@ -32,8 +32,13 @@ Konvertierung reaktionsfähig bleibt.
 
 ## 3. Zentrale Domänenmodelle
 
-`ConversionOptions` enthält Farbpräzision, Speckle-Filter, proportionale Zielgröße sowie den
-globalen Formerkennungsschalter und aktivierte Formtypen. Nicht erkannte Konturen bleiben Pfade.
+Der implementierte `ConversionOptions`-Kern enthält Farbpräzision 1–8 Bit, Speckle-Filter
+0–1000 und proportionale Zielgröße 10–400 Prozent. Die kanonischen Defaults sind 7, 4 und 100.
+Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt sie ausschließlich
+über `createConversionOptions`. Grenztests halten beide Seiten synchron.
+
+Der globale Formerkennungsschalter und aktivierte Formtypen erweitern dieses Modell im
+Formerkennungs-Slice. Nicht erkannte Konturen bleiben Pfade.
 
 Eine kanonische Schemaquelle erzeugt oder speist:
 
@@ -68,9 +73,9 @@ Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
 stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
 `ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
-Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array` und zwei `u32`-Maße und liefert
-den SVG-String oder den stabilen numerischen Fehlercode 1, 2 oder 3. Spätere Resultatmetadaten
-erweitern diesen Vertrag, ohne die Engine an den Browser zu koppeln.
+Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße und die drei
+Optionswerte. Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
+Spätere Resultatmetadaten erweitern diesen Vertrag, ohne die Engine an den Browser zu koppeln.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.
@@ -102,6 +107,11 @@ Rust-Core auf und wird nach genau einem Ergebnis beendet. Der Controller validie
 zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die TypeScript-Domäne ergänzt
 die Enginecodes um `WorkerFailed` und `InvalidSvg`; `ConversionFailure` ordnet jedem Code genau
 eine verständliche UI-Meldung zu.
+
+Farbpräzision setzt den Bitverlust der `visioncortex`-Farbnähe. Der Speckle-Wert wird wie im
+Tracing-Fundament zu einer Mindestfläche quadriert und vor der SVG-Assembly nochmals explizit
+angewendet. Die Zielgröße skaliert den bereits vektorisierten Pfad deterministisch und berechnet
+positive ganzzahlige Zielmaße mit derselben Rundungsregel in Rust und TypeScript.
 
 Der SVG-Download serialisiert das aktuell gerenderte `svg`-Element mit `XMLSerializer`. Dadurch
 entsprechen die Blob-Bytes exakt demselben DOM-Zustand, den der Nutzer sieht. Der Downloadname

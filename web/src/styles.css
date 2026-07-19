@@ -316,6 +316,14 @@ a:focus-visible {
   background: #142938;
 }
 
+.target-dimensions {
+  display: block;
+  margin-top: 0.35rem;
+  color: #86a2b3;
+  font-size: 0.72rem;
+  text-align: right;
+}
+
 .range-label {
   grid-template-columns: 1fr auto !important;
 }
