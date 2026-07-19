@@ -150,6 +150,15 @@ geändert werden. Jede gegenüber der Jury beworbene Funktion muss deshalb vorhe
 getestet, dokumentiert und deployed sein. Unfertige optionale Ideen werden nicht als vorhandene
 Funktionen dargestellt.
 
+## D-018 — Handbuch ist Bestandteil jedes Slices
+
+**Status:** entschieden
+
+Dokumentation wird nicht bis zum Release aufgeschoben. Nutzerverhalten, öffentliche Verträge
+und Entscheidungen werden im selben Commit wie die zugehörige Änderung nachgeführt. Ein Task
+ist erst abgeschlossen, wenn `docs/HANDBOOK.md` und die betroffenen Projektdokumente den
+tatsächlich gelieferten Stand beschreiben.
+
 ## Noch zu klären
 
 - Welche Chrome-Version und welcher WebMCP-Aktivierungsweg sind für die Demo verbindlich?

@@ -139,6 +139,14 @@ wiederholen nicht den Code.
 - TODOs enthalten eine Task-ID oder werden nicht committed.
 - Veraltete Kommentare werden im selben Slice aktualisiert oder entfernt.
 
+Das Handbuch ist Teil des Produkts:
+
+- Nutzerseitiges Verhalten wird in `docs/HANDBOOK.md` im selben Commit nachgeführt.
+- Öffentliche technische Verträge werden in `docs/TECHNICAL_SPEC.md` nachgeführt.
+- Neue oder ersetzte Entscheidungen werden in `docs/DECISIONS.md` nachgeführt.
+- README, Build- und Testanleitung bleiben mit dem tatsächlich ausführbaren Stand synchron.
+- Ein Review bestätigt ausdrücklich, wenn ein Slice keinen Dokumentationsbedarf hat.
+
 ## 8. Fehler und Kontrollfluss
 
 - Erwartbare Fehler sind typisiert und werden an der passenden Grenze übersetzt.
@@ -214,5 +222,6 @@ Ein Slice ist fertig, wenn:
 - der Diff nur notwendige Änderungen enthält.
 - Namen, Typen und Kommentare diesen Regeln entsprechen.
 - Taskstatus und betroffene Verträge aktuell sind.
+- Handbuch und relevante Projektdokumente den tatsächlich gelieferten Stand beschreiben.
 - der Commit auch ohne Chatverlauf verständlich ist.
 - der Slice den vereinbarten MVP-Nutzen tatsächlich Ende zu Ende liefert.

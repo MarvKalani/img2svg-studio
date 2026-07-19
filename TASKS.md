@@ -14,6 +14,7 @@ Die verbindlichen Qualitätsregeln stehen in
 - nur notwendige Git-Diffs erzeugen und fremde Änderungen unangetastet lassen.
 - keine handgeschriebene Quell- oder Testdatei mit mehr als 1000 Zeilen zulassen.
 - relevante schnelle Checks vor jedem Commit, vollständige Checks an jedem Gate ausführen.
+- Handbuch und betroffene Projektdokumente im selben Commit aktualisieren.
 - genau einen verständlichen Commit pro abgeschlossenem Slice mit Task-ID im Betreff erstellen.
 
 ## Statuslegende
@@ -39,6 +40,8 @@ Die verbindlichen Qualitätsregeln stehen in
   - Abnahme: TypeScript 7.0.2 ist als stabile, exakt zu pinnende Version dokumentiert.
 - [x] **P0-07 Offizielle Build-Week-Anforderungen prüfen.**
   - Abnahme: Frist, Pflichtmaterialien, Codex-Nachweis und Testzugang sind dokumentiert.
+- [x] **P0-08 Fortlaufendes Produkthandbuch anlegen.**
+  - Abnahme: jeder Slice muss Handbuch- und Vertragsdokumentation bewusst mitprüfen.
 
 ## OpenAI Build Week — kritischer Pfad
 
