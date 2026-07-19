@@ -253,9 +253,11 @@ Die komplexen Konvertierungsaktionen verwenden die imperative API. Deklarative A
 können ergänzend für stabile Standardformulare eingesetzt werden, dürfen aber keine doppelte
 Geschäftslogik erzeugen.
 
-Der erste WebMCP-Slice registriert ausschließlich `get_capabilities`. Der vollständige
-Produktvertrag ergänzt Konvertierung, Workspace-Zustand, History, A/B-Auswahl, Export,
-KI-Modellverwaltung und beide KI-Aktionen über dieselben sichtbaren Application Services.
+Der Adapter registriert `get_capabilities`, `configure_conversion`, `convert_current_image`,
+Workspace-Zustand, History, A/B-Auswahl, Export, KI-Modellverwaltung und beide KI-Aktionen. Eine
+typisierte und getestete Capability Map ordnet jedes sichtbare Application Command genau einem
+UI- und einem WebMCP-Einstieg zu. Smart Select nimmt normierte Koordinaten von 0 bis 1 an und
+führt dieselben akkumulierten Maskenverfeinerungen wie die Pointer-Oberfläche aus.
 Jedes Tool besitzt:
 
 - einen stabilen, aktionsorientierten Namen.

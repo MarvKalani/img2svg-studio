@@ -20,6 +20,8 @@ import {
   type WebMcpDocument,
   type WebMcpRegistration,
 } from "./webmcp/webmcp-adapter";
+import { createConversionTools } from "./webmcp/conversion-tools";
+import { createStudioTools } from "./webmcp/studio-tools";
 
 const imageStore = createImageStore();
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
@@ -40,15 +42,48 @@ const imageLoader = initializeImageLoader(imageStore, (image) => {
 });
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
-initializeConversion(imageStore, optionsController.current, historyController.record);
-initializeSvgDownload();
+const conversionController = initializeConversion(
+  imageStore,
+  optionsController.current,
+  historyController.record,
+);
+const svgDownloadController = initializeSvgDownload();
 initializeModelManager(modelRegistry);
 let webMcpRegistration: WebMcpRegistration | undefined;
-void initializeWebMcp(document as WebMcpDocument, () => ({
-  imageLoaded: imageStore.current() !== undefined,
-  tools: [WebMcpToolName.GetCapabilities],
-  version: "1",
-})).then((registration) => {
+const conversionTools = createConversionTools({
+  applyOptions: optionsController.apply,
+  convert: conversionController.convert,
+  readOptions: optionsController.current,
+});
+const studioTools = createStudioTools({
+  applySmartSelection: smartSelect.applySelection,
+  assignComparison: historyController.assignComparison,
+  downloadSelectedSvg: svgDownloadController.download,
+  loadModel: modelRegistry.load,
+  readComparedRuns: compareController.current,
+  readImage: imageStore.current,
+  readModels: modelRegistry.snapshots,
+  readOptions: optionsController.current,
+  readRuns: historyController.runs,
+  removeBackground: backgroundRemoval.removeBackground,
+  retryModel: modelRegistry.retry,
+  selectRun: historyController.select,
+  unloadModel: modelRegistry.unload,
+});
+const applicationTools = [...conversionTools, ...studioTools];
+const webMcpToolNames = [
+  WebMcpToolName.GetCapabilities,
+  ...applicationTools.map((tool) => tool.name),
+];
+void initializeWebMcp(
+  document as WebMcpDocument,
+  () => ({
+    imageLoaded: imageStore.current() !== undefined,
+    tools: webMcpToolNames,
+    version: "1",
+  }),
+  applicationTools,
+).then((registration) => {
   webMcpRegistration = registration;
   document.documentElement.dataset.webmcp = registration.status;
 });

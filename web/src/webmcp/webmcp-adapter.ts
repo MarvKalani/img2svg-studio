@@ -1,5 +1,17 @@
 export const WebMcpToolName = {
+  ApplyBackgroundRemoval: "apply_background_removal",
+  ApplySmartSelection: "apply_smart_selection",
+  ConfigureConversion: "configure_conversion",
+  ConvertCurrentImage: "convert_current_image",
+  DownloadSelectedSvg: "download_selected_svg",
   GetCapabilities: "get_capabilities",
+  GetWorkspaceState: "get_workspace_state",
+  LoadModel: "load_model",
+  RetryModel: "retry_model",
+  SelectComparisonA: "select_comparison_a",
+  SelectComparisonB: "select_comparison_b",
+  SelectHistoryRun: "select_history_run",
+  UnloadModel: "unload_model",
 } as const;
 
 export type WebMcpToolName = (typeof WebMcpToolName)[keyof typeof WebMcpToolName];

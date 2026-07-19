@@ -348,6 +348,22 @@ DevTools zusätzlich `#devtools-webmcp-support`. Nach dem Neustart zeigt DevTool
 „Application · WebMCP“ die registrierten Werkzeuge und ihre Aufrufe. Chrome 150 verwendet
 `document.modelContext`; die ältere Navigator-Variante gehört nicht zum Studio.
 
+Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
+
+1. `get_capabilities` und `get_workspace_state` lesen.
+2. Mit `configure_conversion` die sichtbaren Werte setzen und mit `convert_current_image`
+   konvertieren.
+3. Runs über `select_history_run`, `select_comparison_a` und `select_comparison_b` anzeigen oder
+   vergleichen; `download_selected_svg` exportiert den sichtbaren Run.
+4. Modelle mit `load_model`, `retry_model` und `unload_model` verwalten.
+5. `apply_background_removal` oder `apply_smart_selection` anwenden. Smart-Select-Punkte verwenden
+   bildunabhängige X-/Y-Werte von 0 bis 1 und mindestens zwei Vordergrund- sowie einen
+   Hintergrundpunkt.
+
+Zustandsändernde Toolergebnisse enthalten `ok` sowie bei Fehlern einen stabilen Code und eine
+verständliche Meldung. Dateinamen aus lokalen Eingaben sind als nicht vertrauenswürdiger Inhalt
+markiert.
+
 Der bestehende Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter für
 seinen eigenen sichtbaren Converter-Ablauf.
 

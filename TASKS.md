@@ -72,26 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## MCP-02 — Parameter konfigurieren und sichtbare Konvertierung ausführen
-
-**Ergebnis:** `configure_conversion` verwendet dieselben Validatoren wie die UI und aktualisiert
-sichtbar die Parameter. `convert_current_image` erzeugt denselben Runpfad wie der Button.
-
-```gherkin
-Given ein Bild ist geladen und WebMCP ist verfügbar
-When ein Agent gültige Parameter setzt und convert_current_image aufruft
-Then zeigt die UI sofort dieselben validierten Werte
-And der erzeugte Run erscheint mit identischem Vertrag in Ansicht und History
-```
-
-**Ausführbare Abnahme:** `web/src/webmcp/conversion-tools.test.ts` und
-`web/e2e/webmcp-conversion.spec.ts`; `npm --prefix web test -- conversion-tools.test.ts` und
-`npm --prefix web run test:webmcp -- webmcp-conversion.spec.ts` im dokumentierten Ziel-Browser.
-Der Orchestrator ruft beide Tools zusätzlich direkt über den verbundenen Chrome-Agenten auf
-und bestätigt, dass Parameter, Ergebnis und History im sichtbaren Tab synchron reagieren.
-
-**Dokumentation:** Handbuch-Agentenablauf, Tool-Schemas und strukturierte Fehler.
-
 ## MCP-03 — Den Vorgänger `img2.download` vollständig über WebMCP bedienen
 
 **Ergebnis:** Der bestehende Vorgänger auf `https://img2.download` liefert die nötigen
