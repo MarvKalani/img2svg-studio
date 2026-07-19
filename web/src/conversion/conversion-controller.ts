@@ -53,7 +53,11 @@ async function runConversion(
     elements.rasterPreview.hidden = true;
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
-    elements.statusImage.textContent = completedStatus(metrics.circleCount, metrics.rectangleCount);
+    elements.statusImage.textContent = completedStatus(
+      metrics.circleCount,
+      metrics.ellipseCount,
+      metrics.rectangleCount,
+    );
     recordRun({
       durationMilliseconds: Math.max(0, Date.now() - startedAtMilliseconds),
       fileName: file.name,
@@ -71,7 +75,11 @@ async function runConversion(
   }
 }
 
-function completedStatus(circleCount: number, rectangleCount: number): string {
+function completedStatus(
+  circleCount: number,
+  ellipseCount: number,
+  rectangleCount: number,
+): string {
   const nativeShapes = [];
   if (circleCount > 0) {
     nativeShapes.push(`${String(circleCount)} ${circleCount === 1 ? "Kreis" : "Kreise"}`);
@@ -80,6 +88,9 @@ function completedStatus(circleCount: number, rectangleCount: number): string {
     nativeShapes.push(
       `${String(rectangleCount)} ${rectangleCount === 1 ? "Rechteck" : "Rechtecke"}`,
     );
+  }
+  if (ellipseCount > 0) {
+    nativeShapes.push(`${String(ellipseCount)} ${ellipseCount === 1 ? "Ellipse" : "Ellipsen"}`);
   }
   const nativeShapeStatus = nativeShapes.length > 0 ? ` · ${nativeShapes.join(" · ")}` : "";
   return `Konvertierung abgeschlossen · SVG lokal erzeugt${nativeShapeStatus}`;

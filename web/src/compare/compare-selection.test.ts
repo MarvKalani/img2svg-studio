@@ -29,6 +29,7 @@ function run(id: number): ConversionRun {
   return Object.freeze({
     circleCount: 0,
     durationMilliseconds: 10,
+    ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
     id,

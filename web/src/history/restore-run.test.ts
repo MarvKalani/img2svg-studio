@@ -40,6 +40,7 @@ function runInput(
   return {
     circleCount: 0,
     durationMilliseconds: 20,
+    ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
     options: { ...defaultConversionOptions, colorPrecision, filterSpeckle, scalePercent },

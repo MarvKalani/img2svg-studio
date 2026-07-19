@@ -72,22 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-04 — Ellipsen von Kreisen unterscheiden
-
-**Ergebnis:** Das Ellipsen-Fixture wird als `<ellipse>` ausgegeben; Kreisgrenzfälle bleiben bei
-gleicher X-/Y-Ausdehnung `<circle>`.
-
-```gherkin
-Given Ellipsen- und Kreis-Fixture werden mit beiden Detektoren konvertiert
-When die native Form gewählt wird
-Then wird die Ellipse als ellipse und der Kreis als circle innerhalb der Toleranz ausgegeben
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_ellipse.rs` mit
-`cargo test -p img2svg-core --test detect_ellipse`.
-
-**Dokumentation:** Handbuch „Native Ellipsen“ und Unterscheidungsregel.
-
 ## SHAPE-05 — Linien als native SVG-Elemente erkennen
 
 **Ergebnis:** Das Linien-Fixture erzeugt eine native `<line>` mit erwarteten Endpunkten,

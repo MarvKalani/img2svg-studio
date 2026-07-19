@@ -121,6 +121,9 @@ function shapeMetrics(run: ConversionRun): string {
       `${String(run.rectangleCount)} ${run.rectangleCount === 1 ? "Rechteck" : "Rechtecke"}`,
     );
   }
+  if (run.ellipseCount > 0) {
+    metrics.push(`${String(run.ellipseCount)} ${run.ellipseCount === 1 ? "Ellipse" : "Ellipsen"}`);
+  }
   return metrics.join(" · ");
 }
 

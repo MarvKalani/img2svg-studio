@@ -42,6 +42,7 @@ function runInput(runNumber: number): NewConversionRun {
   return {
     circleCount: 0,
     durationMilliseconds: runNumber,
+    ellipseCount: 0,
     fileName: "circle.png",
     heightPixels: 256,
     options: { ...defaultConversionOptions },

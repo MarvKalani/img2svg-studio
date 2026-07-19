@@ -2,6 +2,7 @@ import { ConversionFailure, ConversionFailureCode } from "./conversion-failure";
 
 export interface SvgMetrics {
   circleCount: number;
+  ellipseCount: number;
   heightPixels: number;
   pathCount: number;
   rectangleCount: number;
@@ -26,6 +27,7 @@ export function readSvgMetrics(svg: Element): SvgMetrics {
 
   return {
     circleCount: svg.querySelectorAll("circle").length,
+    ellipseCount: svg.querySelectorAll("ellipse").length,
     heightPixels,
     pathCount: svg.querySelectorAll("path").length,
     rectangleCount: svg.querySelectorAll("rect").length,

@@ -24,9 +24,10 @@ gleichem Bild erneut ein byteidentisches SVG. Zwei Runs lassen sich tastaturbedi
 markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-Geometrie
 überblenden. Eine schema-basierte Tabelle filtert echte Parameterunterschiede; getrennte A/B-
 Downloads exportieren exakt die gespeicherten Run-SVGs. Ein globaler Formerkennungsschalter und
-fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette. Aktivierte Kreis- und
-Rechteckerkennung liefert für eindeutige Flächen native `<circle>`- und `<rect>`-Elemente mit
-sichtbaren Statistiken; byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert.
+fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette. Aktivierte Kreis-, Rechteck-
+und Ellipsenerkennung liefert für eindeutige Flächen native `<circle>`-, `<rect>`- und
+`<ellipse>`-Elemente mit sichtbaren Statistiken; byteidentisches Abschalten und sicherer
+Pfad-Fallback bleiben garantiert.
 
 ## Lokal starten
 

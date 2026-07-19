@@ -15,6 +15,8 @@ pub struct ExpectedShape {
     pub fill: Option<String>,
     pub height: Option<f64>,
     pub radius: Option<f64>,
+    pub radius_x: Option<f64>,
+    pub radius_y: Option<f64>,
     pub width: Option<f64>,
     pub x: Option<f64>,
     pub y: Option<f64>,

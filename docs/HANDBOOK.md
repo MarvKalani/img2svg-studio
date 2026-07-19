@@ -207,8 +207,20 @@ ausgegeben; Status und History zeigen „1 Rechteck“ und keinen Pfad.
 
 Die Flächenabweichung darf intern höchstens zwei Prozent betragen. Sehr schmale gefüllte Cluster
 bleiben für die spätere Linienerkennung erhalten; nicht rechteckige Konturen wie das
-Dreieck-Fixture fallen sicher auf einen Pfad zurück. Ellipse, Linie und Polygon folgen in eigenen
-geprüften Slices.
+Dreieck-Fixture fallen sicher auf einen Pfad zurück.
+
+### Native Ellipsen
+
+Sind „Kreis“ und „Ellipse“ aktiv, entscheidet zuerst die Ausdehnung: Nahezu gleiche Breite und
+Höhe bleiben `<circle>`, eine klar unterschiedliche Ausdehnung mit elliptischer Flächenfüllung
+wird `<ellipse>`. Das Ellipsen-Fixture erzeugt `cx="128"`, `cy="128"`, `rx="80"`, `ry="48"`
+und `fill="#8B5CF6"`; Status und History zeigen „1 Ellipse“ und keinen Pfad.
+
+Ellipse und Kreis verwenden dieselbe konservative Flächentoleranz. Die maximal drei Prozent
+Seitenverhältnisabweichung des Kreises sind zugleich die eindeutige Typgrenze: Eine Ellipse muss
+außerhalb dieser Grenze liegen. Zusätzlich darf ihre Pixelbelegung höchstens acht Prozent von
+der idealen Ellipsenfläche abweichen; dadurch bleibt eine unregelmäßige Kontur trotz ähnlicher
+Gesamtfläche ein Pfad. Linie und Polygon folgen in eigenen geprüften Slices.
 
 ## KI-Manager
 
@@ -241,8 +253,8 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
 Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
-sicheren Pfad-Fallback. Kreis- und Rechteckabnahme lesen das gemeinsame Manifest und prüfen
-Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
+sicheren Pfad-Fallback. Kreis-, Rechteck- und Ellipsenabnahme lesen das gemeinsame Manifest und
+prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
 2-Pixel-Toleranz.
 
 ## Datenschutz

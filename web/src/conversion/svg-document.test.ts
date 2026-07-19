@@ -6,12 +6,13 @@ describe("SVG document metrics", () => {
     const svg = {
       getAttribute: (name: string) => ({ height: "256", width: "256" })[name] ?? null,
       querySelectorAll: (selector: string) => ({
-        length: selector === "circle" || selector === "rect" ? 1 : 0,
+        length: ["circle", "ellipse", "rect"].includes(selector) ? 1 : 0,
       }),
     } as unknown as Element;
 
     expect(readSvgMetrics(svg)).toEqual({
       circleCount: 1,
+      ellipseCount: 1,
       heightPixels: 256,
       pathCount: 0,
       rectangleCount: 1,
