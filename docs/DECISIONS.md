@@ -104,6 +104,23 @@ Domänenwerte und Warum-Kommentare sind verbindlich. Jede handgeschriebene Quell
 Testdatei bleibt unter 1000 Zeilen. Die ausführbaren Regeln stehen in
 `docs/ENGINEERING_STANDARDS.md`.
 
+## D-013 — OpenAI Build Week als Einreichungsziel
+
+**Status:** entschieden
+
+Das Projekt wird für die OpenAI Build Week vorbereitet. Die Einreichungsfrist ist der
+21. Juli 2026 um 17:00 Pacific Time, entsprechend dem 22. Juli 2026 um 02:00 CEST. Wegen der
+kurzen Restzeit priorisiert `docs/SUBMISSION.md` einen funktionierenden vertikalen Kern vor
+dem vollständigen langfristigen Umfang.
+
+## D-014 — Track Developer Tools
+
+**Status:** empfohlen, Bestätigung des Projekteigners ausstehend
+
+Developer Tools ist der passendste Track für die lokale Konvertierungs-Engine, den
+experimentellen A/B-Workflow und die WebMCP-Steuerung. Die finale Auswahl wird vor dem
+Devpost-Submit bestätigt.
+
 ## Noch zu klären
 
 - Welche konkrete Hackathon-Veranstaltung und welche Lizenz-/Einreichungsregeln gelten?

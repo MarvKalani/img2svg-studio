@@ -29,6 +29,7 @@ Implementierung.
 - [Produktspezifikation](docs/PRODUCT_SPEC.md)
 - [Technische Spezifikation](docs/TECHNICAL_SPEC.md)
 - [Engineering-Standards](docs/ENGINEERING_STANDARDS.md)
+- [Build-Week-Einreichungsplan](docs/SUBMISSION.md)
 - [Entscheidungsprotokoll](docs/DECISIONS.md)
 - [Umsetzungsliste](TASKS.md)
 

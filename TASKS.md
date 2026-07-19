@@ -35,6 +35,36 @@ Die verbindlichen Qualitätsregeln stehen in
   - Abnahme: KISS, SINE, EVA, TDD, minimale Diffs und Dateilimit sind verbindlich.
 - [x] **P0-06 TypeScript-Version entscheiden.**
   - Abnahme: TypeScript 7.0.2 ist als stabile, exakt zu pinnende Version dokumentiert.
+- [x] **P0-07 Offizielle Build-Week-Anforderungen prüfen.**
+  - Abnahme: Frist, Pflichtmaterialien, Codex-Nachweis und Testzugang sind dokumentiert.
+
+## OpenAI Build Week — kritischer Pfad
+
+Deadline: **22. Juli 2026, 02:00 CEST**. Diese Liste priorisiert die Submission; die
+vollständige Roadmap darunter bleibt bestehen.
+
+- [ ] **BW-01 Devpost-Teilnahme bestätigen — Aktion des Projekteigners.**
+  - Devpost-Konto, „Join Hackathon“ und Teilnahmeberechtigung prüfen.
+- [ ] **BW-02 GitHub-Repository, Sichtbarkeit und Lizenz festlegen.**
+  - Abnahme: Remote ist gesetzt, `main` gepusht und der Zugriff für Judges geklärt.
+- [ ] **BW-03 M0-Gate vollständig erreichen.**
+- [ ] **BW-04 M1-Gate als funktionierenden Produktkern erreichen.**
+- [ ] **BW-05 Minimale Qualitätsdifferenzierung liefern.**
+  - M2-01, M2-05, M2-06 und M2-08 oder eine kleinere belegbar funktionierende Auswahl.
+- [ ] **BW-06 A/B-Kern liefern.**
+  - M5-01 bis M5-05 sowie kritischen Browsertest priorisieren.
+- [ ] **BW-07 Einen nativen Kreis-Slice liefern.**
+  - M4-01 und M4-02; weitere Formtypen nur bei sicherem Zeitbudget.
+- [ ] **BW-08 WebMCP-Kern liefern.**
+  - M7-01, M7-02, M7-04 und M7-05 mit sichtbarer UI-Synchronität.
+- [ ] **BW-09 Öffentliche statische Demo bereitstellen.**
+  - Abnahme: funktioniert kostenlos und ohne Login in einem frischen Browser.
+- [ ] **BW-10 Englische Submission-Unterlagen fertigstellen.**
+  - README, Projektbeschreibung, Testanleitung, Codex-/GPT-5.6-Nachweis und Lizenzen.
+- [ ] **BW-11 Demovideo unter drei Minuten veröffentlichen — gemeinsame Aktion.**
+  - Öffentliches YouTube-Video mit englischem Audio oder vollständiger Übersetzung.
+- [ ] **BW-12 `/feedback` Session ID und Devpost-Submission absenden — gemeinsame Aktion.**
+  - Alle Links unangemeldet testen; mehrere Stunden Puffer vor der Frist behalten.
 
 ## M0 — Gerüst und erster vertikaler System-Slice
 
