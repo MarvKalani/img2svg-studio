@@ -143,6 +143,7 @@ for an existing-project disclosure.
 - [x] Local production-preview judge path passes in Google Chrome.
 - [x] Accessibility, damaged/oversized input and network audits pass automatically.
 - [x] Third-party code and model inventory exists.
+- [x] Public-repository preflight finds no tracked credentials, local paths or build caches.
 - [x] Direct manual Chrome acceptance is recorded for every completed product slice.
 - [ ] Public demo passes `IMG2SVG_DEMO_BASE_URL=https://studio.img2.download npm --prefix web run test:demo`.
 

@@ -48,3 +48,10 @@ Its production preview ran on an isolated port and passed `test:demo` against th
 Direct Chrome 150 acceptance of the same preview produced four native shapes, two runs and one
 A/B parameter difference with an empty warning and error log. The temporary server and worktree
 were removed after the gate.
+
+## Public-repository preflight
+
+The tracked files and Git objects of both the Studio and predecessor repositories were checked
+before publication. No common private-key, GitHub-token, OpenAI-key, AWS-key or assigned API-key
+pattern was present; no local `/Users/marvin` path was tracked. Neither repository tracks `.env`,
+`.wrangler`, `dist`, `target` or `node_modules` content, and both working trees are clean.
