@@ -188,19 +188,20 @@ Chrome, kontrolliert sichtbaren Zustand, Tastaturweg, Konsole und Netzwerk und d
 Version sowie Ablauf im Commit. Ein gefundener Mangel hält denselben Task offen, beginnt mit
 einem Regressionstest und wird vor jeder anderen Arbeit nachgebessert.
 
-## D-022 — WebMCP zuerst, Apps SDK nur als nachgewiesener Rückfallweg
+## D-022 — WebMCP und Apps SDK bedienen unterschiedliche Agentenwege
 
-**Status:** entschieden
+**Status:** ersetzt am 20. Juli 2026
 
 WebMCP bleibt die Primärintegration, weil seine Tools direkt in der sichtbaren Browserseite
 laufen und denselben lokalen Zustand wie der Nutzer verwenden. Die Abnahme aktiviert in Chrome
 149 oder neuer `#enable-webmcp-testing` und `#devtools-webmcp-support` und ruft die registrierten
 Tools im echten Tab auf.
 
-Scheitert die Nutzung trotz unterstützter Version, korrekter Flags, Origin-/Permissions-
-Konfiguration und behobener eigener Fehler an der Plattform, übernimmt eine OpenAI-Apps-SDK-
-Integration den Agentenkanal. Sie verwendet einen MCP-Server, eine ChatGPT-iframe-UI und einen
-eigenen Deployment- und Datenschutzvertrag. Beide Wege teilen dieselben Application Services.
+Der Apps-SDK-Weg ergänzt WebMCP als eigener ChatGPT-Kanal. Er verwendet einen stateless
+Streamable-HTTP-MCP-Server und eine ChatGPT-iframe-UI. Wegen der expliziten entfernten Dateiübergabe
+teilt er nicht den flüchtigen Browserzustand, sondern ausschließlich denselben Rust-Konvertierungskern
+und dieselben typisierten Options- und Ergebnisverträge. Sein Deployment- und Datenschutzvertrag
+bleibt vom lokalen Browser-Studio getrennt.
 
 Primärquellen:
 
@@ -209,6 +210,29 @@ Primärquellen:
 - <https://developers.openai.com/apps-sdk/build/mcp-server>
 - <https://developers.openai.com/apps-sdk/build/chatgpt-ui>
 - <https://developers.openai.com/apps-sdk/deploy>
+
+## D-024 — Tauri bleibt eine zweite Hülle um denselben Kern
+
+**Status:** entschieden am 20. Juli 2026
+
+Die vorhandene Vite-Oberfläche ist ohne Produktumbau in einer Tauri-Webview lauffähig. Für einen
+ersten Desktop-Build kann sie weiterhin den vorhandenen Web Worker und WASM-Kern verwenden. Der
+spätere native Adapter ruft `img2svg-core` über einen schmalen typisierten Tauri-Command auf; die
+Browserfassung behält `img2svg-wasm`. UI, Engine und Domänenverträge werden nicht dupliziert.
+
+Browserabhängige Ports für Dateiauswahl, Downloads, WebMCP und lokale Modelle bleiben außerhalb des
+Rust-Cores. Deshalb ist Tauri ein unabhängiger vertikaler Slice und keine Voraussetzung für die
+Build-Week-Einreichung.
+
+## D-025 — ChatGPT verwendet Datei-Parameter statt Base64 als Primärweg
+
+**Status:** entschieden am 20. Juli 2026
+
+`vectorize_image` deklariert einen offiziellen ChatGPT-Datei-Parameter. Der Server erhält dadurch
+eine autorisierte kurzlebige Dateireferenz, statt Binärdaten durch den Modellkontext zu tragen.
+`image_base64` bleibt ausschließlich als kompatibler Inspector-/MCP-Host-Eingang erhalten. Das
+Datenwerkzeug liefert SVG und Statistiken; `get_svg_preview` rendert denselben Wert anschließend als
+MCP-Apps-Widget mit Download. Diese Trennung entspricht der offiziellen Tool-first-Empfehlung.
 
 ## D-023 — Vorgänger und img2svg Studio bleiben getrennte Produkte
 

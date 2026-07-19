@@ -11,6 +11,11 @@ Das Repository wird als Rust-Workspace mit separater Web-Anwendung aufgebaut:
 
 Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-Details.
 
+Ein getrennter ChatGPT-Companion ergänzt diese Architektur über einen stateless Node/TypeScript-
+MCP-Server. Er dekodiert eine explizit übergebene Datei, verwendet denselben kompilierten Rust/WASM-
+Kern und liefert SVG plus Statistiken. Ein Tauri-Adapter kann später denselben Rust-Core nativ
+aufrufen; die Plattformpfade sind in [`APPS_SDK.md`](APPS_SDK.md) abgegrenzt.
+
 ## 2. Datenfluss
 
 ```text

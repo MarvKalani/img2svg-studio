@@ -72,6 +72,77 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
+## APPS-01 — Ein Bild über den stateless MCP-Server vektorisieren
+
+**Ergebnis:** Ein eigener Node/TypeScript-Workspace stellt `/mcp` über das offizielle MCP SDK und
+Streamable HTTP bereit. `vectorize_image` akzeptiert den offiziellen ChatGPT-Datei-Parameter oder
+für Inspector-Tests Base64, validiert feste Größenlimits und verwendet nach Rasterdekodierung den
+vorhandenen `img2svg-core` über dessen WASM-Grenze. Modus, Farbanzahl und Detailstufe werden in
+typisierte Engine-Optionen übersetzt. Der Prozess speichert keine Eingabe und kein Ergebnis.
+
+```gherkin
+Given ein gültiges PNG wurde als ChatGPT-Datei oder Base64 an vectorize_image übergeben
+When das Modell Modus, Farbanzahl und Detailstufe wählt
+Then liefert derselbe Rust-Kern ein valides deterministisches SVG
+And die strukturierte Antwort enthält effektive Parameter, Maße, Bytes und Elementzahlen
+```
+
+**Ausführbare Abnahme:** Schnelle Vitest-Vertragstests prüfen Datei- und Base64-Eingang, Limits,
+Parameterabbildung, deterministische Fixture-Ausgabe und stabile Fehlercodes. Ein Streamable-HTTP-
+Integrationstest initialisiert den Server, listet das Tool und ruft es mit dem Kreis-Fixture auf.
+Danach laufen `npm run check` und der MCP Inspector gegen `http://127.0.0.1:8787/mcp`.
+
+**Dokumentation:** Setup, Tool-Schema, Parameterheuristik, Dateigrenzen, Datenschutz und Deployment.
+
+## APPS-02 — SVG als ChatGPT-Widget anzeigen und exakt herunterladen
+
+**Ergebnis:** `get_svg_preview` ist ein reines Renderwerkzeug mit eigener MCP-Apps-Ressource. Das
+Widget zeigt das von `vectorize_image` gelieferte SVG, die wichtigsten Statistiken und lädt exakt
+dieselben SVG-Bytes herunter. Toolbeschreibung und Parameterhinweise führen das Modell selbst zu
+einem sinnvollen ersten Profil und bei „mach es einfacher“ zu weniger Farben und niedrigerem Detail.
+
+```gherkin
+Given vectorize_image hat SVG und Statistiken geliefert
+When das Modell get_svg_preview mit diesem Ergebnis aufruft
+Then erscheint ein zugängliches SVG-Widget inline in ChatGPT
+And der Download enthält exakt das angezeigte SVG
+When der Nutzer um eine einfachere Variante bittet
+Then ruft das Modell vectorize_image erneut mit reduzierter Komplexität auf
+```
+
+**Ausführbare Abnahme:** DOM-nahe Widgettests prüfen Darstellung, untrusted SVG als isolierte
+Bildquelle, Statistiken und Byte-identischen Download. MCP Inspector prüft Ressource, Metadaten und
+Renderwerkzeug. Die Endabnahme lädt ein Bild in ChatGPT Developer Mode hoch, führt beide Aufrufe
+aus und wiederholt die Konvertierung über die natürliche Folgeanweisung.
+
+**Vorbedingung:** `APPS-01` und ein öffentlich erreichbarer HTTPS-`/mcp`-Endpunkt.
+
+**Dokumentation:** ChatGPT-Verbindung, Golden Prompts, Widget-Bedienung und Fehlerfälle.
+
+## APPS-03 — Ein Bild über einen festen externen Pfad als 3D-SVG-Vorschau darstellen
+
+**Priorität:** Stretch-Slice nach vollständiger Abnahme von `APPS-01` und `APPS-02`.
+
+**Ergebnis:** `image_to_3d` verwendet genau einen fest gepinnten externen Provider, wartet begrenzt
+auf ein GLB und rendert es mit einem einfachen Drehregler. three.js `SVGRenderer` erzeugt jeden
+sichtbaren Frame als SVG. Providerfehler sind typisiert; der API-Key kommt ausschließlich aus der
+dokumentierten Umgebung.
+
+```gherkin
+Given ein unterstütztes Bild und ein gültiger Provider-Key liegen vor
+When image_to_3d den festen Konvertierungspfad ausführt
+Then erscheint ein drehbares Objekt und jeder angezeigte Frame ist SVG
+And Timeout, Providerfehler und ungültige GLB-Daten enden verständlich ohne Teilzustand
+```
+
+**Ausführbare Abnahme:** Provider-Porttests verwenden Fixtures statt bezahlter Aufrufe; ein explizit
+gestarteter Smoke-Test und ChatGPT Developer Mode prüfen den echten Pfad. `.env.example` enthält
+nur Variablennamen und Erläuterungen.
+
+**Dokumentation:** Provider, Kostenhinweis, Datenfluss, Key-Setup, Timeout und Grenzen.
+
+---
+
 ## MCP-03 — Den Vorgänger `img2.download` vollständig über WebMCP bedienen
 
 **Ergebnis:** Der bestehende Vorgänger auf `https://img2.download` liefert die nötigen
