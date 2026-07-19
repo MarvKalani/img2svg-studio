@@ -39,9 +39,10 @@ uncached explicit model action permits only the revision-pinned artifact and its
 
 ## Clean-checkout gate
 
-A detached worktree at commit `598d8a7` passed `npm ci` with zero reported vulnerabilities,
-followed by `npm run check`. This rebuilt the TypeScript application and compiled the Rust
-workspace from an empty dependency state.
+A detached worktree at commit `6ba7eae` passed `npm ci` with zero reported vulnerabilities,
+followed by `npm run check`. This rebuilt the TypeScript application from an empty dependency
+state and passed 72 Vitest scenarios plus all 23 Rust ground-truth and contract tests before
+warning-free Clippy.
 
 Its production preview ran on an isolated port and passed `test:demo` against that exact URL.
 Direct Chrome 150 acceptance of the same preview produced four native shapes, two runs and one
