@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## SHAPE-07 — Gemischte Formen deterministisch ausgeben
-
-**Ergebnis:** Die gemischte Szene hält Detektorreihenfolge, Elementanzahl und Z-Reihenfolge
-stabil und meldet keine Form doppelt.
-
-```gherkin
-Given alle unterstützten Formdetektoren und das Mixed-Fixture sind aktiv
-When die Szene zweimal konvertiert wird
-Then stimmen native Elementtypen, Geometrien, Anzahl und Reihenfolge mit dem Manifest überein
-And beide SVG-Ausgaben sind byteidentisch
-```
-
-**Ausführbare Abnahme:** `crates/img2svg-core/tests/detect_mixed_shapes.rs` und
-`web/e2e/shape-recognition.spec.ts`; `cargo test -p img2svg-core --test detect_mixed_shapes`
-und `npm --prefix web run test:e2e -- shape-recognition.spec.ts`.
-
-**Dokumentation:** Handbuch-Formerkennung und aktualisierte unterstützte Formen.
-
 ## AI-01 — Verwendbare Browsermodelle verbindlich festlegen
 
 **Ergebnis:** MODNet- und SAM-Modell, Revision, Dateigröße, Lizenz, Quelle, Eingabe-/Ausgabeform

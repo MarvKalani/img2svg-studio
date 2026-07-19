@@ -38,6 +38,14 @@ pub struct LoadedFixture {
     pub width: usize,
 }
 
+pub struct LoadedSceneFixture {
+    pub expected: Vec<ExpectedShape>,
+    pub height: usize,
+    pub pixels: Vec<u8>,
+    pub tolerance: f64,
+    pub width: usize,
+}
+
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct FixtureManifest {
@@ -53,6 +61,22 @@ struct ShapeFixture {
 }
 
 pub fn load_fixture(fixture_id: &str, element: &str) -> LoadedFixture {
+    let scene = load_scene_fixture(fixture_id);
+    let expected = scene
+        .expected
+        .into_iter()
+        .find(|shape| shape.element == element)
+        .expect("requested shape expectation should exist");
+    LoadedFixture {
+        expected,
+        height: scene.height,
+        pixels: scene.pixels,
+        tolerance: scene.tolerance,
+        width: scene.width,
+    }
+}
+
+pub fn load_scene_fixture(fixture_id: &str) -> LoadedSceneFixture {
     let fixture_root = fixture_root();
     let manifest: FixtureManifest = serde_json::from_str(
         &std::fs::read_to_string(fixture_root.join("manifest.json"))
@@ -64,15 +88,9 @@ pub fn load_fixture(fixture_id: &str, element: &str) -> LoadedFixture {
         .iter()
         .find(|fixture| fixture.id == fixture_id)
         .expect("requested fixture should exist");
-    let expected = fixture
-        .expected
-        .iter()
-        .find(|shape| shape.element == element)
-        .expect("requested shape expectation should exist")
-        .clone();
     let (pixels, width, height) = decode_rgba(&fixture_root.join(&fixture.input));
-    LoadedFixture {
-        expected,
+    LoadedSceneFixture {
+        expected: fixture.expected.clone(),
         height,
         pixels,
         tolerance: manifest.geometry_tolerance_pixels,

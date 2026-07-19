@@ -24,6 +24,13 @@ const TRANSPARENT_KEY_CANDIDATES: [(u8, u8, u8); 8] = [
     (255, 255, 255),
     (1, 1, 1),
 ];
+const PATH_ASSEMBLY_ORDER: u8 = u8::MAX;
+
+struct OrderedSvgElement {
+    assembly_order: u8,
+    cluster_order: usize,
+    markup: String,
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConversionErrorCode {
@@ -238,7 +245,7 @@ pub fn convert_rgba_with_options_result(
     let view = clusters.view();
     let mut svg_elements = Vec::with_capacity(clusters.output_len());
     let mut shape_statistics = ShapeStatistics::default();
-    for &cluster_index in view.clusters_output.iter().rev() {
+    for (cluster_order, &cluster_index) in view.clusters_output.iter().rev().enumerate() {
         let cluster = view.get_cluster(cluster_index);
         if cluster.area() < minimum_cluster_area {
             continue;
@@ -265,17 +272,28 @@ pub fn convert_rgba_with_options_result(
             };
             if let Some(detected_shape) = detect_native_shape(candidate, options.shape_detection) {
                 shape_statistics.record(detected_shape.kind);
-                svg_elements.push(detected_shape.svg);
+                svg_elements.push(OrderedSvgElement {
+                    assembly_order: detected_shape.kind.assembly_order(),
+                    cluster_order,
+                    markup: detected_shape.svg,
+                });
             } else {
-                svg_elements.push(svg_path(
-                    &path_data,
-                    cluster.residue_color(),
-                    offset,
-                    options.scale_percent,
-                ));
+                svg_elements.push(OrderedSvgElement {
+                    assembly_order: PATH_ASSEMBLY_ORDER,
+                    cluster_order,
+                    markup: svg_path(
+                        &path_data,
+                        cluster.residue_color(),
+                        offset,
+                        options.scale_percent,
+                    ),
+                });
             }
         }
     }
+
+    // Raster clusters carry no authoring order, so native types use one canonical z-order.
+    svg_elements.sort_by_key(|element| (element.assembly_order, element.cluster_order));
 
     let target_width = scaled_dimension(width, options.scale_percent)?;
     let target_height = scaled_dimension(height, options.scale_percent)?;
@@ -284,7 +302,10 @@ pub fn convert_rgba_with_options_result(
         shape_statistics,
         svg: format!(
             "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{target_width}\" height=\"{target_height}\" viewBox=\"0 0 {target_width} {target_height}\">{}</svg>",
-            svg_elements.join("")
+            svg_elements
+                .into_iter()
+                .map(|element| element.markup)
+                .collect::<String>()
         ),
     })
 }

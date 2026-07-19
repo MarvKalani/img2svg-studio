@@ -26,8 +26,8 @@ markieren und über einen Regler bei identischer, seitenverhältnistreuer Layer-
 Downloads exportieren exakt die gespeicherten Run-SVGs. Ein globaler Formerkennungsschalter und
 fünf typisierte Formoptionen reichen bis in die Rust-Detektorkette. Für eindeutige Flächen sind
 `<circle>`, `<rect>`, `<ellipse>`, `<line>` und dreipunktige `<polygon>`-Elemente mit sichtbaren
-Statistiken implementiert; byteidentisches Abschalten und sicherer Pfad-Fallback bleiben
-garantiert.
+Statistiken implementiert. Gemischte Szenen verwenden eine kanonische Element- und Z-Reihenfolge;
+byteidentisches Abschalten und sicherer Pfad-Fallback bleiben garantiert.
 
 ## Lokal starten
 

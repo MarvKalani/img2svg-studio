@@ -121,7 +121,14 @@ linke und rechte Kante ab. `PolygonSimplificationEpsilon` kapselt die zulässige
 2 Pixeln zur jeweiligen idealen Geraden. Die Clusterfläche darf höchstens acht Prozent von der
 abgeleiteten Dreiecksfläche abweichen. Gekrümmte oder komplexe Konturen überschreiten mindestens
 eine dieser Grenzen und bleiben Pfade. Die ausgegebene Punktreihenfolge ist Spitze, rechts unten,
-links unten.
+links unten. Kantenabweichungen werden an Pixelzentren gemessen, damit dasselbe Epsilon an beiden
+Rastergrenzen symmetrisch gilt.
+
+Die SVG-Assembly sortiert erkannte native Elemente kanonisch als Kreis, Rechteck, Ellipse, Linie
+und Polygon. Mehrere Elemente desselben Typs behalten ihre stabile Clusterreihenfolge;
+Pfad-Fallbacks folgen ebenfalls stabil. Da `detect_native_shape` pro Cluster beim ersten
+passenden Detektor endet, kann kein Cluster doppelt ausgegeben oder gezählt werden. Der
+Mixed-Fixture-Test prüft Geometrie, Farbe, Statistik, Reihenfolge und zwei byteidentische Läufe.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
 MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.

@@ -244,6 +244,14 @@ Ein typisiertes Vereinfachungs-Epsilon erlaubt pro linker und rechter Kante höc
 Abweichung von der idealen Geraden. Zusätzlich darf die Clusterfläche höchstens acht Prozent von
 der Dreiecksfläche abweichen. Eine gekrümmte oder komplexe Kontur bleibt dadurch ein Pfad.
 
+### Gemischte Szenen
+
+Sind alle Formtypen aktiv, gibt die Engine native Elemente in der kanonischen Reihenfolge Kreis,
+Rechteck, Ellipse, Linie und Polygon aus. Jedes Cluster erzeugt genau ein Element. Das
+Mixed-Fixture enthält Kreis, Rechteck, Linie und Dreieck und erscheint deshalb als `<circle>`,
+`<rect>`, `<line>` und `<polygon>` ohne zusätzlichen Pfad. Status und History zählen jede Form
+genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
+
 ## KI-Manager
 
 KI-Modelle werden nicht automatisch geladen. Der KI-Manager zeigt pro Modell:
@@ -275,9 +283,9 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
 Linie, Polygon und eine gemischte Szene. Der Basistest beweist byteidentisches Abschalten und
-sicheren Pfad-Fallback. Die Einzelabnahmen aller fünf Formtypen lesen das gemeinsame Manifest und
-prüfen Elementtyp, Farbe, Statistik und jeden Geometriewert innerhalb der dort definierten
-2-Pixel-Toleranz.
+sicheren Pfad-Fallback. Die Einzelabnahmen aller fünf Formtypen und die Mixed-Abnahme lesen das
+gemeinsame Manifest. Sie prüfen Elementtyp, Farbe, Statistik, Reihenfolge und jeden Geometriewert
+innerhalb der dort definierten 2-Pixel-Toleranz.
 
 ## Datenschutz
 

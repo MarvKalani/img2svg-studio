@@ -33,6 +33,16 @@ impl NativeShapeKind {
         Self::Line,
         Self::Polygon,
     ];
+
+    pub(crate) const fn assembly_order(self) -> u8 {
+        match self {
+            Self::Circle => 0,
+            Self::Rectangle => 1,
+            Self::Ellipse => 2,
+            Self::Line => 3,
+            Self::Polygon => 4,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -395,8 +405,11 @@ fn triangle_points(
         let progress = row as f64 / triangle_height;
         let expected_left = top_x + (bottom_left - top_x) * progress;
         let expected_right = top_x + (bottom_right - top_x) * progress;
-        if !epsilon.accepts((actual_left as f64 - expected_left).abs())
-            || !epsilon.accepts(((actual_right_inclusive + 1) as f64 - expected_right).abs())
+        // Pixel centers keep the typed edge tolerance symmetric at both raster boundaries.
+        let actual_left = actual_left as f64 + 0.5;
+        let actual_right = actual_right_inclusive as f64 + 0.5;
+        if !epsilon.accepts((actual_left - expected_left).abs())
+            || !epsilon.accepts((actual_right - expected_right).abs())
         {
             return None;
         }
