@@ -11,8 +11,9 @@ Vorgänger auf `https://img2.download` erhält einen getrennten WebMCP-Adapter.
 ## Projektstatus
 
 Die responsive Studio-Oberfläche läuft lokal. Sie zeigt Kopfzeile, Parameterleiste,
-A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. Bildverarbeitung und
-Interaktionen folgen in den nächsten vertikalen Slices.
+A/B-Arbeitsfläche, Parametervergleich, leeren Verlauf und Statuszeile. PNG-, JPEG- und
+WebP-Bilder lassen sich lokal auswählen oder ablegen und werden mit ihren echten Maßen
+angezeigt. Die SVG-Konvertierung folgt im nächsten vertikalen Slice.
 
 ## Lokal starten
 

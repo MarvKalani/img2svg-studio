@@ -7,8 +7,8 @@ oder implementierte Funktionen und kennzeichnet noch nicht verfügbare Abläufe 
 
 Aktueller Stand: Die responsive Studio-Oberfläche ist lokal ausführbar. Kopfzeile,
 Parameterleiste, A/B-Arbeitsfläche, Parameterunterschiede, leerer Verlauf und Statuszeile sind
-sichtbar. Die Bedienelemente zeigen den vorgesehenen Zustand; Bildladen und Konvertierung
-folgen als eigene getestete Slices.
+sichtbar. PNG-, JPEG- und WebP-Bilder können lokal geladen und mit ihren echten Maßen angezeigt
+werden. Die Konvertierung folgt als eigener getesteter Slice.
 
 ## Produktidee
 
@@ -50,9 +50,22 @@ Vor einem Commit prüft `npm run check` im Repository-Root Formatierung, Lint, Z
 TypeScript, schnelle Tests und Produktionsbuild. Die Rust-Prüfungen werden mit dem ersten
 `Cargo.toml` Bestandteil desselben Befehls.
 
-## Geplanter Grundablauf
+## Bild laden
 
-1. Bild per Drag-and-drop oder Dateiauswahl laden.
+„Bild wählen“ öffnet die lokale Dateiauswahl. Alternativ kann ein Bild auf die gestrichelte
+Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
+
+Unterstützt werden PNG, JPEG und WebP bis 25 MB. Nach erfolgreichem Laden zeigt die Oberfläche
+Dateiname, Format, echte Pixelmaße, eine Miniatur und die große Vorschau. Die Vorschau verwendet
+eine lokale `blob:`-URL; die Bilddaten werden nicht übertragen.
+
+Beschädigte Dateien, andere Formate und Dateien über 25 MB zeigen einen verständlichen Fehler.
+Eine bereits geladene gültige Vorschau bleibt dabei erhalten. Beim Laden eines neuen gültigen
+Bildes wird die vorherige Objekt-URL freigegeben.
+
+## Grundablauf
+
+1. Bild per Drag-and-drop oder Dateiauswahl laden. Dieser Schritt ist verfügbar.
 2. Zielgröße und wenige relevante Parameter wählen.
 3. „Konvertieren“ ausführen.
 4. Ergebnis prüfen und als SVG herunterladen.

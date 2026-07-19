@@ -13,10 +13,11 @@ Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
 
 ## 2. Eingaben und Datenschutz
 
-- Mindestens PNG, JPEG und WebP werden über Browser-APIs dekodiert.
+- PNG, JPEG und WebP bis 25 MB werden über Browser-APIs dekodiert.
 - Dateiauswahl und Drag-and-drop verwenden dieselbe validierte Decodergrenze.
 - Das unveränderte Original bleibt für die gesamte Sitzung verfügbar.
 - Beschädigte, zu große und nicht unterstützte Dateien erzeugen verständliche Fehler.
+- Ein fehlgeschlagener neuer Ladevorgang erhält die letzte gültige Vorschau.
 - Bildverarbeitung und Bilddaten bleiben im Browser.
 - Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
 - KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.

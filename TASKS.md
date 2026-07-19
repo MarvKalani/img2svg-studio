@@ -72,24 +72,6 @@ Diese Regeln gelten für jeden Task, ohne in jeder Karte wiederholt zu werden:
 
 ---
 
-## CONV-01 — Rasterbild lokal laden und anzeigen
-
-**Ergebnis:** Dateiauswahl und Drag-and-drop dekodieren PNG, JPEG oder WebP im Browser, zeigen
-Vorschau und echte Maße und lehnen beschädigte oder nicht unterstützte Dateien verständlich ab.
-
-```gherkin
-Given das Kreis-Fixture liegt als 256 mal 256 Pixel großes PNG vor
-When es per Dateiauswahl oder Drag-and-drop geladen wird
-Then zeigt die Arbeitsfläche dasselbe lokale Bild mit 256 mal 256 Pixeln
-And es wird kein Bildinhalt über das Netzwerk übertragen
-```
-
-**Ausführbare Abnahme:** `web/e2e/load-image.spec.ts` mit
-`npm --prefix web run test:e2e -- load-image.spec.ts`; Decoder-Grenzfälle in
-`web/src/image/decode-image.test.ts` mit `npm --prefix web test -- decode-image.test.ts`.
-
-**Dokumentation:** Handbuch „Bild laden“, unterstützte Formate und Fehlerfälle.
-
 ## CONV-02 — Rasterbild real und deterministisch in SVG konvertieren
 
 **Ergebnis:** Rust-Core und schmale WASM-Grenze konvertieren validiertes RGBA mit

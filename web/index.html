@@ -42,16 +42,25 @@
 
       <div class="studio-grid">
         <aside class="sidebar" aria-label="Konvertierungsparameter">
-          <section class="source-card" aria-label="Eingabebild">
-            <div class="source-icon" aria-hidden="true">◇</div>
+          <section class="source-card" aria-label="Eingabebild" data-testid="image-dropzone">
+            <div id="source-icon" class="source-icon" aria-hidden="true">◇</div>
+            <img id="source-thumbnail" class="source-thumbnail" alt="" hidden />
             <div>
-              <strong>Noch kein Bild</strong>
-              <span>PNG, JPEG oder WebP</span>
+              <strong id="source-name">Noch kein Bild</strong>
+              <span id="source-metadata">PNG, JPEG oder WebP</span>
             </div>
-            <button type="button">Bild wählen</button>
+            <button id="image-select-button" type="button">Bild wählen</button>
+            <input
+              id="image-input"
+              class="visually-hidden"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              aria-label="Rasterbild auswählen"
+            />
+            <p id="image-error" class="image-error" role="alert" hidden></p>
           </section>
 
-          <button class="convert-button" type="button" disabled>
+          <button id="convert-button" class="convert-button" type="button" disabled>
             <span aria-hidden="true">✦</span>
             Konvertieren
           </button>
@@ -126,7 +135,14 @@
             <div class="comparison-stage">
               <article class="preview-pane">
                 <span class="preview-label">A · Variante</span>
-                <div class="preview-placeholder">
+                <img
+                  id="workspace-raster-preview"
+                  class="workspace-raster-preview"
+                  data-testid="workspace-raster-preview"
+                  alt=""
+                  hidden
+                />
+                <div id="workspace-empty" class="preview-placeholder">
                   <svg viewBox="0 0 140 140" aria-hidden="true">
                     <path d="M70 14 118 42v56l-48 28-48-28V42Z" />
                     <path d="M70 42 94 56v28L70 98 46 84V56Z" />
@@ -179,7 +195,7 @@
       </div>
 
       <footer class="statusbar" role="status" aria-label="Anwendungsstatus">
-        <span><strong>Bereit</strong> für ein lokales Bild</span>
+        <span id="status-image"><strong>Bereit</strong> für ein lokales Bild</span>
         <span>0 Varianten</span>
         <span>Keine Netzwerkübertragung</span>
       </footer>

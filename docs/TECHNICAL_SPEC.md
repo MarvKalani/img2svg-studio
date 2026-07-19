@@ -75,8 +75,13 @@ werden dokumentiert. Übernommene oder adaptierte Algorithmen erhalten konkrete 
 
 Der erste ausführbare Slice verwendet Vite 8.1.5, TypeScript 7.0.2 und frameworkfreies
 semantisches HTML/CSS. `web/index.html` enthält die sichtbaren Landmarks und
-`web/src/styles.css` die responsive Darstellung. Der TypeScript-Einstieg bleibt bis zum ersten
-interaktiven Slice bewusst auf den Style-Import und das Bereitschaftssignal begrenzt.
+`web/src/styles.css` die responsive Darstellung.
+
+`web/src/image/decode-image.ts` validiert PNG, JPEG und WebP bis 25 MB und dekodiert über
+`createImageBitmap`. Der Browser-Port erzeugt erst nach erfolgreicher Dekodierung eine lokale
+Objekt-URL. `image-loader.ts` verbindet Dateiauswahl und Drop mit derselben Funktion, ersetzt
+die sichtbare Vorschau atomar und gibt die vorherige Objekt-URL beim nächsten gültigen Bild
+oder vor dem Verlassen frei.
 
 Die UI verwendet kleine Feature-Module und zentrale Application Services:
 

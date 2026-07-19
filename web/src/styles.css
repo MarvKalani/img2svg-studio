@@ -16,6 +16,11 @@
   box-sizing: border-box;
 }
 
+/* Component display rules must never resurrect a state hidden by application logic. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   min-width: 0;
@@ -206,6 +211,11 @@ a:focus-visible {
   background: #0c2231;
 }
 
+.source-card.drag-active {
+  border-color: #35d6f5;
+  background: #123247;
+}
+
 .source-icon {
   display: grid;
   width: 2.25rem;
@@ -215,6 +225,14 @@ a:focus-visible {
   color: #43d5ec;
   background: #143246;
   font-size: 1.5rem;
+}
+
+.source-thumbnail {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.45rem;
+  object-fit: contain;
+  background: #eef2f3;
 }
 
 .source-card strong,
@@ -238,6 +256,13 @@ a:focus-visible {
   border-radius: 0.4rem;
   background: #152d3e;
   font-size: 0.77rem;
+}
+
+.image-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #ffb8b8;
+  font-size: 0.75rem;
 }
 
 .convert-button {
@@ -436,6 +461,14 @@ a:focus-visible {
   justify-content: center;
   color: #5f7380;
   text-align: center;
+}
+
+.workspace-raster-preview {
+  position: absolute;
+  inset: 3.8rem 1rem 1rem;
+  width: calc(100% - 2rem);
+  height: calc(100% - 4.8rem);
+  object-fit: contain;
 }
 
 .preview-placeholder svg {
