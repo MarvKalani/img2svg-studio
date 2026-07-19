@@ -381,6 +381,36 @@ Tests oder Paketmetadaten.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
+## ChatGPT-MCP-Companion
+
+Der Companion unter `mcp/` ist ein eigener stateless Server für ChatGPT und andere MCP-Hosts. Er
+teilt den Rust/WASM-Konvertierungskern mit dem Studio, aber nicht dessen flüchtigen Browserzustand.
+`vectorize_image` akzeptiert genau eine ChatGPT-Dateireferenz oder einen Base64-Testwert sowie:
+
+- `mode`: `shapes` für evidenzbasierte native Elemente oder `trace` für Pfade.
+- `color_count`: gewünschte Palette von 2 bis 256 Farben.
+- `detail_level`: `low`, `medium` oder `high`.
+
+Die Toolbeschreibung empfiehlt für flache Logos `shapes`, vier Farben und niedrige Details. Eine
+Bitte wie „mach es einfacher“ reduziert Farbanzahl und Detailstufe. Das Ergebnis enthält den
+SVG-String, effektive Parameter, Eingabe- und Ausgabemaße, Bytezahl sowie Zählungen für Pfade und
+alle fünf nativen Formtypen.
+
+Lokaler Start:
+
+```bash
+npm run build --workspace=img2svg-studio-mcp
+npm start --workspace=img2svg-studio-mcp
+```
+
+`GET /` liefert den Healthcheck, `/mcp` verwendet Streamable HTTP. Der Server akzeptiert höchstens
+25 MiB kodierte Bilddaten und 16.777.216 dekodierte Pixel. Dateidownloads sind auf HTTPS, 15
+Sekunden und denselben Byteumfang begrenzt. Bild und SVG existieren nur während des einzelnen
+Toolaufrufs; es gibt keine MCP-Anwendungssitzung oder Persistenz.
+
+Die echte ChatGPT-Abnahme benötigt einen öffentlichen HTTPS-Endpunkt. Der lokale Inspector kann
+Toolschema und Fixture-Aufruf bereits vollständig prüfen; das Preview-Widget folgt in `APPS-02`.
+
 ## Formerkennungs-Fixtures
 
 Die Ground-Truth-Bilder unter `fixtures/shape-recognition` prüfen Kreis, Ellipse, Rechteck,
@@ -391,7 +421,9 @@ innerhalb der dort definierten 2-Pixel-Toleranz.
 
 ## Datenschutz
 
-- Bildverarbeitung bleibt lokal im Browser.
+- Bildverarbeitung im sichtbaren Studio bleibt lokal im Browser.
+- Der optionale ChatGPT-Companion verarbeitet die ausdrücklich übergebene Datei einmalig im
+  Arbeitsspeicher und speichert weder Bild noch SVG.
 - Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
 - KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
 - Der automatisierte Netzwerkaudit erlaubt bei lokaler Conversion keine Cross-Origin-Anfrage;

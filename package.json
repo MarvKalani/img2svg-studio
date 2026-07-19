@@ -3,21 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
+    "mcp",
     "web"
   ],
   "type": "module",
   "scripts": {
-    "build": "npm run build --workspace=img2svg-studio-web",
+    "build": "npm run build --workspace=img2svg-studio-web && npm run build --workspace=img2svg-studio-mcp",
     "build:wasm": "wasm-pack build crates/img2svg-wasm --target web --out-dir ../../web/src/wasm-pkg --release",
     "check": "npm run format:check && npm run lint && npm run check:lines && npm run typecheck && npm run test:all && npm run build && npm run check:rust",
     "check:lines": "tsx scripts/check-source-lines.ts",
     "check:rust": "tsx scripts/check-rust.ts",
-    "format": "oxfmt --write .github integrations scripts web/index.html web/src web/e2e web/*.ts *.json",
-    "format:check": "oxfmt --check .github integrations scripts web/index.html web/src web/e2e web/*.ts *.json",
-    "lint": "oxlint --deny-warnings --ignore-pattern 'web/src/wasm-pkg/**' integrations scripts web/src web/e2e web/*.ts",
+    "format": "oxfmt --write .github integrations mcp/src mcp/*.ts scripts web/index.html web/src web/e2e web/*.ts *.json",
+    "format:check": "oxfmt --check .github integrations mcp/src mcp/*.ts scripts web/index.html web/src web/e2e web/*.ts *.json",
+    "lint": "oxlint --deny-warnings --ignore-pattern 'web/src/wasm-pkg/**' integrations mcp/src mcp/*.ts scripts web/src web/e2e web/*.ts",
     "test": "vitest run",
-    "test:all": "npm test && npm test --workspace=img2svg-studio-web",
-    "typecheck": "tsc -b tsconfig.json web/tsconfig.json"
+    "test:all": "npm test && npm test --workspace=img2svg-studio-web && npm test --workspace=img2svg-studio-mcp",
+    "typecheck": "tsc -b tsconfig.json web/tsconfig.json mcp/tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "26.1.1",

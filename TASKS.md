@@ -92,6 +92,12 @@ Parameterabbildung, deterministische Fixture-Ausgabe und stabile Fehlercodes. Ei
 Integrationstest initialisiert den Server, listet das Tool und ruft es mit dem Kreis-Fixture auf.
 Danach laufen `npm run check` und der MCP Inspector gegen `http://127.0.0.1:8787/mcp`.
 
+**Stand 20. Juli 2026:** Implementierung, dreizehn MCP-Workspace-Tests, Typecheck, Build sowie
+`tools/list` und der echte Kreisaufruf im offiziellen Inspector sind grün. Der Inspector erhielt
+ein 142-Byte-SVG mit genau einem nativen Kreis und keinem Pfad. Chrome Browser Use blockiert lokale
+Adressen; die direkte Chrome- und ChatGPT-Abnahme folgt am öffentlichen HTTPS-Endpunkt gemeinsam
+mit `APPS-02`.
+
 **Dokumentation:** Setup, Tool-Schema, Parameterheuristik, Dateigrenzen, Datenschutz und Deployment.
 
 ## APPS-02 — SVG als ChatGPT-Widget anzeigen und exakt herunterladen

@@ -12,6 +12,10 @@ in `web/src/ai/model-manifest.ts`; this document records primary sources and ver
 | `wasm-bindgen` | 0.2.126 | MIT OR Apache-2.0 | Rust/browser boundary; [crate](https://crates.io/crates/wasm-bindgen/0.2.126) |
 | `@huggingface/transformers` | 3.8.1 | Apache-2.0 | Browser model runtime; [release](https://github.com/huggingface/transformers.js/releases/tag/3.8.1) |
 | `onnxruntime-web` | 1.22.0-dev.20250409-89f8206ba4 | MIT | Transitive ONNX execution runtime; [package](https://www.npmjs.com/package/onnxruntime-web/v/1.22.0-dev.20250409-89f8206ba4) |
+| `@modelcontextprotocol/sdk` | 1.29.0 | MIT | Streamable HTTP MCP server; [package](https://www.npmjs.com/package/@modelcontextprotocol/sdk/v/1.29.0) |
+| `@modelcontextprotocol/ext-apps` | 1.7.4 | MIT | MCP Apps tool and resource helpers; [package](https://www.npmjs.com/package/@modelcontextprotocol/ext-apps/v/1.7.4) |
+| `sharp` | 0.35.3 | Apache-2.0 | Bounded server-side raster decode and palette reduction; [package](https://www.npmjs.com/package/sharp/v/0.35.3) |
+| `zod` | 4.4.3 | MIT | MCP input and output schemas; [package](https://www.npmjs.com/package/zod/v/4.4.3) |
 
 The Rust engine's own shape adapter and SVG serialization are original Studio code. VTracer is not
 copied or bundled as an application; `visioncortex`, its shared foundation, is consumed as a pinned

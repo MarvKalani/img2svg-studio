@@ -31,6 +31,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
 - Versioned AI results that can be converted, compared and restored to the original image.
 - Thirteen typed WebMCP tools that operate the same visible application services as the UI.
+- A stateless Streamable HTTP MCP companion whose `vectorize_image` tool reuses the Rust/WASM core.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 
 ![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
@@ -69,6 +70,22 @@ npm --prefix web run preview -- --host 127.0.0.1 --port 4173
 Open `http://127.0.0.1:4173` and choose **Beispiel laden** for the bundled geometric example. You
 can also choose any fixture from `fixtures/shape-recognition/input/`.
 
+## ChatGPT MCP companion
+
+The separate companion accepts a ChatGPT file reference or a Base64 fixture, reduces it to the
+requested palette, and runs the same Rust engine used by the browser Studio. It keeps no image,
+SVG, account, or application session.
+
+```bash
+npm run build --workspace=img2svg-studio-mcp
+npm start --workspace=img2svg-studio-mcp
+```
+
+The health check is `http://127.0.0.1:8787/` and the Streamable HTTP endpoint is
+`http://127.0.0.1:8787/mcp`. For ChatGPT Developer Mode, deploy that endpoint behind public HTTPS
+and register the final URL including `/mcp`. The complete tool, privacy, and Tauri contracts are in
+[the Apps SDK companion guide](docs/APPS_SDK.md).
+
 ## Quality gate
 
 ```bash
@@ -87,8 +104,9 @@ npm --prefix web run test:demo
 ## Architecture
 
 The UI and all WebMCP tools call the same typed controllers. Conversion moves RGBA bytes through a
-Web Worker into a small WASM boundary and the Rust engine. AI model sessions stay behind a lifecycle
-registry that owns download verification, cancellation, inference barriers and disposal. See the
+Web Worker into a small WASM boundary and the Rust engine. The stateless MCP companion uses the same
+WASM boundary from Node. AI model sessions stay behind a lifecycle registry that owns download
+verification, cancellation, inference barriers and disposal. See the
 [architecture overview](docs/ARCHITECTURE.md) for the complete flow.
 
 Core technology:
@@ -118,7 +136,9 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 
 ## Privacy and current limits
 
-- No image, mask or generated SVG leaves the browser.
+- In the browser Studio, no image, mask or generated SVG leaves the browser.
+- The optional ChatGPT companion is an explicit remote path: it receives one temporary image,
+  converts it in memory, returns the SVG, and retains neither value.
 - There is no telemetry, tracker or account requirement.
 - Model files are the only intentional cross-origin requests and start only on demand.
 - History is in memory and contains the ten newest runs; reloading starts a fresh workspace.
@@ -130,6 +150,7 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 ```text
 crates/         Rust vectorization engine and WASM boundary
 web/            TypeScript application, browser models and WebMCP
+mcp/            Stateless Node/TypeScript Streamable HTTP companion
 fixtures/       Small original geometric and AI test images
 integrations/   Drop-in WebMCP adapter for img2.download
 docs/           Product, engineering, release and submission evidence

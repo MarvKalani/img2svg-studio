@@ -15,15 +15,22 @@ describe("quality workflow", () => {
     expect(readCheckScript(packageDocument)).toBe(
       "npm run format:check && npm run lint && npm run check:lines && npm run typecheck && npm run test:all && npm run build && npm run check:rust",
     );
+    expect(readScript(packageDocument, "build")).toContain("img2svg-studio-mcp");
+    expect(readScript(packageDocument, "test:all")).toContain("img2svg-studio-mcp");
+    expect(readScript(packageDocument, "typecheck")).toContain("mcp/tsconfig.json");
   });
 });
 
 function readCheckScript(packageDocument: unknown): unknown {
+  return readScript(packageDocument, "check");
+}
+
+function readScript(packageDocument: unknown, name: string): unknown {
   if (!isRecord(packageDocument) || !isRecord(packageDocument.scripts)) {
     return undefined;
   }
 
-  return packageDocument.scripts.check;
+  return packageDocument.scripts[name];
 }
 
 function isRecord(candidate: unknown): candidate is Record<string, unknown> {

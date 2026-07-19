@@ -1,0 +1,66 @@
+export const VectorizeMode = Object.freeze({
+  Shapes: "shapes",
+  Trace: "trace",
+} as const);
+
+export type VectorizeMode = (typeof VectorizeMode)[keyof typeof VectorizeMode];
+
+export const DetailLevel = Object.freeze({
+  High: "high",
+  Low: "low",
+  Medium: "medium",
+} as const);
+
+export type DetailLevel = (typeof DetailLevel)[keyof typeof DetailLevel];
+
+export interface VectorizeOptionInput {
+  colorCount: number;
+  detailLevel: unknown;
+  mode: unknown;
+}
+
+export interface VectorizeOptions {
+  colorCount: number;
+  colorPrecision: number;
+  detailLevel: DetailLevel;
+  filterSpeckle: number;
+  mode: VectorizeMode;
+  shapeDetectionFlags: number;
+}
+
+const allNativeShapeFlags = 0b11_1111;
+const filterSpeckleByDetail: Readonly<Record<DetailLevel, number>> = Object.freeze({
+  [DetailLevel.High]: 1,
+  [DetailLevel.Low]: 8,
+  [DetailLevel.Medium]: 4,
+});
+
+export function createVectorizeOptions(input: VectorizeOptionInput): VectorizeOptions {
+  if (
+    !Number.isSafeInteger(input.colorCount) ||
+    input.colorCount < 2 ||
+    input.colorCount > 256 ||
+    !isDetailLevel(input.detailLevel) ||
+    !isVectorizeMode(input.mode)
+  ) {
+    throw new TypeError("invalid_parameters");
+  }
+
+  return Object.freeze({
+    colorCount: input.colorCount,
+    // Palette reduction happens before tracing, so the engine must preserve all resulting bytes.
+    colorPrecision: 8,
+    detailLevel: input.detailLevel,
+    filterSpeckle: filterSpeckleByDetail[input.detailLevel],
+    mode: input.mode,
+    shapeDetectionFlags: input.mode === VectorizeMode.Shapes ? allNativeShapeFlags : 0,
+  });
+}
+
+function isDetailLevel(value: unknown): value is DetailLevel {
+  return value === DetailLevel.High || value === DetailLevel.Low || value === DetailLevel.Medium;
+}
+
+function isVectorizeMode(value: unknown): value is VectorizeMode {
+  return value === VectorizeMode.Shapes || value === VectorizeMode.Trace;
+}
