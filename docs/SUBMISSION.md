@@ -1,6 +1,6 @@
 # OpenAI Build Week submission
 
-Last reviewed: 19 July 2026
+Last reviewed: 20 July 2026
 
 The submission closes on **21 July 2026 at 5:00 PM Pacific Time**, which is **22 July
 2026 at 02:00 CEST**. Devpost does not allow content changes after the deadline.
@@ -23,7 +23,7 @@ Official references:
 | Repository | `https://github.com/MarvKalani/img2svg-studio` — publication pending |
 | Video | owner must provide public YouTube URL |
 | Codex `/feedback` Session ID | owner must generate from this primary build task |
-| License | owner decision pending; Apache-2.0 recommended |
+| License | [Business Source License 1.1](../LICENSE.md), changing to Apache-2.0 by 20 July 2030 |
 
 ## Ready-to-paste Devpost description
 
@@ -153,7 +153,7 @@ Use the [timed English demo script](release/DEMO_SCRIPT.md) for the recording an
 
 - [ ] Join the OpenAI Build Week event on Devpost and confirm eligibility.
 - [ ] Confirm the Developer Tools track.
-- [ ] Choose the final project license.
+- [x] Adopt BSL 1.1 with an Apache-2.0 change license and publish the Symbiosis Pact.
 - [ ] Create or approve the GitHub repository and push `main`.
 - [ ] Connect the repository to Cloudflare Pages and attach `studio.img2.download`.
 - [ ] Generate the `/feedback` Session ID from this primary Codex build task.

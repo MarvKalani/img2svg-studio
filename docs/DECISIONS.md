@@ -63,11 +63,17 @@ Prozent.
 
 ## D-009 — Lizenz des eigenen Projekts
 
-**Status:** offen, blockiert Veröffentlichung und Einreichung, nicht die lokale Entwicklung
+**Status:** entschieden am 20. Juli 2026
 
-Ausgangswunsch ist BSL 1.1 mit späterem Wechsel zu Apache 2.0. Falls die Hackathon-Regeln eine
-OSI-Lizenz verlangen, soll die Einreichung direkt Apache 2.0 verwenden. Vor Veröffentlichung
-müssen die konkreten Regeln und die Entscheidung des Lizenzgebers dokumentiert werden.
+Das Projekt steht unter der unveränderten Business Source License 1.1 mit projektspezifischen
+Parametern. Produktion ist für Lizenznehmer unter 100.000 USD konsolidiertem Jahresumsatz frei,
+sofern img2svg Studio nicht als funktional gleichwertiger gehosteter Dienst angeboten wird. Die
+Change License ist Apache-2.0, das feste Change Date der 20. Juli 2030.
+
+Der offizielle BSL-Text bleibt unverändert. Projektspezifische wirtschaftliche Grenzen stehen nur
+im zulässigen Additional Use Grant; der soziale `SYMBIOSIS.md`-Pakt verändert die Rechtslage nicht.
+Die Build-Week-Regeln verlangen keine konkrete OSI-Lizenz und erlauben ein öffentliches Repository
+mit eindeutiger Lizenzierung.
 
 ## D-010 — Binäre Eingabe für Browser-Agenten
 

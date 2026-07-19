@@ -162,7 +162,8 @@ passenden Detektor endet, kann kein Cluster doppelt ausgegeben oder gezählt wer
 Mixed-Fixture-Test prüft Geometrie, Farbe, Statistik, Reihenfolge und zwei byteidentische Läufe.
 
 `visioncortex` 0.8.10 und `wasm-bindgen` 0.2.126 sind exakt gepinnt; beide stehen unter
-MIT oder Apache-2.0. Die Lizenz des eigenen Projekts wird davon getrennt in D-009 entschieden.
+MIT oder Apache-2.0. Das eigene Projekt steht davon getrennt gemäß D-009 unter BSL 1.1 und
+wechselt spätestens am 20. Juli 2030 zu Apache-2.0.
 Die Test-only-Abhängigkeiten `png` 0.18.1, `serde` 1.0.229 und `serde_json` 1.0.150 sind ebenfalls
 exakt gepinnt und gelangen nicht in das produktive WASM.
 

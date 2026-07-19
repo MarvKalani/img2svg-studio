@@ -109,9 +109,9 @@ und Agentenablauf.
 
 ## RELEASE-01 — Devpost-Teilnahme, Lizenz und GitHub-Zugriff festlegen
 
-**Benötigte Eigentümerentscheidung:** Devpost-Teilnahme bestätigen sowie Repository-URL,
-öffentlich oder privat und Projektlizenz festlegen. Empfohlener Default ist ein öffentliches
-Repository mit Apache-2.0-Lizenz; die Entscheidung bleibt beim Rechteinhaber.
+**Benötigte Eigentümerentscheidung:** Devpost-Teilnahme bestätigen sowie öffentliches oder privates
+Repository festlegen. Die Projektlizenz ist BSL 1.1 mit einem Additional Use Grant unter 100.000
+USD Jahresumsatz und Apache-2.0 als Change License ab spätestens 20. Juli 2030.
 
 ```gherkin
 Given ein Judge öffnet das eingereichte Repository ohne Entwicklerzugang

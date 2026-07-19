@@ -137,6 +137,11 @@ docs/           Product, engineering, release and submission evidence
 
 ## License
 
-The repository owner is selecting the final project license before publication. Third-party code
-and model licenses are documented in [THIRD_PARTY.md](docs/THIRD_PARTY.md). Do not treat this
-pre-submission working tree as granting a project license until the root `LICENSE` file is added.
+img2svg Studio is source-available under the
+[Business Source License 1.1](LICENSE.md). Production use is free within the Additional Use Grant;
+other production use requires a commercial license. On 20 July 2030, or earlier when required by
+the license, each covered version changes to Apache-2.0. The voluntary
+[Symbiosis Pact](SYMBIOSIS.md) describes ways humans and agents can contribute back.
+
+Third-party code and model licenses are documented separately in
+[THIRD_PARTY.md](docs/THIRD_PARTY.md).

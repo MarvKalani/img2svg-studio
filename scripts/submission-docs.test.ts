@@ -5,6 +5,8 @@ import { describe, expect, test } from "vitest";
 const projectRoot = resolve(import.meta.dirname, "..");
 const submissionDocuments = [
   "README.md",
+  "LICENSE.md",
+  "SYMBIOSIS.md",
   "docs/ARCHITECTURE.md",
   "docs/SUBMISSION.md",
   "docs/THIRD_PARTY.md",
@@ -34,7 +36,23 @@ describe("submission documents", () => {
     expect(submission).toContain("Codex `/feedback` Session ID");
     expect(submission).toContain("https://github.com/MarvKalani/img2svg-studio");
     expect(submission).toContain("## Pre-existing work disclosure");
-    expect(submission).toContain("Apache-2.0 recommended");
+    expect(submission).toContain("Business Source License 1.1");
+  });
+
+  test("Given the owner license decision, when the repository is inspected, then the grant and social pact are explicit", async () => {
+    const license = await readDocument("LICENSE.md");
+    const readme = await readDocument("README.md");
+    const submission = await readDocument("docs/SUBMISSION.md");
+    const symbiosis = await readDocument("SYMBIOSIS.md");
+
+    expect(license).toContain("Business Source License 1.1");
+    expect(license).toContain("**Licensed Work:** img2svg Studio");
+    expect(license).toContain("**Change Date:** 2030-07-20");
+    expect(license).toContain("**Change License:** Apache License, Version 2.0");
+    expect(readme).toContain("[Business Source License 1.1](LICENSE.md)");
+    expect(submission).toContain("Business Source License 1.1");
+    expect(symbiosis).toContain("The legal license remains authoritative");
+    expect(symbiosis).toContain("[SYMBIOSIS]");
   });
 
   test("Given the judge materials, when local links are resolved, then every target exists", async () => {
