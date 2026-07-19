@@ -12,7 +12,7 @@ Die verbindlichen Qualitätsregeln stehen in
 - nur notwendige Git-Diffs erzeugen und fremde Änderungen unangetastet lassen.
 - keine handgeschriebene Quell- oder Testdatei mit mehr als 1000 Zeilen zulassen.
 - relevante schnelle Checks vor jedem Commit, vollständige Checks an jedem Gate ausführen.
-- genau einen verständlichen Commit pro abgeschlossenem Slice erstellen.
+- genau einen verständlichen Commit pro abgeschlossenem Slice mit Task-ID im Betreff erstellen.
 
 ## Statuslegende
 

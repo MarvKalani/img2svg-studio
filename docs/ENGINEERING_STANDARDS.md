@@ -145,6 +145,12 @@ Eine Datei wird nach Verantwortung und Verhalten geteilt, nicht willkürlich nac
 - Lockfiles ändern sich nur durch bewusst geänderte Abhängigkeiten.
 - Vor dem Commit werden Diff, neue Dateien und Löschungen vollständig geprüft.
 - Ein Commit enthält genau einen Slice oder eine klar abgegrenzte Dokumentationsentscheidung.
+- Der Commit-Betreff folgt `type(TASK-ID): imperative summary`, beispielsweise
+  `feat(M1-02): render default SVG conversion`.
+- Wird ein Task zu groß für einen kohärenten Commit, wird der Task vor der Implementierung in
+  kleinere Slices geteilt.
+- Externe Aktionen ohne Repository-Änderung erhalten keinen künstlichen leeren Commit.
+- Die datierte Slice-Historie wird für den Hackathon nicht ohne ausdrücklichen Grund gesquasht.
 
 ## 11. Abhängigkeiten und Performance
 
