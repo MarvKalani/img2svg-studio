@@ -34,28 +34,29 @@ test("Given a fresh public demo, when the example is converted, compared, and ex
   expect(response?.headers()["permissions-policy"]).toBe("tools=(self)");
   await expect(page.getByRole("banner")).toContainText("img2svg Studio");
 
-  await page.getByRole("button", { name: "Beispiel laden" }).click();
-  await page.getByRole("switch", { name: "Native Formen aktivieren" }).click();
+  await page.getByRole("button", { name: "Logo-Demo laden" }).click();
+  await expect(page.getByText("marv-kalani-logo.jpg", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("842 × 576 px");
   const convertButton = page.getByRole("button", { name: "Konvertieren" });
   await convertButton.click();
-  await expect(page.getByTestId("svg-output").locator("circle, rect, line, polygon")).toHaveCount(
-    4,
-  );
+  await expect(page.getByTestId("svg-output").locator("polygon")).toHaveCount(1);
+  await expect(page.getByTestId("history-card")).toContainText("1 Polygon");
 
   await page.getByRole("slider", { name: "Farbpräzision", exact: true }).fill("5");
+  await page.getByLabel("Rastergröße vor Tracing").selectOption("height-720");
   await convertButton.click();
   await expect(page.getByTestId("history-card")).toHaveCount(2);
   await page.getByRole("button", { name: "Run 1 als A setzen" }).click();
   await page.getByRole("button", { name: "Run 2 als B setzen" }).click();
-  await expect(page.getByTestId("diff-setting-row")).toHaveCount(1);
+  await expect(page.getByTestId("diff-setting-row")).toHaveCount(2);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "SVG B", exact: true }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("mixed-b-run-2.svg");
+  expect(download.suggestedFilename()).toBe("marv-kalani-logo-b-run-2.svg");
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
-  expect(await readFile(downloadPath ?? "", "utf8")).toContain("<circle");
+  expect(await readFile(downloadPath ?? "", "utf8")).toContain("<svg");
 
   await page.reload();
   await expect(page.getByRole("banner")).toContainText("img2svg Studio");

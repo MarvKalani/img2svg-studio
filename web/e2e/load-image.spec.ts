@@ -8,7 +8,7 @@ const circleFixturePath = resolve(
 );
 const brokenFixturePath = resolve(import.meta.dirname, "../../fixtures/image-loading/broken.png");
 
-test("Given a fresh Studio, when the bundled example is chosen, then it enters the same local image workflow", async ({
+test("Given a fresh Studio, when the bundled logo demo is chosen, then it enters the local workflow with its measured profile", async ({
   page,
 }) => {
   const crossOriginRequests: string[] = [];
@@ -20,14 +20,22 @@ test("Given a fresh Studio, when the bundled example is chosen, then it enters t
   });
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Beispiel laden" }).click();
+  await page.getByRole("button", { name: "Logo-Demo laden" }).click();
 
-  await expect(page.getByText("mixed.png", { exact: true })).toBeVisible();
+  await expect(page.getByText("marv-kalani-logo.jpg", { exact: true })).toBeVisible();
   await expect(
     page
       .getByTestId("image-dropzone")
-      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
+      .getByText("1280 × 876 · JPEG · Original · V1", { exact: true }),
   ).toBeVisible();
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("842 × 576 px");
+  await expect(page.getByLabel("Farbpräzision Wert")).toHaveText("6 Bit");
+  await expect(page.getByRole("switch", { name: "Native Formen aktivieren" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await expect(page.getByRole("checkbox", { name: "Polygon erkennen" })).toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "Kreis erkennen" })).not.toBeChecked();
   await expect(page.getByRole("button", { name: "Konvertieren" })).toBeEnabled();
   expect(crossOriginRequests).toEqual([]);
 });

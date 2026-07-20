@@ -4,21 +4,19 @@ import { formatImageVersion, ImageVersionKind } from "./image-version";
 
 export interface ImageLoaderController {
   loadAiVersion(file: File): Promise<boolean>;
-  loadExample(): Promise<boolean>;
+  loadLogoDemo(): Promise<boolean>;
   loadOriginal(file: File): Promise<boolean>;
   reportError(message: string): void;
   restoreOriginal(): boolean;
   showCurrentImage(): boolean;
 }
 
-const bundledExampleUrl = new URL(
-  "../../../fixtures/shape-recognition/input/mixed.png",
-  import.meta.url,
-);
+const bundledLogoUrl = new URL("../../../fixtures/demo/marv-kalani-logo.jpg", import.meta.url);
 
 export function initializeImageLoader(
   imageStore: ImageStore,
   onImageLoaded: (image: DecodedImage) => void,
+  onLogoDemoLoaded: () => void,
 ): ImageLoaderController {
   const elements = readImageLoaderElements();
 
@@ -42,16 +40,22 @@ export function initializeImageLoader(
   const loadAiVersion = (file: File): Promise<boolean> =>
     loadImage(file, ImageVersionKind.AiResult);
   const reportError = (message: string): void => showImageError(elements, message);
-  const loadExample = async (): Promise<boolean> => {
+  const loadLogoDemo = async (): Promise<boolean> => {
     try {
-      const response = await fetch(bundledExampleUrl);
+      const response = await fetch(bundledLogoUrl);
       if (!response.ok) {
-        throw new Error(`Example request failed with status ${String(response.status)}.`);
+        throw new Error(`Logo request failed with status ${String(response.status)}.`);
       }
       const bytes = await response.blob();
-      return loadOriginal(new File([bytes], "mixed.png", { type: SupportedImageMimeType.Png }));
+      const loaded = await loadOriginal(
+        new File([bytes], "marv-kalani-logo.jpg", { type: SupportedImageMimeType.Jpeg }),
+      );
+      if (loaded) {
+        onLogoDemoLoaded();
+      }
+      return loaded;
     } catch {
-      showImageError(elements, "Das Beispielbild konnte nicht geladen werden.");
+      showImageError(elements, "Das Logo-Demo konnte nicht geladen werden.");
       return false;
     }
   };
@@ -74,7 +78,7 @@ export function initializeImageLoader(
   };
 
   elements.selectButton.addEventListener("click", () => elements.fileInput.click());
-  elements.exampleButton.addEventListener("click", () => void loadExample());
+  elements.logoDemoButton.addEventListener("click", () => void loadLogoDemo());
   elements.fileInput.addEventListener("change", () => {
     const selectedFile = elements.fileInput.files?.item(0);
     if (selectedFile) {
@@ -102,7 +106,7 @@ export function initializeImageLoader(
   window.addEventListener("beforeunload", () => imageStore.dispose());
   return Object.freeze({
     loadAiVersion,
-    loadExample,
+    loadLogoDemo,
     loadOriginal,
     reportError,
     restoreOriginal,
@@ -115,8 +119,8 @@ interface ImageLoaderElements {
   downloadButton: HTMLButtonElement;
   dropzone: HTMLElement;
   error: HTMLParagraphElement;
-  exampleButton: HTMLButtonElement;
   fileInput: HTMLInputElement;
+  logoDemoButton: HTMLButtonElement;
   sourceIcon: HTMLElement;
   sourceMetadata: HTMLElement;
   sourceName: HTMLElement;
@@ -135,8 +139,8 @@ function readImageLoaderElements(): ImageLoaderElements {
     downloadButton: requireElement("#download-svg", HTMLButtonElement),
     dropzone: requireElement("[data-testid='image-dropzone']", HTMLElement),
     error: requireElement("#image-error", HTMLParagraphElement),
-    exampleButton: requireElement("#load-example-image", HTMLButtonElement),
     fileInput: requireElement("#image-input", HTMLInputElement),
+    logoDemoButton: requireElement("#load-logo-demo", HTMLButtonElement),
     sourceIcon: requireElement("#source-icon", HTMLElement),
     sourceMetadata: requireElement("#source-metadata", HTMLElement),
     sourceName: requireElement("#source-name", HTMLElement),

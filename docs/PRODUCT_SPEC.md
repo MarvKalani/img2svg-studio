@@ -21,6 +21,8 @@ Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
 - Bildverarbeitung und Bilddaten bleiben im Browser.
 - Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
 - KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
+- Das gebündelte Logo-Demo verwendet denselben Decoder und setzt nach erfolgreichem Laden ein
+  vermessenes 576-Pixel-Profil; selbst gewählte oder geteilte Dateien verändern Einstellungen nicht.
 
 ## 3. Oberfläche
 

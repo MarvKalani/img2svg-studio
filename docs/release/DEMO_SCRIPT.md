@@ -7,7 +7,7 @@ minutes and be publicly visible on YouTube.
 
 - Record Chrome at 1920×1080 with browser zoom at 100%.
 - Use the deployed `studio.img2.download` build and a clean profile.
-- Keep `mixed.png` and `portrait.png` ready in the file picker.
+- Keep `portrait.png` ready in the file picker; the owner logo is bundled in the Studio.
 - Cache MODNet before recording, then unload it so the load state remains visible without waiting
   for a full network download during the take.
 - Close personal tabs, notifications and unrelated DevTools panels.
@@ -25,20 +25,21 @@ reproducible visual experiment.”
 
 ### 0:15–0:42 — First deterministic run
 
-**Screen:** Load `mixed.png`, enable **Native shapes**, choose **Convert**, and point at the
-circle, rectangle, line and triangle.
+**Screen:** Choose **Logo demo**, point at the automatic 842×576 target and polygon-only profile,
+then choose **Convert** and show the original beside the faceted SVG.
 
 **Voice:** “The image stays in this browser. A Rust and WebAssembly engine traces arbitrary
-content and emits native SVG geometry when the evidence is strong. This fixture becomes four real
-SVG elements; ambiguous content would safely remain a path.”
+content. Before tracing, this 1280 by 876 logo is proportionally prepared to 842 by 576 pixels.
+Strict triangular evidence becomes a native polygon; shaded or ambiguous facets safely remain
+paths.”
 
 ### 0:42–1:15 — History and A/B evidence
 
-**Screen:** Change **Color precision** to 5, convert again, assign Run 1 to A and Run 2 to B, move
-the comparison slider and show the filtered difference table.
+**Screen:** Change **Raster size** to 720 pixels and **Color precision** to 5, convert again, assign
+Run 1 to A and Run 2 to B, move the comparison slider and show the two filtered differences.
 
 **Voice:** “Every conversion is an immutable run. I can make a second variant, assign both runs to
-A and B, compare them on the same geometry, and see exactly which parameter changed. Each download
+A and B, compare them on the same geometry, and see exactly which parameters changed. Each download
 still contains the exact SVG bytes of its run.”
 
 ### 1:15–1:48 — Local AI lifecycle
@@ -84,13 +85,13 @@ truth instead of trusting them blindly.”
 - Text is readable at normal YouTube 1080p playback.
 - The final YouTube visibility is **Public**, and the link opens while signed out.
 
-## Technical rehearsal — 19 July 2026
+## Technical rehearsal — 20 July 2026
 
 The product shots passed in Chrome 150 before recording:
 
-- the geometric example produced four native SVG elements, two runs and one visible A/B
-  difference;
-- SVG B downloaded as a non-empty 336-byte file;
+- the bundled faceted logo produced 2,798 fallback paths plus one conservative native polygon at
+  842×576; the 1,625-path 1052×720 variant produced two visible A/B differences;
+- SVG B downloaded as a non-empty Marv-Kalani logo SVG;
 - MODNet background removal completed locally through WebGPU;
 - the WebMCP inventory and state-changing tools were operated in the visible Studio; and
 - the Chrome warning and error log stayed empty.

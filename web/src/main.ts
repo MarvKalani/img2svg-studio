@@ -10,6 +10,7 @@ import { createCompareSelection } from "./compare/compare-selection";
 import { initializeConversion } from "./conversion/conversion-controller";
 import { initializeConversionOptions } from "./conversion/conversion-options-controller";
 import { initializeSvgDownload } from "./conversion/svg-download";
+import { createLogoDemoOptions } from "./demo/logo-demo-profile";
 import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
 import { initializePwaIngress } from "./pwa/pwa-ingress";
@@ -35,16 +36,20 @@ const historyController = initializeHistory(
 );
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
 let smartSelect: ReturnType<typeof initializeSmartSelect>;
-const imageLoader = initializeImageLoader(imageStore, (image) => {
-  historyController.clearComparison();
-  const original = imageStore.original();
-  if (original) {
-    historyController.setOriginal(original);
-  }
-  optionsController.showSourceDimensions(image);
-  backgroundRemoval.imageLoaded();
-  smartSelect.imageLoaded();
-});
+const imageLoader = initializeImageLoader(
+  imageStore,
+  (image) => {
+    historyController.clearComparison();
+    const original = imageStore.original();
+    if (original) {
+      historyController.setOriginal(original);
+    }
+    optionsController.showSourceDimensions(image);
+    backgroundRemoval.imageLoaded();
+    smartSelect.imageLoaded();
+  },
+  () => optionsController.apply(createLogoDemoOptions()),
+);
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
 void initializePwaIngress(imageLoader);

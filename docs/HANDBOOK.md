@@ -71,9 +71,19 @@ Homebrew-Installation den Rustup-Compiler für den WASM-Build mit
 „Bild wählen“ öffnet die lokale Dateiauswahl. Alternativ kann ein Bild auf die gestrichelte
 Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
 
-„Beispiel laden“ öffnet ohne Dateidialog die mitgelieferte geometrische Mixed-Fixture. Sie läuft
-über denselben Decoder und eignet sich für einen sofortigen Rundgang durch Konvertierung, History
-und A/B-Vergleich. Der Abruf bleibt auf der App-Origin und enthält keine Nutzerdaten.
+„Logo-Demo laden“ öffnet ohne Dateidialog das mitgelieferte facettierte Logo des Projekteigentümers.
+Es läuft über denselben Decoder wie eine ausgewählte Datei und aktiviert das vermessene
+Demo-Profil: 576 Pixel Zielhöhe bei festem Seitenverhältnis, 6-Bit-Farbpräzision, 4 Pixel
+Speckle-Filter sowie ausschließlich die konservative Polygonerkennung. Das 1280 × 876-Pixel-JPEG
+wird dadurch vor dem Tracing auf 842 × 576 Pixel vorbereitet. Der Abruf bleibt auf der App-Origin.
+
+Das Profil erhält die sichtbaren Kristallfacetten und erkennt eine streng passende Dreiecksfläche
+als natives Polygon; die übrigen, schattierten oder unregelmäßigen Flächen bleiben bewusst Pfade.
+Für eine zweite A/B-Variante eignen sich 720 Pixel Zielhöhe und 5-Bit-Farbpräzision. Die kleinen
+geometrischen Ground-Truth-Fixtures bleiben unter `fixtures/shape-recognition/input/` für exakte
+Form- und Geometrietests erhalten und sind nicht der visuelle Jury-Einstieg.
+
+![Facettiertes Marv-Kalani-Demo-Logo](../fixtures/demo/marv-kalani-logo.jpg)
 
 Unterstützt werden PNG, JPEG und WebP bis 25 MB. Nach erfolgreichem Laden zeigt die Oberfläche
 Dateiname, Format, echte Pixelmaße, eine Miniatur und die große Vorschau. Die Vorschau verwendet

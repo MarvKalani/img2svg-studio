@@ -116,10 +116,11 @@ and use the same shared-controller pattern to extend agent-assisted batch experi
 No account or paid access is required.
 
 1. Open `https://studio.img2.download` in Google Chrome 150 or newer.
-2. Choose **Beispiel laden** to open the bundled geometric fixture without a file dialog.
-3. Enable **Native shapes** and choose **Convert**.
-4. Change **Color precision** and convert again.
-5. Assign Run 1 to A and Run 2 to B, then inspect the single differing parameter.
+2. Choose **Logo-Demo laden** to open the bundled faceted owner logo and its measured local profile.
+3. Choose **Convert**; the 1280×876 source is prepared to 842×576 and a strict facet becomes a
+   native polygon while ambiguous facets remain paths.
+4. Change **Raster size** to 720 px and **Color precision** to 5, then convert again.
+5. Assign Run 1 to A and Run 2 to B, then inspect the two differing parameters.
 6. Download SVG B.
 7. Optional: load MODNet or SlimSAM from the AI Manager. This intentionally downloads a pinned
    model artifact; normal conversion itself remains offline.

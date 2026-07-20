@@ -75,6 +75,11 @@ zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung m
 Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet die ausgewählte
 Run-ID getrennt vom aktuellen Eingabeformular.
 
+`createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe, 576 Pixel
+Zielhöhe, 6 Bit Farbpräzision, 4 Pixel Speckle, 100 Prozent SVG-Skalierung und ausschließlich
+Polygonerkennung. Nur der erfolgreiche gebündelte Logo-Ladevorgang wendet dieses Profil an; alle
+anderen Bildwege behalten die vom Nutzer gesetzten Optionen.
+
 ## 4. Engine-Module
 
 Der Core trennt Pipeline und Formerkennung, damit beide Quellen unter 1000 Zeilen bleiben:
