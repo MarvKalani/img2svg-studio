@@ -52,6 +52,28 @@ const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freez
     (options) => options.colorPrecision,
     (value) => `${String(value)} Bit`,
   ),
+  setting("hierarchical", "Überlagerung", (options) => options.hierarchical, formatTracingValue),
+  setting("curveFitting", "Kurvenmodus", (options) => options.curveFitting, formatTracingValue),
+  setting("layerDifference", "Verlaufsschritt", (options) => options.layerDifference, String),
+  setting(
+    "cornerThreshold",
+    "Eckenwinkel",
+    (options) => options.cornerThreshold,
+    (value) => `${String(value)}°`,
+  ),
+  setting(
+    "lengthThreshold",
+    "Segmentlänge",
+    (options) => options.lengthThreshold,
+    (value) => `${String(value)} px`,
+  ),
+  setting("maxIterations", "Glättungsdurchläufe", (options) => options.maxIterations, String),
+  setting(
+    "spliceThreshold",
+    "Verbindungswinkel",
+    (options) => options.spliceThreshold,
+    (value) => `${String(value)}°`,
+  ),
   setting(
     "filterSpeckle",
     "Speckle-Filter",
@@ -129,4 +151,15 @@ function setting<Value extends number | boolean | string>(
 
 function formatBoolean(value: boolean): string {
   return value ? "An" : "Aus";
+}
+
+function formatTracingValue(value: string): string {
+  const labels: Readonly<Record<string, string>> = {
+    cutout: "Ausschnitte",
+    pixel: "Pixel",
+    polygon: "Polygon",
+    spline: "Spline",
+    stacked: "Gestapelt",
+  };
+  return labels[value] ?? value;
 }

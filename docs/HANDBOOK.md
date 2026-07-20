@@ -45,7 +45,8 @@ Deutsch-/Englisch-Auswahl wie das Studio.
 
 Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste veröffentlichte
 Revision vom 20. Juli 2026; weitere Revisionen desselben Tages erhöhen die zweistellige Endung.
-Die Live-Vorschau und bewusste History-Übernahme werden als Revision `260720.02` ausgeliefert.
+Die Live-Vorschau und bewusste History-Übernahme wurden als Revision `260720.02` ausgeliefert.
+Die vollständige VTracer-Steuerung und das interaktive Handbuch folgen mit `260720.03`.
 
 ### Sprache
 
@@ -235,7 +236,7 @@ Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
 Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Detailfilter, Schwellwert,
-Farbpräzision, Speckle-Filter, Pfadpräzision und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
+alle zehn VTracer-Parameter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
 Formerkennungsschalter und den fünf Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die
 Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparameter mit „—“.
 
@@ -278,19 +279,44 @@ SVG-Skalierung.
 Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:
 
+Der VTracer-Farbmodus liegt bewusst im Abschnitt „Raster vor Tracing“: „Farbe“ verwendet den
+farbigen Tracing-Pfad, „Schwarzweiß“ erzeugt vor demselben deterministischen Kern eine binäre
+Pixelvorlage mit sichtbarem Schwellwert. Der VTracer-Bereich enthält die übrigen zehn wirksamen
+Werte. Seine angezeigten Standards entsprechen VTracer 0.6.5; deshalb beträgt die native
+Farbpräzision 6 Bit.
+
 | Parameter | Gültiger Bereich | Standard | Wirkung |
 |---|---:|---:|---|
-| Farbpräzision | 1–8 Bit | 7 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
+| Farbpräzision | 1–8 Bit | 6 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
 | Speckle-Filter | 0–1000 px | 4 px | entfernt kleine Farbcluster |
 | Pfadpräzision | 0–4 Stellen | 2 Stellen | rundet Pfadkoordinaten und senkt Bytes, nicht die Pfadzahl |
+| Überlagerung | Gestapelt, Ausschnitte | Gestapelt | erzeugt überlagerte oder aneinanderliegende Farbflächen |
+| Kurvenmodus | Pixel, Polygon, Spline | Spline | erhält Pixelkonturen, vereinfacht zu Polygonen oder glättet als Spline |
+| Verlaufsschritt | 0–255 | 16 | bestimmt den Farbabstand zwischen Verlaufsebenen |
+| Eckenwinkel | 0–180° | 60° | erkennt im Spline-Modus Richtungswechsel als Ecken |
+| Segmentlänge | 3,5–10 px | 4 px | begrenzt die Segmentlänge der iterativen Glättung |
+| Glättungsdurchläufe | 1–20 | 10 | begrenzt die weitere Segmentunterteilung |
+| Verbindungswinkel | 0–180° | 45° | trennt Spline-Abschnitte anhand ihrer Winkeländerung |
 | SVG-Skalierung | 10–400 % | 100 % | skaliert SVG und ViewBox nach dem Tracing proportional |
 
 Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Prozent direkt an.
 Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort an. Ein Lauf mit
 50 Prozent aus einem 256×256-Bild erzeugt beispielsweise ein SVG mit 128×128-ViewBox.
 
-Ungültige Werte werden als typisierter Einstellungsfehler abgelehnt. Weitere Parameter werden
-erst ergänzt, wenn derselbe vollständige Weg bis in die Engine getestet ist.
+„Standardwerte“ setzt ausschließlich die zehn VTracer-Werte zurück; Rastervorbereitung,
+SVG-Skalierung und Formerkennung bleiben erhalten. Jeder sichtbare Wert nennt seinen Standard.
+Eckenwinkel, Segmentlänge, Glättungsdurchläufe und Verbindungswinkel sind außerhalb des
+Spline-Modus deaktiviert, weil VTracer sie dort nicht auswertet. Ungültige Werte werden als
+typisierter Einstellungsfehler abgelehnt.
+
+### Interaktives Handbuch
+
+„Handbuch“ im Kopfbereich öffnet die Anleitung direkt über dem Studio. „Hilfe beim Überfahren“
+ist beim Öffnen aktiv: Mauszeiger oder Tastaturfokus auf einem beschriebenen Bedienelement zeigen
+sofort dessen Zweck, Auswirkung und Standardwert. Der Schalter friert die aktuelle Erklärung ein,
+ohne das Handbuch zu schließen. Darunter bleiben alle Erklärungen als aufklappbarer Index
+zugänglich. Escape oder das Schließen-Symbol beendet den Modus. Handbuch und Kontexthilfe folgen
+der gewählten deutschen oder englischen Sprache.
 
 ## Native Formen
 

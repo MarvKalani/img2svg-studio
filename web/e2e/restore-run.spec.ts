@@ -26,7 +26,7 @@ test("Given two runs, when older options are restored and converted, then form a
   await page.locator('[data-run-id="1"]').click();
   await page.getByRole("button", { name: "Einstellungen übernehmen" }).click();
 
-  await expect(page.getByRole("slider", { name: "Farbpräzision", exact: true })).toHaveValue("7");
+  await expect(page.getByRole("slider", { name: "Farbpräzision", exact: true })).toHaveValue("6");
   await expect(page.getByRole("slider", { name: "Speckle-Filter", exact: true })).toHaveValue("4");
   await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
   await expect(page.getByLabel("Rasterfilter")).toHaveValue("color");

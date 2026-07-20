@@ -165,12 +165,134 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Zoomsteuerung: "Zoom controls",
   "img2svg Studio Startseite": "img2svg Studio home",
   "PNG, JPEG oder WebP": "PNG, JPEG or WebP",
+  "Alle Parameter": "All parameters",
+  "Bedienelement auswählen": "Select a control",
+  Eckenwinkel: "Corner threshold",
+  "Erweiterte Parameter": "Advanced parameters",
+  "Fahre mit der Maus über einen Parameter oder fokussiere ihn mit der Tastatur.":
+    "Hover over a parameter or focus it with the keyboard.",
+  Gestapelt: "Stacked",
+  Glättungsdurchläufe: "Smoothing iterations",
+  Handbuch: "Handbook",
+  "Handbuch schließen": "Close handbook",
+  "Hilfe beim Überfahren": "Help on hover",
+  "Interaktives Handbuch": "Interactive handbook",
+  Kontexthilfe: "Context help",
+  Kurvenmodus: "Curve mode",
+  Pixel: "Pixel",
+  Segmentlänge: "Segment length",
+  Spline: "Spline",
+  Standardwerte: "Defaults",
+  Verbindungswinkel: "Splice threshold",
+  Verlaufsschritt: "Gradient step",
+  Überlagerung: "Layering",
+  Ausschnitte: "Cutout",
+  "VTracer-Kurvenmodus": "VTracer curve mode",
+  "VTracer-Überlagerung": "VTracer layering",
+  "VTracer-Eckenwinkel": "VTracer corner threshold",
+  "VTracer-Glättungsdurchläufe": "VTracer smoothing iterations",
+  "VTracer-Segmentlänge": "VTracer segment length",
+  "VTracer-Verbindungswinkel": "VTracer splice threshold",
+  "VTracer-Verlaufsschritt": "VTracer gradient step",
+  "Zeigt die Erklärung des Elements unter der Maus.":
+    "Shows the explanation for the element under the pointer.",
+  "Die Live-Vorschau selbst bleibt flüchtig und füllt den Verlauf nicht bei jeder Änderung.":
+    "The live preview stays temporary and does not fill History after every change.",
+  "Speichert genau die aktuell sichtbare Vorschau als unveränderlichen Run im Verlauf.":
+    "Saves exactly the currently visible preview as an immutable History run.",
+  "Legt fest, wie viele Bits jedes RGB-Farbkanals für die Clusterbildung unterscheiden.":
+    "Sets how many bits of each RGB channel are distinguished during clustering.",
+  "Niedriger fasst ähnliche Farben zusammen und erzeugt meist weniger Pfade; höher erhält mehr Farbabstufungen.":
+    "Lower values merge similar colors and usually create fewer paths; higher values preserve more color shades.",
+  "Entfernt Farbflächen, deren Seitenmaß kleiner als der gewählte Pixelwert ist.":
+    "Removes color areas whose side length is smaller than the selected pixel value.",
+  "Höher reduziert Rauschen, Pfade und Dateigröße, kann aber kleine gewünschte Details löschen.":
+    "Higher values reduce noise, paths, and file size, but may remove small desired details.",
+  "Legt die Dezimalstellen der Koordinaten im SVG-Pfad fest.":
+    "Sets the number of decimal places for coordinates in the SVG path.",
+  "Weniger Stellen verkleinern die Datei ohne die Pfadanzahl zu ändern; bei kleinen Motiven kann starkes Runden sichtbar werden.":
+    "Fewer decimals reduce file size without changing path count; strong rounding can become visible in small artwork.",
+  "Bestimmt, ob Farbflächen übereinander gestapelt oder als aneinanderliegende Ausschnitte erzeugt werden.":
+    "Determines whether color areas are stacked or created as adjacent cutouts.",
+  "Gestapelt ist robuster; Ausschnitte vermeiden verdeckte Flächen und können für Plotter oder Fräsen geeigneter sein.":
+    "Stacked is more robust; cutouts avoid hidden areas and may suit plotters or milling better.",
+  "Wählt zwischen Pixelkontur, vereinfachten Polygonen und geglätteten Bézier-Splines.":
+    "Chooses between pixel contours, simplified polygons, and smoothed Bézier splines.",
+  "Pixel ist am genauesten und größten, Polygon kantig und kompakt, Spline meist der beste allgemeine Kompromiss.":
+    "Pixel is most exact and largest, polygon is angular and compact, and spline is usually the best general compromise.",
+  "Bestimmt den Farbunterschied zwischen aufeinanderfolgenden Verlaufsebenen.":
+    "Sets the color difference between consecutive gradient layers.",
+  "Höher erzeugt gröbere Farbstufen und oft weniger Pfade. Null aktiviert diagonale Clusterverbindungen.":
+    "Higher values create coarser color steps and often fewer paths. Zero enables diagonal cluster connections.",
+  "Mindestwinkel in Grad, ab dem der Spline-Modus eine Richtungsänderung als Ecke behandelt.":
+    "Minimum angle in degrees at which spline mode treats a direction change as a corner.",
+  "Kleinere Werte erhalten mehr Ecken; größere Werte glätten den Verlauf stärker. Wirkt nur im Spline-Modus.":
+    "Lower values preserve more corners; higher values smooth more strongly. Only affects spline mode.",
+  "Glättet iterativ, bis die Kurvensegmente kürzer als dieser Pixelwert sind.":
+    "Smooths iteratively until curve segments are shorter than this pixel value.",
+  "Kleinere Werte folgen Konturen genauer und erzeugen mehr Kurvenpunkte. Wirkt nur im Spline-Modus.":
+    "Lower values follow contours more closely and create more curve points. Only affects spline mode.",
+  "Begrenzt, wie oft VTracer lange Kurvensegmente weiter unterteilt.":
+    "Limits how often VTracer subdivides long curve segments.",
+  "Mehr Durchläufe können komplexe Konturen genauer glätten, kosten aber Rechenzeit. Wirkt nur im Spline-Modus.":
+    "More iterations can smooth complex contours more precisely but cost processing time. Only affects spline mode.",
+  "Mindeständerung des Winkels, ab der benachbarte Spline-Abschnitte getrennt werden.":
+    "Minimum angular change at which adjacent spline sections are separated.",
+  "Kleinere Werte erzeugen mehr getrennte Kurvenabschnitte; größere verbinden stärker. Wirkt nur im Spline-Modus.":
+    "Lower values create more separate curve sections; higher values join more. Only affects spline mode.",
+  "Stellt alle zehn im farbigen Tracing-Pfad verwendeten VTracer-Parameter bereit.":
+    "Provides all ten VTracer parameters used by the color tracing path.",
+  "Jede Änderung aktualisiert die sichtbare Vorschau automatisch; Standardwerte setzt nur diesen Bereich zurück.":
+    "Every change updates the visible preview automatically; Defaults resets only this section.",
+  "Aktuelles Element": "Current element",
+  "Steuert, wie fein VTracer ähnliche Rasterfarben voneinander trennt.":
+    "Controls how finely VTracer separates similar raster colors.",
+  "Für Logos zuerst die Farbpräzision senken; das reduziert häufig Pfade und Dateigröße.":
+    "For logos, lower color precision first; this often reduces paths and file size.",
+  "Bereitet die tatsächlichen Pixel vor, bevor VTracer sie erhält.":
+    "Prepares the actual pixels before VTracer receives them.",
+  "Größe und Filter können die spätere Pfadanzahl stärker beeinflussen als einzelne Kurvenparameter.":
+    "Size and filters can affect the final path count more than individual curve parameters.",
+  "Setzt mehrere Raster-, VTracer- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.":
+    "Sets multiple raster, VTracer, and shape-recognition values to a proven profile.",
+  "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im VTracer-Bereich wieder her.":
+    "After a manual change, Custom appears. The button in the VTracer section restores its defaults.",
+  "Glättet Rauschen oder schärft Kanten im Raster unmittelbar vor dem Tracing.":
+    "Smooths noise or sharpens raster edges immediately before tracing.",
+  "Glätten reduziert oft kleine Cluster; Schärfen kann schwache Kanten erhalten, aber zusätzliche Pfade erzeugen.":
+    "Smoothing often reduces small clusters; sharpening can preserve weak edges but create extra paths.",
+  "Übergibt Farbe, Graustufen oder reines Schwarzweiß an VTracer.":
+    "Passes color, grayscale, or pure black and white to VTracer.",
+  "Graustufen entfernt Farbinformation; Schwarzweiß eignet sich für klare Konturen, Laser und Fräsen.":
+    "Grayscale removes color information; black and white suits clear contours, lasers, and milling.",
+  "Ändert die Pixelauflösung vor dem Tracing bei festem Seitenverhältnis.":
+    "Changes pixel resolution before tracing while preserving aspect ratio.",
+  "Kleinere Raster vereinfachen Details und sparen Pfade; größere Raster können feine Kanten besser erfassen.":
+    "Smaller rasters simplify detail and save paths; larger rasters can capture fine edges better.",
+  "Ändert Ausgabegröße und Koordinatensystem des SVG nach der Rastervorbereitung.":
+    "Changes SVG output size and coordinate system after raster preparation.",
+  "Dieser Wert verändert nicht die Pixel, die VTracer analysiert. Dafür dient die Rastergröße.":
+    "This value does not change the pixels VTracer analyzes. Raster size does that.",
+  "Lädt ein lokales PNG-, JPEG- oder WebP-Bild oder das mitgelieferte Logo-Beispiel.":
+    "Loads a local PNG, JPEG, or WebP image or the bundled logo example.",
+  "Das Bild bleibt im Browser; direkt nach dem Laden entsteht automatisch eine Live-Vorschau.":
+    "The image stays in the browser; a live preview is created automatically after loading.",
+  "Bündelt Profil, Ausgabegröße und die daraus berechneten Zielmaße.":
+    "Groups profile, output size, and the resulting target dimensions.",
+  "Die Rastergröße steuert die Analyse; die SVG-Skalierung steuert die endgültige Ausgabegröße.":
+    "Raster size controls analysis; SVG scaling controls the final output size.",
+  "Trennt beim Schwarzweiß-Filter dunkle und helle Rasterpixel.":
+    "Separates dark and light raster pixels for the black-and-white filter.",
+  "Höher ordnet mehr Pixel Schwarz zu; niedriger erhält nur die dunkelsten Bereiche.":
+    "Higher values assign more pixels to black; lower values keep only the darkest areas.",
 });
 
 const englishPatterns: readonly Readonly<{
   expression: RegExp;
   replace: (...matches: string[]) => string;
 }>[] = Object.freeze([
+  pattern(/^Standard: (.*)$/, (value) => `Default: ${translateContent(value)}`),
+  pattern(/^(\d+) Tracing-Parameter$/, (count) => `${count} tracing parameters`),
   pattern(/^(\d+) Varianten?$/, (count) => `${count} ${count === "1" ? "variant" : "variants"}`),
   pattern(/^(\d+) Pfade?$/, (count) => `${count} ${count === "1" ? "path" : "paths"}`),
   pattern(/^(\d+) Kreise?$/, (count) => `${count} ${count === "1" ? "circle" : "circles"}`),

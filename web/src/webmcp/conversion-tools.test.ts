@@ -17,13 +17,20 @@ describe("WebMCP conversion tools", () => {
     const output = JSON.parse(
       await configure.execute({
         colorPrecision: 5,
+        cornerThreshold: 90,
+        curveFitting: "polygon",
         filterSpeckle: 12,
+        hierarchical: "cutout",
+        layerDifference: 48,
+        lengthThreshold: 5.5,
+        maxIterations: 12,
         pathPrecision: 1,
         rasterDetailMode: "smooth",
         monochromeThreshold: 140,
         rasterFilterMode: "monochrome",
         rasterResizePercent: 200,
         scalePercent: 50,
+        spliceThreshold: 30,
       }),
     );
 
@@ -46,7 +53,13 @@ describe("WebMCP conversion tools", () => {
     expect(applyOptions).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         colorPrecision: 5,
+        cornerThreshold: 90,
+        curveFitting: "polygon",
         filterSpeckle: 12,
+        hierarchical: "cutout",
+        layerDifference: 48,
+        lengthThreshold: 5.5,
+        maxIterations: 12,
         pathPrecision: 1,
         preprocessing: {
           detailMode: "smooth",
@@ -55,13 +68,20 @@ describe("WebMCP conversion tools", () => {
           resize: { kind: "percentage", percent: 200 },
         },
         scalePercent: 50,
+        spliceThreshold: 30,
       }),
     );
     expect(output).toMatchObject({
       ok: true,
       options: {
         colorPrecision: 5,
+        cornerThreshold: 90,
+        curveFitting: "polygon",
         filterSpeckle: 12,
+        hierarchical: "cutout",
+        layerDifference: 48,
+        lengthThreshold: 5.5,
+        maxIterations: 12,
         pathPrecision: 1,
         preprocessing: {
           detailMode: "smooth",
@@ -70,6 +90,7 @@ describe("WebMCP conversion tools", () => {
           resize: { kind: "percentage", percent: 200 },
         },
         scalePercent: 50,
+        spliceThreshold: 30,
       },
     });
   });

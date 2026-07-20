@@ -1,5 +1,6 @@
 import initializeWasm, { convert_rgba } from "../wasm-pkg/img2svg_wasm";
 import { readEngineFailureCode } from "./conversion-failure";
+import { CurveFittingMode, HierarchicalMode } from "./conversion-options";
 import { shapeDetectionFlags } from "./shape-options";
 import type {
   ConversionWorkerRequest,
@@ -30,6 +31,13 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
       request.options.colorPrecision,
       request.options.filterSpeckle,
       request.options.pathPrecision,
+      hierarchicalModeCode(request.options.hierarchical),
+      curveFittingModeCode(request.options.curveFitting),
+      request.options.layerDifference,
+      request.options.cornerThreshold,
+      Math.round(request.options.lengthThreshold * 10),
+      request.options.maxIterations,
+      request.options.spliceThreshold,
       request.options.scalePercent,
       shapeDetectionFlags(request.options.shapeDetection),
     );
@@ -40,4 +48,19 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
       ok: false,
     });
   }
+}
+
+function curveFittingModeCode(mode: CurveFittingMode): number {
+  switch (mode) {
+    case CurveFittingMode.Pixel:
+      return 0;
+    case CurveFittingMode.Polygon:
+      return 1;
+    case CurveFittingMode.Spline:
+      return 2;
+  }
+}
+
+function hierarchicalModeCode(mode: HierarchicalMode): number {
+  return mode === HierarchicalMode.Stacked ? 0 : 1;
 }

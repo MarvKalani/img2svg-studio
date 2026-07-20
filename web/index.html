@@ -32,6 +32,17 @@
           Lokal · kein Upload
         </span>
 
+        <button
+          id="handbook-toggle"
+          class="handbook-toggle"
+          type="button"
+          aria-controls="handbook-drawer"
+          aria-expanded="false"
+        >
+          <span aria-hidden="true">?</span>
+          Handbuch
+        </button>
+
         <label class="language-control">
           <span class="visually-hidden">Sprache / Language</span>
           <select id="language-select" aria-label="Sprache / Language">
@@ -54,9 +65,50 @@
         </div>
       </header>
 
+      <aside id="handbook-drawer" class="handbook-drawer" aria-labelledby="handbook-title" hidden>
+        <header>
+          <div>
+            <span class="eyebrow">Kontexthilfe</span>
+            <h2 id="handbook-title">Interaktives Handbuch</h2>
+          </div>
+          <button id="handbook-close" type="button" aria-label="Handbuch schließen">×</button>
+        </header>
+        <button
+          id="context-help-toggle"
+          class="context-help-toggle"
+          type="button"
+          role="switch"
+          aria-checked="true"
+        >
+          <span class="switch-indicator" aria-hidden="true"></span>
+          <span>
+            <strong>Hilfe beim Überfahren</strong>
+            <small>Zeigt die Erklärung des Elements unter der Maus.</small>
+          </span>
+        </button>
+        <section id="context-help" class="context-help" aria-live="polite">
+          <span class="eyebrow">Aktuelles Element</span>
+          <h3 id="context-help-title">Bedienelement auswählen</h3>
+          <p id="context-help-description">
+            Fahre mit der Maus über einen Parameter oder fokussiere ihn mit der Tastatur.
+          </p>
+          <p id="context-help-effect" class="context-help-effect"></p>
+          <p id="context-help-default" class="context-help-default"></p>
+        </section>
+        <section class="handbook-index" aria-labelledby="handbook-index-title">
+          <h3 id="handbook-index-title">Alle Parameter</h3>
+          <div id="handbook-index"></div>
+        </section>
+      </aside>
+
       <div class="studio-grid">
         <aside class="sidebar" aria-label="Konvertierungsparameter">
-          <section class="source-card" aria-label="Eingabebild" data-testid="image-dropzone">
+          <section
+            class="source-card"
+            aria-label="Eingabebild"
+            data-help-key="source"
+            data-testid="image-dropzone"
+          >
             <div id="source-icon" class="source-icon" aria-hidden="true">◇</div>
             <img id="source-thumbnail" class="source-thumbnail" alt="" hidden />
             <div>
@@ -80,14 +132,20 @@
             <p id="image-error" class="image-error" role="alert" hidden></p>
           </section>
 
-          <button id="convert-button" class="convert-button" type="button" disabled>
+          <button
+            id="convert-button"
+            class="convert-button"
+            type="button"
+            data-help-key="accept"
+            disabled
+          >
             <span aria-hidden="true">✦</span>
             <span id="convert-button-label">Variante übernehmen</span>
           </button>
 
-          <section class="control-panel preprocessing-panel">
+          <section class="control-panel preprocessing-panel" data-help-key="preprocessing">
             <h2>Raster vor Tracing</h2>
-            <label>
+            <label data-help-key="rasterResize">
               <span>Rastergröße</span>
               <select id="raster-resize" aria-label="Rastergröße vor Tracing"></select>
             </label>
@@ -97,7 +155,7 @@
               aria-label="Vorbereitete Rastermaße"
               >—</output
             >
-            <label>
+            <label data-help-key="rasterFilter">
               <span>Filter</span>
               <select id="raster-filter" aria-label="Rasterfilter">
                 <option value="color" selected>Farbe</option>
@@ -105,7 +163,7 @@
                 <option value="monochrome">Schwarzweiß</option>
               </select>
             </label>
-            <label>
+            <label data-help-key="rasterDetail">
               <span>Detailfilter</span>
               <select id="raster-detail" aria-label="Raster-Detailfilter">
                 <option value="none" selected>Aus</option>
@@ -113,7 +171,12 @@
                 <option value="sharpen">Schärfen</option>
               </select>
             </label>
-            <label id="monochrome-threshold-control" class="range-label" hidden>
+            <label
+              id="monochrome-threshold-control"
+              class="range-label"
+              data-help-key="monochromeThreshold"
+              hidden
+            >
               <span>Schwellwert</span>
               <output
                 id="monochrome-threshold-value"
@@ -132,13 +195,13 @@
             </label>
           </section>
 
-          <section class="control-panel">
+          <section class="control-panel" data-help-key="svgOutput">
             <h2>SVG-Ausgabe</h2>
-            <label>
+            <label data-help-key="preset">
               <span>Preset</span>
               <select id="conversion-preset" aria-label="Preset"></select>
             </label>
-            <label>
+            <label data-help-key="scalePercent">
               <span>SVG-Skalierung</span>
               <select id="scale-percent" aria-label="Zielgröße">
                 <option value="25">25 %</option>
@@ -155,15 +218,15 @@
             >
           </section>
 
-          <section class="control-panel">
+          <section class="control-panel" data-help-key="colors">
             <h2>Farben</h2>
-            <label class="range-label">
+            <label class="range-label" data-help-key="colorPrecision">
               <span>Farbpräzision</span>
               <output
                 id="color-precision-value"
                 for="color-precision"
                 aria-label="Farbpräzision Wert"
-                >7 Bit</output
+                >6 Bit</output
               >
               <input
                 id="color-precision"
@@ -173,12 +236,21 @@
                 value="7"
                 aria-label="Farbpräzision"
               />
+              <small>Standard: 6 Bit</small>
             </label>
           </section>
 
-          <section class="control-panel">
-            <h2>Kurven</h2>
-            <label class="range-label">
+          <section class="control-panel tracing-panel" data-help-key="tracing">
+            <div class="panel-heading">
+              <div>
+                <h2>VTracer</h2>
+                <span>10 Tracing-Parameter</span>
+              </div>
+              <button id="reset-tracing-options" class="reset-options" type="button">
+                Standardwerte
+              </button>
+            </div>
+            <label class="range-label" data-help-key="pathPrecision">
               <span>Pfadpräzision</span>
               <output id="path-precision-value" for="path-precision" aria-label="Pfadpräzision Wert"
                 >2 Stellen</output
@@ -191,8 +263,9 @@
                 value="2"
                 aria-label="Pfadpräzision"
               />
+              <small>Standard: 2 Stellen</small>
             </label>
-            <label class="range-label">
+            <label class="range-label" data-help-key="filterSpeckle">
               <span>Speckle-Filter</span>
               <output
                 id="filter-speckle-value"
@@ -208,7 +281,96 @@
                 value="4"
                 aria-label="Speckle-Filter"
               />
+              <small>Standard: 4 px</small>
             </label>
+            <details class="advanced-options">
+              <summary>Erweiterte Parameter · 7</summary>
+              <div class="advanced-options-content">
+                <label data-help-key="hierarchical">
+                  <span>Überlagerung</span>
+                  <select id="hierarchical-mode" aria-label="VTracer-Überlagerung">
+                    <option value="stacked" selected>Gestapelt</option>
+                    <option value="cutout">Ausschnitte</option>
+                  </select>
+                  <small>Standard: Gestapelt</small>
+                </label>
+                <label data-help-key="curveFitting">
+                  <span>Kurvenmodus</span>
+                  <select id="curve-fitting" aria-label="VTracer-Kurvenmodus">
+                    <option value="pixel">Pixel</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="spline" selected>Spline</option>
+                  </select>
+                  <small>Standard: Spline</small>
+                </label>
+                <label class="range-label" data-help-key="layerDifference">
+                  <span>Verlaufsschritt</span>
+                  <output id="layer-difference-value" for="layer-difference">16</output>
+                  <input
+                    id="layer-difference"
+                    type="range"
+                    min="0"
+                    max="255"
+                    value="16"
+                    aria-label="VTracer-Verlaufsschritt"
+                  />
+                  <small>Standard: 16</small>
+                </label>
+                <label class="range-label" data-help-key="cornerThreshold">
+                  <span>Eckenwinkel</span>
+                  <output id="corner-threshold-value" for="corner-threshold">60°</output>
+                  <input
+                    id="corner-threshold"
+                    type="range"
+                    min="0"
+                    max="180"
+                    value="60"
+                    aria-label="VTracer-Eckenwinkel"
+                  />
+                  <small>Standard: 60°</small>
+                </label>
+                <label class="range-label" data-help-key="lengthThreshold">
+                  <span>Segmentlänge</span>
+                  <output id="length-threshold-value" for="length-threshold">4,0 px</output>
+                  <input
+                    id="length-threshold"
+                    type="range"
+                    min="3.5"
+                    max="10"
+                    step="0.1"
+                    value="4"
+                    aria-label="VTracer-Segmentlänge"
+                  />
+                  <small>Standard: 4,0 px</small>
+                </label>
+                <label class="range-label" data-help-key="maxIterations">
+                  <span>Glättungsdurchläufe</span>
+                  <output id="max-iterations-value" for="max-iterations">10</output>
+                  <input
+                    id="max-iterations"
+                    type="range"
+                    min="1"
+                    max="20"
+                    value="10"
+                    aria-label="VTracer-Glättungsdurchläufe"
+                  />
+                  <small>Standard: 10</small>
+                </label>
+                <label class="range-label" data-help-key="spliceThreshold">
+                  <span>Verbindungswinkel</span>
+                  <output id="splice-threshold-value" for="splice-threshold">45°</output>
+                  <input
+                    id="splice-threshold"
+                    type="range"
+                    min="0"
+                    max="180"
+                    value="45"
+                    aria-label="VTracer-Verbindungswinkel"
+                  />
+                  <small>Standard: 45°</small>
+                </label>
+              </div>
+            </details>
           </section>
 
           <section class="control-panel shape-panel">

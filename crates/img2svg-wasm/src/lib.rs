@@ -12,12 +12,30 @@ pub fn convert_rgba(
     color_precision: u32,
     filter_speckle: u32,
     path_precision: u32,
+    hierarchical_mode: u32,
+    curve_fitting_mode: u32,
+    layer_difference: u32,
+    corner_threshold_degrees: u32,
+    length_threshold_tenths: u32,
+    max_iterations: u32,
+    splice_threshold_degrees: u32,
     scale_percent: u32,
     shape_detection_flags: u32,
 ) -> Result<String, JsValue> {
     let options =
         img2svg_core::ConversionOptions::try_new(color_precision, filter_speckle, scale_percent)
             .and_then(|options| options.try_with_path_precision(path_precision))
+            .and_then(|options| {
+                options.try_with_tracing_options(
+                    hierarchical_mode,
+                    curve_fitting_mode,
+                    layer_difference,
+                    corner_threshold_degrees,
+                    length_threshold_tenths,
+                    max_iterations,
+                    splice_threshold_degrees,
+                )
+            })
             .map_err(|_| JsValue::from_f64(4.0))?
             .with_shape_detection(img2svg_core::ShapeDetectionOptions::from_flags(
                 shape_detection_flags,

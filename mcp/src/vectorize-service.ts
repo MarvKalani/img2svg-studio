@@ -64,6 +64,15 @@ export interface VectorizeResult extends Record<string, unknown> {
 }
 
 let wasmReady = false;
+const vtracerDefaults = Object.freeze({
+  cornerThresholdDegrees: 60,
+  curveFittingModeCode: 2,
+  hierarchicalModeCode: 0,
+  layerDifference: 16,
+  lengthThresholdTenths: 40,
+  maxIterations: 10,
+  spliceThresholdDegrees: 45,
+});
 
 export async function vectorizeImage(request: VectorizeRequest): Promise<VectorizeResult> {
   let options;
@@ -88,6 +97,13 @@ export async function vectorizeImage(request: VectorizeRequest): Promise<Vectori
       options.colorPrecision,
       options.filterSpeckle,
       options.pathPrecision,
+      vtracerDefaults.hierarchicalModeCode,
+      vtracerDefaults.curveFittingModeCode,
+      vtracerDefaults.layerDifference,
+      vtracerDefaults.cornerThresholdDegrees,
+      vtracerDefaults.lengthThresholdTenths,
+      vtracerDefaults.maxIterations,
+      vtracerDefaults.spliceThresholdDegrees,
       100,
       options.shapeDetectionFlags,
     );

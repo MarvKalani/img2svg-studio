@@ -11,7 +11,13 @@ describe("logo demo profile", () => {
   test("Given the faceted logo, when the demo profile is created, then preprocessing preserves detail and only polygon recognition is enabled", () => {
     expect(createLogoDemoOptions()).toEqual({
       colorPrecision: 6,
+      cornerThreshold: 60,
+      curveFitting: "spline",
       filterSpeckle: 16,
+      hierarchical: "stacked",
+      layerDifference: 16,
+      lengthThreshold: 4,
+      maxIterations: 10,
       pathPrecision: 0,
       preprocessing: {
         detailMode: RasterDetailMode.None,
@@ -30,6 +36,7 @@ describe("logo demo profile", () => {
           rectangle: false,
         },
       },
+      spliceThreshold: 45,
     });
   });
 });

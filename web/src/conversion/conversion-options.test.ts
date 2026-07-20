@@ -8,8 +8,14 @@ import {
 describe("conversion options", () => {
   test("Given canonical defaults, when read, then conversion and shape values are explicit", () => {
     expect(defaultConversionOptions).toEqual({
-      colorPrecision: 7,
+      colorPrecision: 6,
+      cornerThreshold: 60,
+      curveFitting: "spline",
       filterSpeckle: 4,
+      hierarchical: "stacked",
+      layerDifference: 16,
+      lengthThreshold: 4,
+      maxIterations: 10,
       pathPrecision: 2,
       preprocessing: {
         detailMode: "none",
@@ -22,6 +28,7 @@ describe("conversion options", () => {
         enabled: false,
         types: { circle: true, ellipse: true, line: true, polygon: true, rectangle: true },
       },
+      spliceThreshold: 45,
     });
   });
 

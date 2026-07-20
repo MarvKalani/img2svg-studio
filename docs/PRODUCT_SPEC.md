@@ -64,9 +64,16 @@ Das MVP trennt Rastervorbereitung vor dem Tracing von der SVG-Skalierung danach:
 | Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor VTracer |
 | Detailfilter | Aus, Glätten, Schärfen | Aus | lokale Glättung oder Kantenverstärkung vor VTracer |
 | Schwarzweiß-Schwellwert | 0–255 | 128 | Grenze zwischen Schwarz und Weiß |
-| `color_precision` | 1–8 Bit/Kanal | 7 | Farbzusammenfassung |
+| `color_precision` | 1–8 Bit/Kanal | 6 | Farbzusammenfassung |
 | `filter_speckle` | 0–1000 px | 4 | kleine Segmente entfernen |
 | `path_precision` | 0–4 Stellen | 2 | Koordinaten runden und SVG-Bytes reduzieren |
+| `hierarchical` | Gestapelt, Ausschnitte | Gestapelt | überlagerte oder aneinanderliegende Farbflächen |
+| `mode` | Pixel, Polygon, Spline | Spline | Art der Konturanpassung |
+| `layer_difference` | 0–255 | 16 | Farbabstand zwischen Verlaufsebenen |
+| `corner_threshold` | 0–180° | 60° | Mindestwinkel einer Spline-Ecke |
+| `length_threshold` | 3,5–10 px | 4 px | maximale Segmentlänge beim Glätten |
+| `max_iterations` | 1–20 | 10 | Begrenzung der Glättungsdurchläufe |
+| `splice_threshold` | 0–180° | 45° | Winkel zum Trennen von Spline-Abschnitten |
 | `scale_percent` | 10–400 % | 100 | proportionale SVG-Zielgröße nach dem Tracing |
 
 Eine kanonische Definition speist TypeScript-Validierung, Rust/WASM-Vertrag, UI, Run-Snapshot,

@@ -1,13 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export function convert_rgba(pixels: Uint8Array, width: number, height: number, color_precision: number, filter_speckle: number, path_precision: number, scale_percent: number, shape_detection_flags: number): string;
+export function convert_rgba(pixels: Uint8Array, width: number, height: number, color_precision: number, filter_speckle: number, path_precision: number, hierarchical_mode: number, curve_fitting_mode: number, layer_difference: number, corner_threshold_degrees: number, length_threshold_tenths: number, max_iterations: number, splice_threshold_degrees: number, scale_percent: number, shape_detection_flags: number): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
-    readonly convert_rgba: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => [number, number, number, number];
+    readonly convert_rgba: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number, l: number, m: number, n: number, o: number, p: number) => [number, number, number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __externref_table_dealloc: (a: number) => void;

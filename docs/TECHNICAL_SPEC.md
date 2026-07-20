@@ -123,8 +123,9 @@ Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
 stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
 `ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
-Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die vier
-numerischen Optionswerte und ein `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
+Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die zehn
+VTracer-Werte als validierte Zahlen beziehungsweise Enum-Codes, die SVG-Skalierung und ein
+`u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
 Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
 Die schmale WASM-Grenze liefert weiterhin nur den SVG-String; die Web-App liest sichtbare
 Elementzählungen aus genau diesem validierten SVG und speichert sie mit dem Run.

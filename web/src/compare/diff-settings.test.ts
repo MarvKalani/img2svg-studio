@@ -8,7 +8,7 @@ const b: ConversionOptions = { ...defaultConversionOptions, colorPrecision: 5 };
 describe("conversion settings diff", () => {
   test("Given only color precision differs, when only differences are requested, then exactly that formatted row remains", () => {
     expect(compareConversionSettings(a, b, true)).toEqual([
-      { a: "7 Bit", b: "5 Bit", key: "colorPrecision", label: "Farbpräzision" },
+      { a: "6 Bit", b: "5 Bit", key: "colorPrecision", label: "Farbpräzision" },
     ]);
   });
 
@@ -21,6 +21,13 @@ describe("conversion settings diff", () => {
       "Detailfilter",
       "Schwarzweiß-Schwellwert",
       "Farbpräzision",
+      "Überlagerung",
+      "Kurvenmodus",
+      "Verlaufsschritt",
+      "Eckenwinkel",
+      "Segmentlänge",
+      "Glättungsdurchläufe",
+      "Verbindungswinkel",
       "Speckle-Filter",
       "Pfadpräzision",
       "Zielgröße",

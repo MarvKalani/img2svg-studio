@@ -7,17 +7,24 @@
  * @param {number} color_precision
  * @param {number} filter_speckle
  * @param {number} path_precision
+ * @param {number} hierarchical_mode
+ * @param {number} curve_fitting_mode
+ * @param {number} layer_difference
+ * @param {number} corner_threshold_degrees
+ * @param {number} length_threshold_tenths
+ * @param {number} max_iterations
+ * @param {number} splice_threshold_degrees
  * @param {number} scale_percent
  * @param {number} shape_detection_flags
  * @returns {string}
  */
-export function convert_rgba(pixels, width, height, color_precision, filter_speckle, path_precision, scale_percent, shape_detection_flags) {
+export function convert_rgba(pixels, width, height, color_precision, filter_speckle, path_precision, hierarchical_mode, curve_fitting_mode, layer_difference, corner_threshold_degrees, length_threshold_tenths, max_iterations, splice_threshold_degrees, scale_percent, shape_detection_flags) {
     let deferred3_0;
     let deferred3_1;
     try {
         const ptr0 = passArray8ToWasm0(pixels, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.convert_rgba(ptr0, len0, width, height, color_precision, filter_speckle, path_precision, scale_percent, shape_detection_flags);
+        const ret = wasm.convert_rgba(ptr0, len0, width, height, color_precision, filter_speckle, path_precision, hierarchical_mode, curve_fitting_mode, layer_difference, corner_threshold_degrees, length_threshold_tenths, max_iterations, splice_threshold_degrees, scale_percent, shape_detection_flags);
         var ptr2 = ret[0];
         var len2 = ret[1];
         if (ret[3]) {

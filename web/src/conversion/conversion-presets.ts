@@ -114,9 +114,16 @@ function preset(
 function sameOptions(a: Readonly<ConversionOptions>, b: Readonly<ConversionOptions>): boolean {
   return (
     a.colorPrecision === b.colorPrecision &&
+    a.cornerThreshold === b.cornerThreshold &&
+    a.curveFitting === b.curveFitting &&
     a.filterSpeckle === b.filterSpeckle &&
+    a.hierarchical === b.hierarchical &&
+    a.layerDifference === b.layerDifference &&
+    a.lengthThreshold === b.lengthThreshold &&
+    a.maxIterations === b.maxIterations &&
     a.pathPrecision === b.pathPrecision &&
     a.scalePercent === b.scalePercent &&
+    a.spliceThreshold === b.spliceThreshold &&
     a.preprocessing.detailMode === b.preprocessing.detailMode &&
     a.preprocessing.filterMode === b.preprocessing.filterMode &&
     a.preprocessing.monochromeThreshold === b.preprocessing.monochromeThreshold &&

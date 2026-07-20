@@ -27,7 +27,7 @@ describe("conversion presets", () => {
 
   test("Given canonical or adjusted options, when matched, then the preset or custom state is explicit", () => {
     expect(matchingConversionPresetId(defaultConversionOptions)).toBe(ConversionPresetId.Balanced);
-    expect(matchingConversionPresetId({ ...defaultConversionOptions, colorPrecision: 6 })).toBe(
+    expect(matchingConversionPresetId({ ...defaultConversionOptions, colorPrecision: 5 })).toBe(
       customConversionPresetId,
     );
     expect(readConversionPreset(ConversionPresetId.Photo).options).toMatchObject({

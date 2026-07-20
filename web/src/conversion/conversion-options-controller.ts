@@ -1,5 +1,7 @@
 import type { DecodedImage } from "../image/decode-image";
 import {
+  CurveFittingMode,
+  HierarchicalMode,
   createConversionOptions,
   defaultConversionOptions,
   scaledDimensions,
@@ -54,7 +56,13 @@ export function initializeConversionOptions(): ConversionOptionsController {
   const current = (): ConversionOptions =>
     createConversionOptions({
       colorPrecision: elements.colorPrecision.valueAsNumber,
+      cornerThreshold: elements.cornerThreshold.valueAsNumber,
+      curveFitting: readCurveFittingMode(elements.curveFitting.value),
       filterSpeckle: elements.filterSpeckle.valueAsNumber,
+      hierarchical: readHierarchicalMode(elements.hierarchical.value),
+      layerDifference: elements.layerDifference.valueAsNumber,
+      lengthThreshold: elements.lengthThreshold.valueAsNumber,
+      maxIterations: elements.maxIterations.valueAsNumber,
       pathPrecision: elements.pathPrecision.valueAsNumber,
       preprocessing: createRasterPreprocessingOptions({
         detailMode: readRasterDetailMode(elements.rasterDetail.value),
@@ -67,13 +75,19 @@ export function initializeConversionOptions(): ConversionOptionsController {
         enabled: elements.shapeDetection.getAttribute("aria-checked") === "true",
         types: readShapeTypes(shapeTypeInputs),
       }),
+      spliceThreshold: elements.spliceThreshold.valueAsNumber,
     });
 
   const render = (): void => {
     const options = current();
     elements.colorPrecisionValue.textContent = `${String(options.colorPrecision)} Bit`;
+    elements.cornerThresholdValue.textContent = `${String(options.cornerThreshold)}°`;
     elements.filterSpeckleValue.textContent = `${String(options.filterSpeckle)} px`;
+    elements.layerDifferenceValue.textContent = String(options.layerDifference);
+    elements.lengthThresholdValue.textContent = `${options.lengthThreshold.toLocaleString("de-DE", { minimumFractionDigits: 1 })} px`;
+    elements.maxIterationsValue.textContent = String(options.maxIterations);
     elements.pathPrecisionValue.textContent = `${String(options.pathPrecision)} ${options.pathPrecision === 1 ? "Stelle" : "Stellen"}`;
+    elements.spliceThresholdValue.textContent = `${String(options.spliceThreshold)}°`;
     elements.monochromeThresholdValue.textContent = String(
       options.preprocessing.monochromeThreshold,
     );
@@ -90,6 +104,11 @@ export function initializeConversionOptions(): ConversionOptionsController {
       elements.targetDimensions.textContent = `${String(target.widthPixels)} × ${String(target.heightPixels)} px`;
     }
     const shapeDetectionEnabled = options.shapeDetection.enabled;
+    const splineControlsEnabled = options.curveFitting === CurveFittingMode.Spline;
+    elements.cornerThreshold.disabled = !splineControlsEnabled;
+    elements.lengthThreshold.disabled = !splineControlsEnabled;
+    elements.maxIterations.disabled = !splineControlsEnabled;
+    elements.spliceThreshold.disabled = !splineControlsEnabled;
     elements.preset.value = matchingConversionPresetId(options);
     for (const input of shapeTypeInputs.values()) {
       input.disabled = !shapeDetectionEnabled;
@@ -104,13 +123,20 @@ export function initializeConversionOptions(): ConversionOptionsController {
   };
 
   elements.colorPrecision.addEventListener("input", renderChangedOptions);
+  elements.cornerThreshold.addEventListener("input", renderChangedOptions);
+  elements.curveFitting.addEventListener("change", renderChangedOptions);
   elements.filterSpeckle.addEventListener("input", renderChangedOptions);
+  elements.hierarchical.addEventListener("change", renderChangedOptions);
+  elements.layerDifference.addEventListener("input", renderChangedOptions);
+  elements.lengthThreshold.addEventListener("input", renderChangedOptions);
+  elements.maxIterations.addEventListener("input", renderChangedOptions);
   elements.pathPrecision.addEventListener("input", renderChangedOptions);
   elements.monochromeThreshold.addEventListener("input", renderChangedOptions);
   elements.rasterFilter.addEventListener("change", renderChangedOptions);
   elements.rasterDetail.addEventListener("change", renderChangedOptions);
   elements.rasterResize.addEventListener("change", renderChangedOptions);
   elements.scalePercent.addEventListener("change", renderChangedOptions);
+  elements.spliceThreshold.addEventListener("input", renderChangedOptions);
   elements.shapeDetection.addEventListener("click", () => {
     const enabled = elements.shapeDetection.getAttribute("aria-checked") === "true";
     elements.shapeDetection.setAttribute("aria-checked", String(!enabled));
@@ -123,26 +149,30 @@ export function initializeConversionOptions(): ConversionOptionsController {
     writeOptions(readConversionPreset(elements.preset.value).options);
     renderChangedOptions();
   });
-  elements.colorPrecision.value = String(defaultConversionOptions.colorPrecision);
-  elements.filterSpeckle.value = String(defaultConversionOptions.filterSpeckle);
-  elements.pathPrecision.value = String(defaultConversionOptions.pathPrecision);
-  elements.scalePercent.value = String(defaultConversionOptions.scalePercent);
-  elements.shapeDetection.setAttribute(
-    "aria-checked",
-    String(defaultShapeDetectionOptions.enabled),
-  );
+  elements.resetTracingOptions.addEventListener("click", () => {
+    writeTracingOptions(defaultConversionOptions);
+    renderChangedOptions();
+  });
+  writeOptions(defaultConversionOptions);
   render();
 
   function writeOptions(options: Readonly<ConversionOptions>): void {
     const validatedOptions = createConversionOptions(options);
     elements.colorPrecision.value = String(validatedOptions.colorPrecision);
+    elements.cornerThreshold.value = String(validatedOptions.cornerThreshold);
+    elements.curveFitting.value = validatedOptions.curveFitting;
     elements.filterSpeckle.value = String(validatedOptions.filterSpeckle);
+    elements.hierarchical.value = validatedOptions.hierarchical;
+    elements.layerDifference.value = String(validatedOptions.layerDifference);
+    elements.lengthThreshold.value = String(validatedOptions.lengthThreshold);
+    elements.maxIterations.value = String(validatedOptions.maxIterations);
     elements.pathPrecision.value = String(validatedOptions.pathPrecision);
     elements.monochromeThreshold.value = String(validatedOptions.preprocessing.monochromeThreshold);
     elements.rasterFilter.value = validatedOptions.preprocessing.filterMode;
     elements.rasterDetail.value = validatedOptions.preprocessing.detailMode;
     elements.rasterResize.value = rasterResizePresetId(validatedOptions.preprocessing.resize);
     elements.scalePercent.value = String(validatedOptions.scalePercent);
+    elements.spliceThreshold.value = String(validatedOptions.spliceThreshold);
     elements.shapeDetection.setAttribute(
       "aria-checked",
       String(validatedOptions.shapeDetection.enabled),
@@ -151,6 +181,19 @@ export function initializeConversionOptions(): ConversionOptionsController {
       requireShapeInput(shapeTypeInputs, shape.key).checked =
         validatedOptions.shapeDetection.types[shape.key];
     }
+  }
+
+  function writeTracingOptions(options: Readonly<ConversionOptions>): void {
+    elements.colorPrecision.value = String(options.colorPrecision);
+    elements.cornerThreshold.value = String(options.cornerThreshold);
+    elements.curveFitting.value = options.curveFitting;
+    elements.filterSpeckle.value = String(options.filterSpeckle);
+    elements.hierarchical.value = options.hierarchical;
+    elements.layerDifference.value = String(options.layerDifference);
+    elements.lengthThreshold.value = String(options.lengthThreshold);
+    elements.maxIterations.value = String(options.maxIterations);
+    elements.pathPrecision.value = String(options.pathPrecision);
+    elements.spliceThreshold.value = String(options.spliceThreshold);
   }
 
   return {
@@ -173,8 +216,18 @@ export function initializeConversionOptions(): ConversionOptionsController {
 interface ConversionOptionElements {
   colorPrecision: HTMLInputElement;
   colorPrecisionValue: HTMLOutputElement;
+  cornerThreshold: HTMLInputElement;
+  cornerThresholdValue: HTMLOutputElement;
+  curveFitting: HTMLSelectElement;
   filterSpeckle: HTMLInputElement;
   filterSpeckleValue: HTMLOutputElement;
+  hierarchical: HTMLSelectElement;
+  layerDifference: HTMLInputElement;
+  layerDifferenceValue: HTMLOutputElement;
+  lengthThreshold: HTMLInputElement;
+  lengthThresholdValue: HTMLOutputElement;
+  maxIterations: HTMLInputElement;
+  maxIterationsValue: HTMLOutputElement;
   monochromeThreshold: HTMLInputElement;
   monochromeThresholdControl: HTMLElement;
   monochromeThresholdValue: HTMLOutputElement;
@@ -185,9 +238,12 @@ interface ConversionOptionElements {
   rasterFilter: HTMLSelectElement;
   rasterDetail: HTMLSelectElement;
   rasterResize: HTMLSelectElement;
+  resetTracingOptions: HTMLButtonElement;
   scalePercent: HTMLSelectElement;
   shapeDetection: HTMLButtonElement;
   shapeTypeOptions: HTMLElement;
+  spliceThreshold: HTMLInputElement;
+  spliceThresholdValue: HTMLOutputElement;
   targetDimensions: HTMLOutputElement;
 }
 
@@ -195,8 +251,18 @@ function readElements(): ConversionOptionElements {
   return {
     colorPrecision: requireElement("#color-precision", HTMLInputElement),
     colorPrecisionValue: requireElement("#color-precision-value", HTMLOutputElement),
+    cornerThreshold: requireElement("#corner-threshold", HTMLInputElement),
+    cornerThresholdValue: requireElement("#corner-threshold-value", HTMLOutputElement),
+    curveFitting: requireElement("#curve-fitting", HTMLSelectElement),
     filterSpeckle: requireElement("#filter-speckle", HTMLInputElement),
     filterSpeckleValue: requireElement("#filter-speckle-value", HTMLOutputElement),
+    hierarchical: requireElement("#hierarchical-mode", HTMLSelectElement),
+    layerDifference: requireElement("#layer-difference", HTMLInputElement),
+    layerDifferenceValue: requireElement("#layer-difference-value", HTMLOutputElement),
+    lengthThreshold: requireElement("#length-threshold", HTMLInputElement),
+    lengthThresholdValue: requireElement("#length-threshold-value", HTMLOutputElement),
+    maxIterations: requireElement("#max-iterations", HTMLInputElement),
+    maxIterationsValue: requireElement("#max-iterations-value", HTMLOutputElement),
     monochromeThreshold: requireElement("#monochrome-threshold", HTMLInputElement),
     monochromeThresholdControl: requireElement("#monochrome-threshold-control", HTMLElement),
     monochromeThresholdValue: requireElement("#monochrome-threshold-value", HTMLOutputElement),
@@ -207,11 +273,35 @@ function readElements(): ConversionOptionElements {
     rasterFilter: requireElement("#raster-filter", HTMLSelectElement),
     rasterDetail: requireElement("#raster-detail", HTMLSelectElement),
     rasterResize: requireElement("#raster-resize", HTMLSelectElement),
+    resetTracingOptions: requireElement("#reset-tracing-options", HTMLButtonElement),
     scalePercent: requireElement("#scale-percent", HTMLSelectElement),
     shapeDetection: requireElement("#shape-detection-enabled", HTMLButtonElement),
     shapeTypeOptions: requireElement("#shape-type-options", HTMLElement),
+    spliceThreshold: requireElement("#splice-threshold", HTMLInputElement),
+    spliceThresholdValue: requireElement("#splice-threshold-value", HTMLOutputElement),
     targetDimensions: requireElement("#target-dimensions", HTMLOutputElement),
   };
+}
+
+function readCurveFittingMode(value: string): CurveFittingMode {
+  switch (value) {
+    case CurveFittingMode.Pixel:
+    case CurveFittingMode.Polygon:
+    case CurveFittingMode.Spline:
+      return value;
+    default:
+      throw new Error("Required curve fitting mode is invalid.");
+  }
+}
+
+function readHierarchicalMode(value: string): HierarchicalMode {
+  switch (value) {
+    case HierarchicalMode.Cutout:
+    case HierarchicalMode.Stacked:
+      return value;
+    default:
+      throw new Error("Required hierarchical mode is invalid.");
+  }
 }
 
 function readRasterDetailMode(value: string): RasterDetailMode {

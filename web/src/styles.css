@@ -68,7 +68,7 @@ a:focus-visible {
 .topbar {
   z-index: 2;
   display: grid;
-  grid-template-columns: auto auto minmax(22rem, 1fr) auto;
+  grid-template-columns: auto auto auto auto minmax(22rem, 1fr) auto;
   align-items: center;
   gap: 1rem;
   min-width: 0;
@@ -321,6 +321,14 @@ a:focus-visible {
   margin-top: 0.45rem;
   color: #a8bac6;
   font-size: 0.78rem;
+}
+
+.control-panel label > small {
+  grid-column: 1 / -1;
+  margin-top: -0.35rem;
+  color: #6f8998;
+  font-size: 0.65rem;
+  text-align: right;
 }
 
 .control-panel select,
@@ -889,7 +897,7 @@ a:focus-visible {
 
 @media (max-width: 74rem) {
   .topbar {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto auto auto minmax(16rem, 1fr) auto;
   }
 
   .privacy-badge {
@@ -907,7 +915,7 @@ a:focus-visible {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
   }
 
   .view-tabs {

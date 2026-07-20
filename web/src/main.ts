@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./help/interactive-handbook.css";
 import "./footer.css";
 import "./compare-split.css";
 import "./workspace-view.css";
@@ -21,6 +22,7 @@ import { initializePwaIngress } from "./pwa/pwa-ingress";
 import { showAppVersion } from "./release/app-version";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
+import { initializeInteractiveHandbook } from "./help/interactive-handbook";
 import { initializeLocalization } from "./i18n/localization";
 import { initializeWorkspaceView } from "./workspace/workspace-view-controller";
 import {
@@ -33,6 +35,7 @@ import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
 
 initializeLocalization();
+initializeInteractiveHandbook();
 showAppVersion();
 const imageStore = createImageStore();
 const aiCapabilities = await detectBrowserAiCapabilities();

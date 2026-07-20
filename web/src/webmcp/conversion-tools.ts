@@ -1,5 +1,10 @@
 import type { ConversionController } from "../conversion/conversion-controller";
-import { createConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
+import {
+  CurveFittingMode,
+  HierarchicalMode,
+  createConversionOptions,
+  type ConversionOptions,
+} from "../conversion/conversion-options";
 import {
   RasterDetailMode,
   RasterFilterMode,
@@ -23,7 +28,13 @@ const configureSchema = Object.freeze({
   additionalProperties: false,
   properties: Object.freeze({
     colorPrecision: Object.freeze({ maximum: 8, minimum: 1, type: "integer" }),
+    cornerThreshold: Object.freeze({ maximum: 180, minimum: 0, type: "integer" }),
+    curveFitting: Object.freeze({ enum: Object.values(CurveFittingMode), type: "string" }),
     filterSpeckle: Object.freeze({ maximum: 1_000, minimum: 0, type: "integer" }),
+    hierarchical: Object.freeze({ enum: Object.values(HierarchicalMode), type: "string" }),
+    layerDifference: Object.freeze({ maximum: 255, minimum: 0, type: "integer" }),
+    lengthThreshold: Object.freeze({ maximum: 10, minimum: 3.5, type: "number" }),
+    maxIterations: Object.freeze({ maximum: 20, minimum: 1, type: "integer" }),
     rasterDetailMode: Object.freeze({
       enum: Object.freeze(Object.values(RasterDetailMode)),
       type: "string",
@@ -40,6 +51,7 @@ const configureSchema = Object.freeze({
       type: "integer",
     }),
     scalePercent: Object.freeze({ maximum: 400, minimum: 10, type: "integer" }),
+    spliceThreshold: Object.freeze({ maximum: 180, minimum: 0, type: "integer" }),
     useOriginalRasterSize: Object.freeze({ const: true, type: "boolean" }),
   }),
   required: Object.freeze(["colorPrecision", "filterSpeckle", "pathPrecision", "scalePercent"]),
@@ -60,11 +72,11 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
     description:
-      "Set visible raster preprocessing, color precision, speckle filter, path precision, and SVG scale. The Studio automatically refreshes its live preview with the same validation.",
+      "Set visible raster preprocessing, all ten color-tracing VTracer parameters, and SVG scale. The Studio automatically refreshes its live preview with the same validation.",
     execute: (input: unknown) => {
       try {
-        const values = requireConfigureInput(input);
         const currentOptions = services.readOptions();
+        const values = requireConfigureInput(input, currentOptions);
         const options = createConversionOptions({
           ...currentOptions,
           ...values,
@@ -182,21 +194,49 @@ function convertCurrentImageTool(services: ConversionToolServices): WebMcpTool {
   });
 }
 
-function requireConfigureInput(input: unknown): {
-  colorPrecision: number;
-  filterSpeckle: number;
-  pathPrecision: number;
-  scalePercent: number;
-} {
+function requireConfigureInput(input: unknown, current: ConversionOptions): ConversionOptions {
   if (!isRecord(input)) {
     throw new TypeError("Conversion tool input must be an object.");
   }
   return {
     colorPrecision: requireNumber(input.colorPrecision),
+    cornerThreshold: optionalNumber(input.cornerThreshold, current.cornerThreshold),
+    curveFitting: optionalCurveFitting(input.curveFitting, current.curveFitting),
     filterSpeckle: requireNumber(input.filterSpeckle),
+    hierarchical: optionalHierarchical(input.hierarchical, current.hierarchical),
+    layerDifference: optionalNumber(input.layerDifference, current.layerDifference),
+    lengthThreshold: optionalNumber(input.lengthThreshold, current.lengthThreshold),
+    maxIterations: optionalNumber(input.maxIterations, current.maxIterations),
     pathPrecision: requireNumber(input.pathPrecision),
+    preprocessing: current.preprocessing,
     scalePercent: requireNumber(input.scalePercent),
+    shapeDetection: current.shapeDetection,
+    spliceThreshold: optionalNumber(input.spliceThreshold, current.spliceThreshold),
   };
+}
+
+function optionalCurveFitting(value: unknown, fallback: CurveFittingMode): CurveFittingMode {
+  if (value === undefined) {
+    return fallback;
+  }
+  if (Object.values(CurveFittingMode).some((candidate) => candidate === value)) {
+    return value as CurveFittingMode;
+  }
+  throw new TypeError("Curve fitting mode is invalid.");
+}
+
+function optionalHierarchical(value: unknown, fallback: HierarchicalMode): HierarchicalMode {
+  if (value === undefined) {
+    return fallback;
+  }
+  if (Object.values(HierarchicalMode).some((candidate) => candidate === value)) {
+    return value as HierarchicalMode;
+  }
+  throw new TypeError("Hierarchical mode is invalid.");
+}
+
+function optionalNumber(value: unknown, fallback: number): number {
+  return value === undefined ? fallback : requireNumber(value);
 }
 
 function requireNumber(value: unknown): number {

@@ -12,6 +12,8 @@ describe("German to English UI translation", () => {
     ["Entladen", "Unload"],
     ["19,76 MiB · Apache-2.0", "19.76 MiB · Apache-2.0"],
     ["Maske mit 3 Punkten aktualisiert · WebGPU", "Mask updated with 3 points · WebGPU"],
+    ["10 Tracing-Parameter", "10 tracing parameters"],
+    ["Standard: 2 Stellen", "Default: 2 decimals"],
   ])("translates %s", (german, english) => {
     expect(translateGermanText(german)).toBe(english);
   });

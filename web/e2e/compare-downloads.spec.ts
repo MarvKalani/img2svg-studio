@@ -26,9 +26,9 @@ test("Given A and B differ only in color precision, when filtered and downloaded
   const rows = page.getByTestId("diff-setting-row");
   await expect(onlyDifferences).toBeChecked();
   await expect(rows).toHaveCount(1);
-  await expect(rows.first().getByRole("cell")).toHaveText(["Farbpräzision", "7 Bit", "5 Bit"]);
+  await expect(rows.first().getByRole("cell")).toHaveText(["Farbpräzision", "6 Bit", "5 Bit"]);
   await onlyDifferences.uncheck();
-  await expect(rows).toHaveCount(15);
+  await expect(rows).toHaveCount(22);
   await onlyDifferences.check();
 
   await expectDownload(page, "SVG A", "circle-a-run-1.svg", svgA);
