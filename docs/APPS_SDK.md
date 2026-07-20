@@ -21,7 +21,8 @@ And get_svg_preview renders the new SVG with an exact download action
 
 ```mermaid
 flowchart LR
-  ChatGPT["ChatGPT model"] --> Http["Stateless Streamable HTTP"]
+  ChatGPT["ChatGPT model"] --> Connection["Secure MCP Tunnel or public HTTPS"]
+  Connection --> Http["Stateless Streamable HTTP"]
   Http --> Vectorize["vectorize_image data tool"]
   Vectorize --> Decode["bounded raster decode"]
   Decode --> Wasm["existing img2svg WASM boundary"]
@@ -62,15 +63,27 @@ and downloads the exact SVG bytes. Conversion remains in the data tool.
 
 ## Hosting and privacy
 
-The browser Studio keeps all images local. The ChatGPT companion is a separate, explicit remote
-path: ChatGPT supplies a short-lived file reference, the stateless server downloads it for the
-single tool call, converts it in memory, returns the result, and retains neither image nor SVG.
-The public documentation and widget state this distinction directly.
+The browser Studio keeps all images local and needs no MCP server. The ChatGPT companion is a
+separate, explicit path: ChatGPT supplies a short-lived file reference, the stateless server reads
+it for one tool call, converts it in memory, returns the result, and retains neither image nor SVG.
+The documentation and widget state this distinction directly.
+
+For Developer Mode, the preferred smallest setup keeps `http://127.0.0.1:8787/mcp` local and uses
+OpenAI Secure MCP Tunnel. The tunnel requires its own `tunnel_id` and runtime API key, but it does
+not expose an inbound port and does not add an OpenAI API call to conversion. A temporary public
+HTTPS tunnel is an alternative. Permanent public MCP hosting is deferred until the companion must
+remain available independently of the developer machine.
 
 The `/mcp` endpoint uses Streamable HTTP without application sessions. `GET /` is a health check,
 CORS is limited to the MCP methods and headers, and errors use stable public codes without input
-bytes or secrets. API credentials are introduced only with an external 3D provider and are read
-from environment variables documented in `.env.example`.
+bytes or secrets. Conversion itself needs no API credential. Tunnel credentials and a later
+external 3D-provider key stay outside the repository in environment variables.
+
+Official setup references:
+
+- [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
+- [Connect from ChatGPT](https://developers.openai.com/apps-sdk/deploy/connect-chatgpt)
+- [Public HTTPS alternative](https://developers.openai.com/apps-sdk/build/mcp-server#step-5--expose-an-https-endpoint)
 
 ## Tauri path
 

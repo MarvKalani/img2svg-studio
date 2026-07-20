@@ -190,7 +190,7 @@ einem Regressionstest und wird vor jeder anderen Arbeit nachgebessert.
 
 ## D-022 — WebMCP und Apps SDK bedienen unterschiedliche Agentenwege
 
-**Status:** ersetzt am 20. Juli 2026
+**Status:** entschieden am 20. Juli 2026
 
 WebMCP bleibt die Primärintegration, weil seine Tools direkt in der sichtbaren Browserseite
 laufen und denselben lokalen Zustand wie der Nutzer verwenden. Die Abnahme aktiviert in Chrome
@@ -203,6 +203,11 @@ teilt er nicht den flüchtigen Browserzustand, sondern ausschließlich denselben
 und dieselben typisierten Options- und Ergebnisverträge. Sein Deployment- und Datenschutzvertrag
 bleibt vom lokalen Browser-Studio getrennt.
 
+Im Developer Mode bleibt der MCP-Server lokal und wird bevorzugt über OpenAI Secure MCP Tunnel
+verbunden. Damit ist kein öffentlicher Ingress nötig. Dauerhaftes öffentliches Hosting folgt nur,
+wenn der ChatGPT-Kanal unabhängig vom Entwicklungsrechner verfügbar sein soll. Das statische
+Studio und sein WebMCP funktionieren in beiden Fällen ohne Anwendungsserver.
+
 Primärquellen:
 
 - <https://developer.chrome.com/docs/ai/webmcp>
@@ -210,6 +215,7 @@ Primärquellen:
 - <https://developers.openai.com/apps-sdk/build/mcp-server>
 - <https://developers.openai.com/apps-sdk/build/chatgpt-ui>
 - <https://developers.openai.com/apps-sdk/deploy>
+- <https://developers.openai.com/api/docs/guides/secure-mcp-tunnels>
 
 ## D-024 — Tauri bleibt eine zweite Hülle um denselben Kern
 
@@ -233,6 +239,20 @@ eine autorisierte kurzlebige Dateireferenz, statt Binärdaten durch den Modellko
 `image_base64` bleibt ausschließlich als kompatibler Inspector-/MCP-Host-Eingang erhalten. Das
 Datenwerkzeug liefert SVG und Statistiken; `get_svg_preview` rendert denselben Wert anschließend als
 MCP-Apps-Widget mit Download. Diese Trennung entspricht der offiziellen Tool-first-Empfehlung.
+
+## D-026 — Das Devpost-Plugin unterstützt die Einreichung, nicht das Produkt
+
+**Status:** entschieden am 20. Juli 2026
+
+Das optionale Devpost Hackathons Plugin kann in Codex die Build-Week-Regeln bereitstellen, die
+Einreichung mit `$prepare-submission` prüfen und mit `$submit` übertragen. Es ist weder
+Laufzeitabhängigkeit noch Bewertungsanforderung und verändert die img2svg-Architektur nicht.
+Offizielle Regeln und Hackathon-Webseite bleiben die Quelle der Wahrheit. Deshalb wird das Plugin
+erst für den finalen Einreichungsaudit verwendet; Produktcode und Nachweise bleiben im Repository.
+
+Quelle:
+
+- <https://openai.devpost.com/details/faqs>
 
 ## D-023 — Vorgänger und img2svg Studio bleiben getrennte Produkte
 

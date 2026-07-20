@@ -314,23 +314,26 @@ Primärquellen:
 - <https://developer.chrome.com/docs/ai/webmcp/secure-tools>
 - <https://developer.chrome.com/blog/new-in-devtools-149>
 
-### Apps-SDK-Rückfallweg
+### Optionaler ChatGPT-Companion
 
-Ein eigener Implementierungsfehler löst keinen Architekturwechsel aus. Erst wenn WebMCP in
-einer unterstützten und korrekt konfigurierten Chrome-Version nachweislich nicht für den
-Browser-Agenten nutzbar ist, wird der WebMCP-Aktionsslice durch eine ChatGPT-App ersetzt.
+WebMCP bleibt die primäre Agentenschnittstelle des sichtbaren, lokalen Studios. Der getrennte
+ChatGPT-Companion ergänzt diesen Weg, ersetzt ihn aber nicht und ist keine Voraussetzung für den
+Browserbetrieb.
 
-Der funktionale Ersatz verwendet einen HTTP-erreichbaren MCP-Server, dessen Tools dieselben
-typisierten Application Services ansprechen, sowie eine UI im ChatGPT-iframe über die MCP Apps
-Bridge. Die Agentensteuerung wechselt damit von der lokalen Browserseite in die ChatGPT-Surface.
-Serverbetrieb, HTTPS und Datei-/Datenschutzfluss werden dann als eigener Slice getestet und
-dokumentiert. Beide Wege verwenden dieselben Application Services.
+Der Companion verwendet einen Streamable-HTTP-MCP-Server und eine UI im ChatGPT-iframe über die
+MCP Apps Bridge. Für Developer Mode erreicht ChatGPT den lokalen Server bevorzugt über OpenAI
+Secure MCP Tunnel; temporäres öffentliches HTTPS bleibt eine Alternative. Dauerhaftes Hosting ist
+nur für eine unabhängig verfügbare ChatGPT-App sinnvoll. Tunnel-, Hosting- und
+Datei-/Datenschutzfluss werden getrennt vom statischen Browser-Studio getestet und dokumentiert.
+Beide Wege teilen den Rust-Konvertierungskern und typisierte Verträge, nicht den flüchtigen
+Browserzustand.
 
 Primärquellen:
 
 - <https://developers.openai.com/apps-sdk/build/mcp-server>
 - <https://developers.openai.com/apps-sdk/build/chatgpt-ui>
 - <https://developers.openai.com/apps-sdk/deploy>
+- <https://developers.openai.com/api/docs/guides/secure-mcp-tunnels>
 
 ## 8. KI-Modelle
 

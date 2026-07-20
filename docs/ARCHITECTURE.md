@@ -1,7 +1,8 @@
 # Architecture
 
 img2svg Studio is a static, local-first browser application. There is no application server and no
-image upload path.
+image upload path. The optional ChatGPT companion is a separate stateless process reached locally
+through Secure MCP Tunnel; it does not change the browser deployment.
 
 ```mermaid
 flowchart LR

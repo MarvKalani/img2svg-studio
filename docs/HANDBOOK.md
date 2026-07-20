@@ -442,9 +442,12 @@ zeigt Byte-, Element- und Pfadzahl. „Download SVG“ erzeugt einen Blob direkt
 dadurch entsprechen Download und Vorschau bytegenau einander. Das Renderwerkzeug enthält keine
 Konvertierungslogik und akzeptiert höchstens 5 MiB SVG.
 
-Die echte ChatGPT-Abnahme benötigt einen öffentlichen HTTPS-Endpunkt. Der offizielle lokale
-Inspector prüft bereits beide Werkzeuge, die MCP-Apps-Ressource und den vollständigen
-Fixture-zu-Preview-Datenfluss.
+Die echte ChatGPT-Abnahme verbindet den lokalen Endpunkt bevorzugt über OpenAI Secure MCP Tunnel.
+Dafür bleiben Server und Bilder auf dem Entwicklungsrechner; nur ausgehender HTTPS-Verkehr zum
+OpenAI-Tunnel ist nötig. Ein temporärer öffentlicher HTTPS-Tunnel ist eine Alternative. Dauerhaftes
+öffentliches MCP-Hosting wird erst für eine unabhängig vom Entwicklungsrechner verfügbare
+ChatGPT-App erwogen. Der offizielle lokale Inspector prüft bereits beide Werkzeuge, die
+MCP-Apps-Ressource und den vollständigen Fixture-zu-Preview-Datenfluss.
 
 ## Formerkennungs-Fixtures
 

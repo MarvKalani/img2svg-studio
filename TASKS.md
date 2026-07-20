@@ -95,8 +95,8 @@ Danach laufen `npm run check` und der MCP Inspector gegen `http://127.0.0.1:8787
 **Stand 20. Juli 2026:** Implementierung, dreizehn MCP-Workspace-Tests, Typecheck, Build sowie
 `tools/list` und der echte Kreisaufruf im offiziellen Inspector sind grün. Der Inspector erhielt
 ein 142-Byte-SVG mit genau einem nativen Kreis und keinem Pfad. Chrome Browser Use blockiert lokale
-Adressen; die direkte Chrome- und ChatGPT-Abnahme folgt am öffentlichen HTTPS-Endpunkt gemeinsam
-mit `APPS-02`.
+Adressen; die ChatGPT-Abnahme folgt über OpenAI Secure MCP Tunnel gemeinsam mit `APPS-02`. Ein
+dauerhaft öffentlich gehosteter MCP-Server ist dafür keine Voraussetzung.
 
 **Dokumentation:** Setup, Tool-Schema, Parameterheuristik, Dateigrenzen, Datenschutz und Deployment.
 
@@ -121,13 +121,14 @@ Bildquelle, Statistiken und Byte-identischen Download. MCP Inspector prüft Ress
 Renderwerkzeug. Die Endabnahme lädt ein Bild in ChatGPT Developer Mode hoch, führt beide Aufrufe
 aus und wiederholt die Konvertierung über die natürliche Folgeanweisung.
 
-**Vorbedingung:** `APPS-01` und ein öffentlich erreichbarer HTTPS-`/mcp`-Endpunkt.
+**Vorbedingung:** `APPS-01` und eine ChatGPT-Verbindung über OpenAI Secure MCP Tunnel oder einen
+temporären öffentlichen HTTPS-`/mcp`-Endpunkt.
 
 **Stand 20. Juli 2026:** Renderwerkzeug, MCP-Apps-Ressource, isolierte SVG-Bilddarstellung,
 byte-identischer Blob-Download, Größenlimit und achtzehn MCP-Workspace-Tests sind grün. Der
 offizielle Inspector listet beide Werkzeuge und die `text/html;profile=mcp-app`-Ressource und
 rendert das Test-SVG mit korrekten Statistiken. Die endgültige Widget- und Folgeprompt-Abnahme in
-Chrome/ChatGPT wartet auf den öffentlichen HTTPS-Endpunkt.
+Chrome/ChatGPT wartet auf die Secure-MCP-Tunnel-Verbindung.
 
 **Dokumentation:** ChatGPT-Verbindung, Golden Prompts, Widget-Bedienung und Fehlerfälle.
 
@@ -192,9 +193,10 @@ und Agentenablauf.
 
 ## RELEASE-01 — Devpost-Teilnahme, Lizenz und GitHub-Zugriff festlegen
 
-**Benötigte Eigentümerentscheidung:** Devpost-Teilnahme bestätigen sowie öffentliches oder privates
-Repository festlegen. Die Projektlizenz ist BSL 1.1 mit einem Additional Use Grant unter 100.000
-USD Jahresumsatz und Apache-2.0 als Change License ab spätestens 20. Juli 2030.
+**Stand 20. Juli 2026:** Die Devpost-Teilnahme ist bestätigt. Offen bleiben öffentliches oder
+privates Repository, GitHub-Zugriff und Push. Die Projektlizenz ist BSL 1.1 mit einem Additional
+Use Grant unter 100.000 USD Jahresumsatz und Apache-2.0 als Change License ab spätestens
+20. Juli 2030.
 
 ```gherkin
 Given ein Judge öffnet das eingereichte Repository ohne Entwicklerzugang
@@ -258,6 +260,9 @@ und Funktionsaudit gegen Handbuch und Testliste.
 
 **Gemeinsame Aktion:** Der Orchestrator erstellt Drehbuch, Shotlist und Prüfprotokoll; der
 Projekteigner bestätigt Veröffentlichung, `/feedback`-Session-ID und endgültiges Absenden.
+Das optionale Devpost Hackathons Plugin kann anschließend mit `$prepare-submission` den finalen
+Audit und mit `$submit` die Formularübertragung unterstützen; die offiziellen Regeln bleiben
+maßgeblich.
 
 **Status 19. Juli:** Getaktetes englisches Drehbuch, Shotlist, Take-Checkliste und technischer
 Chrome-150-Probelauf sind dokumentiert. Öffentliche Aufnahme, YouTube-Prüfung, Session-ID und

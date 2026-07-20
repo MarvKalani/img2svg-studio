@@ -19,6 +19,7 @@ Official references:
 | Project | img2svg Studio |
 | Tagline | A local-first raster-to-SVG lab that turns tuning into reproducible evidence. |
 | Track | Developer Tools |
+| Devpost participation | Registered on 20 July 2026 |
 | Demo | `https://studio.img2.download` — publication pending |
 | Repository | `https://github.com/MarvKalani/img2svg-studio` — publication pending |
 | Video | owner must provide public YouTube URL |
@@ -60,7 +61,8 @@ works when WebMCP is unavailable.
 The static UI uses TypeScript 7 and Vite. Conversion runs in a Web Worker, crosses a small WASM
 boundary, and executes in a Rust core built on the `visioncortex` tracing foundation used by
 VTracer. MODNet and SlimSAM run through Transformers.js with WebGPU and a MODNet WASM fallback.
-There is no backend, image upload, account or telemetry path.
+The submitted browser Studio has no backend, image upload, account or telemetry path. Its optional
+ChatGPT companion is a separate stateless integration and is not needed for the public demo.
 
 We built the Studio during OpenAI Build Week with Codex and GPT-5.6 Sol. Each feature was delivered
 as a vertical test-driven slice: an executable Given–When–Then contract, the smallest coherent
@@ -123,6 +125,19 @@ npm ci
 npm --prefix web run test:demo
 ```
 
+## Devpost Hackathons Plugin
+
+The optional Devpost Hackathons Plugin is a submission assistant inside Codex, not a dependency of
+img2svg Studio and not an Apps SDK deployment target. It provides Build Week context and these
+useful finalization commands:
+
+- `$prepare-submission` audits security, eligibility and required submission material.
+- `$submit` fills and sends the Devpost submission.
+
+We use it for the final audit and form workflow after demo, repository, video and `/feedback`
+Session ID are ready. The official rules and Hackathon website remain authoritative if the plugin
+differs. Plugin use is optional and provides no judging advantage.
+
 ## Pre-existing work disclosure
 
 `img2.download` is a separate pre-existing converter owned by the project author. The new
@@ -151,7 +166,7 @@ for an existing-project disclosure.
 
 Use the [timed English demo script](release/DEMO_SCRIPT.md) for the recording and final take check.
 
-- [ ] Join the OpenAI Build Week event on Devpost and confirm eligibility.
+- [x] Join the OpenAI Build Week event on Devpost and confirm eligibility.
 - [ ] Confirm the Developer Tools track.
 - [x] Adopt BSL 1.1 with an Apache-2.0 change license and publish the Symbiosis Pact.
 - [ ] Create or approve the GitHub repository and push `main`.

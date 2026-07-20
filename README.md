@@ -83,8 +83,10 @@ npm start --workspace=img2svg-studio-mcp
 ```
 
 The health check is `http://127.0.0.1:8787/` and the Streamable HTTP endpoint is
-`http://127.0.0.1:8787/mcp`. For ChatGPT Developer Mode, deploy that endpoint behind public HTTPS
-and register the final URL including `/mcp`. The complete tool, privacy, and Tauri contracts are in
+`http://127.0.0.1:8787/mcp`. For ChatGPT Developer Mode, keep the server local and connect it with
+OpenAI Secure MCP Tunnel, or expose it temporarily through HTTPS. Permanent public MCP hosting is
+optional and only useful when the ChatGPT app must run independently of the developer machine;
+the browser Studio and WebMCP need no server. The complete connection, privacy and Tauri contracts are in
 [the Apps SDK companion guide](docs/APPS_SDK.md).
 
 ## Quality gate
