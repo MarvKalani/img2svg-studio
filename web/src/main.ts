@@ -17,6 +17,7 @@ import { createLogoDemoOptions } from "./demo/logo-demo-profile";
 import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
 import { initializePwaIngress } from "./pwa/pwa-ingress";
+import { showAppVersion } from "./release/app-version";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
 import { initializeLocalization } from "./i18n/localization";
@@ -31,6 +32,7 @@ import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
 
 initializeLocalization();
+showAppVersion();
 const imageStore = createImageStore();
 const aiCapabilities = await detectBrowserAiCapabilities();
 const availableModelIds = new Set<"modnet" | "slimsam">([

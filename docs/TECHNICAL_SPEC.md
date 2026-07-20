@@ -18,6 +18,10 @@ bestehenden Controller und bewahrt deren deutsche Quelle für den verlustfreien 
 Die Präferenz `de` oder `en` liegt als einziger i18n-Wert in `localStorage`; Domänenzustand,
 SVG-Ausgabe und WebMCP-Verträge bleiben sprachneutral und unverändert.
 
+`release/app-version.ts` hält die sichtbare Produktversion an einer Stelle. Das Format
+`YYMMDD.RR` verbindet das Veröffentlichungsdatum mit einer zweistelligen Tagesrevision und wird
+beim Start in den Seitenfuß sowie als `data-app-version` am Wurzeldokument geschrieben.
+
 Ein getrennter ChatGPT-Companion ergänzt diese Architektur über einen stateless Node/TypeScript-
 MCP-Server. Er dekodiert eine explizit übergebene Datei, verwendet denselben kompilierten Rust/WASM-
 Kern und liefert SVG plus Statistiken. Ein Tauri-Adapter kann später denselben Rust-Core nativ

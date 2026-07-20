@@ -35,6 +35,7 @@ Der akzeptierte Entwurf besteht aus:
 - zentraler Arbeitsfläche für Original, SVG und deckungsgleichen A/B-Split.
 - Parameter-Diff unter dem Vergleich.
 - Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
+- Fußbereich mit einer sichtbaren Version im Format `YYMMDD.RR`.
 
 Alle Kernaktionen sind tastaturbedienbar und zeigen ihren Lade-, Fehler- oder Leerzustand.
 

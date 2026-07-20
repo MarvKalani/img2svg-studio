@@ -35,6 +35,12 @@ Die Oberfläche besteht aus:
 - einer Parameter-Diff-Tabelle unter dem Vergleich.
 - einem Verlauf mit Conversion-Runs am unteren Rand.
 - einer schmalen Statuszeile mit Größe, Pfaden, Formen und Laufzeit.
+- einem Fußbereich mit der sichtbaren Produktversion.
+
+### Version
+
+Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste veröffentlichte
+Revision vom 20. Juli 2026; weitere Revisionen desselben Tages erhöhen die zweistellige Endung.
 
 ### Sprache
 
