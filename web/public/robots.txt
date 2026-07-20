@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://studio.img2.download/sitemap.xml

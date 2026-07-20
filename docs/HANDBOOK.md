@@ -37,6 +37,10 @@ Die Oberfläche besteht aus:
 - einer schmalen Statuszeile mit Größe, Pfaden, Formen und Laufzeit.
 - einem Fußbereich mit der sichtbaren Produktversion.
 
+Der Fußbereich verlinkt von jeder Studio-Ansicht auf Impressum, Datenschutz und Lizenzen. Diese
+Seiten sind ohne Anmeldung direkt erreichbar und verwenden dieselbe lokal gespeicherte
+Deutsch-/Englisch-Auswahl wie das Studio.
+
 ### Version
 
 Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste veröffentlichte
@@ -547,6 +551,13 @@ innerhalb der dort definierten 2-Pixel-Toleranz.
 - Der automatisierte Netzwerkaudit erlaubt bei lokaler Conversion keine Cross-Origin-Anfrage;
   nach einer expliziten Modellaktion sind ausschließlich revisionsgebundene Modellartefakte
   und deren Weiterleitungen zulässig.
+- Die öffentliche Datenschutzseite benennt Hosting über Cloudflare, die kurzlebige PWA-
+  Übergabe, die Sprachpräferenz, optionale Modelldownloads von Hugging Face und WebMCP transparent.
+- Das Studio setzt keine Cookies, Analyse-, Werbe- oder Trackingdienste ein.
+
+Das Impressum, die Datenschutzhinweise und die Lizenzübersicht sind als statische Seiten Teil des
+Produktionsbuilds. Die Lizenzübersicht verweist auf den maßgeblichen BSL-1.1-Text, die
+Symbiosis-Erklärung und das gepflegte Drittanbieterinventar im öffentlichen Repository.
 
 ## Dokumentationspflege
 

@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./footer.css";
 import "./compare-split.css";
 import "./workspace-view.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";

@@ -3,7 +3,8 @@
 **A local-first raster-to-SVG lab for turning visual tuning into reproducible evidence.**
 
 [Live demo](https://studio.img2.download) · [Architecture](docs/ARCHITECTURE.md) ·
-[User guide](docs/HANDBOOK.md) · [Submission notes](docs/SUBMISSION.md)
+[User guide](docs/HANDBOOK.md) · [Submission notes](docs/SUBMISSION.md) ·
+[Privacy](https://studio.img2.download/datenschutz.html)
 
 ![img2svg Studio workspace](docs/screenshots/app-shell.png)
 
@@ -33,6 +34,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Hardware-filtered typed WebMCP tools that operate the same visible application services as the UI.
 - A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
+- Visible dated release plus bilingual legal, privacy and license pages.
 
 ![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
 

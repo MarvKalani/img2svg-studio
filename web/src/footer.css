@@ -1,0 +1,27 @@
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem 1rem;
+  min-height: 2rem;
+  padding: 0.35rem 1rem;
+  border-top: 1px solid #142d3d;
+  color: #7891a0;
+  background: #061722;
+  font-size: 0.68rem;
+}
+
+.site-footer nav {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.site-footer a {
+  color: #9eb9c7;
+}
+
+.site-version {
+  color: #77dbea;
+  font-variant-numeric: tabular-nums;
+}

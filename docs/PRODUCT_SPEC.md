@@ -36,8 +36,11 @@ Der akzeptierte Entwurf besteht aus:
 - Parameter-Diff unter dem Vergleich.
 - Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
 - Fußbereich mit einer sichtbaren Version im Format `YYMMDD.RR`.
+- direkt erreichbaren, zweisprachigen Seiten für Impressum, Datenschutz und Lizenzen.
 
 Alle Kernaktionen sind tastaturbedienbar und zeigen ihren Lade-, Fehler- oder Leerzustand.
+Die rechtlichen Seiten sind aus dem Fußbereich erreichbar, benötigen kein JavaScript für ihren
+deutschen Inhalt und teilen bei aktiviertem JavaScript die lokale Sprachauswahl des Studios.
 
 ## 4. Konvertierung
 

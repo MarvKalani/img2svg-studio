@@ -22,6 +22,12 @@ SVG-Ausgabe und WebMCP-Verträge bleiben sprachneutral und unverändert.
 `YYMMDD.RR` verbindet das Veröffentlichungsdatum mit einer zweistelligen Tagesrevision und wird
 beim Start in den Seitenfuß sowie als `data-app-version` am Wurzeldokument geschrieben.
 
+`public/impressum.html`, `public/datenschutz.html` und `public/licenses.html` sind eigenständige
+statische Dokumente mit Canonical-URL, gemeinsamer `legal.css` und progressiver Sprachumschaltung
+über `legal.js`. Der deutsche Inhalt bleibt ohne JavaScript lesbar. Die Umschaltung verwendet nur
+die bereits vorhandene Präferenz `img2svg-language`; rechtliche Inhalte werden nicht dynamisch
+nachgeladen. `robots.txt` und `sitemap.xml` machen Start- und Rechteseiten auffindbar.
+
 Ein getrennter ChatGPT-Companion ergänzt diese Architektur über einen stateless Node/TypeScript-
 MCP-Server. Er dekodiert eine explizit übergebene Datei, verwendet denselben kompilierten Rust/WASM-
 Kern und liefert SVG plus Statistiken. Ein Tauri-Adapter kann später denselben Rust-Core nativ
