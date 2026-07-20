@@ -491,12 +491,18 @@ a:focus-visible {
 .compare-layer {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+}
+
+.compare-content {
+  position: absolute;
+  inset: 0;
   transform-origin: center;
   will-change: transform;
 }
 
-.compare-layer svg,
-.compare-layer img {
+.compare-content svg,
+.compare-content img {
   display: block;
   width: 100%;
   height: 100%;

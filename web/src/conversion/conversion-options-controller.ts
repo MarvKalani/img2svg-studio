@@ -16,6 +16,12 @@ import {
   type RasterFilterMode as RasterFilterModeValue,
 } from "./raster-preprocessing";
 import {
+  conversionPresets,
+  customConversionPresetId,
+  matchingConversionPresetId,
+  readConversionPreset,
+} from "./conversion-presets";
+import {
   createShapeDetectionOptions,
   defaultShapeDetectionOptions,
   nativeShapeSchema,
@@ -33,6 +39,12 @@ export function initializeConversionOptions(): ConversionOptionsController {
   const elements = readElements();
   elements.rasterResize.replaceChildren(
     ...rasterResizePresets.map((preset) => new Option(preset.label, preset.id)),
+  );
+  const customPresetOption = new Option("Benutzerdefiniert", customConversionPresetId);
+  customPresetOption.disabled = true;
+  elements.preset.replaceChildren(
+    ...conversionPresets.map((preset) => new Option(preset.label, preset.id)),
+    customPresetOption,
   );
   const shapeTypeInputs = createShapeTypeInputs(elements.shapeTypeOptions);
   let sourceDimensions: { heightPixels: number; widthPixels: number } | undefined;
@@ -76,6 +88,7 @@ export function initializeConversionOptions(): ConversionOptionsController {
       elements.targetDimensions.textContent = `${String(target.widthPixels)} × ${String(target.heightPixels)} px`;
     }
     const shapeDetectionEnabled = options.shapeDetection.enabled;
+    elements.preset.value = matchingConversionPresetId(options);
     for (const input of shapeTypeInputs.values()) {
       input.disabled = !shapeDetectionEnabled;
     }
@@ -94,6 +107,13 @@ export function initializeConversionOptions(): ConversionOptionsController {
     elements.shapeDetection.setAttribute("aria-checked", String(!enabled));
     render();
   });
+  for (const input of shapeTypeInputs.values()) {
+    input.addEventListener("change", render);
+  }
+  elements.preset.addEventListener("change", () => {
+    writeOptions(readConversionPreset(elements.preset.value).options);
+    render();
+  });
   elements.colorPrecision.value = String(defaultConversionOptions.colorPrecision);
   elements.filterSpeckle.value = String(defaultConversionOptions.filterSpeckle);
   elements.pathPrecision.value = String(defaultConversionOptions.pathPrecision);
@@ -104,27 +124,29 @@ export function initializeConversionOptions(): ConversionOptionsController {
   );
   render();
 
+  function writeOptions(options: Readonly<ConversionOptions>): void {
+    const validatedOptions = createConversionOptions(options);
+    elements.colorPrecision.value = String(validatedOptions.colorPrecision);
+    elements.filterSpeckle.value = String(validatedOptions.filterSpeckle);
+    elements.pathPrecision.value = String(validatedOptions.pathPrecision);
+    elements.monochromeThreshold.value = String(validatedOptions.preprocessing.monochromeThreshold);
+    elements.rasterFilter.value = validatedOptions.preprocessing.filterMode;
+    elements.rasterDetail.value = validatedOptions.preprocessing.detailMode;
+    elements.rasterResize.value = rasterResizePresetId(validatedOptions.preprocessing.resize);
+    elements.scalePercent.value = String(validatedOptions.scalePercent);
+    elements.shapeDetection.setAttribute(
+      "aria-checked",
+      String(validatedOptions.shapeDetection.enabled),
+    );
+    for (const shape of nativeShapeSchema) {
+      requireShapeInput(shapeTypeInputs, shape.key).checked =
+        validatedOptions.shapeDetection.types[shape.key];
+    }
+  }
+
   return {
     apply: (options) => {
-      const validatedOptions = createConversionOptions(options);
-      elements.colorPrecision.value = String(validatedOptions.colorPrecision);
-      elements.filterSpeckle.value = String(validatedOptions.filterSpeckle);
-      elements.pathPrecision.value = String(validatedOptions.pathPrecision);
-      elements.monochromeThreshold.value = String(
-        validatedOptions.preprocessing.monochromeThreshold,
-      );
-      elements.rasterFilter.value = validatedOptions.preprocessing.filterMode;
-      elements.rasterDetail.value = validatedOptions.preprocessing.detailMode;
-      elements.rasterResize.value = rasterResizePresetId(validatedOptions.preprocessing.resize);
-      elements.scalePercent.value = String(validatedOptions.scalePercent);
-      elements.shapeDetection.setAttribute(
-        "aria-checked",
-        String(validatedOptions.shapeDetection.enabled),
-      );
-      for (const shape of nativeShapeSchema) {
-        requireShapeInput(shapeTypeInputs, shape.key).checked =
-          validatedOptions.shapeDetection.types[shape.key];
-      }
+      writeOptions(options);
       render();
     },
     current,
@@ -145,6 +167,7 @@ interface ConversionOptionElements {
   monochromeThresholdValue: HTMLOutputElement;
   pathPrecision: HTMLInputElement;
   pathPrecisionValue: HTMLOutputElement;
+  preset: HTMLSelectElement;
   preparedDimensions: HTMLOutputElement;
   rasterFilter: HTMLSelectElement;
   rasterDetail: HTMLSelectElement;
@@ -166,6 +189,7 @@ function readElements(): ConversionOptionElements {
     monochromeThresholdValue: requireElement("#monochrome-threshold-value", HTMLOutputElement),
     pathPrecision: requireElement("#path-precision", HTMLInputElement),
     pathPrecisionValue: requireElement("#path-precision-value", HTMLOutputElement),
+    preset: requireElement("#conversion-preset", HTMLSelectElement),
     preparedDimensions: requireElement("#prepared-raster-dimensions", HTMLOutputElement),
     rasterFilter: requireElement("#raster-filter", HTMLSelectElement),
     rasterDetail: requireElement("#raster-detail", HTMLSelectElement),

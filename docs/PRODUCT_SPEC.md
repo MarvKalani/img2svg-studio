@@ -21,8 +21,8 @@ Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
 - Bildverarbeitung und Bilddaten bleiben im Browser.
 - Die App verwendet lokale Fonts und verzichtet auf Telemetrie und Tracker.
 - KI-Modellzugriffe beginnen nach sichtbarer Nutzeraktion.
-- Das gebündelte Logo-Demo verwendet denselben Decoder und setzt nach erfolgreichem Laden ein
-  vermessenes 576-Pixel-Profil; selbst gewählte oder geteilte Dateien verändern Einstellungen nicht.
+- Das gebündelte Logo-Demo verwendet denselben Decoder, behält die Originalgröße und aktiviert das
+  Logo-Preset; selbst gewählte oder geteilte Dateien verändern Einstellungen nicht.
 
 ## 3. Oberfläche
 
@@ -30,7 +30,7 @@ Der akzeptierte Entwurf besteht aus:
 
 - Kopfzeile und Statusanzeige.
 - linker Leiste für Bild, Zielgröße, wenige Konvertierungsparameter und KI-Manager.
-- zentraler Arbeitsfläche für Original, SVG und A/B-Überblendung.
+- zentraler Arbeitsfläche für Original, SVG und deckungsgleichen A/B-Split.
 - Parameter-Diff unter dem Vergleich.
 - Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
 

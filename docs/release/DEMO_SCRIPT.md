@@ -25,21 +25,20 @@ reproducible visual experiment.”
 
 ### 0:15–0:42 — First deterministic run
 
-**Screen:** Choose **Logo demo**, point at the automatic 842×576 target, Speckle 16 and zero-decimal
-path profile, then choose **Convert** and show the original beside the faceted SVG.
+**Screen:** Choose **Logo demo**, point at the original 1280×876 raster size, the Logo preset,
+Speckle 16 and zero-decimal paths, then choose **Convert** and show the 542-path run.
 
 **Voice:** “The image stays in this browser. A Rust and WebAssembly engine traces arbitrary
-content. Before tracing, this 1280 by 876 logo is proportionally prepared to 842 by 576 pixels.
-The measured profile keeps the defining crystal facets while reducing the result to 315 paths.”
+content. It starts at the original 1280 by 876 pixels and produces a measured 542-path result.”
 
 ### 0:42–1:15 — History and A/B evidence
 
-**Screen:** Change **Raster size** to 720 pixels and **Color precision** to 5, convert again, assign
-Run 1 to A and Run 2 to B, move the comparison slider and show the two filtered differences.
+**Screen:** Change **Raster size** to 576 pixels, convert again, assign Original to A and Run 2 to
+B, then drag the divider across the logo and show the measured 315-path optimized run.
 
-**Voice:** “Every conversion is an immutable run. I can make a second variant, assign both runs to
-A and B, compare them on the same geometry, and see exactly which parameters changed. Each download
-still contains the exact SVG bytes of its run.”
+**Voice:** “Every conversion is an immutable run. The divider keeps Original on the left and SVG
+on the right while both stay aligned under zoom and pan. Each download still contains the exact
+SVG bytes of its run.”
 
 ### 1:15–1:48 — Local AI lifecycle
 

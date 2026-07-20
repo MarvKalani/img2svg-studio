@@ -11,6 +11,12 @@ test("Given WebMCP is unavailable, when the studio starts, then the complete vis
 }) => {
   const javascriptErrors: Error[] = [];
   page.on("pageerror", (error) => javascriptErrors.push(error));
+  await page.addInitScript(() => {
+    Object.defineProperty(Document.prototype, "modelContext", {
+      configurable: true,
+      value: undefined,
+    });
+  });
   const response = await page.goto("/");
 
   expect(response?.headers()["origin-agent-cluster"]).toBe("?1");

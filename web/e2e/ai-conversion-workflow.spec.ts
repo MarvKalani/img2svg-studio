@@ -10,7 +10,9 @@ test("Given an applied AI mask, when original and derived inputs are converted a
   test.setTimeout(240_000);
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
-  const originalPreviewUrl = await page.getByTestId("workspace-raster-preview").getAttribute("src");
+  const rasterPreview = page.getByTestId("workspace-raster-preview");
+  await expect(rasterPreview).toHaveAttribute("src", /^blob:/u);
+  const originalPreviewUrl = await rasterPreview.getAttribute("src");
   const convert = page.getByRole("button", { name: "Konvertieren" });
 
   await convert.click();
@@ -57,10 +59,7 @@ test("Given an applied AI mask, when original and derived inputs are converted a
     "true",
   );
   await expect(page.getByText("portrait.png", { exact: true })).toBeVisible();
-  await expect(page.getByTestId("workspace-raster-preview")).toHaveAttribute(
-    "src",
-    originalPreviewUrl ?? "",
-  );
+  await expect(rasterPreview).toHaveAttribute("src", originalPreviewUrl ?? "");
 
   await convert.click();
   const run3 = page.locator('[data-run-id="3"]');

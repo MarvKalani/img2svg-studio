@@ -126,9 +126,7 @@
             <h2>SVG-Ausgabe</h2>
             <label>
               <span>Preset</span>
-              <select aria-label="Preset">
-                <option>Logo</option>
-              </select>
+              <select id="conversion-preset" aria-label="Preset"></select>
             </label>
             <label>
               <span>SVG-Skalierung</span>
@@ -355,28 +353,45 @@
                   data-testid="compare-canvas"
                   aria-label="Synchronisierter A/B-Bildausschnitt"
                 >
-                  <div
-                    id="compare-layer-a"
-                    class="compare-layer"
-                    data-testid="compare-layer-a"
-                  ></div>
-                  <div
-                    id="compare-layer-b"
-                    class="compare-layer"
-                    data-testid="compare-layer-b"
-                  ></div>
+                  <div id="compare-layer-a" class="compare-layer" data-testid="compare-layer-a">
+                    <div
+                      id="compare-content-a"
+                      class="compare-content"
+                      data-testid="compare-content-a"
+                    ></div>
+                  </div>
+                  <div id="compare-layer-b" class="compare-layer" data-testid="compare-layer-b">
+                    <div
+                      id="compare-content-b"
+                      class="compare-content"
+                      data-testid="compare-content-b"
+                    ></div>
+                  </div>
+                  <button
+                    id="compare-split-divider"
+                    class="compare-split-divider"
+                    type="button"
+                    role="separator"
+                    aria-label="A/B-Trenner verschieben"
+                    aria-orientation="vertical"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="50"
+                  >
+                    <span aria-hidden="true">↔</span>
+                  </button>
                 </div>
                 <label class="compare-slider">
-                  <span>Überblendung</span>
+                  <span>Trennposition</span>
                   <input
                     id="compare-slider"
                     type="range"
                     min="0"
                     max="100"
                     value="50"
-                    aria-label="Anteil Variante B"
+                    aria-label="Trennposition zwischen A und B"
                   />
-                  <output id="compare-slider-value" for="compare-slider">50 % B</output>
+                  <output id="compare-slider-value" for="compare-slider">50 % A · 50 % B</output>
                 </label>
               </div>
             </div>

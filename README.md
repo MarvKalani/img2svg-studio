@@ -66,8 +66,9 @@ npm --prefix web run preview -- --host 127.0.0.1 --port 4173
 ```
 
 Open `http://127.0.0.1:4173` and choose **Logo-Demo laden** for the bundled faceted logo and its
-measured 576-pixel polygon profile. The small files under `fixtures/shape-recognition/input/`
-remain exact engineering fixtures for individual native-shape contracts.
+original-size Logo preset. The measured 576-pixel optimization remains selectable under **Raster
+size**. The small files under `fixtures/shape-recognition/input/` remain exact engineering fixtures
+for individual native-shape contracts.
 
 On the deployed HTTPS demo, Chrome can install the Studio as an app. Installed platforms expose
 img2svg in **Share with…** for supported images; desktop Chrome can additionally associate PNG,

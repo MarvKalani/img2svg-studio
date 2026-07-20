@@ -17,7 +17,7 @@ describe("logo demo profile", () => {
         detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Color,
         monochromeThreshold: 128,
-        resize: { heightPixels: 576, kind: RasterResizeKind.TargetHeight },
+        resize: { kind: RasterResizeKind.Original },
       },
       scalePercent: 100,
       shapeDetection: {

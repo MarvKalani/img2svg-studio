@@ -18,8 +18,8 @@ test("Given an original and one SVG run, when compared and navigated, then zoom 
   await page.getByRole("button", { name: "Original als A setzen" }).click();
   await page.getByRole("button", { name: "Run 1 als B setzen" }).click();
 
-  const layerA = page.getByTestId("compare-layer-a");
-  const layerB = page.getByTestId("compare-layer-b");
+  const layerA = page.getByTestId("compare-content-a");
+  const layerB = page.getByTestId("compare-content-b");
   await expect(layerA.locator("img")).toHaveAttribute("alt", "Original circle.png");
   await expect(layerB.locator(":scope > svg")).toBeVisible();
   await page.getByRole("button", { name: "Vergrößern" }).click();
@@ -32,9 +32,9 @@ test("Given an original and one SVG run, when compared and navigated, then zoom 
   if (!bounds) {
     return;
   }
-  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+  await page.mouse.move(bounds.x + bounds.width / 4, bounds.y + bounds.height / 2);
   await page.mouse.down();
-  await page.mouse.move(bounds.x + bounds.width / 2 + 30, bounds.y + bounds.height / 2 + 20);
+  await page.mouse.move(bounds.x + bounds.width / 4 + 30, bounds.y + bounds.height / 2 + 20);
   await page.mouse.up();
 
   await expectSharedTransform(layerA, layerB, "translate(30px, 20px)");

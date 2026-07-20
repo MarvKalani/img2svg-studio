@@ -72,15 +72,14 @@ Homebrew-Installation den Rustup-Compiler für den WASM-Build mit
 Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
 
 „Logo-Demo laden“ öffnet ohne Dateidialog das mitgelieferte facettierte Logo des Projekteigentümers.
-Es läuft über denselben Decoder wie eine ausgewählte Datei und aktiviert das vermessene
-Demo-Profil: 576 Pixel Zielhöhe bei festem Seitenverhältnis, 6-Bit-Farbpräzision, 16 Pixel
-Speckle-Filter, ganzzahlige Pfadkoordinaten sowie ausschließlich die konservative
-Polygonerkennung. Das 1280 × 876-Pixel-JPEG wird dadurch vor dem Tracing auf 842 × 576 Pixel
-vorbereitet. Der Abruf bleibt auf der App-Origin.
+Es läuft über denselben Decoder wie eine ausgewählte Datei, behält seine 1280 × 876 Originalpixel
+und aktiviert „Logo / Icon“: 6-Bit-Farbpräzision, 16 Pixel Speckle-Filter, ganzzahlige
+Pfadkoordinaten und ausschließlich die konservative Polygonerkennung. Damit entstehen gemessene
+542 Pfade. Der Abruf bleibt auf der App-Origin.
 
-Das vermessene Profil erhält die sichtbaren Kristallfacetten und reduziert die Ausgabe gegenüber
-dem vorherigen Profil von 2.798 auf 315 Pfade sowie von 1.360.284 auf 389.707 Bytes. Methodik,
-Einzelachsen und Qualitätswerte stehen in
+Die weiterhin auswählbare Rastergröße „576 px Höhe“ bereitet das Logo proportional auf 842 × 576
+Pixel vor und reduziert denselben Lauf auf 315 Pfade. Methodik, Einzelachsen und Qualitätswerte
+stehen in
 [`docs/release/LOGO_OPTIMIZATION.md`](release/LOGO_OPTIMIZATION.md).
 Für eine zweite A/B-Variante eignen sich 720 Pixel Zielhöhe und 5-Bit-Farbpräzision. Die kleinen
 geometrischen Ground-Truth-Fixtures bleiben unter `fixtures/shape-recognition/input/` für exakte
@@ -187,11 +186,9 @@ den Run in den jeweiligen Vergleichsplatz. Dieselbe Quelle belegt nie beide Plä
 gesetzt sind, zeigt die gemeinsame Arbeitsfläche Rasteroriginal und SVG oder zwei SVGs
 deckungsgleich. Die Labels nennen „Original“ oder die zugeordnete Run-ID.
 
-Der Regler „Überblendung“ bestimmt den sichtbaren Anteil von B:
-
-- 0 Prozent zeigt nur A.
-- 50 Prozent zeigt beide Ebenen mit halber Deckkraft.
-- 100 Prozent zeigt nur B.
+Der cyanfarbene Trenner teilt dieselbe Bildfläche ohne Überblendung: links liegt A, rechts B. Er
+lässt sich direkt ziehen oder über den Regler „Trennposition“ bewegen. Bei 50 Prozent zeigt die
+linke Hälfte A und die rechte Hälfte B; 0 Prozent zeigt nur B, 100 Prozent nur A.
 
 Beide Ebenen verwenden eine gemeinsame normalisierte ViewBox und erhalten darin die native
 ViewBox des Runs seitenverhältnistreu. Deshalb bleiben auch unterschiedlich skalierte Runs
@@ -238,6 +235,14 @@ Rastergröße, Filter und Schwellwert werden unveränderlich im Run gespeichert,
 „Einstellungen übernehmen“ wiederhergestellt und im A/B-Parametervergleich angezeigt.
 
 ### Tracing und SVG-Ausgabe
+
+Das Preset fasst ausschließlich vorhandene, sichtbare Parameter zusammen. „Ausgewogen“ ist der
+Default, „Logo / Icon“ reduziert Farben und Koordinaten, „Illustration“ entfernt kleinere Flächen
+und rundet Koordinaten, „Foto / detailreich“ erhält mehr Farbinformation und glättet das
+Eingaberaster, „Schwarzweiß /
+Laser“ erzeugt eine binäre Vorlage. Eine manuelle Abweichung wird sichtbar als
+„Benutzerdefiniert“ markiert. Alle Presets starten mit Original-Rastergröße und 100 Prozent
+SVG-Skalierung.
 
 Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:

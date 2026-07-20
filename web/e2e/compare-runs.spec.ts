@@ -6,7 +6,7 @@ const circleFixturePath = resolve(
   "../../fixtures/shape-recognition/input/circle.png",
 );
 
-test("Given two runs, when assigned by keyboard, then 0, 50, and 100 percent align and blend A with B", async ({
+test("Given two runs, when assigned by keyboard, then the movable divider reveals A left and B right", async ({
   page,
 }) => {
   await page.goto("/");
@@ -28,41 +28,83 @@ test("Given two runs, when assigned by keyboard, then 0, 50, and 100 percent ali
   await expect(assignB).toBeFocused();
   const layerA = page.getByTestId("compare-layer-a");
   const layerB = page.getByTestId("compare-layer-b");
-  await expect(layerA.locator(":scope > svg")).toHaveAttribute("viewBox", "0 0 1 1");
-  await expect(layerB.locator(":scope > svg")).toHaveAttribute("viewBox", "0 0 1 1");
-  await expect(layerA.locator(":scope > svg")).toHaveAttribute(
+  const contentA = page.getByTestId("compare-content-a");
+  const contentB = page.getByTestId("compare-content-b");
+  await expect(contentA.locator(":scope > svg")).toHaveAttribute("viewBox", "0 0 256 256");
+  await expect(contentB.locator(":scope > svg")).toHaveAttribute("viewBox", "0 0 128 128");
+  await expect(contentA.locator(":scope > svg")).toHaveAttribute(
     "preserveAspectRatio",
     "xMidYMid meet",
   );
-  await expect(layerA.locator(":scope > svg")).toHaveAttribute(
+  await expect(contentA.locator(":scope > svg")).toHaveAttribute(
     "data-source-view-box",
     "0 0 256 256",
   );
-  await expect(layerB.locator(":scope > svg")).toHaveAttribute(
+  await expect(contentB.locator(":scope > svg")).toHaveAttribute(
     "data-source-view-box",
     "0 0 128 128",
   );
   expect(await layerA.boundingBox()).toEqual(await layerB.boundingBox());
-  const tracedShape = layerA.locator("path");
+  const tracedShape = contentA.locator("path");
   const shapeBounds = await tracedShape.boundingBox();
   expect(shapeBounds).not.toBeNull();
   expect(Math.abs((shapeBounds?.width ?? 0) - (shapeBounds?.height ?? 0))).toBeLessThan(1);
 
-  const slider = page.getByRole("slider", { name: "Anteil Variante B" });
-  await expectBlend(slider, layerA, layerB, "0", "1", "0");
-  await expectBlend(slider, layerA, layerB, "50", "0.5", "0.5");
-  await expectBlend(slider, layerA, layerB, "100", "0", "1");
+  const slider = page.getByRole("slider", { name: "Trennposition zwischen A und B" });
+  await expectSplit(
+    slider,
+    layerA,
+    layerB,
+    "0",
+    "inset(0px 100% 0px 0px)",
+    "inset(0px 0px 0px 0%)",
+  );
+  await expectSplit(
+    slider,
+    layerA,
+    layerB,
+    "50",
+    "inset(0px 50% 0px 0px)",
+    "inset(0px 0px 0px 50%)",
+  );
+  await expectSplit(
+    slider,
+    layerA,
+    layerB,
+    "100",
+    "inset(0px 0% 0px 0px)",
+    "inset(0px 0px 0px 100%)",
+  );
+
+  const canvas = page.getByTestId("compare-canvas");
+  await slider.fill("50");
+  const bounds = await canvas.boundingBox();
+  const divider = page.getByRole("separator", { name: "A/B-Trenner verschieben" });
+  const dividerBounds = await divider.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(dividerBounds).not.toBeNull();
+  if (!bounds || !dividerBounds) {
+    return;
+  }
+  await divider.hover();
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width * 0.75, bounds.y + bounds.height / 2);
+  await page.mouse.up();
+  await expect(slider).toHaveValue("75");
+  await expect(divider).toHaveAttribute("aria-valuenow", "75");
+  await expect(layerA).toHaveCSS("clip-path", "inset(0px 25% 0px 0px)");
+  await expect(layerB).toHaveCSS("clip-path", "inset(0px 0px 0px 75%)");
 });
 
-async function expectBlend(
+async function expectSplit(
   slider: import("@playwright/test").Locator,
   layerA: import("@playwright/test").Locator,
   layerB: import("@playwright/test").Locator,
   percentage: string,
-  opacityA: string,
-  opacityB: string,
+  clipA: string,
+  clipB: string,
 ): Promise<void> {
   await slider.fill(percentage);
-  await expect(layerA).toHaveCSS("opacity", opacityA);
-  await expect(layerB).toHaveCSS("opacity", opacityB);
+  await expect(layerA).toHaveCSS("clip-path", clipA);
+  await expect(layerB).toHaveCSS("clip-path", clipB);
 }

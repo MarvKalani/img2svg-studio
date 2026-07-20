@@ -116,10 +116,9 @@ and use the same shared-controller pattern to extend agent-assisted batch experi
 No account or paid access is required.
 
 1. Open `https://studio.img2.download` in Google Chrome 150 or newer.
-2. Choose **Logo-Demo laden** to open the bundled faceted owner logo and its measured local profile.
-3. Choose **Convert**; the 1280×876 source is prepared to 842×576 and a strict facet becomes a
-   native polygon while ambiguous facets remain paths.
-4. Change **Raster size** to 720 px and **Color precision** to 5, then convert again.
+2. Choose **Logo-Demo laden** to open the bundled faceted owner logo at its original 1280×876 size.
+3. Choose **Convert**; the Logo preset produces a measured 542-path original-size result.
+4. Change **Raster size** to 576 px, then convert again for the measured 315-path optimization.
 5. Assign Run 1 to A and Run 2 to B, then inspect the two differing parameters.
 6. Download SVG B.
 7. Optional: load MODNet or SlimSAM from the AI Manager. This intentionally downloads a pinned

@@ -258,11 +258,11 @@ Store, SVG und Bildzustand bleiben unverändert.
 
 `compareSelection` hält je eine typisierte Original- oder Run-Quelle für A und B. Die Zuweisung
 derselben Quelle in den anderen Platz entfernt sie aus dem bisherigen Platz. `compareController`
-rendert erst bei zwei vollständigen Plätzen. Jeder native SVG-Snapshot liegt in einer äußeren
-ViewBox `0 0 1 1` mit `xMidYMid meet`; das Raster verwendet denselben seitenverhältnistreuen
-Canvas. Der 0–100-Regler setzt komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
-`viewportController` projiziert einen reinen Zustand aus Skalierung und Pixelversatz identisch auf
-beide Layer. Tasten, Mausrad, Pointer-Drag, Zwei-Pointer-Pinch und Pfeiltasten verwenden denselben
+rendert erst bei zwei vollständigen Plätzen. Beide Quellen verwenden denselben proportionalen
+Canvas. Zwei feste Clip-Fenster zeigen A links und B rechts; der direkt ziehbare Trenner und der
+Tastatur-Regler verändern dieselbe Prozentposition. `viewportController` transformiert nur die
+Inhalte hinter den Clip-Fenstern und projiziert Skalierung und Pixelversatz identisch auf beide
+Layer. Tasten, Mausrad, Pointer-Drag, Zwei-Pointer-Pinch und Pfeiltasten verwenden denselben
 Zoom-/Pan-Kern; jede neue A/B-Kombination startet bei 100 Prozent und zentrierter Position.
 
 `compareConversionSettings` projiziert beide Options-Snapshots über eine typisierte, stabile

@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./compare-split.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
 import { browserModelManifest } from "./ai/model-manifest";

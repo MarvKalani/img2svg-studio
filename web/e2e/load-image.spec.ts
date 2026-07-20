@@ -8,7 +8,7 @@ const circleFixturePath = resolve(
 );
 const brokenFixturePath = resolve(import.meta.dirname, "../../fixtures/image-loading/broken.png");
 
-test("Given a fresh Studio, when the bundled logo demo is chosen, then it enters the local workflow with its measured profile", async ({
+test("Given a fresh Studio, when the bundled logo demo is chosen, then it keeps original raster size and applies the logo preset", async ({
   page,
 }) => {
   const crossOriginRequests: string[] = [];
@@ -28,7 +28,9 @@ test("Given a fresh Studio, when the bundled logo demo is chosen, then it enters
       .getByTestId("image-dropzone")
       .getByText("1280 × 876 · JPEG · Original · V1", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("842 × 576 px");
+  await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("1280 × 876 px");
+  await expect(page.getByLabel("Preset")).toHaveValue("logo");
   await expect(page.getByLabel("Farbpräzision Wert")).toHaveText("6 Bit");
   await expect(page.getByRole("switch", { name: "Native Formen aktivieren" })).toHaveAttribute(
     "aria-checked",
@@ -38,6 +40,26 @@ test("Given a fresh Studio, when the bundled logo demo is chosen, then it enters
   await expect(page.getByRole("checkbox", { name: "Kreis erkennen" })).not.toBeChecked();
   await expect(page.getByRole("button", { name: "Konvertieren" })).toBeEnabled();
   expect(crossOriginRequests).toEqual([]);
+});
+
+test("Given a fresh Studio, when presets are inspected and adjusted, then useful profiles and a custom state are visible", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const preset = page.getByLabel("Preset");
+  await expect(preset.locator("option")).toHaveCount(6);
+  await expect(preset).toHaveValue("balanced");
+  await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
+
+  await preset.selectOption("photo");
+  const colorPrecision = page.getByRole("slider", { name: "Farbpräzision" });
+  await expect(colorPrecision).toHaveValue("8");
+  await expect(page.getByRole("slider", { name: "Speckle-Filter" })).toHaveValue("4");
+  await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
+
+  await colorPrecision.fill("7");
+  await expect(preset).toHaveValue("custom");
 });
 
 test("Given a 256 by 256 PNG, when selected, then the same local image and dimensions are visible", async ({

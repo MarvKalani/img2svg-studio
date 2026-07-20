@@ -27,8 +27,8 @@ export function initializeViewport(): ViewportController {
 
   const render = (): void => {
     const transform = `translate(${formatPixels(viewport.offsetX)}, ${formatPixels(viewport.offsetY)}) scale(${String(viewport.scale)})`;
-    elements.layerA.style.transform = transform;
-    elements.layerB.style.transform = transform;
+    elements.contentA.style.transform = transform;
+    elements.contentB.style.transform = transform;
     elements.value.textContent = `${String(Math.round(viewport.scale * 100))}%`;
   };
 
@@ -167,8 +167,8 @@ function formatPixels(value: number): string {
 
 interface ViewportElements {
   canvas: HTMLElement;
-  layerA: HTMLElement;
-  layerB: HTMLElement;
+  contentA: HTMLElement;
+  contentB: HTMLElement;
   value: HTMLElement;
   zoomIn: HTMLButtonElement;
   zoomOut: HTMLButtonElement;
@@ -177,8 +177,8 @@ interface ViewportElements {
 function readElements(): ViewportElements {
   return {
     canvas: requireElement("#compare-canvas", HTMLElement),
-    layerA: requireElement("#compare-layer-a", HTMLElement),
-    layerB: requireElement("#compare-layer-b", HTMLElement),
+    contentA: requireElement("#compare-content-a", HTMLElement),
+    contentB: requireElement("#compare-content-b", HTMLElement),
     value: requireElement("#zoom-value", HTMLElement),
     zoomIn: requireElement("#zoom-in", HTMLButtonElement),
     zoomOut: requireElement("#zoom-out", HTMLButtonElement),

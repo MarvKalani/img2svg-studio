@@ -36,11 +36,11 @@ test("Given a fresh public demo, when the example is converted, compared, and ex
 
   await page.getByRole("button", { name: "Logo-Demo laden" }).click();
   await expect(page.getByText("marv-kalani-logo.jpg", { exact: true })).toBeVisible();
-  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("842 × 576 px");
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("1280 × 876 px");
   const convertButton = page.getByRole("button", { name: "Konvertieren" });
   await convertButton.click();
-  await expect(page.getByTestId("svg-output").locator("path")).toHaveCount(315);
-  await expect(page.getByTestId("history-card")).toContainText("315 Pfade");
+  await expect(page.getByTestId("svg-output").locator("path")).toHaveCount(542);
+  await expect(page.getByTestId("history-card")).toContainText("542 Pfade");
 
   await page.getByRole("slider", { name: "Farbpräzision", exact: true }).fill("5");
   await page.getByLabel("Rastergröße vor Tracing").selectOption("height-720");
