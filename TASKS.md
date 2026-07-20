@@ -6,8 +6,8 @@ ausdrücklich genannte Abhängigkeit besitzt. Erledigte Tasks werden im zugehör
 Abschluss-Commit vollständig aus dieser Datei gelöscht; Commit, Tests und Handbuch bilden
 danach den dauerhaften Nachweis.
 
-`RELEASE-01` und die Eigentümeranteile aus `RELEASE-05` dürfen parallel erledigt werden,
-sobald die nötigen Angaben vorliegen; sie halten die autonome Implementierungsqueue nicht an.
+Die Eigentümeranteile aus `RELEASE-05` dürfen parallel erledigt werden, sobald die nötigen
+Angaben vorliegen; sie halten die autonome Implementierungsqueue nicht an.
 
 ## Verbindlicher Taskablauf
 
@@ -190,27 +190,6 @@ einmaliger Anmeldung, das dadurch ausgelöste Cloudflare-Deployment und dieselbe
 
 **Dokumentation:** Vollständiges Vorgänger-Tool-Inventar, lokale Dateiübergabe, Hosting-Header
 und Agentenablauf.
-
-## RELEASE-01 — Devpost-Teilnahme, Lizenz und GitHub-Zugriff festlegen
-
-**Stand 20. Juli 2026:** Die Devpost-Teilnahme ist bestätigt. Offen bleiben öffentliches oder
-privates Repository, GitHub-Zugriff und Push. Die Projektlizenz ist BSL 1.1 mit einem Additional
-Use Grant unter 100.000 USD Jahresumsatz und Apache-2.0 als Change License ab spätestens
-20. Juli 2030.
-
-```gherkin
-Given ein Judge öffnet das eingereichte Repository ohne Entwicklerzugang
-When Lizenz, Hauptbranch und dokumentierter Setup-Pfad geprüft werden
-Then ist der erlaubte Nutzungsumfang eindeutig und der zu bewertende Commit erreichbar
-And das Projekt ist dem richtigen Devpost-Event beigetreten
-```
-
-**Abnahmenachweis:** `LICENSE`, Git-Remote, erfolgreicher Push und unangemeldeter Browsercheck;
-bei privatem Repository bestätigter Zugriff für beide in `docs/SUBMISSION.md` genannten
-Judge-Adressen. Externe Aktionen werden als Nachweis dokumentiert; Repository-Änderungen
-erhalten den zugehörigen Commit.
-
-**Dokumentation:** README, Drittanbieterinventar, UI-Footer und Submission-Checkliste.
 
 ## RELEASE-03 — Öffentliche statische Demo reproduzierbar deployen
 

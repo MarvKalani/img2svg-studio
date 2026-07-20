@@ -21,7 +21,7 @@ Official references:
 | Track | Developer Tools |
 | Devpost participation | Registered on 20 July 2026 |
 | Demo | `https://studio.img2.download` — publication pending |
-| Repository | `https://github.com/MarvKalani/img2svg-studio` — publication pending |
+| Repository | [github.com/MarvKalani/img2svg-studio](https://github.com/MarvKalani/img2svg-studio) — public |
 | Video | owner must provide public YouTube URL |
 | Codex `/feedback` Session ID | owner must generate from this primary build task |
 | License | [Business Source License 1.1](../LICENSE.md), changing to Apache-2.0 by 20 July 2030 |
@@ -177,7 +177,7 @@ Use the [timed English demo script](release/DEMO_SCRIPT.md) for the recording an
 - [x] Join the OpenAI Build Week event on Devpost and confirm eligibility.
 - [ ] Confirm the Developer Tools track.
 - [x] Adopt BSL 1.1 with an Apache-2.0 change license and publish the Symbiosis Pact.
-- [ ] Create or approve the GitHub repository and push `main`.
+- [x] Create the public GitHub repository and push `main`.
 - [ ] Connect the repository to Cloudflare Pages and attach `studio.img2.download`.
 - [ ] Generate the `/feedback` Session ID from this primary Codex build task.
 - [ ] Record the English demo, keep it below three minutes and publish it publicly on YouTube.
