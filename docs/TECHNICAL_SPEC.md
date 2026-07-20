@@ -234,8 +234,11 @@ ein kurzlebiges Canvas und wendet danach optional eine deterministische 3×3-Gau
 milde Unscharfmaske sowie den gewählten RGB-Filter an. Der Alphakanal bleibt
 unverändert. Erst dieser Buffer wird ohne Kopie an einen dedizierten Worker übertragen. Der Worker
 initialisiert das generierte WASM, ruft den Rust-Core auf und wird nach genau einem Ergebnis
-beendet. Der Controller validiert das
-zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die TypeScript-Domäne ergänzt
+beendet. Der Conversion-Controller entprellt Optionsänderungen um 120 Millisekunden, serialisiert
+gleichzeitige Anforderungen und verwirft Ergebnisse älterer Revisionsstände. Er validiert das
+zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die Vorschau enthält bereits den
+vollständigen typisierten Run-Kandidaten, bleibt jedoch flüchtig. Erst die explizite Übernahme
+reicht diesen Kandidaten an den History-Store weiter. Die TypeScript-Domäne ergänzt
 die Enginecodes um `WorkerFailed` und `InvalidSvg`; `ConversionFailure` ordnet jedem Code genau
 eine verständliche UI-Meldung zu.
 
@@ -253,7 +256,7 @@ wird ausschließlich aus dem Namen des aktuell geladenen Bildes abgeleitet.
 Die UI verwendet kleine Feature-Module und zentrale Application Services:
 
 - `imageService`: Laden, Dekodieren, Transformation und Größenänderung.
-- `conversionService`: Worker, WASM-Lebenszyklus und Abbruch.
+- `conversionService`: Rastervorbereitung, Worker und WASM-Lebenszyklus.
 - `settingsStore`: validierte Einstellungen.
 - `historyStore`: unveränderliche Runs und A/B-Auswahl.
 - `exportService`: bytegenauer SVG-Download.

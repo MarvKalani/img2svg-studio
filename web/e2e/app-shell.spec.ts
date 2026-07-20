@@ -51,7 +51,7 @@ test("Given image and SVG content, when the view tabs are used, then each reques
   );
   await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
   await expect(page.getByRole("button", { name: "SVG", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",

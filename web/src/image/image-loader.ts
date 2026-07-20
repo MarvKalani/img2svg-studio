@@ -115,7 +115,6 @@ export function initializeImageLoader(
 }
 
 interface ImageLoaderElements {
-  convertButton: HTMLButtonElement;
   downloadButton: HTMLButtonElement;
   dropzone: HTMLElement;
   error: HTMLParagraphElement;
@@ -135,7 +134,6 @@ interface ImageLoaderElements {
 
 function readImageLoaderElements(): ImageLoaderElements {
   return {
-    convertButton: requireElement("#convert-button", HTMLButtonElement),
     downloadButton: requireElement("#download-svg", HTMLButtonElement),
     dropzone: requireElement("[data-testid='image-dropzone']", HTMLElement),
     error: requireElement("#image-error", HTMLParagraphElement),
@@ -176,7 +174,6 @@ function showLoadedImage(elements: ImageLoaderElements, loadedImage: LoadedImage
   elements.workspaceImage.src = image.previewUrl;
   elements.workspaceImage.alt = `Geladenes Rasterbild ${image.fileName}`;
   elements.workspaceImage.hidden = false;
-  elements.convertButton.disabled = false;
   elements.statusImage.textContent = `${dimensions} · ${format}`;
 }
 

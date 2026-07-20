@@ -45,6 +45,7 @@ Deutsch-/Englisch-Auswahl wie das Studio.
 
 Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste veröffentlichte
 Revision vom 20. Juli 2026; weitere Revisionen desselben Tages erhöhen die zweistellige Endung.
+Die Live-Vorschau und bewusste History-Übernahme werden als Revision `260720.02` ausgeliefert.
 
 ### Sprache
 
@@ -142,13 +143,18 @@ oder Eingabetaste löst die fokussierte Aktion aus, und Pfeiltasten ändern nati
 einem Eingabefehler bleibt der zuletzt gültige Workspace bedienbar; eine gültige PNG-, JPEG-
 oder WebP-Datei kann unmittelbar erneut gewählt werden.
 
-## Konvertieren
+## Live-Vorschau und Übernahme
 
-Nach dem Laden aktiviert sich „Konvertieren“. Der Browser skaliert und filtert die Rasterpixel
-gemäß „Raster vor Tracing“ und übergibt erst dieses RGBA-Ergebnis an einen Web Worker. Dort
-erzeugt der Rust-Core über die schmale WASM-Grenze ein SVG, während die Oberfläche bedienbar
-bleibt. Das Ergebnis ersetzt die Rastervorschau in „A · Variante“; die Statuszeile bestätigt den
-Abschluss.
+Nach dem Laden erzeugt das Studio automatisch eine SVG-Vorschau. Jede Änderung an Rastergröße,
+Filtern, Preset, Tracing-Werten, Skalierung oder Formerkennung aktualisiert dieselbe Vorschau nach
+einer kurzen Entprellung. Schnelle Reglerbewegungen erzeugen dadurch keinen Verlaufsmüll;
+veraltete Berechnungen dürfen ein neueres Ergebnis nicht überschreiben.
+
+Der Browser skaliert und filtert die Rasterpixel gemäß „Raster vor Tracing“ und übergibt erst
+dieses RGBA-Ergebnis an einen Web Worker. Dort erzeugt der Rust-Core über die schmale WASM-Grenze
+ein SVG, während die Oberfläche bedienbar bleibt. „Variante übernehmen“ speichert erst das
+sichtbar geprüfte Ergebnis als unveränderlichen Run im Verlauf. Nach der Übernahme bleibt der
+Button deaktiviert, bis Bild oder Parameter wieder eine neue Vorschau erzeugen.
 
 Der Standardlauf verwendet die Originalmaße, den Farbmodus und deterministische
 `visioncortex`-Standardeinstellungen. Gleiche vorbereitete RGBA-Pixel erzeugen byteidentisches
@@ -157,21 +163,22 @@ erzeugen kein Hintergrundelement.
 
 ### SVG herunterladen
 
-Nach einer erfolgreichen Konvertierung erscheint oben rechts in „A · Variante“ die Aktion
+Nach einer erfolgreichen Vorschau erscheint oben rechts in „A · Variante“ die Aktion
 „SVG herunterladen“. Sie serialisiert genau das aktuell dargestellte SVG und speichert es mit
 dem Namen des Rasterbildes und der Endung `.svg`, beispielsweise `circle.svg`.
 
-Ein späterer Konvertierungsfehler zeigt seine verständliche Meldung direkt beim Eingabebild.
-Das letzte erfolgreiche SVG und dessen Download bleiben verfügbar; „Konvertieren“ ist danach
-erneut bedienbar.
+Ein späterer Vorschaufehler zeigt seine verständliche Meldung direkt beim Eingabebild. Das letzte
+erfolgreiche SVG und dessen Download bleiben verfügbar; nach einer weiteren Parameteränderung
+wird die Vorschau erneut berechnet.
 
 ## Grundablauf
 
 1. Bild per Drag-and-drop oder Dateiauswahl laden.
-2. Rastergröße und optionalen Filter vor dem Tracing wählen.
-3. „Konvertieren“ ausführen und das echte SVG in „A · Variante“ prüfen.
-4. Rastervorbereitung, SVG-Skalierung und Tracing-Parameter variieren.
-5. Ergebnis als SVG herunterladen und weitere Runs erzeugen.
+2. Das automatisch erzeugte SVG prüfen.
+3. Rastervorbereitung, SVG-Skalierung und Tracing-Parameter variieren und die Änderungen direkt
+   vergleichen.
+4. Ein überzeugendes Ergebnis mit „Variante übernehmen“ in den Verlauf schreiben.
+5. Ergebnis als SVG herunterladen und weitere Varianten übernehmen.
 6. Das Original und einen Run oder zwei Runs im Verlauf als A und B auswählen.
 7. Darstellung und Parameterunterschiede vergleichen.
 
@@ -180,14 +187,14 @@ wenn er im Browser getestet wurde.
 
 Die Kopfzeile schaltet die gemeinsame Arbeitsfläche gezielt zwischen SVG, der aktuellen
 verarbeiteten Rasterversion, dem unveränderten Original und dem A/B-Vergleich um. Nach dem Laden
-öffnet sich „Verarbeitet“, nach einer Konvertierung „SVG“ und bei einer vollständigen A/B-Zuweisung
+öffnet sich „Verarbeitet“, nach einer Live-Vorschau „SVG“ und bei einer vollständigen A/B-Zuweisung
 automatisch der Vergleich.
 
 ## Verlauf und A/B-Vergleich
 
 Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
-und wie jeder Run als A oder B gewählt werden. Jede erfolgreiche Konvertierung erzeugt zusätzlich
-genau einen unveränderlichen Run. Der Verlauf hält alle Runs der aktuellen Bild-Session von neu
+und wie jeder Run als A oder B gewählt werden. Jede bewusste Übernahme erzeugt genau einen
+unveränderlichen Run; reine Vorschauänderungen bleiben flüchtig. Der Verlauf hält alle Runs von neu
 nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
 - die fortlaufende Run-ID.
@@ -198,8 +205,9 @@ Das Auswählen einer Karte zeigt ihr gespeichertes SVG wieder in „A · Variant
 eingestellten Regler bleiben dabei unverändert. „Einstellungen übernehmen“ kopiert anschließend
 dessen validierte Raster-, Tracing- und SVG-Parameter in die Eingabemaske und berechnet beide
 Maßanzeigen neu. Das geladene Originalbild, der ausgewählte Run und sein angezeigtes SVG bleiben
-dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei gleichem Bild und
-gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. „Löschen“ entfernt einen
+dabei unverändert. Die wiederhergestellten Einstellungen erzeugen automatisch eine Vorschau; eine
+bewusste Übernahme erzeugt den neuen Run. Bei gleichem Bild und gleichen Einstellungen ist dessen
+SVG byteidentisch zum Ausgangs-Run. „Löschen“ entfernt einen
 nicht mehr benötigten Run und dessen SVG aus der Session. War der Run ausgewählt, zeigt die
 Arbeitsfläche anschließend das Original; gehörte er zum A/B-Vergleich, wird der Vergleich geleert.
 Beim Laden eines anderen Originalbildes beginnt eine neue leere Session-History.
@@ -466,7 +474,8 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 
 1. `get_capabilities` und `get_workspace_state` lesen.
 2. Mit `configure_conversion` Rastergröße, Filter, Schwellwert, Tracing-Werte und SVG-Skalierung
-   setzen und mit `convert_current_image` konvertieren. Die Rastergröße verwendet genau eines aus
+   setzen; die Live-Vorschau aktualisiert sich automatisch. `convert_current_image` übernimmt das
+   aktuelle Ergebnis in den Verlauf. Die Rastergröße verwendet genau eines aus
    `useOriginalRasterSize`, `rasterResizePercent` oder `rasterTargetHeightPixels`.
 3. Runs über `select_history_run` anzeigen und mit `delete_history_run` entfernen.
    `select_comparison_a` und `select_comparison_b` wählen

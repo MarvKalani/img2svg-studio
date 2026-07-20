@@ -6,15 +6,17 @@ const circleFixturePath = resolve(
   "../../fixtures/shape-recognition/input/circle.png",
 );
 
-test("Given one image, when eleven conversions run and unwanted runs are deleted, then the complete session stays user-controlled", async ({
+test("Given one image, when eleven previews are accepted and unwanted runs are deleted, then the complete session stays user-controlled", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
   const runCard = (runId: number) => page.locator(`[data-run-id="${String(runId)}"]`);
+  const speckleFilter = page.getByRole("slider", { name: "Speckle-Filter", exact: true });
 
   for (let runNumber = 1; runNumber <= 10; runNumber += 1) {
+    await speckleFilter.fill(String(runNumber - 1));
     await convertButton.click();
     await expect(runCard(runNumber)).toBeVisible();
   }

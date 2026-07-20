@@ -11,13 +11,13 @@ test("Given the Studio, when English is selected, then static and dynamic workfl
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { name: "Raster before tracing" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Choose image" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Convert" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Accept variant" })).toBeDisabled();
 
   await page.getByRole("button", { name: "Load logo demo" }).click();
-  await page.getByRole("button", { name: "Convert" }).click();
+  await page.getByRole("button", { name: "Accept variant" }).click();
   await expect(page.getByRole("button", { name: "Delete run 1" })).toBeVisible();
   await expect(page.locator("#status-variant-count")).toHaveText("1 variant");
-  await expect(page.locator("#status-image")).toContainText("Conversion complete");
+  await expect(page.locator("#status-image")).toContainText("Variant 1 accepted");
 
   await page.getByRole("button", { name: "AI Manager" }).click();
   const modnet = page.locator('[data-model-id="modnet"]');

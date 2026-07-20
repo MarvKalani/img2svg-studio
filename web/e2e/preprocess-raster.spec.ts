@@ -20,7 +20,7 @@ test("Given a raster image, when resized and filtered before conversion, then VT
 
   await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("576 × 576 px");
   await expect(page.getByLabel("Zielmaße")).toHaveText("576 × 576 px");
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   await expect(output.locator("svg")).toHaveAttribute("viewBox", "0 0 576 576");

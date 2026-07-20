@@ -11,7 +11,7 @@ test("Given two runs, when older options are restored and converted, then form a
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
   await convertButton.click();
   const originalSvg = await serializedOutput(page);
 

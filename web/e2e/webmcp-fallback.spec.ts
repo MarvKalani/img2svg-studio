@@ -23,7 +23,7 @@ test("Given WebMCP is unavailable, when the studio starts, then the complete vis
   expect(response?.headers()["permissions-policy"]).toBe("tools=(self)");
   await expect(page.locator("html")).toHaveAttribute("data-webmcp", "unsupported");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   await expect(page.getByTestId("svg-output").locator("svg")).toBeVisible();
   await expect(page.locator('[data-run-id="1"]')).toBeVisible();

@@ -19,7 +19,7 @@ test("Given the circle fixture, when all parameters change, then their values an
   await expect(page.getByLabel("Farbpräzision Wert")).toHaveText("5 Bit");
   await expect(page.getByLabel("Speckle-Filter Wert")).toHaveText("12 px");
   await expect(page.getByLabel("Zielmaße")).toHaveText("128 × 128 px");
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   await expect(page.getByTestId("svg-output").locator("svg")).toHaveAttribute(
     "viewBox",

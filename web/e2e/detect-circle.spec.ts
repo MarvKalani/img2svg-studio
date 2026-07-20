@@ -16,7 +16,7 @@ test("Given the circle fixture and only circle detection, when converted, then o
     await page.getByRole("checkbox", { name: `${type} erkennen` }).uncheck();
   }
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   const circle = output.locator("circle");

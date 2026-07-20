@@ -60,7 +60,7 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
     description:
-      "Set visible raster preprocessing, color precision, speckle filter, path precision, and SVG scale using the same Studio validation.",
+      "Set visible raster preprocessing, color precision, speckle filter, path precision, and SVG scale. The Studio automatically refreshes its live preview with the same validation.",
     execute: (input: unknown) => {
       try {
         const values = requireConfigureInput(input);
@@ -160,7 +160,8 @@ function readFilterMode(value: unknown): RasterFilterModeValue | undefined {
 function convertCurrentImageTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: true }),
-    description: "Convert the loaded image through the visible Studio workflow and create a run.",
+    description:
+      "Accept the latest visible SVG preview as an immutable History run. If needed, the Studio first refreshes the preview with the current image and parameters.",
     execute: async () => {
       const attempt = await services.convert();
       if (!attempt.ok) {

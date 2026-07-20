@@ -22,7 +22,7 @@ test("Given the complete core workflow, when operated by keyboard, then focus, v
   await expectNoAccessibilityViolations(page);
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
 
-  const convert = page.getByRole("button", { name: "Konvertieren" });
+  const convert = page.getByRole("button", { name: "Variante übernehmen" });
   await convert.focus();
   await page.keyboard.press("Enter");
   await expect(page.locator('[data-run-id="1"]')).toBeVisible();
@@ -61,7 +61,7 @@ test("Given damaged or oversized input, when selected, then a useful error keeps
     "Das Bild ist größer als 25 MB. Bitte wähle eine kleinere Datei.",
   );
   await expect(page.getByRole("button", { name: "Bild wählen" })).toBeEnabled();
-  await expect(page.getByRole("button", { name: "Konvertieren" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Variante übernehmen" })).toBeDisabled();
 });
 
 test("Given local conversion and an explicit model action, when network traffic is audited, then only pinned model artifacts leave the app origin", async ({
@@ -76,7 +76,7 @@ test("Given local conversion and an explicit model action, when network traffic 
   });
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
   expect(remoteRequests).toEqual([]);
 
   await page.getByRole("button", { name: "Hintergrund entfernen", exact: true }).click();

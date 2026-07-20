@@ -3,7 +3,7 @@ import { translateGermanText } from "./localization";
 
 describe("German to English UI translation", () => {
   test.each([
-    ["Konvertieren", "Convert"],
+    ["Variante übernehmen", "Accept variant"],
     ["  Noch kein Bild  ", "  No image yet  "],
     ["3 Varianten", "3 variants"],
     ["1 Pfad · 2 Kreise", "1 path · 2 circles"],

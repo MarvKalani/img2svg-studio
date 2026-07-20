@@ -6,7 +6,7 @@ const unknownShapeFixturePath = resolve(
   "../../fixtures/shape-recognition/input/triangle.png",
 );
 
-test("Given shape detection controls, when disabled and enabled before conversion, then the unproved contour remains the exact path fallback", async ({
+test("Given shape detection controls, when the triangle detector is enabled, then the live preview replaces the path fallback with a polygon", async ({
   page,
 }) => {
   await page.goto("/");
@@ -21,7 +21,7 @@ test("Given shape detection controls, when disabled and enabled before conversio
   ).toBe(true);
 
   await page.getByLabel("Rasterbild auswählen").setInputFiles(unknownShapeFixturePath);
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
   await convertButton.click();
   const fallbackSvg = await serializedOutput(page);
 
@@ -35,11 +35,10 @@ test("Given shape detection controls, when disabled and enabled before conversio
   await expect(page.getByRole("checkbox", { name: "Kreis erkennen" })).toBeChecked();
   await convertButton.click();
 
-  expect(await serializedOutput(page)).toBe(fallbackSvg);
-  await expect(page.getByTestId("svg-output").locator("path")).toHaveCount(1);
-  await expect(
-    page.getByTestId("svg-output").locator("circle, rect, ellipse, line, polygon"),
-  ).toHaveCount(0);
+  expect(await serializedOutput(page)).not.toBe(fallbackSvg);
+  await expect(page.getByTestId("svg-output").locator("path")).toHaveCount(0);
+  await expect(page.getByTestId("svg-output").locator("polygon")).toHaveCount(1);
+  await expect(page.getByTestId("history-card")).toHaveCount(2);
 });
 
 async function serializedOutput(page: import("@playwright/test").Page): Promise<string> {

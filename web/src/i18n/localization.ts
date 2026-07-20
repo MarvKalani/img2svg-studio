@@ -77,8 +77,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Kurven: "Curves",
   Lizenzen: "Licenses",
   Laden: "Load",
-  "Lade ein Bild und erstelle deine erste SVG-Variante.":
-    "Load an image and create your first SVG variant.",
+  "Lade ein Bild und übernimm deine erste SVG-Variante.":
+    "Load an image and accept your first SVG variant.",
   "Logo / Icon": "Logo / icon",
   "Logo-Demo laden": "Load logo demo",
   "Lokale Verarbeitung": "Local processing",
@@ -91,8 +91,10 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "Maske normal.": "Normal mask.",
   "Native Formen": "Native shapes",
   "Native Formen aktivieren": "Enable native shapes",
-  "Nach der Konvertierung erscheint hier dein SVG.": "Your SVG appears here after conversion.",
+  "Nach dem Laden erscheint hier automatisch dein SVG.":
+    "Your SVG appears here automatically after loading.",
   "Nicht geladen": "Not loaded",
+  "Im Verlauf gespeichert": "Saved to History",
   "Noch kein Bild": "No image yet",
   "Noch keine Varianten zum Vergleichen.": "No variants to compare yet.",
   "Nur Unterschiede": "Differences only",
@@ -142,8 +144,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Vergrößern: "Zoom in",
   Verkleinern: "Zoom out",
   Verlauf: "History",
-  "Varianten erscheinen nach der ersten Konvertierung.":
-    "Variants appear after the first conversion.",
+  "Varianten erscheinen nach der ersten Übernahme.": "Variants appear after the first acceptance.",
+  "Variante übernehmen": "Accept variant",
   Verwerfen: "Discard",
   Vordergrund: "Foreground",
   "Vordergrundpunkt setzen": "Set foreground point",
@@ -151,6 +153,9 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Set foreground points; switch to “Background” for corrections.",
   "Vorbereitete Rastermaße": "Prepared raster dimensions",
   "Vorschau von": "Preview of",
+  "Vorschau fehlgeschlagen": "Preview failed",
+  "Vorschau wird aktualisiert …": "Updating preview …",
+  "Vorschau wird lokal aktualisiert …": "Updating preview locally …",
   "Wähle später zwei Runs aus dem Verlauf.": "Choose two runs from History later.",
   "Wird entladen …": "Unloading …",
   Datenschutz: "Privacy",
@@ -214,6 +219,11 @@ const englishPatterns: readonly Readonly<{
   pattern(/^Run (\d+) ausgewählt$/, (runId) => `Run ${runId} selected`),
   pattern(/^Run (\d+) gelöscht$/, (runId) => `Run ${runId} deleted`),
   pattern(/^Run (\d+) löschen$/, (runId) => `Delete run ${runId}`),
+  pattern(
+    /^Variante (\d+) übernommen(.*)$/,
+    (runId, suffix) => `Variant ${runId} accepted${suffix}`,
+  ),
+  pattern(/^Vorschau bereit(.*)$/, (suffix) => `Preview ready${suffix}`),
   pattern(
     /^SlimSAM berechnet das lokale Bild-Embedding(.*)$/,
     (suffix) => `SlimSAM is computing the local image embedding${suffix}`,

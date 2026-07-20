@@ -22,7 +22,7 @@ test("Given loaded SlimSAM, when two positive and one negative point refine the 
   );
   await page.evaluate(async () => caches.delete("transformers-cache"));
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
   await expect(page.getByTestId("history-card")).toHaveCount(1);
 
   await page.getByRole("button", { name: "KI-Manager" }).click();

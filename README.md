@@ -22,6 +22,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 
 - Local PNG, JPEG and WebP input up to 25 MiB, including drag and drop.
 - Deterministic Rust/WebAssembly vectorization with path fallback.
+- Debounced live SVG preview; History changes only when a visible result is accepted.
 - Optional native SVG recognition for circles, rectangles, ellipses, lines and triangles.
 - Session history with immutable, individually removable runs, thumbnails, metrics and restorable
   settings.
@@ -59,7 +60,7 @@ npm --prefix web run test:demo
 ```
 
 That command builds the static application, starts a production preview and runs the judge path in
-real Google Chrome: direct navigation, image load, two conversions, A/B comparison, SVG export,
+real Google Chrome: direct navigation, image load, two accepted variants, A/B comparison, SVG export,
 reload, security headers, console errors and unexpected network traffic.
 
 For interactive use:

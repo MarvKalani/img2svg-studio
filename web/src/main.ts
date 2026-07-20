@@ -52,6 +52,7 @@ const historyController = initializeHistory(
 );
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
 let smartSelect: ReturnType<typeof initializeSmartSelect>;
+let conversionController: ReturnType<typeof initializeConversion>;
 const imageLoader = initializeImageLoader(
   imageStore,
   (image) => {
@@ -64,17 +65,18 @@ const imageLoader = initializeImageLoader(
     workspaceView.showProcessed();
     backgroundRemoval.imageLoaded();
     smartSelect.imageLoaded();
+    conversionController.requestPreview();
   },
   () => optionsController.apply(createLogoDemoOptions()),
 );
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
-void initializePwaIngress(imageLoader);
-const conversionController = initializeConversion(imageStore, optionsController.current, (run) => {
-  const recorded = historyController.record(run);
-  workspaceView.showSvg();
-  return recorded;
+conversionController = initializeConversion(imageStore, optionsController.current, {
+  recordRun: historyController.record,
+  showPreview: workspaceView.showSvg,
 });
+optionsController.subscribe(conversionController.requestPreview);
+void initializePwaIngress(imageLoader);
 const svgDownloadController = initializeSvgDownload();
 initializeModelManager(modelRegistry, availableModelIds);
 let webMcpRegistration: WebMcpRegistration | undefined;

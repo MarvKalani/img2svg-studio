@@ -11,7 +11,7 @@ test("Given an original and one SVG run, when compared and navigated, then zoom 
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const originalCard = page.getByTestId("history-original-card");
   await expect(originalCard).toContainText("Original");

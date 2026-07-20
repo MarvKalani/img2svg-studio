@@ -16,7 +16,7 @@ test("Given the line fixture and only line detection, when converted, then one n
     await page.getByRole("checkbox", { name: `${type} erkennen` }).uncheck();
   }
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   const line = output.locator("line");

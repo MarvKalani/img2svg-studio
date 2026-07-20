@@ -12,7 +12,7 @@ test("Given A and B differ only in color precision, when filtered and downloaded
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
   await convertButton.click();
   const svgA = await serializedOutput(page);
 

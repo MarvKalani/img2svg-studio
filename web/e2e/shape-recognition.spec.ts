@@ -6,7 +6,7 @@ const mixedFixturePath = resolve(
   "../../fixtures/shape-recognition/input/mixed.png",
 );
 
-test("Given the mixed fixture and all detectors, when converted twice, then native shapes keep manifest order and identical bytes", async ({
+test("Given the mixed fixture and all detectors, when the same effective preview is accepted twice, then native shapes keep manifest order and identical bytes", async ({
   page,
 }) => {
   const unexpectedRequests: string[] = [];
@@ -22,7 +22,7 @@ test("Given the mixed fixture and all detectors, when converted twice, then nati
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(mixedFixturePath);
   await page.getByRole("switch", { name: "Native Formen aktivieren" }).click();
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
 
   await convertButton.click();
   const output = page.getByTestId("svg-output");
@@ -54,6 +54,9 @@ test("Given the mixed fixture and all detectors, when converted twice, then nati
   await expect(output.locator("path, ellipse")).toHaveCount(0);
   const firstSvg = await serializedOutput(page);
 
+  await page.getByLabel("Zielgröße").selectOption("50");
+  await expect(output.locator("svg")).toHaveAttribute("viewBox", "0 0 128 128");
+  await page.getByLabel("Zielgröße").selectOption("100");
   await convertButton.click();
 
   expect(await serializedOutput(page)).toBe(firstSvg);

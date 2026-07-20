@@ -38,7 +38,7 @@ test("Given a fresh Studio, when the bundled logo demo is chosen, then it keeps 
   );
   await expect(page.getByRole("checkbox", { name: "Polygon erkennen" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Kreis erkennen" })).not.toBeChecked();
-  await expect(page.getByRole("button", { name: "Konvertieren" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Variante übernehmen" })).toBeEnabled();
   expect(crossOriginRequests).toEqual([]);
 });
 

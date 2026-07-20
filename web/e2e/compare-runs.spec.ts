@@ -11,7 +11,7 @@ test("Given two runs, when assigned by keyboard, then the movable divider reveal
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
-  const convertButton = page.getByRole("button", { name: "Konvertieren" });
+  const convertButton = page.getByRole("button", { name: "Variante übernehmen" });
   await convertButton.click();
   await page.getByLabel("Zielgröße").selectOption("50");
   await convertButton.click();

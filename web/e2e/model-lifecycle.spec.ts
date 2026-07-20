@@ -9,7 +9,12 @@ test("Given an active model download, when cancelled and retried, then every ope
   test.setTimeout(180_000);
   await page.goto("/");
   await page.evaluate(async () => caches.delete("transformers-cache"));
+  await page.getByRole("button", { name: "KI-Manager" }).click();
   const card = page.locator("[data-model-id='slimsam']");
+  test.skip(
+    (await card.count()) === 0,
+    "SlimSAM lifecycle requires a real WebGPU adapter with shader-f16.",
+  );
 
   await card.getByRole("button", { name: "Laden: SlimSAM 77 Uniform" }).click();
   await expect(card).toHaveAttribute("data-model-state", "downloading");
@@ -33,6 +38,7 @@ test("Given an offline MODNet load, when connectivity returns, then retry runs i
   await page.goto("/");
   await page.evaluate(async () => caches.delete("transformers-cache"));
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
+  await page.getByRole("button", { name: "KI-Manager" }).click();
   await page.route("https://huggingface.co/**", (route) => route.abort("internetdisconnected"));
 
   const card = page.locator("[data-model-id='modnet']");

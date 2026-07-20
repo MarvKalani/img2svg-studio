@@ -16,7 +16,7 @@ test("Given the triangle fixture and only polygon detection, when converted, the
     await page.getByRole("checkbox", { name: `${type} erkennen` }).uncheck();
   }
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   const polygon = output.locator("polygon");

@@ -16,7 +16,7 @@ test("Given the ellipse fixture with circle and ellipse detection, when converte
     await page.getByRole("checkbox", { name: `${type} erkennen` }).uncheck();
   }
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   const ellipse = output.locator("ellipse");

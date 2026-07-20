@@ -16,7 +16,7 @@ test("Given the rectangle fixture and only rectangle detection, when converted, 
     await page.getByRole("checkbox", { name: `${type} erkennen` }).uncheck();
   }
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const output = page.getByTestId("svg-output");
   const rectangle = output.locator("rect");

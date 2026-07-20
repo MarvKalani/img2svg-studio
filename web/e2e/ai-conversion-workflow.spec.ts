@@ -13,7 +13,7 @@ test("Given an applied AI mask, when original and derived inputs are converted a
   const rasterPreview = page.getByTestId("workspace-raster-preview");
   await expect(rasterPreview).toHaveAttribute("src", /^blob:/u);
   const originalPreviewUrl = await rasterPreview.getAttribute("src");
-  const convert = page.getByRole("button", { name: "Konvertieren" });
+  const convert = page.getByRole("button", { name: "Variante übernehmen" });
 
   await convert.click();
   const originalSvg = await serializedOutput(page);

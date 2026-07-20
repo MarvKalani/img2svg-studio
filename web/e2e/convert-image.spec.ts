@@ -6,18 +6,18 @@ const circleFixturePath = resolve(
   "../../fixtures/shape-recognition/input/circle.png",
 );
 
-test("Given the loaded circle fixture, when converted, then a deterministic transparent SVG is rendered", async ({
+test("Given the loaded circle fixture, when its live preview is accepted, then a deterministic transparent SVG is recorded", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
 
-  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
   const svgOutput = page.getByTestId("svg-output");
   await expect(svgOutput.locator("svg")).toHaveAttribute("viewBox", "0 0 256 256");
   await expect(svgOutput.locator("path").first()).toBeVisible();
   await expect(page.getByRole("status", { name: "Anwendungsstatus" })).toContainText(
-    "Konvertierung abgeschlossen",
+    "Variante 1 übernommen",
   );
 });

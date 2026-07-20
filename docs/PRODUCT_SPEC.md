@@ -93,9 +93,10 @@ darf keine Kontur doppelt ausgeben.
 - Laufzeit, Dateigröße und Pfad-/Formanzahlen.
 - Transparenzstatus und nicht fatale Warnungen.
 
-Jede erfolgreiche Konvertierung erzeugt einen unveränderlichen Run mit stabiler ID und
-Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und alle erzeugten Runs
-des aktuellen Bildes im Arbeitsspeicher. Einzelne Runs können gezielt gelöscht werden.
+Bild- und Parameteränderungen erzeugen nach kurzer Entprellung automatisch eine flüchtige
+SVG-Vorschau. Nur „Variante übernehmen“ erzeugt daraus einen unveränderlichen Run mit stabiler ID
+und Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und alle übernommenen
+Runs des aktuellen Bildes im Arbeitsspeicher. Einzelne Runs können gezielt gelöscht werden.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder
@@ -158,7 +159,7 @@ typisierte Werkzeuge für den sichtbaren Produktablauf:
 - `get_workspace_state`: Einstellungen, aktuellen Run, History, A/B-Auswahl und Modellzustände
   lesen.
 - `configure_conversion`: dieselben drei Parameter mit denselben Validatoren setzen.
-- `convert_current_image`: den normalen sichtbaren Conversion-Service ausführen.
+- `convert_current_image`: die aktuelle Live-Vorschau als sichtbaren History-Run übernehmen.
 - `select_history_run`: einen Run sichtbar auswählen; `select_comparison_a` und
   `select_comparison_b`: Original oder Run sichtbar vergleichen.
 - `delete_history_run`: einen Run aus der aktuellen Browser-Session entfernen.

@@ -33,6 +33,7 @@ export interface ConversionOptionsController {
   apply(options: ConversionOptions): void;
   current(): ConversionOptions;
   showSourceDimensions(image: DecodedImage): void;
+  subscribe(listener: () => void): () => void;
 }
 
 export function initializeConversionOptions(): ConversionOptionsController {
@@ -47,6 +48,7 @@ export function initializeConversionOptions(): ConversionOptionsController {
     customPresetOption,
   );
   const shapeTypeInputs = createShapeTypeInputs(elements.shapeTypeOptions);
+  const listeners = new Set<() => void>();
   let sourceDimensions: { heightPixels: number; widthPixels: number } | undefined;
 
   const current = (): ConversionOptions =>
@@ -94,25 +96,32 @@ export function initializeConversionOptions(): ConversionOptionsController {
     }
   };
 
-  elements.colorPrecision.addEventListener("input", render);
-  elements.filterSpeckle.addEventListener("input", render);
-  elements.pathPrecision.addEventListener("input", render);
-  elements.monochromeThreshold.addEventListener("input", render);
-  elements.rasterFilter.addEventListener("change", render);
-  elements.rasterDetail.addEventListener("change", render);
-  elements.rasterResize.addEventListener("change", render);
-  elements.scalePercent.addEventListener("change", render);
+  const renderChangedOptions = (): void => {
+    render();
+    for (const listener of listeners) {
+      listener();
+    }
+  };
+
+  elements.colorPrecision.addEventListener("input", renderChangedOptions);
+  elements.filterSpeckle.addEventListener("input", renderChangedOptions);
+  elements.pathPrecision.addEventListener("input", renderChangedOptions);
+  elements.monochromeThreshold.addEventListener("input", renderChangedOptions);
+  elements.rasterFilter.addEventListener("change", renderChangedOptions);
+  elements.rasterDetail.addEventListener("change", renderChangedOptions);
+  elements.rasterResize.addEventListener("change", renderChangedOptions);
+  elements.scalePercent.addEventListener("change", renderChangedOptions);
   elements.shapeDetection.addEventListener("click", () => {
     const enabled = elements.shapeDetection.getAttribute("aria-checked") === "true";
     elements.shapeDetection.setAttribute("aria-checked", String(!enabled));
-    render();
+    renderChangedOptions();
   });
   for (const input of shapeTypeInputs.values()) {
-    input.addEventListener("change", render);
+    input.addEventListener("change", renderChangedOptions);
   }
   elements.preset.addEventListener("change", () => {
     writeOptions(readConversionPreset(elements.preset.value).options);
-    render();
+    renderChangedOptions();
   });
   elements.colorPrecision.value = String(defaultConversionOptions.colorPrecision);
   elements.filterSpeckle.value = String(defaultConversionOptions.filterSpeckle);
@@ -147,12 +156,16 @@ export function initializeConversionOptions(): ConversionOptionsController {
   return {
     apply: (options) => {
       writeOptions(options);
-      render();
+      renderChangedOptions();
     },
     current,
     showSourceDimensions: (image) => {
       sourceDimensions = image;
       render();
+    },
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
     },
   };
 }

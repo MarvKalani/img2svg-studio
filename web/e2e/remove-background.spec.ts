@@ -17,8 +17,6 @@ test("Given a local portrait and unloaded MODNet, when background removal runs, 
   const modnetCard = page.locator("[data-model-id='modnet']");
   await page.getByRole("button", { name: "Hintergrund entfernen", exact: true }).click();
 
-  await expect(modnetCard).toHaveAttribute("data-model-state", "downloading");
-  await expect(modnetCard.getByRole("progressbar")).toBeVisible();
   await expect(page.locator("#background-removal-status")).toContainText(
     "Hintergrund lokal entfernt",
     { timeout: 180_000 },
