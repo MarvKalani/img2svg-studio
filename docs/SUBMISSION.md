@@ -20,7 +20,7 @@ Official references:
 | Tagline | A local-first raster-to-SVG lab that turns tuning into reproducible evidence. |
 | Track | Developer Tools |
 | Devpost participation | Registered on 20 July 2026 |
-| Demo | `https://studio.img2.download` — publication pending |
+| Demo | [studio.img2.download](https://studio.img2.download) — live |
 | Repository | [github.com/MarvKalani/img2svg-studio](https://github.com/MarvKalani/img2svg-studio) — public |
 | Video | owner must provide public YouTube URL |
 | Codex `/feedback` Session ID | owner must generate from this primary build task |
@@ -56,7 +56,7 @@ refines a mask from positive and negative points. Models download only after an 
 their files are checked by size and SHA-256, and they can be cancelled, retried and unloaded. An
 applied AI result becomes a versioned conversion input while the original remains restorable.
 
-Chrome's WebMCP imperative API exposes thirteen narrow tools for workspace inspection, parameter
+Chrome's WebMCP imperative API exposes fourteen narrow tools for workspace inspection, parameter
 changes, conversion, history, A/B selection, downloads and model actions. Those tools call the same
 typed controllers as the visible UI, so agent actions remain visible and manual operation still
 works when WebMCP is unavailable.
@@ -168,7 +168,7 @@ for an existing-project disclosure.
 - [x] Third-party code and model inventory exists.
 - [x] Public-repository preflight finds no tracked credentials, local paths or build caches.
 - [x] Direct manual Chrome acceptance is recorded for every completed product slice.
-- [ ] Public demo passes `IMG2SVG_DEMO_BASE_URL=https://studio.img2.download npm --prefix web run test:demo`.
+- [x] Public demo passes `IMG2SVG_DEMO_BASE_URL=https://studio.img2.download npm --prefix web run test:demo`.
 
 ### Owner actions
 
@@ -178,7 +178,7 @@ Use the [timed English demo script](release/DEMO_SCRIPT.md) for the recording an
 - [ ] Confirm the Developer Tools track.
 - [x] Adopt BSL 1.1 with an Apache-2.0 change license and publish the Symbiosis Pact.
 - [x] Create the public GitHub repository and push `main`.
-- [ ] Connect the repository to Cloudflare Pages and attach `studio.img2.download`.
+- [x] Connect the repository to Cloudflare Pages and attach `studio.img2.download`.
 - [ ] Generate the `/feedback` Session ID from this primary Codex build task.
 - [ ] Record the English demo, keep it below three minutes and publish it publicly on YouTube.
 - [ ] Paste the final links into Devpost and submit before the deadline.

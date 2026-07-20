@@ -95,5 +95,5 @@ The product shots passed in Chrome 150 before recording:
 - the WebMCP inventory and state-changing tools were operated in the visible Studio; and
 - the Chrome warning and error log stayed empty.
 
-The final take still requires the public deployment URL, spoken recording, runtime measurement and
-signed-out YouTube check.
+The final take still requires the spoken recording, runtime measurement and signed-out YouTube
+check.

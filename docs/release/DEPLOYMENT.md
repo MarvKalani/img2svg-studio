@@ -2,11 +2,12 @@
 
 Target: `https://studio.img2.download`
 
-Status on 19 July 2026: the production build and local preview acceptance pass. Publication is
-waiting for the GitHub repository and Cloudflare zone access.
+Status on 20 July 2026: the production build is live through Cloudflare Pages. The custom domain,
+public acceptance test and direct Chrome 150 review pass.
 
-The local `origin` is prepared for `https://github.com/MarvKalani/img2svg-studio.git`; the target
-does not exist publicly yet and no push is claimed before account authentication succeeds.
+Cloudflare builds the public `MarvKalani/img2svg-studio` repository on every push to `main`. The
+first deployment was built from application commit `27ad982`; the Pages project is also reachable
+at `https://img2svg-studio.pages.dev`.
 
 Direct Chrome 150 acceptance opened `/workspace`, emitted four native SVG shapes, created two
 runs, showed their one parameter difference, downloaded a 336-byte SVG and survived a reload with
@@ -15,7 +16,7 @@ same-origin traffic and Cloudflare's per-file limit.
 
 ## Cloudflare Pages configuration
 
-Connect the repository through the Cloudflare Pages Git integration and use:
+The Cloudflare Pages Git integration uses:
 
 | Setting | Value |
 | --- | --- |
@@ -39,8 +40,8 @@ Provider references:
 - [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
 - [Platform limits](https://developers.cloudflare.com/pages/platform/limits/#file-size)
 
-After the first successful Pages deployment, add `studio.img2.download` under **Custom domains**.
-Cloudflare validates the domain and creates or requests the required DNS record.
+`studio.img2.download` is attached under **Custom domains**. Cloudflare manages its CNAME to the
+Pages project.
 
 ## Acceptance
 
@@ -60,3 +61,7 @@ IMG2SVG_DEMO_BASE_URL=https://studio.img2.download \
 The same test verifies direct navigation, security headers, local geometric conversion, a second
 run, A/B comparison, byte-bearing SVG download, reload, clean console and no cross-origin image
 traffic. It also rejects any build asset above Cloudflare Pages' 25 MiB per-file limit.
+
+The public run on 20 July 2026 passed both scenarios in real Chrome in three seconds. A separate
+header probe returned HTTP 200 with `Origin-Agent-Cluster: ?1` and
+`Permissions-Policy: tools=(self)`.

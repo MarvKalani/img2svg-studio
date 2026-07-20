@@ -2,11 +2,8 @@
 
 **A local-first raster-to-SVG lab for turning visual tuning into reproducible evidence.**
 
-[Target demo](https://studio.img2.download) · [Architecture](docs/ARCHITECTURE.md) ·
+[Live demo](https://studio.img2.download) · [Architecture](docs/ARCHITECTURE.md) ·
 [User guide](docs/HANDBOOK.md) · [Submission notes](docs/SUBMISSION.md)
-
-> Deployment of the public demo is the remaining release gate. Until it is live, use the local
-> production-preview command below.
 
 ![img2svg Studio workspace](docs/screenshots/app-shell.png)
 
@@ -25,13 +22,14 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Local PNG, JPEG and WebP input up to 25 MiB, including drag and drop.
 - Deterministic Rust/WebAssembly vectorization with path fallback.
 - Optional native SVG recognition for circles, rectangles, ellipses, lines and triangles.
-- Ten immutable conversion runs with thumbnails, metrics and restorable settings.
+- Session history with immutable, individually removable runs, thumbnails, metrics and restorable
+  settings.
 - Layer-aligned A/B comparison, a filtered parameter-difference table and exact per-run downloads.
 - Local MODNet background removal with verified, abortable model downloads and WebGPU/WASM fallback.
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
 - Versioned AI results that can be converted, compared and restored to the original image.
 - Installable PWA entry points for OS sharing and desktop PNG, JPEG and WebP file opening.
-- Thirteen typed WebMCP tools that operate the same visible application services as the UI.
+- Fourteen typed WebMCP tools that operate the same visible application services as the UI.
 - A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 
@@ -44,9 +42,8 @@ gate runs in Chrome 150 on Apple Silicon; the static build has no OS-specific se
 The complete manual conversion workflow remains available when WebMCP or WebGPU is unavailable.
 SlimSAM specifically requires WebGPU, while MODNet can fall back to WASM.
 
-No account, API key or paid service is required. Judges can use the public target demo without
-installing the project; until that deployment gate is complete, the command below reproduces the
-same static build and judge path locally.
+No account, API key or paid service is required. Judges can use the public demo without installing
+the project. The command below reproduces the same static build and judge path locally.
 
 ## Try the production build locally
 

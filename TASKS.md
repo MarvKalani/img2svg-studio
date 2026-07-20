@@ -191,37 +191,14 @@ einmaliger Anmeldung, das dadurch ausgelöste Cloudflare-Deployment und dieselbe
 **Dokumentation:** Vollständiges Vorgänger-Tool-Inventar, lokale Dateiübergabe, Hosting-Header
 und Agentenablauf.
 
-## RELEASE-03 — Öffentliche statische Demo reproduzierbar deployen
-
-**Ergebnis:** Ein Produktionsbuild läuft kostenlos und ohne Login auf
-`https://studio.img2.download` mit nötigen Sicherheitsheadern und funktioniert in einem
-frischen Ziel-Browser.
-
-**Status 19. Juli:** Produktionsbuild, lokaler Preview-Test und direkte Chrome-150-Abnahme sind
-grün. Veröffentlichung und öffentliche Abnahme folgen nach GitHub-/Cloudflare-Zugriff; die
-Ziel-Domain hat noch keinen DNS-Eintrag.
-
-```gherkin
-Given die öffentliche Demo-URL wird ohne bestehende Sitzung geöffnet
-When das geometrische Beispiel geladen, konvertiert, verglichen und exportiert wird
-Then funktioniert der Kernablauf ohne lokale Reparatur oder kostenpflichtigen Zugang
-And Reload und direkte Start-URL liefern weiterhin die Anwendung
-```
-
-**Ausführbare Abnahme:** `web/e2e/deployed-demo.spec.ts`; `npm --prefix web run test:demo`
-gegen den Preview-Server und `IMG2SVG_DEMO_BASE_URL=<Produktions-URL> npm --prefix web run
-test:demo` gegen die veröffentlichte Demo.
-
-**Dokumentation:** README-Demo-/Deployment-Link und Submission-Testanleitung.
-
 ## RELEASE-04 — Englische Einreichungsunterlagen fertigstellen
 
 **Ergebnis:** README und Devpost-Text erklären Problem, Lösung, Architektur, lokalen Datenschutz,
 Codex-/GPT-5.6-Zusammenarbeit, Setup, Tests, Grenzen, Lizenz und freien Demo-Zugang auf Englisch.
 
-**Status 19. Juli:** Englischer README-/Devpost-Text, Architektur, Drittanbieterinventar,
-Linkprüfung, frischer Checkout und finale Chrome-Screenshots sind abgenommen. Finale Demo-,
-Repository-, Lizenz- und Video-Links folgen nach den dokumentierten Owner-Aktionen.
+**Status 20. Juli:** Englischer README-/Devpost-Text, Architektur, Drittanbieterinventar,
+Linkprüfung, frischer Checkout, öffentliche Demo, Repository, Lizenz und finale Chrome-Screenshots
+sind abgenommen. Video-Link und endgültiges Absenden folgen als dokumentierte Owner-Aktionen.
 
 ```gherkin
 Given ein Judge kennt das Projekt nicht
