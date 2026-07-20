@@ -19,7 +19,7 @@ aufrufen; die Plattformpfade sind in [`APPS_SDK.md`](APPS_SDK.md) abgegrenzt.
 ## 2. Datenfluss
 
 ```text
-Datei / Drop
+Datei / Drop / PWA Share Target / Desktop File Handler
   → Browser-Decoder
   → unveränderliches Original-RGBA
   → proportionale Rastergröße und optionaler Farbfilter
@@ -34,6 +34,13 @@ Datei / Drop
 
 CPU-intensive WASM-Aufrufe laufen in einem Web Worker, damit die Bedienoberfläche während der
 Konvertierung reaktionsfähig bleibt.
+
+Share Target und Desktop-Dateihandler enden beide in `ImageLoaderController.loadOriginal`. Der
+Service Worker fängt nur `POST /share-target` und den einmaligen Leseweg unter
+`/__shared-image/` ab. Er legt den Bild-Response unter einem zufälligen Token in einem eigenen
+versionierten Cache ab und löscht ihn beim ersten Lesen. Die App-Shell und Modellartefakte werden
+nicht von diesem Worker gecacht. Eine fehlgeschlagene Registrierung lässt den normalen Tab
+unverändert bedienbar.
 
 ## 3. Zentrale Domänenmodelle
 
@@ -426,6 +433,7 @@ den beiden ONNX-Sessions.
 - Property-/Grenzwerttests für ungültige Dimensionen und Parameter.
 - TypeScript-Tests für Stores, Diff, Größen und Tool-Schemas.
 - Browser-Tests für Upload, Run, History, A/B, Export und Fehlerzustände.
+- PWA-Vertragstests für Manifest, einmalige Share-Brücke und beide Bild-Startwege.
 - WebMCP-End-to-End-Test im unterstützten Chrome-Build.
 - Manueller Demo-Smoke-Test vor Release.
 

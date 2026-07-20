@@ -42,6 +42,11 @@ the browser. Each conversion becomes an immutable run in a visual history. Users
 runs to A and B, move a layer-aligned comparison slider, inspect only the parameters that differ,
 restore old settings, and download the exact SVG associated with either run.
 
+The same static build is installable as a PWA. Supported systems can share an image directly into
+img2svg or open PNG, JPEG and WebP files with it; those entries still use the normal local decoder.
+The glossy candy app icon is itself a dogfooding artifact: we created a raster source, converted it
+with img2svg's own WASM tracer, and rendered the install sizes from that SVG.
+
 The Rust/WebAssembly engine traces arbitrary contours and can emit native circles, rectangles,
 ellipses, lines and triangles when geometric evidence is strong. Ambiguous content safely remains
 an SVG path.
@@ -90,6 +95,7 @@ user-facing state machine. WebMCP also changed during the build from the older n
 - Deterministic Rust/WASM output with structural ground-truth tests.
 - Two real, unloadable in-browser AI workflows rather than simulated model cards.
 - One visible application-service layer shared by UI and WebMCP.
+- An installable image share/file-open path with an app icon made through our own converter.
 - Zero Axe violations in the audited core path and no cross-origin conversion traffic.
 - A reproducible production-demo test that runs against local preview or the public URL.
 
@@ -117,6 +123,7 @@ No account or paid access is required.
 6. Download SVG B.
 7. Optional: load MODNet or SlimSAM from the AI Manager. This intentionally downloads a pinned
    model artifact; normal conversion itself remains offline.
+8. Optional: install the PWA and use the operating system's share or file-open entry for an image.
 
 Local fallback:
 

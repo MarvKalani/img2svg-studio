@@ -6,6 +6,7 @@ export interface ImageLoaderController {
   loadAiVersion(file: File): Promise<boolean>;
   loadExample(): Promise<boolean>;
   loadOriginal(file: File): Promise<boolean>;
+  reportError(message: string): void;
   restoreOriginal(): boolean;
   showCurrentImage(): boolean;
 }
@@ -40,6 +41,7 @@ export function initializeImageLoader(
   const loadOriginal = (file: File): Promise<boolean> => loadImage(file, ImageVersionKind.Original);
   const loadAiVersion = (file: File): Promise<boolean> =>
     loadImage(file, ImageVersionKind.AiResult);
+  const reportError = (message: string): void => showImageError(elements, message);
   const loadExample = async (): Promise<boolean> => {
     try {
       const response = await fetch(bundledExampleUrl);
@@ -102,6 +104,7 @@ export function initializeImageLoader(
     loadAiVersion,
     loadExample,
     loadOriginal,
+    reportError,
     restoreOriginal,
     showCurrentImage,
   });

@@ -8,6 +8,8 @@ through Secure MCP Tunnel; it does not change the browser deployment.
 flowchart LR
   Human["Human in the UI"] --> Controllers["Typed application controllers"]
   Agent["Browser agent via WebMCP"] --> Controllers
+  OS["OS share / file open"] --> PWA["One-time PWA ingress"]
+  PWA --> Controllers
   Controllers --> Workspace["Versioned image, history and comparison stores"]
   Controllers --> Worker["Conversion Web Worker"]
   Worker --> Wasm["Small WASM boundary"]
@@ -49,11 +51,20 @@ handlers call the same controllers as visible controls and report structured suc
 error codes. Tool availability never controls UI availability. Origin isolation and the
 `Permissions-Policy: tools=(self)` response header constrain the browser capability to this origin.
 
+### PWA ingress
+
+The manifest advertises an image share target and desktop image file handlers. File launches and
+share launches both call the existing image-loader controller. A small service worker bridges a
+share POST through a random same-origin Cache Storage key and deletes the response on first read.
+It deliberately does not cache the application shell, user work, SVG output or model artifacts.
+Service-worker registration is progressive and cannot disable manual browser use.
+
 ## State and privacy
 
-Image versions, SVG runs and comparisons exist only in page memory. Object URLs are released when
-their versions are replaced. Conversion has no network dependency. An explicit AI load may fetch
-only the revision-pinned files declared in the model manifest; there is no analytics or telemetry.
+Image versions, SVG runs and comparisons exist only in page memory. A PWA-shared source exists in
+Cache Storage only until its first page read. Object URLs are released when their versions are
+replaced. Conversion has no network dependency. An explicit AI load may fetch only the
+revision-pinned files declared in the model manifest; there is no analytics or telemetry.
 
 ## Deployment
 

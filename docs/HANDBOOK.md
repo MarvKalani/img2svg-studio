@@ -79,6 +79,30 @@ Unterstützt werden PNG, JPEG und WebP bis 25 MB. Nach erfolgreichem Laden zeigt
 Dateiname, Format, echte Pixelmaße, eine Miniatur und die große Vorschau. Die Vorschau verwendet
 eine lokale `blob:`-URL; die Bilddaten werden nicht übertragen.
 
+## Installieren, teilen und mit img2svg öffnen
+
+Auf der ausgelieferten HTTPS-Demo kann Chrome das Studio über das Installationssymbol in der
+Adressleiste als eigenständige App installieren. Die Installation ist optional; im normalen Tab
+bleiben alle Funktionen einschließlich WebMCP verfügbar.
+
+Nach der Installation kann ein unterstütztes PNG-, JPEG- oder WebP-Bild über den
+Systembefehl „Teilen mit …“ an **img2svg** übergeben werden. Desktop Chrome kann dieselben
+Dateitypen zusätzlich über „Öffnen mit img2svg“ starten. Welche Einträge das Betriebssystem
+anzeigt, hängt von dessen PWA-Unterstützung ab. Beide Wege verwenden den normalen Bild-Loader mit
+denselben Format-, Größen- und Fehlergrenzen wie „Bild wählen“.
+
+Bei „Teilen mit …“ legt der Service Worker das Bild unter einem zufälligen Token kurz in einem
+eigenen Cache ab, navigiert das Studio zu diesem Token und löscht den Cache-Eintrag beim ersten
+Lesen. Er besitzt keinen App-Shell-, History-, SVG- oder Modellcache. Das Bild bleibt damit lokal
+und wird nicht an einen Anwendungsserver gesendet.
+
+Das Candy-App-Icon wurde bewusst mit dem Produkt selbst erstellt: Das Raster-Original liegt unter
+[`docs/assets/app-icon-candy-source.png`](assets/app-icon-candy-source.png). Der img2svg-WASM-Kern
+hat es nach lokaler Vorbereitung auf 512 × 512 Pixel mit 32 Farben und mittlerem Detail in
+[`web/public/icons/app-icon.svg`](../web/public/icons/app-icon.svg) vektorisiert; daraus werden die
+installierbaren 192- und 512-Pixel-Icons gerendert. Damit ist das Icon zugleich ein realer
+Dogfooding-Nachweis für den Konvertierungspfad.
+
 Beschädigte Dateien, andere Formate und Dateien über 25 MB zeigen einen verständlichen Fehler.
 Eine bereits geladene gültige Vorschau bleibt dabei erhalten. Beim Laden eines neuen gültigen
 Bildes wird die vorherige Objekt-URL freigegeben.

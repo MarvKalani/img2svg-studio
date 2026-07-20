@@ -122,6 +122,18 @@ Ein angewendetes KI-Ergebnis wird als versionierte Eingabe in Conversion, Histor
 Konkrete Modelle dürfen erst nach Prüfung von Quelle, Revision, Größe, Lizenz und Runtime in
 die Registry gelangen.
 
+## 7.1 Installierbare App-Eingänge
+
+Das statische Studio besitzt ein Web-App-Manifest und kann auf unterstützten Plattformen als PWA
+installiert werden. Ein Share Target nimmt genau ein PNG-, JPEG- oder WebP-Bild entgegen;
+Desktop-Dateihandler akzeptieren dieselben Typen. Beide Eingänge verwenden den vorhandenen
+validierten Bild-Loader und erzeugen keinen zweiten Workspace-Zustand.
+
+Der Service Worker dient ausschließlich als einmalige lokale Brücke zwischen Share-POST und
+Anwendungsnavigation. Das Bild wird beim ersten Lesen entfernt. App-Shell, Conversion-History,
+SVGs und KI-Modelle werden dadurch weder offline versprochen noch zusätzlich persistiert. Ohne
+PWA-Unterstützung bleibt der normale Browserablauf vollständig erhalten.
+
 ## 8. WebMCP
 
 WebMCP ist eine progressive Erweiterung hinter Feature Detection. Das MVP bietet eng

@@ -12,6 +12,7 @@ import { initializeConversionOptions } from "./conversion/conversion-options-con
 import { initializeSvgDownload } from "./conversion/svg-download";
 import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
+import { initializePwaIngress } from "./pwa/pwa-ingress";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
 import {
@@ -46,6 +47,7 @@ const imageLoader = initializeImageLoader(imageStore, (image) => {
 });
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
+void initializePwaIngress(imageLoader);
 const conversionController = initializeConversion(
   imageStore,
   optionsController.current,

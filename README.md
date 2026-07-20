@@ -30,6 +30,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Local MODNet background removal with verified, abortable model downloads and WebGPU/WASM fallback.
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
 - Versioned AI results that can be converted, compared and restored to the original image.
+- Installable PWA entry points for OS sharing and desktop PNG, JPEG and WebP file opening.
 - Thirteen typed WebMCP tools that operate the same visible application services as the UI.
 - A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
@@ -69,6 +70,11 @@ npm --prefix web run preview -- --host 127.0.0.1 --port 4173
 
 Open `http://127.0.0.1:4173` and choose **Beispiel laden** for the bundled geometric example. You
 can also choose any fixture from `fixtures/shape-recognition/input/`.
+
+On the deployed HTTPS demo, Chrome can install the Studio as an app. Installed platforms expose
+img2svg in **Share with…** for supported images; desktop Chrome can additionally associate PNG,
+JPEG and WebP files. Both routes reuse the normal local image decoder. The service worker is only
+a one-time share bridge and does not cache the application, images, SVG history or AI models.
 
 ## ChatGPT MCP companion
 
@@ -147,6 +153,8 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 - History is in memory and contains the ten newest runs; reloading starts a fresh workspace.
 - SlimSAM requires WebGPU. MODNet falls back to WASM when WebGPU is unavailable.
 - WebMCP is progressive: unsupported browsers retain the complete manual UI.
+- PWA installation, OS share targets and file associations depend on platform support; the normal
+  browser tab remains the primary judge and WebMCP path.
 
 ## Repository map
 
