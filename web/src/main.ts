@@ -36,6 +36,10 @@ let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
 let smartSelect: ReturnType<typeof initializeSmartSelect>;
 const imageLoader = initializeImageLoader(imageStore, (image) => {
   historyController.clearComparison();
+  const original = imageStore.original();
+  if (original) {
+    historyController.setOriginal(original);
+  }
   optionsController.showSourceDimensions(image);
   backgroundRemoval.imageLoaded();
   smartSelect.imageLoaded();
@@ -58,6 +62,7 @@ const conversionTools = createConversionTools({
 const studioTools = createStudioTools({
   applySmartSelection: smartSelect.applySelection,
   assignComparison: historyController.assignComparison,
+  assignOriginalComparison: historyController.assignOriginalComparison,
   downloadSelectedSvg: svgDownloadController.download,
   loadModel: modelRegistry.load,
   readComparedRuns: compareController.current,

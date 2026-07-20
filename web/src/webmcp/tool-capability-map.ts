@@ -11,8 +11,14 @@ export const toolCapabilityMap: readonly ToolCapability[] = Object.freeze([
   capability(WebMcpToolName.ConfigureConversion, ".sidebar"),
   capability(WebMcpToolName.ConvertCurrentImage, "#convert-button"),
   capability(WebMcpToolName.SelectHistoryRun, "#history-content"),
-  capability(WebMcpToolName.SelectComparisonA, "[data-compare-slot='a']"),
-  capability(WebMcpToolName.SelectComparisonB, "[data-compare-slot='b']"),
+  capability(
+    WebMcpToolName.SelectComparisonA,
+    "[data-compare-slot='a'], [data-compare-original-slot='a']",
+  ),
+  capability(
+    WebMcpToolName.SelectComparisonB,
+    "[data-compare-slot='b'], [data-compare-original-slot='b']",
+  ),
   capability(WebMcpToolName.DownloadSelectedSvg, "#download-svg"),
   capability(WebMcpToolName.LoadModel, "#model-manager"),
   capability(WebMcpToolName.RetryModel, "#model-manager"),

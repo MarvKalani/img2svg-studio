@@ -4,6 +4,7 @@ import type { NormalizedImagePoint, SmartSelectionRequest } from "../ai/smart-se
 import type { BrowserModelId } from "../ai/model-manifest";
 import type { ModelRegistrySnapshot } from "../ai/model-registry";
 import type { ComparedRuns, CompareSlot } from "../compare/compare-selection";
+import { ComparisonSourceKind } from "../compare/comparison-source";
 import type { ConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import type { LoadedImage } from "../image/image-store";
@@ -12,6 +13,7 @@ import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
 export interface StudioToolServices {
   applySmartSelection(request: SmartSelectionRequest): Promise<AiActionResult>;
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
+  assignOriginalComparison(slot: CompareSlot): boolean;
   downloadSelectedSvg(): boolean;
   loadModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
   readComparedRuns(): ComparedRuns;
@@ -35,6 +37,19 @@ const runSchema = Object.freeze({
   additionalProperties: false,
   properties: Object.freeze({ runId: Object.freeze({ minimum: 1, type: "integer" }) }),
   required: Object.freeze(["runId"]),
+  type: "object",
+});
+
+const comparisonSchema = Object.freeze({
+  additionalProperties: false,
+  oneOf: Object.freeze([
+    Object.freeze({ required: Object.freeze(["runId"]) }),
+    Object.freeze({ required: Object.freeze(["original"]) }),
+  ]),
+  properties: Object.freeze({
+    original: Object.freeze({ const: true, type: "boolean" }),
+    runId: Object.freeze({ minimum: 1, type: "integer" }),
+  }),
   type: "object",
 });
 
@@ -131,8 +146,13 @@ function selectRunTool(services: StudioToolServices): WebMcpTool {
 function compareTool(services: StudioToolServices, slot: CompareSlot, name: string): WebMcpTool {
   return defineTool({
     annotations: { readOnlyHint: false, untrustedContentHint: true },
-    description: `Assign one History run to visible comparison slot ${slot.toUpperCase()}.`,
+    description: `Assign the raster original or one History run to visible comparison slot ${slot.toUpperCase()}.`,
     execute: (input: unknown) => {
+      if (isRecord(input) && input.original === true && input.runId === undefined) {
+        return services.assignOriginalComparison(slot)
+          ? success({ source: "original", slot })
+          : failure("original_not_found", "Es ist kein Rasteroriginal geladen.");
+      }
       const runId = readRunId(input);
       if (runId === undefined) {
         return invalidInput("runId must be a positive integer.");
@@ -140,7 +160,7 @@ function compareTool(services: StudioToolServices, slot: CompareSlot, name: stri
       const run = services.assignComparison(slot, runId);
       return run ? success({ run: runSummary(run), slot }) : missingRun(runId);
     },
-    inputSchema: runSchema,
+    inputSchema: comparisonSchema,
     name,
   });
 }
@@ -307,11 +327,15 @@ function modelSummary(snapshot: ModelRegistrySnapshot): Record<string, unknown> 
   return { id: snapshot.model.id, ...snapshot.state };
 }
 
-function comparedRunIds(compared: ComparedRuns): Record<string, number> {
+function comparedRunIds(compared: ComparedRuns): Record<string, number | "original"> {
   return {
-    ...(compared.a ? { a: compared.a.id } : {}),
-    ...(compared.b ? { b: compared.b.id } : {}),
+    ...(compared.a ? { a: comparisonSourceId(compared.a) } : {}),
+    ...(compared.b ? { b: comparisonSourceId(compared.b) } : {}),
   };
+}
+
+function comparisonSourceId(source: NonNullable<ComparedRuns["a"]>): number | "original" {
+  return source.kind === ComparisonSourceKind.Run ? source.run.id : "original";
 }
 
 function actionResult(result: AiActionResult): string {

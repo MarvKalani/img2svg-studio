@@ -1,0 +1,60 @@
+import { describe, expect, test } from "vitest";
+import { defaultConversionOptions } from "../conversion/conversion-options";
+import type { ConversionRun } from "../history/history-store";
+import { ImageVersionKind } from "../image/image-version";
+import { compareSourceSettings } from "./compare-source-settings";
+import { originalSource, runSource } from "./comparison-source";
+
+describe("original comparison settings", () => {
+  test("Given the raster original and one run, when differences are requested, then source and all conversion parameters stay explicit", () => {
+    const rows = compareSourceSettings(
+      originalSource({
+        file: new File([], "circle.png", { type: "image/png" }),
+        metadata: {
+          fileName: "circle.png",
+          heightPixels: 256,
+          mimeType: "image/png",
+          previewUrl: "blob:circle",
+          sizeBytes: 0,
+          widthPixels: 256,
+        },
+        version: { id: 1, kind: ImageVersionKind.Original },
+      }),
+      runSource(run()),
+      true,
+    );
+
+    expect(rows).toHaveLength(10);
+    expect(rows[0]).toEqual({
+      a: "Original · V1",
+      b: "Run 1 · Original · V1",
+      key: "source",
+      label: "Quelle",
+    });
+    expect(rows[1]).toEqual({
+      a: "—",
+      b: "7 Bit",
+      key: "colorPrecision",
+      label: "Farbpräzision",
+    });
+  });
+});
+
+function run(): ConversionRun {
+  return {
+    circleCount: 0,
+    durationMilliseconds: 1,
+    ellipseCount: 0,
+    fileName: "circle.png",
+    heightPixels: 256,
+    id: 1,
+    inputVersion: { id: 1, kind: ImageVersionKind.Original },
+    lineCount: 0,
+    options: defaultConversionOptions,
+    pathCount: 1,
+    polygonCount: 0,
+    rectangleCount: 0,
+    svg: "<svg></svg>",
+    widthPixels: 256,
+  };
+}

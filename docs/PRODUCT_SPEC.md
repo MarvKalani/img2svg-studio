@@ -79,7 +79,8 @@ darf keine Kontur doppelt ausgeben.
 - Transparenzstatus und nicht fatale Warnungen.
 
 Jede erfolgreiche Konvertierung erzeugt einen unveränderlichen Run mit stabiler ID und
-Zeitstempel. Die Session-History hält höchstens zehn Runs im Arbeitsspeicher.
+Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und höchstens zehn Runs
+im Arbeitsspeicher.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder
@@ -87,9 +88,11 @@ KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechse
 
 ## 6. A/B-Vergleich
 
-- Zwei Runs werden tastaturbedienbar als A und B markiert.
+- Original und Run oder zwei Runs werden tastaturbedienbar als A und B markiert.
 - Ein Slider beschneidet beide Ergebnisse deckungsgleich von 0 bis 100 Prozent.
 - Unterschiedliche Maße werden in derselben Vergleichs-ViewBox normalisiert.
+- Zoom von 25 bis 800 Prozent und Pan verwenden für A und B denselben Viewport-Zustand; Mausrad,
+  Drag, Pinch und Tastatur bleiben synchron.
 - Eine schema-basierte Tabelle zeigt Eingabeversion und beide Parameterwerte.
 - „Nur Unterschiede“ zeigt jeden abweichenden Parameter genau einmal.
 - Download A und Download B exportieren bytegenau den jeweils ausgewählten Run.
@@ -124,8 +127,8 @@ typisierte Werkzeuge für den sichtbaren Produktablauf:
   lesen.
 - `configure_conversion`: dieselben drei Parameter mit denselben Validatoren setzen.
 - `convert_current_image`: den normalen sichtbaren Conversion-Service ausführen.
-- `select_history_run`, `select_comparison_a` und `select_comparison_b`: History und Vergleich
-  sichtbar steuern.
+- `select_history_run`: einen Run sichtbar auswählen; `select_comparison_a` und
+  `select_comparison_b`: Original oder Run sichtbar vergleichen.
 - `download_selected_svg`: exakt den sichtbaren ausgewählten Run exportieren.
 - `load_model`, `retry_model` und `unload_model`: denselben KI-Manager bedienen.
 - `apply_background_removal` und `apply_smart_selection`: KI-Ergebnisse als versionierte

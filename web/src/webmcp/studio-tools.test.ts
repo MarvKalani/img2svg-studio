@@ -1,6 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import { MaskPolarity } from "../ai/sam-selection";
+import { originalSource } from "../compare/comparison-source";
 import { defaultConversionOptions } from "../conversion/conversion-options";
+import { ImageVersionKind } from "../image/image-version";
 import { createStudioTools, type StudioToolServices } from "./studio-tools";
 
 describe("complete Studio WebMCP tools", () => {
@@ -53,12 +55,41 @@ describe("complete Studio WebMCP tools", () => {
     expect(output).toMatchObject({ code: "invalid_input", ok: false });
     expect(applicationServices.applySmartSelection).not.toHaveBeenCalled();
   });
+
+  test("Given an original is loaded, when comparison A selects it, then the visible source and workspace state use the typed original", async () => {
+    const applicationServices = services();
+    applicationServices.assignOriginalComparison = vi.fn(() => true);
+    applicationServices.readComparedRuns = () =>
+      Object.freeze({
+        a: originalSource({
+          file: new File([], "circle.png", { type: "image/png" }),
+          metadata: {
+            fileName: "circle.png",
+            heightPixels: 256,
+            mimeType: "image/png",
+            previewUrl: "blob:circle",
+            sizeBytes: 0,
+            widthPixels: 256,
+          },
+          version: { id: 1, kind: ImageVersionKind.Original },
+        }),
+      });
+    const tools = createStudioTools(applicationServices);
+
+    const selectionResult = JSON.parse(await tools[2]!.execute({ original: true }));
+    const workspace = JSON.parse(await tools[0]!.execute({}));
+
+    expect(selectionResult).toEqual({ ok: true, slot: "a", source: "original" });
+    expect(applicationServices.assignOriginalComparison).toHaveBeenCalledWith("a");
+    expect(workspace.comparison).toEqual({ a: "original" });
+  });
 });
 
 function services(): StudioToolServices {
   return {
     applySmartSelection: vi.fn(),
     assignComparison: vi.fn(),
+    assignOriginalComparison: vi.fn(() => false),
     downloadSelectedSvg: vi.fn(() => false),
     loadModel: vi.fn(),
     readComparedRuns: () => Object.freeze({}),

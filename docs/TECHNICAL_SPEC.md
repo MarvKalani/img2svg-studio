@@ -222,18 +222,22 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
 
-`historyController` rendert aus dem Store ausschließlich die zehn Karten und projiziert einen
-ausgewählten SVG-Snapshot zurück in die Arbeitsfläche. Er schreibt keine alten Optionen in das
+`historyController` rendert das Rasteroriginal vor den höchstens zehn Run-Karten und projiziert
+eine gewählte Quelle zurück in die Arbeitsfläche. Ein neues Original startet eine leere Run-History;
+KI-Versionen behalten dieselbe Originalquelle. Der Controller schreibt keine alten Optionen in das
 Formular. `restoreSelectedRunOptions` validiert den ausgewählten Snapshot erneut und reicht eine
 Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schreibt numerische
 Werte, globalen Formerkennungszustand und Typauswahl und rendert die abgeleiteten Zielmaße neu;
 Store, SVG und Bildzustand bleiben unverändert.
 
-`compareSelection` hält je einen unveränderlichen Run-Verweis für A und B. Die Zuweisung desselben
-Runs in den anderen Platz entfernt ihn aus dem bisherigen Platz. `compareController` rendert erst
-bei zwei vollständigen Plätzen. Jeder native SVG-Snapshot liegt in einer äußeren ViewBox
-`0 0 1 1` mit `xMidYMid meet`; beide Layer füllen denselben Canvas. Der 0–100-Regler setzt
-komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
+`compareSelection` hält je eine typisierte Original- oder Run-Quelle für A und B. Die Zuweisung
+derselben Quelle in den anderen Platz entfernt sie aus dem bisherigen Platz. `compareController`
+rendert erst bei zwei vollständigen Plätzen. Jeder native SVG-Snapshot liegt in einer äußeren
+ViewBox `0 0 1 1` mit `xMidYMid meet`; das Raster verwendet denselben seitenverhältnistreuen
+Canvas. Der 0–100-Regler setzt komplementär `opacity(A) = 1 - B` und `opacity(B) = B`.
+`viewportController` projiziert einen reinen Zustand aus Skalierung und Pixelversatz identisch auf
+beide Layer. Tasten, Mausrad, Pointer-Drag, Zwei-Pointer-Pinch und Pfeiltasten verwenden denselben
+Zoom-/Pan-Kern; jede neue A/B-Kombination startet bei 100 Prozent und zentrierter Position.
 
 `compareConversionSettings` projiziert beide Options-Snapshots über eine typisierte, stabile
 Schemafolge in formatierte Tabellenzeilen. Der standardmäßig aktive Differenzfilter vergleicht
@@ -260,7 +264,8 @@ können ergänzend für stabile Standardformulare eingesetzt werden, dürfen abe
 Geschäftslogik erzeugen.
 
 Der Adapter registriert `get_capabilities`, `configure_conversion`, `convert_current_image`,
-Workspace-Zustand, History, A/B-Auswahl, Export, KI-Modellverwaltung und beide KI-Aktionen. Eine
+Workspace-Zustand, History, A/B-Auswahl einschließlich Rasteroriginal, Export,
+KI-Modellverwaltung und beide KI-Aktionen. Eine
 typisierte und getestete Capability Map ordnet jedes sichtbare Application Command genau einem
 UI- und einem WebMCP-Einstieg zu. Smart Select nimmt normierte Koordinaten von 0 bis 1 an und
 führt dieselben akkumulierten Maskenverfeinerungen wie die Pointer-Oberfläche aus.

@@ -37,6 +37,17 @@ describe("history store", () => {
     expect(selected?.options.scalePercent).toBe(100);
     expect(store.selected()?.id).toBe(stored.id);
   });
+
+  test("Given runs from one image, when a new original starts a history, then IDs restart without stale variants", () => {
+    const store = createHistoryStore();
+    store.add(runInput(1));
+
+    store.clear();
+
+    expect(store.runs()).toEqual([]);
+    expect(store.selected()).toBeUndefined();
+    expect(store.add(runInput(2)).id).toBe(1);
+  });
 });
 
 function runInput(runNumber: number): NewConversionRun {

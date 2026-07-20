@@ -478,17 +478,30 @@ a:focus-visible {
 .compare-canvas {
   position: absolute;
   inset: 3.8rem 1rem 4.3rem;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.compare-canvas.is-panning {
+  cursor: grabbing;
 }
 
 .compare-layer {
   position: absolute;
   inset: 0;
+  transform-origin: center;
+  will-change: transform;
 }
 
-.compare-layer svg {
+.compare-layer svg,
+.compare-layer img {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .compare-slider {
@@ -790,6 +803,18 @@ a:focus-visible {
   width: 100%;
   height: 100%;
   max-height: 4.5rem;
+}
+
+.history-thumbnail img {
+  width: 100%;
+  height: 100%;
+  max-height: 4.5rem;
+  object-fit: contain;
+}
+
+.history-original-item .history-card {
+  border-color: #4b7084;
+  background: #142f3e;
 }
 
 .history-card span,

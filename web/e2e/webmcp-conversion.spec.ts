@@ -61,8 +61,15 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
     scalePercent: 100,
   });
   await executeTool(page, "convert_current_image", {});
-  await executeTool(page, "select_comparison_a", { runId: 1 });
+  await executeTool(page, "select_comparison_a", { original: true });
   await executeTool(page, "select_comparison_b", { runId: 2 });
+  await expect(page.locator("#compare-label-a")).toHaveText("A · Original");
+  await expect(page.locator("#compare-label-b")).toHaveText("B · Run 2");
+  expect(await executeTool(page, "get_workspace_state", {})).toMatchObject({
+    comparison: { a: "original", b: 2 },
+  });
+
+  await executeTool(page, "select_comparison_a", { runId: 1 });
   await expect(page.locator("#compare-output")).toBeVisible();
   await expect(page.locator("#compare-label-a")).toHaveText("A · Run 1");
   await expect(page.locator("#compare-label-b")).toHaveText("B · Run 2");

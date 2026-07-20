@@ -35,9 +35,9 @@
         </nav>
 
         <div class="zoom-controls" aria-label="Zoomsteuerung">
-          <button type="button" aria-label="Verkleinern">−</button>
-          <span>100%</span>
-          <button type="button" aria-label="Vergrößern">+</button>
+          <button id="zoom-out" type="button" aria-label="Verkleinern" disabled>−</button>
+          <span id="zoom-value" data-testid="zoom-value">100%</span>
+          <button id="zoom-in" type="button" aria-label="Vergrößern" disabled>+</button>
         </div>
       </header>
 
@@ -285,7 +285,12 @@
                   </button>
                   <span id="compare-label-b" class="preview-label"></span>
                 </div>
-                <div class="compare-canvas" data-testid="compare-canvas">
+                <div
+                  id="compare-canvas"
+                  class="compare-canvas"
+                  data-testid="compare-canvas"
+                  aria-label="Synchronisierter A/B-Bildausschnitt"
+                >
                   <div
                     id="compare-layer-a"
                     class="compare-layer"

@@ -117,7 +117,7 @@ erneut bedienbar.
 3. Das echte SVG in „A · Variante“ prüfen.
 4. Zielgröße und relevante Parameter variieren.
 5. Ergebnis als SVG herunterladen und weitere Runs erzeugen.
-6. Zwei Runs im Verlauf als A und B auswählen.
+6. Das Original und einen Run oder zwei Runs im Verlauf als A und B auswählen.
 7. Darstellung und Parameterunterschiede vergleichen.
 
 Dieser Ablauf wird mit jedem vertikalen Slice ergänzt und erst dann als verfügbar bezeichnet,
@@ -125,8 +125,10 @@ wenn er im Browser getestet wurde.
 
 ## Verlauf und A/B-Vergleich
 
-Jede erfolgreiche Konvertierung erzeugt genau einen unveränderlichen Run. Der Verlauf zeigt die
-zehn neuesten Runs von neu nach alt als horizontal bedienbare Karten. Jede Karte enthält:
+Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
+und wie jeder Run als A oder B gewählt werden. Jede erfolgreiche Konvertierung erzeugt zusätzlich
+genau einen unveränderlichen Run. Der Verlauf zeigt das Original sowie die zehn neuesten Runs von
+neu nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
 - die fortlaufende Run-ID.
 - eine echte SVG-Miniatur.
@@ -140,10 +142,10 @@ dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei glei
 gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. Nach dem elften Lauf wird
 nur der älteste Run aus der sichtbaren Session-History entfernt.
 
-Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ den Run in den
-jeweiligen Vergleichsplatz. Derselbe Run belegt nie beide Plätze; eine neue Zuweisung verschiebt
-ihn eindeutig. Sobald A und B gesetzt sind, zeigt die gemeinsame Arbeitsfläche beide SVGs
-deckungsgleich. Die Labels nennen die zugeordneten Run-IDs.
+Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ das Original oder
+den Run in den jeweiligen Vergleichsplatz. Dieselbe Quelle belegt nie beide Plätze. Sobald A und B
+gesetzt sind, zeigt die gemeinsame Arbeitsfläche Rasteroriginal und SVG oder zwei SVGs
+deckungsgleich. Die Labels nennen „Original“ oder die zugeordnete Run-ID.
 
 Der Regler „Überblendung“ bestimmt den sichtbaren Anteil von B:
 
@@ -156,11 +158,18 @@ ViewBox des Runs seitenverhältnistreu. Deshalb bleiben auch unterschiedlich ska
 zentriert und deckungsgleich, ohne Kreisformen zu verzerren. Die aktuellen Eingabeeinstellungen
 werden durch A/B-Zuweisungen nicht verändert.
 
+Die Zoomtasten verändern den gemeinsamen Ausschnitt von 25 bis 800 Prozent. Mausrad oder
+Trackpad zoomen um die Zeigerposition; Drag verschiebt den Ausschnitt. Auf Touch-Geräten steuern
+zwei Finger Zoom und Position als Pinch-Geste. Beide Ebenen erhalten immer exakt dieselbe
+Transformation. Pfeiltasten verschieben den fokussierten Vergleich tastaturbedienbar, ein
+Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
+
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
 Werten in A und B. Ohne den Filter erscheinen Farbpräzision, Speckle-Filter und Zielgröße in
 stabiler Reihenfolge mit Einheiten, gefolgt vom globalen Formerkennungsschalter und den fünf
-Formtypen.
+Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die Tabelle „Quelle“ und kennzeichnet dort
+nicht vorhandene Konvertierungsparameter mit „—“.
 
 „SVG A“ und „SVG B“ laden jeweils den unveränderten SVG-Text des zugeordneten Runs herunter. Die
 normalisierte Vergleichsdarstellung gelangt nicht in den Export. Dateinamen enthalten Platz und
@@ -358,8 +367,9 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 1. `get_capabilities` und `get_workspace_state` lesen.
 2. Mit `configure_conversion` die sichtbaren Werte setzen und mit `convert_current_image`
    konvertieren.
-3. Runs über `select_history_run`, `select_comparison_a` und `select_comparison_b` anzeigen oder
-   vergleichen; `download_selected_svg` exportiert den sichtbaren Run.
+3. Runs über `select_history_run` anzeigen. `select_comparison_a` und `select_comparison_b` wählen
+   per Run-ID oder `original: true` die sichtbaren Vergleichsquellen;
+   `download_selected_svg` exportiert den sichtbaren Run.
 4. Modelle mit `load_model`, `retry_model` und `unload_model` verwalten.
 5. `apply_background_removal` oder `apply_smart_selection` anwenden. Smart-Select-Punkte verwenden
    bildunabhängige X-/Y-Werte von 0 bis 1 und mindestens zwei Vordergrund- sowie einen

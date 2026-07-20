@@ -2,16 +2,23 @@ import { parseSvgDocument } from "../conversion/svg-document";
 import { downloadSvgFile, svgFileName } from "../conversion/svg-download";
 import type { ConversionRun } from "../history/history-store";
 import type { ComparedRuns, CompareSelection, CompareSlot } from "./compare-selection";
-import { compareRunSettings } from "./compare-run-settings";
+import { compareSourceSettings } from "./compare-source-settings";
+import {
+  ComparisonSourceKind,
+  comparisonSourceLabel,
+  type ComparisonSource,
+} from "./comparison-source";
+import { initializeViewport } from "./viewport-controller";
 
 export interface CompareController {
-  assign(slot: CompareSlot, run: ConversionRun): void;
+  assign(slot: CompareSlot, source: ComparisonSource): void;
   clear(): void;
   current(): ComparedRuns;
 }
 
 export function initializeCompare(selection: CompareSelection): CompareController {
   const elements = readElements();
+  const viewport = initializeViewport();
 
   const renderOpacity = (): void => {
     const bPercent = elements.slider.valueAsNumber;
@@ -29,7 +36,7 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
       return;
     }
 
-    const rows = compareRunSettings(
+    const rows = compareSourceSettings(
       comparedRuns.a,
       comparedRuns.b,
       elements.onlyDifferences.checked,
@@ -44,25 +51,29 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
     const complete = comparedRuns.a !== undefined && comparedRuns.b !== undefined;
     elements.output.hidden = !complete;
     elements.stage.classList.toggle("compare-active", complete);
+    viewport.setEnabled(complete);
     renderSettings();
     if (!complete) {
       return;
     }
 
-    elements.labelA.textContent = `A · Run ${String(comparedRuns.a.id)}`;
-    elements.labelB.textContent = `B · Run ${String(comparedRuns.b.id)}`;
-    elements.layerA.replaceChildren(normalizedSvg(comparedRuns.a));
-    elements.layerB.replaceChildren(normalizedSvg(comparedRuns.b));
+    elements.labelA.textContent = `A · ${comparisonSourceLabel(comparedRuns.a)}`;
+    elements.labelB.textContent = `B · ${comparisonSourceLabel(comparedRuns.b)}`;
+    elements.layerA.replaceChildren(renderSource(comparedRuns.a));
+    elements.layerB.replaceChildren(renderSource(comparedRuns.b));
+    renderDownload(elements.downloadA, comparedRuns.a, "A");
+    renderDownload(elements.downloadB, comparedRuns.b, "B");
+    viewport.reset();
     renderOpacity();
   };
 
   elements.slider.addEventListener("input", renderOpacity);
   elements.onlyDifferences.addEventListener("change", renderSettings);
   elements.downloadA.addEventListener("click", () =>
-    downloadComparedRun(selection.current().a, "a"),
+    downloadComparedSource(selection.current().a, "a"),
   );
   elements.downloadB.addEventListener("click", () =>
-    downloadComparedRun(selection.current().b, "b"),
+    downloadComparedSource(selection.current().b, "b"),
   );
 
   return {
@@ -78,10 +89,11 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
   };
 }
 
-function downloadComparedRun(run: ConversionRun | undefined, slot: CompareSlot): void {
-  if (!run) {
+function downloadComparedSource(source: ComparisonSource | undefined, slot: CompareSlot): void {
+  if (!source || source.kind !== ComparisonSourceKind.Run) {
     return;
   }
+  const { run } = source;
 
   downloadSvgFile({
     bytes: run.svg,
@@ -89,7 +101,18 @@ function downloadComparedRun(run: ConversionRun | undefined, slot: CompareSlot):
   });
 }
 
-function settingRow(setting: ReturnType<typeof compareRunSettings>[number]): HTMLElement {
+function renderDownload(
+  button: HTMLButtonElement,
+  source: ComparisonSource,
+  slot: "A" | "B",
+): void {
+  const isRun = source.kind === ComparisonSourceKind.Run;
+  button.hidden = !isRun;
+  button.disabled = !isRun;
+  button.textContent = `SVG ${slot}`;
+}
+
+function settingRow(setting: ReturnType<typeof compareSourceSettings>[number]): HTMLElement {
   const row = document.createElement("div");
   row.setAttribute("role", "row");
   row.dataset.settingKey = setting.key;
@@ -120,6 +143,17 @@ function normalizedSvg(run: ConversionRun): SVGSVGElement {
   source.setAttribute("preserveAspectRatio", "xMidYMid meet");
   normalized.append(source);
   return normalized;
+}
+
+function renderSource(source: ComparisonSource): SVGSVGElement | HTMLImageElement {
+  if (source.kind === ComparisonSourceKind.Run) {
+    return normalizedSvg(source.run);
+  }
+  const image = document.createElement("img");
+  image.alt = `Original ${source.image.file.name}`;
+  image.draggable = false;
+  image.src = source.image.metadata.previewUrl;
+  return image;
 }
 
 interface CompareElements {
