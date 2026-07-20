@@ -1,4 +1,5 @@
 import { createLogoDemoOptions } from "../demo/logo-demo-profile";
+import { createTopographyDemoOptions } from "../demo/topography-demo-profile";
 import {
   createConversionOptions,
   defaultConversionOptions,
@@ -17,6 +18,7 @@ export const ConversionPresetId = {
   Logo: "logo",
   Monochrome: "monochrome",
   Photo: "photo",
+  Topography: "topography",
 } as const;
 
 export type ConversionPresetId = (typeof ConversionPresetId)[keyof typeof ConversionPresetId];
@@ -32,6 +34,7 @@ export interface ConversionPreset {
 export const conversionPresets: readonly ConversionPreset[] = Object.freeze([
   preset(ConversionPresetId.Balanced, "Ausgewogen", defaultConversionOptions),
   preset(ConversionPresetId.Logo, "Logo / Icon", createLogoDemoOptions()),
+  preset(ConversionPresetId.Topography, "Topografie / Konturen", createTopographyDemoOptions()),
   preset(
     ConversionPresetId.Illustration,
     "Illustration",

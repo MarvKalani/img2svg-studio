@@ -92,6 +92,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Load an image and accept your first SVG variant.",
   "Logo / Icon": "Logo / icon",
   "Logo-Demo laden": "Load logo demo",
+  "Topografie-Demo laden": "Load topography demo",
+  "Topografie / Konturen": "Topography / contours",
   "Lokale Verarbeitung": "Local processing",
   "Lokal · kein Upload": "Local · no upload",
   Linie: "Line",

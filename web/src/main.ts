@@ -17,6 +17,7 @@ import { initializeConversion } from "./conversion/conversion-controller";
 import { initializeConversionOptions } from "./conversion/conversion-options-controller";
 import { initializeSvgDownload } from "./conversion/svg-download";
 import { createLogoDemoOptions } from "./demo/logo-demo-profile";
+import { createTopographyDemoOptions } from "./demo/topography-demo-profile";
 import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
 import { initializePwaIngress } from "./pwa/pwa-ingress";
@@ -77,6 +78,7 @@ const imageLoader = initializeImageLoader(
     conversionController.requestPreview();
   },
   () => optionsController.apply(createLogoDemoOptions()),
+  () => optionsController.apply(createTopographyDemoOptions()),
 );
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 magicWand = initializeMagicWand(imageStore, imageLoader, selectionActivity);

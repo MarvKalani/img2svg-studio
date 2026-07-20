@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "benchmark:logo": "tsx benchmarks/logo-benchmark.ts",
+    "benchmark:topography": "tsx benchmarks/topography-benchmark.ts",
     "capture:screenshots": "npm run build && playwright test --config=playwright.screenshots.config.ts",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview",

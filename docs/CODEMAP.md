@@ -35,6 +35,7 @@ das sichtbare Produkt.
 | Gewünschte Änderung | Primäre Dateien | Zugehörige Abnahme |
 | --- | --- | --- |
 | Bild laden, validieren oder Demo öffnen | `web/src/image/image-loader.ts`, `decode-image.ts`, `image-store.ts` | `load-image.spec.ts`, Image-Unit-Tests |
+| Logo- oder Topografie-Benchmark | `web/benchmarks/benchmark-runner.ts`, jeweilige Benchmark-Konfiguration | produktiver Chrome-Lauf und Ergebnisdokument unter `docs/release/` |
 | Raster vor dem Tracing skalieren oder filtern | `web/src/conversion/raster-preprocessing.ts`, `read-raster-pixels.ts` | `raster-preprocessing.test.ts`, `preprocess-raster.spec.ts` |
 | VTracer-Parameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vtracer-handbook.spec.ts` |
 | Live-Vorschau oder Ergebnis annehmen | `conversion-controller.ts`, `conversion-service.ts` | `live-preview.spec.ts`, `convert-image.spec.ts` |

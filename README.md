@@ -38,6 +38,7 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 - Visible dated release plus bilingual legal, privacy and license pages.
+- First-party logo and fictional topography demos with reproducible browser benchmarks.
 
 ![Layer-aligned A/B comparison with the exact parameter difference](docs/screenshots/comparison-workflow.png)
 

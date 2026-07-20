@@ -42,6 +42,33 @@ test("Given a fresh Studio, when the bundled logo demo is chosen, then it keeps 
   expect(crossOriginRequests).toEqual([]);
 });
 
+test("Given the bundled topography raster, when its demo is chosen, then it loads locally with the measured contour profile", async ({
+  page,
+}) => {
+  const crossOriginRequests: string[] = [];
+  page.on("request", (request) => {
+    const requestUrl = new URL(request.url());
+    if (requestUrl.origin !== "http://127.0.0.1:4173") {
+      crossOriginRequests.push(request.url());
+    }
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Topografie-Demo laden" }).click();
+
+  await expect(page.getByText("topography-island.png", { exact: true })).toBeVisible();
+  await expect(
+    page
+      .getByTestId("image-dropzone")
+      .getByText("1536 × 1024 · PNG · Original · V1", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("percent-75");
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("1152 × 768 px");
+  await expect(page.getByLabel("Preset")).toHaveValue("topography");
+  await expect(page.getByRole("button", { name: "Variante übernehmen" })).toBeEnabled();
+  expect(crossOriginRequests).toEqual([]);
+});
+
 test("Given a fresh Studio, when presets are inspected and adjusted, then useful profiles and a custom state are visible", async ({
   page,
 }) => {

@@ -7,17 +7,37 @@ export interface ImageLoaderController {
   loadManualVersion(file: File): Promise<boolean>;
   loadLogoDemo(): Promise<boolean>;
   loadOriginal(file: File): Promise<boolean>;
+  loadTopographyDemo(): Promise<boolean>;
   reportError(message: string): void;
   restoreOriginal(): boolean;
   showCurrentImage(): boolean;
 }
 
-const bundledLogoUrl = new URL("../../../fixtures/demo/marv-kalani-logo.jpg", import.meta.url);
+interface BundledDemo {
+  readonly errorMessage: string;
+  readonly fileName: string;
+  readonly mimeType: SupportedImageMimeType;
+  readonly url: URL;
+}
+
+const bundledLogo: BundledDemo = Object.freeze({
+  errorMessage: "Das Logo-Demo konnte nicht geladen werden.",
+  fileName: "marv-kalani-logo.jpg",
+  mimeType: SupportedImageMimeType.Jpeg,
+  url: new URL("../../../fixtures/demo/marv-kalani-logo.jpg", import.meta.url),
+});
+const bundledTopography: BundledDemo = Object.freeze({
+  errorMessage: "Das Topografie-Demo konnte nicht geladen werden.",
+  fileName: "topography-island.png",
+  mimeType: SupportedImageMimeType.Png,
+  url: new URL("../../../fixtures/demo/topography-island.png", import.meta.url),
+});
 
 export function initializeImageLoader(
   imageStore: ImageStore,
   onImageLoaded: (image: DecodedImage) => void,
   onLogoDemoLoaded: () => void,
+  onTopographyDemoLoaded: () => void,
 ): ImageLoaderController {
   const elements = readImageLoaderElements();
 
@@ -40,24 +60,27 @@ export function initializeImageLoader(
   const loadManualVersion = (file: File): Promise<boolean> =>
     loadImage(file, ImageVersionKind.ManualResult);
   const reportError = (message: string): void => showImageError(elements, message);
-  const loadLogoDemo = async (): Promise<boolean> => {
+  const loadBundledDemo = async (demo: BundledDemo): Promise<boolean> => {
     try {
-      const response = await fetch(bundledLogoUrl);
-      if (!response.ok) {
-        throw new Error(`Logo request failed with status ${String(response.status)}.`);
-      }
-      const bytes = await response.blob();
-      const loaded = await loadOriginal(
-        new File([bytes], "marv-kalani-logo.jpg", { type: SupportedImageMimeType.Jpeg }),
+      const response = await fetch(demo.url);
+      if (!response.ok) throw new Error(`Demo request failed: ${String(response.status)}.`);
+      return loadOriginal(
+        new File([await response.blob()], demo.fileName, { type: demo.mimeType }),
       );
-      if (loaded) {
-        onLogoDemoLoaded();
-      }
-      return loaded;
     } catch {
-      showImageError(elements, "Das Logo-Demo konnte nicht geladen werden.");
+      showImageError(elements, demo.errorMessage);
       return false;
     }
+  };
+  const loadLogoDemo = async (): Promise<boolean> => {
+    const loaded = await loadBundledDemo(bundledLogo);
+    if (loaded) onLogoDemoLoaded();
+    return loaded;
+  };
+  const loadTopographyDemo = async (): Promise<boolean> => {
+    const loaded = await loadBundledDemo(bundledTopography);
+    if (loaded) onTopographyDemoLoaded();
+    return loaded;
   };
   const restoreOriginal = (): boolean => {
     const original = imageStore.restoreOriginal();
@@ -79,6 +102,7 @@ export function initializeImageLoader(
 
   elements.selectButton.addEventListener("click", () => elements.fileInput.click());
   elements.logoDemoButton.addEventListener("click", () => void loadLogoDemo());
+  elements.topographyDemoButton.addEventListener("click", () => void loadTopographyDemo());
   elements.fileInput.addEventListener("change", () => {
     const selectedFile = elements.fileInput.files?.item(0);
     if (selectedFile) {
@@ -109,6 +133,7 @@ export function initializeImageLoader(
     loadManualVersion,
     loadLogoDemo,
     loadOriginal,
+    loadTopographyDemo,
     reportError,
     restoreOriginal,
     showCurrentImage,
@@ -137,6 +162,7 @@ interface ImageLoaderElements {
   error: HTMLParagraphElement;
   fileInput: HTMLInputElement;
   logoDemoButton: HTMLButtonElement;
+  topographyDemoButton: HTMLButtonElement;
   sourceIcon: HTMLElement;
   sourceMetadata: HTMLElement;
   sourceName: HTMLElement;
@@ -156,6 +182,7 @@ function readImageLoaderElements(): ImageLoaderElements {
     error: requireElement("#image-error", HTMLParagraphElement),
     fileInput: requireElement("#image-input", HTMLInputElement),
     logoDemoButton: requireElement("#load-logo-demo", HTMLButtonElement),
+    topographyDemoButton: requireElement("#load-topography-demo", HTMLButtonElement),
     sourceIcon: requireElement("#source-icon", HTMLElement),
     sourceMetadata: requireElement("#source-metadata", HTMLElement),
     sourceName: requireElement("#source-name", HTMLElement),

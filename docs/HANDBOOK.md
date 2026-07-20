@@ -95,7 +95,14 @@ Homebrew-Installation den Rustup-Compiler für den WASM-Build mit
 Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
 
 „Logo-Demo laden“ öffnet ohne Dateidialog das mitgelieferte facettierte Logo des Projekteigentümers.
-Es läuft über denselben Decoder wie eine ausgewählte Datei, behält seine 1280 × 876 Originalpixel
+„Topografie-Demo laden“ öffnet eine eigens erzeugte fiktive Inselkarte mit dichten Konturlinien.
+Sie enthält keine fremden Kartendaten und dient dazu, Pfadanzahl, Dateigröße und Detailverlust bei
+unterschiedlicher Rastervorbereitung sichtbar zu vergleichen. Die reproduzierbaren Profile und
+Messwerte stehen im [Topografie-Benchmark](release/TOPOGRAPHY_BENCHMARK.md). Das gemessene Profil
+„Topografie / Konturen“ bereitet 75 % der Originalpixel mit 6-Bit-Farbpräzision, 12-Pixel-
+Speckle-Filter und einer Koordinatenstelle vor; es war der beste Struktur-/Größenkompromiss und
+blieb im Benchmark unter einer Sekunde Engine-Zeit.
+Das Logo läuft über denselben Decoder wie eine ausgewählte Datei, behält seine 1280 × 876 Originalpixel
 und aktiviert „Logo / Icon“: 6-Bit-Farbpräzision, 16 Pixel Speckle-Filter, ganzzahlige
 Pfadkoordinaten und ausschließlich die konservative Polygonerkennung. Damit entstehen gemessene
 542 Pfade. Der Abruf bleibt auf der App-Origin.
