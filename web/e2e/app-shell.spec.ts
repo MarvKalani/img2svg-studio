@@ -28,6 +28,41 @@ test("Given a narrow viewport, when the start page loads, then the studio has no
   expect(await hasHorizontalOverflow(page)).toBe(false);
 });
 
+test("Given image and SVG content, when the view tabs are used, then each requested workspace view is visible", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "SVG", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.getByRole("button", { name: "Logo-Demo laden" }).click();
+  await expect(page.getByRole("button", { name: "Verarbeitet", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+
+  await page.getByRole("button", { name: "Original", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Original", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+
+  await page.getByRole("button", { name: "Konvertieren" }).click();
+  await expect(page.getByRole("button", { name: "SVG", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(page.getByTestId("svg-output")).toBeVisible();
+
+  await page.getByRole("button", { name: "Verarbeitet", exact: true }).click();
+  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+  await expect(page.getByTestId("svg-output")).toBeHidden();
+});
+
 async function hasHorizontalOverflow(page: import("@playwright/test").Page) {
   return page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

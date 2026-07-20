@@ -437,8 +437,8 @@ a:focus-visible {
   background: #eef2f3;
 }
 
-.comparison-stage.compare-active > .preview-pane,
-.comparison-stage.compare-active > .comparison-divider {
+.comparison-stage[data-view-mode="comparison"].compare-active > .preview-pane,
+.comparison-stage[data-view-mode="comparison"].compare-active > .comparison-divider {
   display: none;
 }
 

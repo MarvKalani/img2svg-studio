@@ -1,5 +1,6 @@
 import "./styles.css";
 import "./compare-split.css";
+import "./workspace-view.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
 import { browserModelManifest } from "./ai/model-manifest";
@@ -17,6 +18,7 @@ import { createImageStore } from "./image/image-store";
 import { initializePwaIngress } from "./pwa/pwa-ingress";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
+import { initializeWorkspaceView } from "./workspace/workspace-view-controller";
 import {
   initializeWebMcp,
   WebMcpToolName,
@@ -27,9 +29,10 @@ import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
 
 const imageStore = createImageStore();
+const workspaceView = initializeWorkspaceView(imageStore);
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const optionsController = initializeConversionOptions();
-const compareController = initializeCompare(createCompareSelection());
+const compareController = initializeCompare(createCompareSelection(), workspaceView.showComparison);
 const historyController = initializeHistory(
   createHistoryStore(),
   optionsController.apply,
@@ -46,6 +49,7 @@ const imageLoader = initializeImageLoader(
       historyController.setOriginal(original);
     }
     optionsController.showSourceDimensions(image);
+    workspaceView.showProcessed();
     backgroundRemoval.imageLoaded();
     smartSelect.imageLoaded();
   },
@@ -54,11 +58,11 @@ const imageLoader = initializeImageLoader(
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
 smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
 void initializePwaIngress(imageLoader);
-const conversionController = initializeConversion(
-  imageStore,
-  optionsController.current,
-  historyController.record,
-);
+const conversionController = initializeConversion(imageStore, optionsController.current, (run) => {
+  const recorded = historyController.record(run);
+  workspaceView.showSvg();
+  return recorded;
+});
 const svgDownloadController = initializeSvgDownload();
 initializeModelManager(modelRegistry);
 let webMcpRegistration: WebMcpRegistration | undefined;

@@ -11,6 +11,11 @@ test("Given the model manager, when no download was requested, then both local A
   });
   await page.goto("/");
 
+  const toggle = page.getByRole("button", { name: "KI-Manager" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("list", { name: "KI-Modelle" })).toBeHidden();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("list", { name: "KI-Modelle" }).getByRole("listitem")).toHaveCount(2);
   const card = page.locator('[data-model-id="slimsam"]');
   await expect(card).toContainText("Smart Select");

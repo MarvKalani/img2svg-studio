@@ -16,7 +16,10 @@ export interface CompareController {
   current(): ComparedRuns;
 }
 
-export function initializeCompare(selection: CompareSelection): CompareController {
+export function initializeCompare(
+  selection: CompareSelection,
+  showComparison: () => void,
+): CompareController {
   const elements = readElements();
   const viewport = initializeViewport();
 
@@ -85,6 +88,9 @@ export function initializeCompare(selection: CompareSelection): CompareControlle
     assign: (slot, run) => {
       selection.assign(slot, run);
       render();
+      if (selection.current().a && selection.current().b) {
+        showComparison();
+      }
     },
     clear: () => {
       selection.clear();

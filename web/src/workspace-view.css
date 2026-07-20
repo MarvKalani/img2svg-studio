@@ -1,0 +1,9 @@
+.comparison-stage:not([data-view-mode="comparison"]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.comparison-stage:not([data-view-mode="comparison"]) > .comparison-divider,
+.comparison-stage:not([data-view-mode="comparison"]) > #secondary-preview-pane,
+.comparison-stage:not([data-view-mode="comparison"]) > #compare-output {
+  display: none;
+}

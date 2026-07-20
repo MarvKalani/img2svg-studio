@@ -31,10 +31,10 @@
         </span>
 
         <nav class="view-tabs" aria-label="Ansichtsmodus">
-          <button type="button">SVG</button>
-          <button type="button">Verarbeitet</button>
-          <button type="button">Original</button>
-          <button class="active" type="button" aria-pressed="true">A/B Vergleich</button>
+          <button id="view-svg" class="active" type="button" aria-pressed="true">SVG</button>
+          <button id="view-processed" type="button" aria-pressed="false">Verarbeitet</button>
+          <button id="view-original" type="button" aria-pressed="false">Original</button>
+          <button id="view-comparison" type="button" aria-pressed="false">A/B Vergleich</button>
         </nav>
 
         <div class="zoom-controls" aria-label="Zoomsteuerung">
@@ -242,12 +242,18 @@
               type="button"
               class="manager-button"
               aria-controls="model-manager"
-              aria-expanded="true"
+              aria-expanded="false"
             >
               <span>KI-Manager</span>
               <span aria-hidden="true">›</span>
             </button>
-            <div id="model-manager" class="model-manager" role="list" aria-label="KI-Modelle"></div>
+            <div
+              id="model-manager"
+              class="model-manager"
+              role="list"
+              aria-label="KI-Modelle"
+              hidden
+            ></div>
           </section>
         </aside>
 
@@ -255,8 +261,8 @@
           <section class="comparison" aria-labelledby="workspace-title">
             <h1 id="workspace-title" class="visually-hidden">Arbeitsfläche</h1>
             <div id="comparison-stage" class="comparison-stage">
-              <article class="preview-pane">
-                <span class="preview-label">A · Variante</span>
+              <article id="primary-preview-pane" class="preview-pane">
+                <span id="primary-preview-label" class="preview-label">SVG</span>
                 <button id="download-svg" class="download-button" type="button" hidden>
                   SVG herunterladen
                 </button>
@@ -322,7 +328,7 @@
 
               <div class="comparison-divider" aria-hidden="true"><span>↔</span></div>
 
-              <article class="preview-pane">
+              <article id="secondary-preview-pane" class="preview-pane">
                 <span class="preview-label align-right">B · Variante</span>
                 <div class="preview-placeholder secondary">
                   <svg viewBox="0 0 140 140" aria-hidden="true">

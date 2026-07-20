@@ -160,6 +160,11 @@ erneut bedienbar.
 Dieser Ablauf wird mit jedem vertikalen Slice ergänzt und erst dann als verfügbar bezeichnet,
 wenn er im Browser getestet wurde.
 
+Die Kopfzeile schaltet die gemeinsame Arbeitsfläche gezielt zwischen SVG, der aktuellen
+verarbeiteten Rasterversion, dem unveränderten Original und dem A/B-Vergleich um. Nach dem Laden
+öffnet sich „Verarbeitet“, nach einer Konvertierung „SVG“ und bei einer vollständigen A/B-Zuweisung
+automatisch der Vergleich.
+
 ## Verlauf und A/B-Vergleich
 
 Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
@@ -339,6 +344,9 @@ Mixed-Fixture enthält Kreis, Rechteck, Linie und Dreieck und erscheint deshalb 
 genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
 
 ## KI-Manager
+
+Der KI-Manager startet geschlossen und öffnet oder schließt seine verfügbaren Modellkarten über
+denselben tastaturbedienbaren Schalter.
 
 Der KI-Manager ist in der Seitenleiste standardmäßig geöffnet und kann über seine Kopfzeile ein-
 und ausgeklappt werden. KI-Modelle starten im Zustand „Nicht geladen“. Jede Modellkarte zeigt:
