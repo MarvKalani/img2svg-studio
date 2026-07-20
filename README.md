@@ -2,7 +2,8 @@
 
 **A local-first raster-to-SVG lab for turning visual tuning into reproducible evidence.**
 
-[Live demo](https://studio.img2.download) · [Architecture](docs/ARCHITECTURE.md) ·
+[Live demo](https://studio.img2.download) · [Codemap](docs/CODEMAP.md) ·
+[Architecture](docs/ARCHITECTURE.md) ·
 [User guide](docs/HANDBOOK.md) · [Submission notes](docs/SUBMISSION.md) ·
 [Privacy](https://studio.img2.download/datenschutz.html)
 
@@ -123,7 +124,8 @@ The UI and all WebMCP tools call the same typed controllers. Conversion moves RG
 Web Worker into a small WASM boundary and the Rust engine. The stateless MCP companion uses the same
 WASM boundary from Node. AI model sessions stay behind a lifecycle registry that owns download
 verification, cancellation, inference barriers and disposal. See the
-[architecture overview](docs/ARCHITECTURE.md) for the complete flow.
+[architecture overview](docs/ARCHITECTURE.md) for the stable boundaries and the
+[codemap](docs/CODEMAP.md) for concrete change entry points.
 
 Core technology:
 

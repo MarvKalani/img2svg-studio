@@ -4,6 +4,9 @@ img2svg Studio is a static, local-first browser application. There is no applica
 image upload path. The optional ChatGPT companion is a separate stateless process reached locally
 through Secure MCP Tunnel; it does not change the browser deployment.
 
+For concrete ownership, entry points and test routes, use the maintained
+[codemap](CODEMAP.md).
+
 ```mermaid
 flowchart LR
   Human["Human in the UI"] --> Controllers["Typed application controllers"]

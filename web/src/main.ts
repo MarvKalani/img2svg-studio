@@ -1,4 +1,5 @@
 import "./styles.css";
+import "./history/history.css";
 import "./help/interactive-handbook.css";
 import "./footer.css";
 import "./compare-split.css";

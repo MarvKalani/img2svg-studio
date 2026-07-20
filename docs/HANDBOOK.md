@@ -47,6 +47,8 @@ Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste
 Revision vom 20. Juli 2026; weitere Revisionen desselben Tages erhöhen die zweistellige Endung.
 Die Live-Vorschau und bewusste History-Übernahme wurden als Revision `260720.02` ausgeliefert.
 Die vollständige VTracer-Steuerung und das interaktive Handbuch folgen mit `260720.03`.
+Die fachliche Aufteilung von Engine-Optionen und Historien-Styles sowie die Codemap folgen mit
+`260720.04`.
 
 ### Sprache
 

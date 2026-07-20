@@ -1,4 +1,4 @@
-export const appVersion = "260720.03" as const;
+export const appVersion = "260720.04" as const;
 
 export function showAppVersion(): void {
   const output = document.querySelector("#app-version");

@@ -165,6 +165,8 @@ Das Handbuch ist Teil des Produkts:
 - Öffentliche technische Verträge werden in `docs/TECHNICAL_SPEC.md` nachgeführt.
 - Neue oder ersetzte Entscheidungen werden in `docs/DECISIONS.md` nachgeführt.
 - README, Build- und Testanleitung bleiben mit dem tatsächlich ausführbaren Stand synchron.
+- `docs/CODEMAP.md` wird aktualisiert, wenn sich Zuständigkeiten, Einstiegspunkte oder kritische
+  Datenflüsse ändern.
 - Ein Review bestätigt ausdrücklich, wenn ein Slice keinen Dokumentationsbedarf hat.
 
 ## 8. Fehler und Kontrollfluss
