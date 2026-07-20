@@ -26,6 +26,10 @@ test("Given the legal notice is opened, when English is selected, then its requi
   await page.goto("/impressum.html");
 
   const germanNotice = page.locator('[data-legal-language="de"]');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://studio.img2.download/impressum",
+  );
   await expect(page.getByRole("heading", { name: "Impressum" })).toBeVisible();
   await expect(germanNotice.locator("address")).toContainText("Marvin Kalani");
   await expect(germanNotice.locator("address")).toContainText("Zum Bruch 3a");
@@ -43,6 +47,10 @@ test("Given privacy information is opened, then local processing and optional ne
   await page.goto("/datenschutz.html");
 
   const germanPrivacy = page.locator('[data-legal-language="de"]');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://studio.img2.download/datenschutz",
+  );
   await expect(page.getByRole("heading", { name: "Datenschutz" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Lokale Bildverarbeitung" })).toBeVisible();
   await expect(germanPrivacy.getByText("Cloudflare", { exact: true })).toBeVisible();
@@ -56,6 +64,10 @@ test("Given license information is opened, then the source license and change da
   await page.goto("/licenses.html");
 
   const germanLicenses = page.locator('[data-legal-language="de"]');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://studio.img2.download/licenses",
+  );
   await expect(page.getByRole("heading", { name: "Lizenzen" })).toBeVisible();
   await expect(
     germanLicenses.getByText("Business Source License 1.1", { exact: true }),
