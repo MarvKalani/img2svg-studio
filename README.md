@@ -40,7 +40,8 @@ downloaded only after a visible user action and then run locally through WebGPU 
 The Studio targets desktop Google Chrome 150 or newer on macOS, Windows and Linux. The release
 gate runs in Chrome 150 on Apple Silicon; the static build has no OS-specific server component.
 The complete manual conversion workflow remains available when WebMCP or WebGPU is unavailable.
-SlimSAM specifically requires WebGPU, while MODNet can fall back to WASM.
+SlimSAM is offered only when the active WebGPU adapter supports `shader-f16`; MODNet can fall
+back to WASM.
 
 No account, API key or paid service is required. Judges can use the public demo without installing
 the project. The command below reproduces the same static build and judge path locally.
@@ -151,7 +152,8 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 - Model files are the only intentional cross-origin requests and start only on demand.
 - History is in memory and keeps every run for the current image until the user deletes it;
   reloading starts a fresh workspace.
-- SlimSAM requires WebGPU. MODNet falls back to WASM when WebGPU is unavailable.
+- SlimSAM requires WebGPU with `shader-f16` and is hidden when unsupported. MODNet falls back to
+  WASM when WebGPU is unavailable.
 - WebMCP is progressive: unsupported browsers retain the complete manual UI.
 - PWA installation, OS share targets and file associations depend on platform support; the normal
   browser tab remains the primary judge and WebMCP path.

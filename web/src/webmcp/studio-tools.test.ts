@@ -41,6 +41,19 @@ describe("complete Studio WebMCP tools", () => {
     expect(JSON.stringify(output)).not.toContain("svg");
   });
 
+  test("Given shader-f16 is unavailable, when tools are created, then SlimSAM is not offered to users or agents", () => {
+    const tools = createStudioTools(services(), {
+      modelIds: ["modnet"],
+      smartSelection: false,
+    });
+
+    expect(tools.map((tool) => tool.name)).not.toContain("apply_smart_selection");
+    const loadModel = tools.find((tool) => tool.name === "load_model")!;
+    expect(loadModel.inputSchema).toMatchObject({
+      properties: { modelId: { enum: ["modnet"] } },
+    });
+  });
+
   test("Given too few Smart Select points, when apply_smart_selection executes, then the request is rejected before application state changes", async () => {
     const applicationServices = services();
     const tool = createStudioTools(applicationServices).at(-1)!;

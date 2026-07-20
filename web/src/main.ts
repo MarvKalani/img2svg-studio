@@ -2,6 +2,7 @@ import "./styles.css";
 import "./compare-split.css";
 import "./workspace-view.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
+import { detectBrowserAiCapabilities, showSupportedAiTools } from "./ai/browser-ai-capabilities";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
 import { browserModelManifest } from "./ai/model-manifest";
 import { initializeModelManager } from "./ai/model-manager";
@@ -29,6 +30,12 @@ import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
 
 const imageStore = createImageStore();
+const aiCapabilities = await detectBrowserAiCapabilities();
+const availableModelIds = new Set<"modnet" | "slimsam">([
+  "modnet",
+  ...(aiCapabilities.smartSelect ? (["slimsam"] as const) : []),
+]);
+showSupportedAiTools(aiCapabilities);
 const workspaceView = initializeWorkspaceView(imageStore);
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const optionsController = initializeConversionOptions();
@@ -64,30 +71,37 @@ const conversionController = initializeConversion(imageStore, optionsController.
   return recorded;
 });
 const svgDownloadController = initializeSvgDownload();
-initializeModelManager(modelRegistry);
+initializeModelManager(modelRegistry, availableModelIds);
 let webMcpRegistration: WebMcpRegistration | undefined;
 const conversionTools = createConversionTools({
   applyOptions: optionsController.apply,
   convert: conversionController.convert,
   readOptions: optionsController.current,
 });
-const studioTools = createStudioTools({
-  applySmartSelection: smartSelect.applySelection,
-  assignComparison: historyController.assignComparison,
-  assignOriginalComparison: historyController.assignOriginalComparison,
-  downloadSelectedSvg: svgDownloadController.download,
-  loadModel: modelRegistry.load,
-  readComparedRuns: compareController.current,
-  readImage: imageStore.current,
-  readModels: modelRegistry.snapshots,
-  readOptions: optionsController.current,
-  readRuns: historyController.runs,
-  removeRun: (runId) => historyController.remove(runId) !== undefined,
-  removeBackground: backgroundRemoval.removeBackground,
-  retryModel: modelRegistry.retry,
-  selectRun: historyController.select,
-  unloadModel: modelRegistry.unload,
-});
+const studioTools = createStudioTools(
+  {
+    applySmartSelection: smartSelect.applySelection,
+    assignComparison: historyController.assignComparison,
+    assignOriginalComparison: historyController.assignOriginalComparison,
+    downloadSelectedSvg: svgDownloadController.download,
+    loadModel: modelRegistry.load,
+    readComparedRuns: compareController.current,
+    readImage: imageStore.current,
+    readModels: () =>
+      modelRegistry.snapshots().filter((snapshot) => availableModelIds.has(snapshot.model.id)),
+    readOptions: optionsController.current,
+    readRuns: historyController.runs,
+    removeRun: (runId) => historyController.remove(runId) !== undefined,
+    removeBackground: backgroundRemoval.removeBackground,
+    retryModel: modelRegistry.retry,
+    selectRun: historyController.select,
+    unloadModel: modelRegistry.unload,
+  },
+  {
+    modelIds: [...availableModelIds],
+    smartSelection: aiCapabilities.smartSelect,
+  },
+);
 const applicationTools = [...conversionTools, ...studioTools];
 const webMcpToolNames = [
   WebMcpToolName.GetCapabilities,

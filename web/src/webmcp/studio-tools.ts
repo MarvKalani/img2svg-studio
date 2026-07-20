@@ -28,6 +28,16 @@ export interface StudioToolServices {
   unloadModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
 }
 
+export interface StudioToolAvailability {
+  readonly modelIds: readonly BrowserModelId[];
+  readonly smartSelection: boolean;
+}
+
+const allStudioTools: StudioToolAvailability = Object.freeze({
+  modelIds: Object.freeze(["modnet", "slimsam"] as const),
+  smartSelection: true,
+});
+
 const emptyObjectSchema = Object.freeze({
   additionalProperties: false,
   properties: Object.freeze({}),
@@ -51,15 +61,6 @@ const comparisonSchema = Object.freeze({
     original: Object.freeze({ const: true, type: "boolean" }),
     runId: Object.freeze({ minimum: 1, type: "integer" }),
   }),
-  type: "object",
-});
-
-const modelSchema = Object.freeze({
-  additionalProperties: false,
-  properties: Object.freeze({
-    modelId: Object.freeze({ enum: Object.freeze(["modnet", "slimsam"]), type: "string" }),
-  }),
-  required: Object.freeze(["modelId"]),
   type: "object",
 });
 
@@ -95,20 +96,24 @@ const smartSelectionSchema = Object.freeze({
   type: "object",
 });
 
-export function createStudioTools(services: StudioToolServices): readonly WebMcpTool[] {
-  return Object.freeze([
+export function createStudioTools(
+  services: StudioToolServices,
+  availability: StudioToolAvailability = allStudioTools,
+): readonly WebMcpTool[] {
+  const tools = [
     readWorkspaceTool(services),
     selectRunTool(services),
     deleteRunTool(services),
     compareTool(services, "a", WebMcpToolName.SelectComparisonA),
     compareTool(services, "b", WebMcpToolName.SelectComparisonB),
     downloadTool(services),
-    modelTool(services, "load", WebMcpToolName.LoadModel),
-    modelTool(services, "retry", WebMcpToolName.RetryModel),
-    modelTool(services, "unload", WebMcpToolName.UnloadModel),
+    modelTool(services, availability.modelIds, "load", WebMcpToolName.LoadModel),
+    modelTool(services, availability.modelIds, "retry", WebMcpToolName.RetryModel),
+    modelTool(services, availability.modelIds, "unload", WebMcpToolName.UnloadModel),
     backgroundRemovalTool(services),
-    smartSelectionTool(services),
-  ]);
+    ...(availability.smartSelection ? [smartSelectionTool(services)] : []),
+  ];
+  return Object.freeze(tools);
 }
 
 function deleteRunTool(services: StudioToolServices): WebMcpTool {
@@ -198,6 +203,7 @@ function downloadTool(services: StudioToolServices): WebMcpTool {
 
 function modelTool(
   services: StudioToolServices,
+  modelIds: readonly BrowserModelId[],
   action: "load" | "retry" | "unload",
   name: string,
 ): WebMcpTool {
@@ -205,9 +211,9 @@ function modelTool(
     annotations: { readOnlyHint: false, untrustedContentHint: false },
     description: `${action} one declared local AI model through the visible model manager.`,
     execute: async (input: unknown) => {
-      const modelId = readModelId(input);
+      const modelId = readModelId(input, modelIds);
       if (!modelId) {
-        return invalidInput("modelId must be modnet or slimsam.");
+        return invalidInput(`modelId must be ${modelIds.join(" or ")}.`);
       }
       const operation =
         action === "load"
@@ -228,7 +234,7 @@ function modelTool(
       }
       return success({ model: modelSummary(snapshot) });
     },
-    inputSchema: modelSchema,
+    inputSchema: modelSchema(modelIds),
     name,
   });
 }
@@ -270,11 +276,25 @@ function readRunId(input: unknown): number | undefined {
   return Number(input.runId);
 }
 
-function readModelId(input: unknown): BrowserModelId | undefined {
+function modelSchema(modelIds: readonly BrowserModelId[]): Readonly<Record<string, unknown>> {
+  return Object.freeze({
+    additionalProperties: false,
+    properties: Object.freeze({
+      modelId: Object.freeze({ enum: Object.freeze([...modelIds]), type: "string" }),
+    }),
+    required: Object.freeze(["modelId"]),
+    type: "object",
+  });
+}
+
+function readModelId(
+  input: unknown,
+  modelIds: readonly BrowserModelId[],
+): BrowserModelId | undefined {
   if (!isRecord(input)) {
     return undefined;
   }
-  return input.modelId === "modnet" || input.modelId === "slimsam" ? input.modelId : undefined;
+  return modelIds.find((modelId) => modelId === input.modelId);
 }
 
 function readSmartSelection(input: unknown): SmartSelectionRequest | undefined {

@@ -4,6 +4,7 @@ import type {
   Tensor,
 } from "@huggingface/transformers";
 import type { RasterPixels } from "../conversion/read-raster-pixels";
+import { detectBrowserAiCapabilities } from "./browser-ai-capabilities";
 import { prepareModelArtifactCache } from "./model-artifact-cache";
 import { createDownloadProgressReporter } from "./model-download-progress";
 import { totalModelBytes } from "./model-manifest";
@@ -53,8 +54,9 @@ export function createSamModelLoader(): ModelLoader {
       if (model.id !== "slimsam") {
         throw new Error(`SlimSAM-Loader kann ${model.id} nicht laden.`);
       }
-      if (typeof navigator === "undefined" || !("gpu" in navigator)) {
-        throw new Error("SlimSAM benötigt einen Browser mit WebGPU-Unterstützung.");
+      const capabilities = await detectBrowserAiCapabilities();
+      if (!capabilities.smartSelect) {
+        throw new Error("SlimSAM benötigt WebGPU mit shader-f16-Unterstützung.");
       }
 
       const progress = createDownloadProgressReporter(model, report);

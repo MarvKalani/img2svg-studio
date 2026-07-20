@@ -348,8 +348,7 @@ genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
 Der KI-Manager startet geschlossen und öffnet oder schließt seine verfügbaren Modellkarten über
 denselben tastaturbedienbaren Schalter.
 
-Der KI-Manager ist in der Seitenleiste standardmäßig geöffnet und kann über seine Kopfzeile ein-
-und ausgeklappt werden. KI-Modelle starten im Zustand „Nicht geladen“. Jede Modellkarte zeigt:
+KI-Modelle starten im Zustand „Nicht geladen“. Jede Modellkarte zeigt:
 
 - Name, Aufgabe, Größe und Lizenz.
 - Zustand: nicht geladen, Download mit Prozentwert, Initialisierung, bereit oder Fehler.
@@ -361,6 +360,11 @@ SlimSAM 77 Uniform mit 19,76 MiB für Smart Select fest. Beide Modelle und ihre 
 stehen unter Apache-2.0. MODNet ist für WebGPU mit WASM-Fallback vorgesehen; SlimSAM verwendet
 zwei FP16-Graphen über WebGPU. Revision, Einzeldateien und Prüfsummen sind im
 Drittanbieter-Inventar festgehalten.
+
+Beim Start prüft das Studio den echten WebGPU-Adapter. Fehlt `shader-f16`, werden SlimSAM, Smart
+Select und das zugehörige WebMCP-Werkzeug nicht angeboten. MODNet bleibt sichtbar, weil es auf
+Rechnern ohne geeignete GPU über WASM laufen kann. So kann kein unpassendes FP16-Modell geladen
+werden und die Oberfläche zeigt ausschließlich ausführbare Funktionen.
 
 ### Hintergrund entfernen
 
@@ -375,8 +379,9 @@ einen erneuten Versuch.
 
 ### Smart Select
 
-Smart Select wird verfügbar, sobald ein Bild geladen und SlimSAM 77 Uniform im KI-Manager
-explizit auf „Bereit · WebGPU“ gebracht wurde. „Smart Select“ berechnet einmalig das lokale
+Auf einem Adapter mit `shader-f16` wird Smart Select verfügbar, sobald ein Bild geladen und
+SlimSAM 77 Uniform im KI-Manager explizit auf „Bereit · WebGPU“ gebracht wurde. „Smart Select“
+berechnet einmalig das lokale
 Bild-Embedding und legt eine deckungsgleiche, türkisfarbene Maskenebene über das Rasterbild.
 
 „+ Vordergrund“ setzt grüne Punkte auf Bereiche, die zur Auswahl gehören. „− Hintergrund“ setzt
@@ -430,8 +435,9 @@ Bei einem Verbindungsfehler:
 In einem unterstützten Browser kann ein Agent dieselben sichtbaren Anwendungsdienste verwenden
 wie ein Mensch. Auf `https://studio.img2.download` bestätigt der Nutzer die lokale Dateiübergabe.
 Danach kann der Agent Einstellungen und Workspace lesen, konvertieren, History und A/B bedienen,
-SVG exportieren sowie KI-Modelle und KI-Aktionen steuern. Jede Aktion bleibt unmittelbar in der
-Oberfläche sichtbar.
+SVG exportieren sowie die auf dem Rechner verfügbaren KI-Modelle und KI-Aktionen steuern. Nicht
+unterstützte GPU-Werkzeuge werden weder registriert noch in einem Modellschema angeboten. Jede
+Aktion bleibt unmittelbar in der Oberfläche sichtbar.
 
 Chrome 149 oder neuer benötigt für lokale Tests `#enable-webmcp-testing`; für die Toolansicht in
 DevTools zusätzlich `#devtools-webmcp-support`. Nach dem Neustart zeigt DevTools unter

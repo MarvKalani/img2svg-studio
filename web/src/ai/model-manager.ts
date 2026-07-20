@@ -1,5 +1,5 @@
 import "./model-manager.css";
-import { type BrowserModelPurpose, totalModelBytes } from "./model-manifest";
+import { type BrowserModelId, type BrowserModelPurpose, totalModelBytes } from "./model-manifest";
 import type { ModelRegistry, ModelRegistrySnapshot } from "./model-registry";
 
 type ModelAction = "load" | "retry" | "unload";
@@ -12,12 +12,18 @@ export interface ModelManagerPresentation {
   readonly statusText: string;
 }
 
-export function initializeModelManager(registry: ModelRegistry): void {
+export function initializeModelManager(
+  registry: ModelRegistry,
+  visibleModelIds: ReadonlySet<BrowserModelId>,
+): void {
   const manager = requireElement("#model-manager", HTMLElement);
   const toggle = requireElement("#model-manager-toggle", HTMLButtonElement);
   const render = (): void => {
     manager.replaceChildren(
-      ...registry.snapshots().map((snapshot) => modelCard(snapshot, registry)),
+      ...registry
+        .snapshots()
+        .filter((snapshot) => visibleModelIds.has(snapshot.model.id))
+        .map((snapshot) => modelCard(snapshot, registry)),
     );
   };
 

@@ -376,6 +376,12 @@ teilen dasselbe Lade-Promise. Fehler führen immer in einen sichtbaren `error`-Z
 `dispose()` und Embedding-Caches werden beim Entladen berücksichtigt. Vollständige Quellen,
 Lizenzketten, Größen und Prüfsummen stehen in `docs/THIRD_PARTY.md`.
 
+`browser-ai-capabilities.ts` fordert den tatsächlichen WebGPU-Adapter an und prüft dessen
+Feature-Set. Nur `shader-f16` aktiviert SlimSAM. Dieselbe Capability filtert die Modellkarten,
+den Workspace-Snapshot, die erlaubten Modell-IDs in den WebMCP-Schemas und das Werkzeug
+`apply_smart_selection`. Der SlimSAM-Loader wiederholt die Prüfung als letzte Laufzeitbarriere.
+MODNet bleibt durch seinen deklarierten WASM-Fallback verfügbar.
+
 `model-registry.ts` implementiert die disjunkte Zustandsmenge `not-loaded`, `downloading`,
 `initializing`, `ready`, `unloading` und `error`. Unveränderliche Snapshots enthalten ausschließlich
 Modelldefinition und sichtbaren Zustand; Runtime-Handles bleiben intern. Je Modell deduplizieren

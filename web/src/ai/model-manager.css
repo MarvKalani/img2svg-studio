@@ -22,6 +22,11 @@
   cursor: pointer;
 }
 
+.ai-tool-button[hidden],
+.ai-tool-status[hidden] {
+  display: none;
+}
+
 .ai-tool-button:disabled {
   cursor: not-allowed;
   filter: saturate(0.35);

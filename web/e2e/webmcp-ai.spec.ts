@@ -9,6 +9,10 @@ test("Given SlimSAM and a local image, when the WebMCP agent applies normalized 
   test.setTimeout(240_000);
   await installWebMcpFake(page);
   await page.goto("/");
+  test.skip(
+    await page.getByRole("button", { name: "Smart Select", exact: true }).isHidden(),
+    "SlimSAM requires a real WebGPU adapter with shader-f16.",
+  );
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
 
   const loaded = await executeTool(page, "load_model", { modelId: "slimsam" });

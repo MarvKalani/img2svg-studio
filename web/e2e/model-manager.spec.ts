@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { emulateGpuFeatures } from "./gpu-test-fixture";
 
 test("Given the model manager, when no download was requested, then both local AI models are described without model traffic", async ({
   page,
@@ -9,6 +10,7 @@ test("Given the model manager, when no download was requested, then both local A
       unexpectedRequests.push(request.url());
     }
   });
+  await emulateGpuFeatures(page, ["shader-f16"]);
   await page.goto("/");
 
   const toggle = page.getByRole("button", { name: "KI-Manager" });

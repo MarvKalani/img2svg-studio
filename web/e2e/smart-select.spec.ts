@@ -16,11 +16,16 @@ test("Given loaded SlimSAM, when two positive and one negative point refine the 
   test.setTimeout(240_000);
   const remoteRequests = collectRemoteModelRequests(page);
   await page.goto("/");
+  test.skip(
+    await page.getByRole("button", { name: "Smart Select", exact: true }).isHidden(),
+    "SlimSAM requires a real WebGPU adapter with shader-f16.",
+  );
   await page.evaluate(async () => caches.delete("transformers-cache"));
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
   await page.getByRole("button", { name: "Konvertieren" }).click();
   await expect(page.getByTestId("history-card")).toHaveCount(1);
 
+  await page.getByRole("button", { name: "KI-Manager" }).click();
   const modelCard = page.locator("[data-model-id='slimsam']");
   const smartSelect = page.getByRole("button", { name: "Smart Select", exact: true });
   await expect(smartSelect).toBeDisabled();

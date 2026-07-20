@@ -126,6 +126,11 @@ Ein angewendetes KI-Ergebnis wird als versionierte Eingabe in Conversion, Histor
 Konkrete Modelle dürfen erst nach Prüfung von Quelle, Revision, Größe, Lizenz und Runtime in
 die Registry gelangen.
 
+Vor dem Rendern prüft die App die benötigten Hardwaremerkmale. Ein GPU-exklusives Modell und
+seine UI- sowie WebMCP-Aktionen werden nur angeboten, wenn der aktive Adapter alle benötigten
+Merkmale besitzt. SlimSAM erfordert `shader-f16`; MODNet bleibt durch seinen WASM-Fallback
+unabhängig davon verfügbar.
+
 ## 7.1 Installierbare App-Eingänge
 
 Das statische Studio besitzt ein Web-App-Manifest und kann auf unterstützten Plattformen als PWA
@@ -152,9 +157,10 @@ typisierte Werkzeuge für den sichtbaren Produktablauf:
   `select_comparison_b`: Original oder Run sichtbar vergleichen.
 - `delete_history_run`: einen Run aus der aktuellen Browser-Session entfernen.
 - `download_selected_svg`: exakt den sichtbaren ausgewählten Run exportieren.
-- `load_model`, `retry_model` und `unload_model`: denselben KI-Manager bedienen.
-- `apply_background_removal` und `apply_smart_selection`: KI-Ergebnisse als versionierte
-  Eingabe in den normalen Workflow übernehmen.
+- `load_model`, `retry_model` und `unload_model`: dieselben verfügbaren Modelle wie der
+  KI-Manager bedienen.
+- `apply_background_removal` und, bei `shader-f16`, `apply_smart_selection`: KI-Ergebnisse als
+  versionierte Eingabe in den normalen Workflow übernehmen.
 
 Mensch und Agent verwenden dieselben Application Services und denselben sichtbaren Zustand.
 Lokale Bilder gelangen über die browserbestätigte Dateiübergabe in den Tab. Danach ist jede
