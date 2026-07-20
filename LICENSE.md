@@ -1,3 +1,13 @@
+# Licensing scope
+
+The Business Source License below applies only to the original img2svg Studio code and assets
+identified as the Licensed Work. Third-party components are excluded from the Licensed Work and
+remain subject to their respective licenses. Their notices are preserved in
+[`THIRD_PARTY_LICENSES`](THIRD_PARTY_LICENSES/) and inventoried in
+[`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md).
+
+---
+
 # Business Source License 1.1
 
 ## Parameters

@@ -55,6 +55,30 @@ describe("submission documents", () => {
     expect(symbiosis).toContain("[SYMBIOSIS]");
   });
 
+  test("Given the tracing foundation, when publication notices are inspected, then Studio and upstream rights are separated", async () => {
+    const license = await readDocument("LICENSE.md");
+    const inventory = await readDocument("docs/THIRD_PARTY.md");
+    const publicPage = await readDocument("web/public/licenses.html");
+    const vtracerLicense = await readDocument("THIRD_PARTY_LICENSES/VTRACER-MIT.txt");
+    const visioncortexLicense = await readDocument("THIRD_PARTY_LICENSES/VISIONCORTEX-MIT.txt");
+    const visioncortexAttributions = await readDocument(
+      "THIRD_PARTY_LICENSES/VISIONCORTEX-ATTRIBUTIONS.md",
+    );
+
+    expect(license).toContain("Third-party components are excluded from the Licensed Work");
+    expect(inventory).toContain("VTracer 0.6.5");
+    expect(inventory).toContain("THIRD_PARTY_LICENSES/VTRACER-MIT.txt");
+    expect(inventory).toContain("THIRD_PARTY_LICENSES/VISIONCORTEX-MIT.txt");
+    expect(inventory).not.toContain("VTracer is not copied");
+    expect(publicPage).toContain("VTracer 0.6.5");
+    expect(publicPage).toContain("visioncortex 0.8.10");
+    expect(publicPage).toContain("THIRD_PARTY_LICENSES/VTRACER-MIT.txt");
+    expect(publicPage).toContain("THIRD_PARTY_LICENSES/VISIONCORTEX-MIT.txt");
+    expect(vtracerLicense).toContain("Copyright (c) 2024 TSANG, Hao Fung");
+    expect(visioncortexLicense).toContain("Copyright (c) 2026 TSANG, Hao Fung");
+    expect(visioncortexAttributions).toContain("# Simplify.js");
+  });
+
   test("Given the judge materials, when local links are resolved, then every target exists", async () => {
     const missingTargets: string[] = [];
 

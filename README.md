@@ -190,4 +190,5 @@ the license, each covered version changes to Apache-2.0. The voluntary
 [Symbiosis Pact](SYMBIOSIS.md) describes ways humans and agents can contribute back.
 
 Third-party code and model licenses are documented separately in
-[THIRD_PARTY.md](docs/THIRD_PARTY.md).
+[THIRD_PARTY.md](docs/THIRD_PARTY.md); their complete preserved notices live in
+[THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES/).

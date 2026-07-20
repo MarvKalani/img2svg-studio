@@ -8,7 +8,8 @@ in `web/src/ai/model-manifest.ts`; this document records primary sources and ver
 
 | Component | Version | License | Purpose and source |
 | --- | --- | --- | --- |
-| `visioncortex` | 0.8.10 | MIT OR Apache-2.0 | Color clustering and contour tracing; [crate](https://crates.io/crates/visioncortex/0.8.10) |
+| VTracer | 0.6.5 | MIT | Reference workflow and parameter semantics for raster-to-SVG tracing; [source](https://github.com/visioncortex/vtracer/tree/v0.6.5) |
+| `visioncortex` | 0.8.10 | MIT OR Apache-2.0; distributed here under MIT | Color clustering and contour tracing; [crate](https://crates.io/crates/visioncortex/0.8.10) |
 | `wasm-bindgen` | 0.2.126 | MIT OR Apache-2.0 | Rust/browser boundary; [crate](https://crates.io/crates/wasm-bindgen/0.2.126) |
 | `@huggingface/transformers` | 3.8.1 | Apache-2.0 | Browser model runtime; [release](https://github.com/huggingface/transformers.js/releases/tag/3.8.1) |
 | `onnxruntime-web` | 1.22.0-dev.20250409-89f8206ba4 | MIT | Transitive ONNX execution runtime; [package](https://www.npmjs.com/package/onnxruntime-web/v/1.22.0-dev.20250409-89f8206ba4) |
@@ -17,10 +18,14 @@ in `web/src/ai/model-manifest.ts`; this document records primary sources and ver
 | `sharp` | 0.35.3 | Apache-2.0 | Bounded server-side raster decode and palette reduction; [package](https://www.npmjs.com/package/sharp/v/0.35.3) |
 | `zod` | 4.4.3 | MIT | MCP input and output schemas; [package](https://www.npmjs.com/package/zod/v/4.4.3) |
 
-The Rust engine's own shape adapter and SVG serialization are original Studio code. VTracer is not
-copied or bundled as an application; `visioncortex`, its shared foundation, is consumed as a pinned
-crate under its published license. The SHAPE-08 audit records which public `Shape` algorithms were
-measured and which behavior was retained.
+The Rust engine's shape adapter and SVG serialization are original Studio code. Its orchestration
+follows the public VTracer workflow and parameter semantics while consuming `visioncortex`, the
+same tracing foundation, as a pinned crate. Upstream rights are not relicensed under the Studio's
+BSL. The exact [VTracer MIT notice](../THIRD_PARTY_LICENSES/VTRACER-MIT.txt),
+[visioncortex MIT notice](../THIRD_PARTY_LICENSES/VISIONCORTEX-MIT.txt) and packaged
+[visioncortex attributions](../THIRD_PARTY_LICENSES/VISIONCORTEX-ATTRIBUTIONS.md) are preserved
+unchanged. The SHAPE-08 audit records which public `Shape` algorithms were measured and which
+behavior was retained.
 
 VTracer 0.6.5 does not call the dormant public shape classifiers itself. The Studio's ground-truth
 audit retained only `Shape::is_circle()` as an additional pixel-occupancy check. `is_ellipse()` was
