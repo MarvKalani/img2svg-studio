@@ -4,7 +4,7 @@ import { ImageVersionKind } from "../image/image-version";
 import { createHistoryStore, type NewConversionRun } from "./history-store";
 
 describe("history store", () => {
-  test("Given eleven successful conversions, when recorded, then only the ten newest immutable runs remain", () => {
+  test("Given eleven successful conversions, when recorded, then every immutable session run remains", () => {
     const store = createHistoryStore();
 
     for (let runNumber = 1; runNumber <= 11; runNumber += 1) {
@@ -12,8 +12,8 @@ describe("history store", () => {
     }
 
     const runs = store.runs();
-    expect(runs).toHaveLength(10);
-    expect(runs.map((run) => run.id)).toEqual([11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);
+    expect(runs).toHaveLength(11);
+    expect(runs.map((run) => run.id)).toEqual([11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
     expect(Object.isFrozen(runs)).toBe(true);
     expect(runs.every((run) => Object.isFrozen(run) && Object.isFrozen(run.options))).toBe(true);
     expect(
@@ -25,6 +25,17 @@ describe("history store", () => {
           Object.isFrozen(run.options.preprocessing.resize),
       ),
     ).toBe(true);
+  });
+
+  test("Given a selected run, when it is removed, then its SVG is released and selection is cleared", () => {
+    const store = createHistoryStore();
+    const older = store.add(runInput(1));
+    const selected = store.add(runInput(2));
+
+    expect(store.remove(selected.id)).toBe(selected);
+    expect(store.runs()).toEqual([older]);
+    expect(store.selected()).toBeUndefined();
+    expect(store.remove(selected.id)).toBeUndefined();
   });
 
   test("Given stored runs, when an older run is selected, then its snapshot stays unchanged", () => {

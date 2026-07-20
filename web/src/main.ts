@@ -77,6 +77,7 @@ const studioTools = createStudioTools({
   readModels: modelRegistry.snapshots,
   readOptions: optionsController.current,
   readRuns: historyController.runs,
+  removeRun: (runId) => historyController.remove(runId) !== undefined,
   removeBackground: backgroundRemoval.removeBackground,
   retryModel: modelRegistry.retry,
   selectRun: historyController.select,

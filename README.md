@@ -151,7 +151,8 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
   converts it in memory, returns the SVG, and retains neither value.
 - There is no telemetry, tracker or account requirement.
 - Model files are the only intentional cross-origin requests and start only on demand.
-- History is in memory and contains the ten newest runs; reloading starts a fresh workspace.
+- History is in memory and keeps every run for the current image until the user deletes it;
+  reloading starts a fresh workspace.
 - SlimSAM requires WebGPU. MODNet falls back to WASM when WebGPU is unavailable.
 - WebMCP is progressive: unsupported browsers retain the complete manual UI.
 - PWA installation, OS share targets and file associations depend on platform support; the normal

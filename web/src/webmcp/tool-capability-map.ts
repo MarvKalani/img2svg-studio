@@ -11,6 +11,7 @@ export const toolCapabilityMap: readonly ToolCapability[] = Object.freeze([
   capability(WebMcpToolName.ConfigureConversion, ".sidebar"),
   capability(WebMcpToolName.ConvertCurrentImage, "#convert-button"),
   capability(WebMcpToolName.SelectHistoryRun, "#history-content"),
+  capability(WebMcpToolName.DeleteHistoryRun, ".history-delete-button"),
   capability(
     WebMcpToolName.SelectComparisonA,
     "[data-compare-slot='a'], [data-compare-original-slot='a']",

@@ -33,6 +33,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   const configured = await executeTool(page, "configure_conversion", {
     colorPrecision: 5,
     filterSpeckle: 12,
+    pathPrecision: 2,
     scalePercent: 50,
   });
   expect(configured).toMatchObject({ ok: true });
@@ -58,6 +59,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   await executeTool(page, "configure_conversion", {
     colorPrecision: 7,
     filterSpeckle: 4,
+    pathPrecision: 2,
     scalePercent: 100,
   });
   await executeTool(page, "convert_current_image", {});
@@ -87,12 +89,20 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   expect(downloadResult).toEqual({ downloaded: true, ok: true });
   expect((await downloadPromise).suggestedFilename()).toBe("circle.svg");
 
+  expect(await executeTool(page, "delete_history_run", { runId: 1 })).toEqual({
+    deletedRunId: 1,
+    ok: true,
+  });
+  await expect(page.locator('[data-run-id="1"]')).toHaveCount(0);
+  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+
   const unloadResult = await executeTool(page, "unload_model", { modelId: "modnet" });
   expect(unloadResult).toMatchObject({ model: { id: "modnet", status: "not-loaded" }, ok: true });
 
   await executeTool(page, "configure_conversion", {
     colorPrecision: 7,
     filterSpeckle: 4,
+    pathPrecision: 2,
     rasterFilterMode: "grayscale",
     rasterResizePercent: 200,
     scalePercent: 100,
@@ -110,6 +120,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
       "convert_current_image",
       "get_workspace_state",
       "select_history_run",
+      "delete_history_run",
       "select_comparison_a",
       "select_comparison_b",
       "download_selected_svg",

@@ -32,7 +32,7 @@ Der akzeptierte Entwurf besteht aus:
 - linker Leiste für Bild, Zielgröße, wenige Konvertierungsparameter und KI-Manager.
 - zentraler Arbeitsfläche für Original, SVG und A/B-Überblendung.
 - Parameter-Diff unter dem Vergleich.
-- Session-History mit höchstens zehn Runs am unteren Rand.
+- Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
 
 Alle Kernaktionen sind tastaturbedienbar und zeigen ihren Lade-, Fehler- oder Leerzustand.
 
@@ -88,8 +88,8 @@ darf keine Kontur doppelt ausgeben.
 - Transparenzstatus und nicht fatale Warnungen.
 
 Jede erfolgreiche Konvertierung erzeugt einen unveränderlichen Run mit stabiler ID und
-Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und höchstens zehn Runs
-im Arbeitsspeicher.
+Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und alle erzeugten Runs
+des aktuellen Bildes im Arbeitsspeicher. Einzelne Runs können gezielt gelöscht werden.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder
@@ -150,6 +150,7 @@ typisierte Werkzeuge für den sichtbaren Produktablauf:
 - `convert_current_image`: den normalen sichtbaren Conversion-Service ausführen.
 - `select_history_run`: einen Run sichtbar auswählen; `select_comparison_a` und
   `select_comparison_b`: Original oder Run sichtbar vergleichen.
+- `delete_history_run`: einen Run aus der aktuellen Browser-Session entfernen.
 - `download_selected_svg`: exakt den sichtbaren ausgewählten Run exportieren.
 - `load_model`, `retry_model` und `unload_model`: denselben KI-Manager bedienen.
 - `apply_background_removal` und `apply_smart_selection`: KI-Ergebnisse als versionierte

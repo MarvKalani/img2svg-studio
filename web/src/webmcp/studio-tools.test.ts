@@ -13,6 +13,7 @@ describe("complete Studio WebMCP tools", () => {
     expect(toolNames).toEqual([
       "get_workspace_state",
       "select_history_run",
+      "delete_history_run",
       "select_comparison_a",
       "select_comparison_b",
       "download_selected_svg",
@@ -76,12 +77,25 @@ describe("complete Studio WebMCP tools", () => {
       });
     const tools = createStudioTools(applicationServices);
 
-    const selectionResult = JSON.parse(await tools[2]!.execute({ original: true }));
+    const selectionResult = JSON.parse(await tools[3]!.execute({ original: true }));
     const workspace = JSON.parse(await tools[0]!.execute({}));
 
     expect(selectionResult).toEqual({ ok: true, slot: "a", source: "original" });
     expect(applicationServices.assignOriginalComparison).toHaveBeenCalledWith("a");
     expect(workspace.comparison).toEqual({ a: "original" });
+  });
+
+  test("Given a History run, when delete_history_run executes, then it delegates the exact session ID", async () => {
+    const applicationServices = services();
+    applicationServices.removeRun = vi.fn(() => true);
+    const tool = createStudioTools(applicationServices).find(
+      (candidate) => candidate.name === "delete_history_run",
+    )!;
+
+    const output = JSON.parse(await tool.execute({ runId: 4 }));
+
+    expect(output).toEqual({ deletedRunId: 4, ok: true });
+    expect(applicationServices.removeRun).toHaveBeenCalledWith(4);
   });
 });
 
@@ -97,6 +111,7 @@ function services(): StudioToolServices {
     readModels: () => [],
     readOptions: () => ({ ...defaultConversionOptions }),
     readRuns: () => [],
+    removeRun: vi.fn(),
     removeBackground: vi.fn(),
     retryModel: vi.fn(),
     selectRun: vi.fn(),

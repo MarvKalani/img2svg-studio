@@ -8,6 +8,7 @@ export const WebMcpToolName = {
   GetWorkspaceState: "get_workspace_state",
   LoadModel: "load_model",
   RetryModel: "retry_model",
+  DeleteHistoryRun: "delete_history_run",
   SelectComparisonA: "select_comparison_a",
   SelectComparisonB: "select_comparison_b",
   SelectHistoryRun: "select_history_run",

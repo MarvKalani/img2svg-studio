@@ -74,8 +74,10 @@ Shape-Anzahlen und den unveränderlichen Options-Snapshot des History-Runs.
 Der aktuelle `historyStore` speichert pro erfolgreichem Lauf SVG, kopierten Options-Snapshot,
 Dateiname, Zielmaße, Pfad- und alle fünf Shape-Anzahlen sowie Laufzeit. Run, Options-Snapshot und
 zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung monoton steigend.
-Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet die ausgewählte
-Run-ID getrennt vom aktuellen Eingabeformular.
+Der Store hält alle Einträge der aktuellen Bild-Session in Reihenfolge neu nach alt und verwaltet
+die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular. Die Einträge bleiben bis zum
+gezielten Löschen oder zum Laden eines anderen Originals erhalten. `remove` gibt den entfernten Run
+zurück und bereinigt dessen Auswahlzustand.
 
 `createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe ohne
 Detailfilter, 576 Pixel Zielhöhe, 6 Bit Farbpräzision, 16 Pixel Speckle, 0 Stellen
@@ -244,11 +246,13 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
 
-`historyController` rendert das Rasteroriginal vor den höchstens zehn Run-Karten und projiziert
-eine gewählte Quelle zurück in die Arbeitsfläche. Ein neues Original startet eine leere Run-History;
-KI-Versionen behalten dieselbe Originalquelle. Der Controller schreibt keine alten Optionen in das
-Formular. `restoreSelectedRunOptions` validiert den ausgewählten Snapshot erneut und reicht eine
-Kopie an `conversionOptionsController.apply` weiter. Dieser explizite Pfad schreibt numerische
+`historyController` rendert das Rasteroriginal vor allen Run-Karten der aktuellen Bild-Session und
+projiziert eine gewählte Quelle zurück in die Arbeitsfläche. Ein neues Original startet eine leere
+Run-History; KI-Versionen behalten dieselbe Originalquelle. Das Löschen eines ausgewählten Runs
+wählt das Original; das Löschen einer A/B-Quelle leert den Vergleich. Der Controller schreibt
+keine alten Optionen in das Formular. `restoreSelectedRunOptions` validiert den ausgewählten
+Snapshot erneut und reicht eine Kopie an `conversionOptionsController.apply` weiter. Dieser
+explizite Pfad schreibt numerische
 Werte, globalen Formerkennungszustand und Typauswahl und rendert die abgeleiteten Zielmaße neu;
 Store, SVG und Bildzustand bleiben unverändert.
 

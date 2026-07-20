@@ -13,6 +13,7 @@ export interface HistoryController {
   assignOriginalComparison(slot: CompareSlot): boolean;
   clearComparison(): void;
   record(input: NewConversionRun): ConversionRun;
+  remove(runId: number): ConversionRun | undefined;
   runs(): readonly ConversionRun[];
   select(runId: number): ConversionRun | undefined;
   selected(): ConversionRun | undefined;
@@ -88,6 +89,30 @@ export function initializeHistory(
     return true;
   };
 
+  const remove = (runId: number): ConversionRun | undefined => {
+    const wasSelected = store.selected()?.id === runId;
+    const comparedRuns = compareController.current();
+    const wasCompared = [comparedRuns.a, comparedRuns.b].some(
+      (source) => source?.kind === ComparisonSourceKind.Run && source.run.id === runId,
+    );
+    const removed = store.remove(runId);
+    if (!removed) {
+      return undefined;
+    }
+    if (wasCompared) {
+      compareController.clear();
+    }
+    if (wasSelected && originalImage) {
+      originalSelected = true;
+      showOriginal(originalImage);
+    }
+    render();
+    elements.statusImage.textContent = wasSelected
+      ? `Run ${String(runId)} gelöscht · Original ausgewählt`
+      : `Run ${String(runId)} gelöscht`;
+    return removed;
+  };
+
   const render = (): void => {
     const runs = store.runs();
     const selectedRunId = store.selected()?.id;
@@ -126,6 +151,9 @@ export function initializeHistory(
             assignComparison(slot, run.id);
             focusCompareButton(elements.content, run.id, slot);
           },
+          () => {
+            remove(run.id);
+          },
         ),
       ),
     );
@@ -143,6 +171,7 @@ export function initializeHistory(
       render();
       return run;
     },
+    remove,
     runs: store.runs,
     select,
     selected: store.selected,
@@ -210,6 +239,7 @@ function runItem(
   comparedAsB: boolean,
   selectRun: () => void,
   compareRun: (slot: CompareSlot) => void,
+  removeRun: () => void,
 ): HTMLElement {
   const item = document.createElement("article");
   item.className = "history-item";
@@ -240,9 +270,20 @@ function runItem(
   actions.append(
     compareButton(run, "a", comparedAsA, compareRun),
     compareButton(run, "b", comparedAsB, compareRun),
+    deleteButton(run, removeRun),
   );
   item.append(button, actions);
   return item;
+}
+
+function deleteButton(run: ConversionRun, removeRun: () => void): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "history-delete-button";
+  button.textContent = "Löschen";
+  button.setAttribute("aria-label", `Run ${String(run.id)} löschen`);
+  button.addEventListener("click", removeRun);
+  return button;
 }
 
 function shapeMetrics(run: ConversionRun): string {

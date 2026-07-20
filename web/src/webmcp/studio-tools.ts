@@ -21,6 +21,7 @@ export interface StudioToolServices {
   readModels(): readonly ModelRegistrySnapshot[];
   readOptions(): ConversionOptions;
   readRuns(): readonly ConversionRun[];
+  removeRun(runId: number): boolean;
   removeBackground(): Promise<AiActionResult>;
   retryModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
   selectRun(runId: number): ConversionRun | undefined;
@@ -98,6 +99,7 @@ export function createStudioTools(services: StudioToolServices): readonly WebMcp
   return Object.freeze([
     readWorkspaceTool(services),
     selectRunTool(services),
+    deleteRunTool(services),
     compareTool(services, "a", WebMcpToolName.SelectComparisonA),
     compareTool(services, "b", WebMcpToolName.SelectComparisonB),
     downloadTool(services),
@@ -107,6 +109,22 @@ export function createStudioTools(services: StudioToolServices): readonly WebMcp
     backgroundRemovalTool(services),
     smartSelectionTool(services),
   ]);
+}
+
+function deleteRunTool(services: StudioToolServices): WebMcpTool {
+  return defineTool({
+    annotations: { readOnlyHint: false, untrustedContentHint: true },
+    description: "Delete one History run from the current browser session and release its SVG.",
+    execute: (input: unknown) => {
+      const runId = readRunId(input);
+      if (runId === undefined) {
+        return invalidInput("runId must be a positive integer.");
+      }
+      return services.removeRun(runId) ? success({ deletedRunId: runId }) : missingRun(runId);
+    },
+    inputSchema: runSchema,
+    name: WebMcpToolName.DeleteHistoryRun,
+  });
 }
 
 function readWorkspaceTool(services: StudioToolServices): WebMcpTool {

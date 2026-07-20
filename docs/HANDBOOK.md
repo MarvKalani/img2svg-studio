@@ -165,8 +165,8 @@ wenn er im Browser getestet wurde.
 
 Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
 und wie jeder Run als A oder B gewählt werden. Jede erfolgreiche Konvertierung erzeugt zusätzlich
-genau einen unveränderlichen Run. Der Verlauf zeigt das Original sowie die zehn neuesten Runs von
-neu nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
+genau einen unveränderlichen Run. Der Verlauf hält alle Runs der aktuellen Bild-Session von neu
+nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
 - die fortlaufende Run-ID.
 - eine echte SVG-Miniatur.
@@ -177,8 +177,10 @@ eingestellten Regler bleiben dabei unverändert. „Einstellungen übernehmen“
 dessen validierte Raster-, Tracing- und SVG-Parameter in die Eingabemaske und berechnet beide
 Maßanzeigen neu. Das geladene Originalbild, der ausgewählte Run und sein angezeigtes SVG bleiben
 dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei gleichem Bild und
-gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. Nach dem elften Lauf wird
-nur der älteste Run aus der sichtbaren Session-History entfernt.
+gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. „Löschen“ entfernt einen
+nicht mehr benötigten Run und dessen SVG aus der Session. War der Run ausgewählt, zeigt die
+Arbeitsfläche anschließend das Original; gehörte er zum A/B-Vergleich, wird der Vergleich geleert.
+Beim Laden eines anderen Originalbildes beginnt eine neue leere Session-History.
 
 Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ das Original oder
 den Run in den jeweiligen Vergleichsplatz. Dieselbe Quelle belegt nie beide Plätze. Sobald A und B
@@ -429,7 +431,8 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 2. Mit `configure_conversion` Rastergröße, Filter, Schwellwert, Tracing-Werte und SVG-Skalierung
    setzen und mit `convert_current_image` konvertieren. Die Rastergröße verwendet genau eines aus
    `useOriginalRasterSize`, `rasterResizePercent` oder `rasterTargetHeightPixels`.
-3. Runs über `select_history_run` anzeigen. `select_comparison_a` und `select_comparison_b` wählen
+3. Runs über `select_history_run` anzeigen und mit `delete_history_run` entfernen.
+   `select_comparison_a` und `select_comparison_b` wählen
    per Run-ID oder `original: true` die sichtbaren Vergleichsquellen;
    `download_selected_svg` exportiert den sichtbaren Run.
 4. Modelle mit `load_model`, `retry_model` und `unload_model` verwalten.

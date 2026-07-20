@@ -25,12 +25,11 @@ export interface ConversionRun extends Readonly<Omit<NewConversionRun, "options"
 export interface HistoryStore {
   add(input: NewConversionRun): ConversionRun;
   clear(): void;
+  remove(id: number): ConversionRun | undefined;
   runs(): readonly ConversionRun[];
   select(id: number): ConversionRun | undefined;
   selected(): ConversionRun | undefined;
 }
-
-const maximumRunCount = 10;
 
 export function createHistoryStore(): HistoryStore {
   const storedRuns: ConversionRun[] = [];
@@ -57,7 +56,6 @@ export function createHistoryStore(): HistoryStore {
       });
       nextRunId += 1;
       storedRuns.unshift(run);
-      storedRuns.splice(maximumRunCount);
       selectedRunId = run.id;
       return run;
     },
@@ -65,6 +63,17 @@ export function createHistoryStore(): HistoryStore {
       storedRuns.splice(0);
       nextRunId = 1;
       selectedRunId = undefined;
+    },
+    remove: (id) => {
+      const runIndex = storedRuns.findIndex((run) => run.id === id);
+      if (runIndex < 0) {
+        return undefined;
+      }
+      const [removed] = storedRuns.splice(runIndex, 1);
+      if (selectedRunId === id) {
+        selectedRunId = undefined;
+      }
+      return removed;
     },
     runs: () => Object.freeze([...storedRuns]),
     select: (id) => {

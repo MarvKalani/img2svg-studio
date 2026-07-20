@@ -6,7 +6,7 @@ const circleFixturePath = resolve(
   "../../fixtures/shape-recognition/input/circle.png",
 );
 
-test("Given one image, when eleven conversions run, then the ten newest immutable runs can be selected", async ({
+test("Given one image, when eleven conversions run and unwanted runs are deleted, then the complete session stays user-controlled", async ({
   page,
 }) => {
   await page.goto("/");
@@ -22,18 +22,25 @@ test("Given one image, when eleven conversions run, then the ten newest immutabl
   await convertButton.click();
 
   const historyCards = page.getByTestId("history-card");
-  await expect(historyCards).toHaveCount(10);
-  await expect(runCard(1)).toHaveCount(0);
+  await expect(historyCards).toHaveCount(11);
+  await expect(runCard(1)).toBeVisible();
   await expect(runCard(11)).toContainText("128 × 128");
   await expect(runCard(11)).toContainText("1 Pfad");
   await expect(runCard(11)).toContainText("ms");
 
-  await runCard(2).click();
+  await page.getByRole("button", { name: "Run 1 als A setzen" }).click();
+  await page.getByRole("button", { name: "Run 11 als B setzen" }).click();
+  await page.getByRole("button", { name: "Run 1 löschen" }).click();
 
-  await expect(page.getByTestId("svg-output").locator("svg")).toHaveAttribute(
-    "viewBox",
-    "0 0 256 256",
-  );
+  await expect(historyCards).toHaveCount(10);
+  await expect(runCard(1)).toHaveCount(0);
+  await expect(page.locator("#compare-output")).toBeHidden();
+
+  await page.getByRole("button", { name: "Run 11 löschen" }).click();
+
+  await expect(historyCards).toHaveCount(9);
+  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+  await expect(page.getByTestId("history-original-card")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByLabel("Zielgröße")).toHaveValue("50");
-  await expect(page.getByLabel("Anwendungsstatus")).toContainText("10 Varianten");
+  await expect(page.getByLabel("Anwendungsstatus")).toContainText("9 Varianten");
 });
