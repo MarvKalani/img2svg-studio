@@ -55,6 +55,7 @@ das sichtbare Produkt.
 | Browser-AI-Verfügbarkeit | `browser-ai-capabilities.ts` | Capability-Test und `ai-capabilities.spec.ts` |
 | WebMCP im Studio | `webmcp/studio-tools.ts`, `conversion-tools.ts`, `webmcp-adapter.ts` | WebMCP-Unit-Tests und `webmcp-*.spec.ts` |
 | ChatGPT-MCP-Konvertierung | `mcp/src/vectorize-service.ts`, `vectorize-options.ts`, `image-input.ts` | MCP-Unit- und Server-Vertragstests |
+| ChatGPT-MCP-Regionen | `mcp/src/image-region-service.ts`, `connected-region.ts` | Regions- und MCP-Server-Vertragstests |
 | ChatGPT-Vorschauwidget | `mcp/src/preview-widget.ts`, `mcp/src/mcp-app.ts` | Widget- und MCP-Server-Tests |
 | PWA-Share/File-Open | `pwa/pwa-ingress.ts`, Manifest, Service Worker | PWA-Unit-Test und `pwa-image-ingress.spec.ts` |
 | Version, Recht und Deployment | `release/app-version.ts`, `web/public/*.html`, `web/public/_headers` | Release-, Legal- und Demo-Specs |
@@ -144,6 +145,7 @@ bleibt die vollständige UI bedienbar.
 Streamable HTTP
   -> mcp-app Tool-Schema
   -> image-input (Dateireferenz/Base64 und Limits)
+  -> image-region-service (normierte Randregionen und transparentes PNG)
   -> vectorize-options
   -> vectorize-service
   -> generiertes Node-WASM des Rust-Cores

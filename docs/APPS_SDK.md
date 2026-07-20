@@ -23,7 +23,9 @@ And get_svg_preview renders the new SVG with an exact download action
 flowchart LR
   ChatGPT["ChatGPT model"] --> Connection["Secure MCP Tunnel or public HTTPS"]
   Connection --> Http["Stateless Streamable HTTP"]
-  Http --> Vectorize["vectorize_image data tool"]
+  Http --> Analyze["analyze_image data tool"]
+  Analyze --> Remove["remove_background_region data tool"]
+  Remove --> Vectorize["vectorize_image data tool"]
   Vectorize --> Decode["bounded raster decode"]
   Decode --> Wasm["existing img2svg WASM boundary"]
   Wasm --> Core["shared img2svg-core Rust crate"]
@@ -36,6 +38,24 @@ The data tool and render tool stay separate. This lets the model inspect and reu
 SVG result before choosing whether to render it, and keeps the widget free of conversion logic.
 
 ## Tool contracts
+
+### `analyze_image`
+
+The model supplies one image and a sensitivity from 0 to 100. The tool samples deterministic
+points along the original image edge, flood-fills four-connected colors against each seed, sorts
+the resulting regions by size and returns at most twelve candidates. Each candidate contains a
+one-based region number, sampled RGBA color, pixel count, coverage and a normalized seed in the
+closed range 0 to 1. The returned PNG overlays the regions and labels their seeds, so the model
+does not need to estimate screen pixels or depend on widget size.
+
+### `remove_background_region`
+
+The model copies a seed and sensitivity from `analyze_image`. The tool maps that normalized point
+back to the original raster, recomputes the connected mask and changes only selected alpha bytes
+to zero. It returns a visible indexed PNG content block, Base64 PNG and removal statistics. The
+256-color ceiling matches the vectorizer contract and keeps the stateless hand-off bounded. The
+original remains unchanged, and the returned Base64 can be supplied to `vectorize_image` only
+after the model has inspected it.
 
 ### `vectorize_image`
 

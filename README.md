@@ -87,10 +87,12 @@ a one-time share bridge and does not cache the application, images, SVG history 
 
 ## ChatGPT MCP companion
 
-The separate companion accepts a ChatGPT file reference or a Base64 fixture, reduces it to the
-requested palette, and runs the same Rust engine used by the browser Studio. It keeps no image,
-SVG, account, or application session. `get_svg_preview` renders the returned SVG in an MCP Apps
-widget and provides a byte-exact local download.
+The separate companion accepts a ChatGPT file reference or a Base64 fixture. Before tracing,
+`analyze_image` can show numbered edge-connected color regions with normalized seed coordinates;
+`remove_background_region` returns the chosen region as transparent PNG for visual review and
+direct reuse by `vectorize_image`. The same Rust engine then creates the SVG. The companion keeps
+no image, SVG, account, or application session. `get_svg_preview` renders the returned SVG in an
+MCP Apps widget and provides a byte-exact local download.
 
 ```bash
 npm run build --workspace=img2svg-studio-mcp

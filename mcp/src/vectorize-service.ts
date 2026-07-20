@@ -33,11 +33,14 @@ export class VectorizeError extends Error {
   }
 }
 
-export interface VectorizeRequest {
-  colorCount: number;
-  detailLevel: DetailLevel;
+export interface RasterImageInput {
   imageBase64?: string;
   imageBytes?: Uint8Array;
+}
+
+export interface VectorizeRequest extends RasterImageInput {
+  colorCount: number;
+  detailLevel: DetailLevel;
   mode: VectorizeMode;
 }
 
@@ -124,7 +127,7 @@ export async function vectorizeImage(request: VectorizeRequest): Promise<Vectori
   });
 }
 
-function readEncodedImage(request: VectorizeRequest): Uint8Array {
+export function readEncodedImage(request: RasterImageInput): Uint8Array {
   const suppliedInputs =
     Number(request.imageBytes !== undefined) + Number(request.imageBase64 !== undefined);
   if (suppliedInputs !== 1) {
@@ -142,6 +145,33 @@ function readEncodedImage(request: VectorizeRequest): Uint8Array {
     throw new VectorizeError("invalid_image", "The image is empty.");
   }
   return bytes;
+}
+
+export async function decodeRasterImage(encodedImage: Uint8Array): Promise<{
+  heightPixels: number;
+  rgba: Uint8Array;
+  widthPixels: number;
+}> {
+  try {
+    const { data, info } = await sharp(encodedImage, {
+      failOn: "warning",
+      limitInputPixels: maximumDecodedPixels,
+    })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    if (info.width * info.height > maximumDecodedPixels) {
+      throw new VectorizeError("image_too_large", "The decoded image exceeds 16,777,216 pixels.");
+    }
+    return { heightPixels: info.height, rgba: data, widthPixels: info.width };
+  } catch (error) {
+    if (error instanceof VectorizeError) {
+      throw error;
+    }
+    throw new VectorizeError("invalid_image", "The image format or contents are invalid.", {
+      cause: error,
+    });
+  }
 }
 
 function decodeBase64(value: string): Uint8Array {

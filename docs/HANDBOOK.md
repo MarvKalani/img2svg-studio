@@ -555,6 +555,21 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 
 Der Companion unter `mcp/` ist ein eigener stateless Server für ChatGPT und andere MCP-Hosts. Er
 teilt den Rust/WASM-Konvertierungskern mit dem Studio, aber nicht dessen flüchtigen Browserzustand.
+Für eine kontrollierte Hintergrundentfernung ruft ChatGPT zuerst `analyze_image` auf. Das Werkzeug
+liefert eine beschriftete PNG-Vorschau und bis zu zwölf Randregionen mit Farbwert, Bildanteil und
+normiertem Saatpunkt. Koordinaten von 0 bis 1 beziehen sich immer auf das Originalraster und sind
+damit unabhängig von Chatfenster, Zoom und Bildschirmauflösung. ChatGPT prüft die Vorschau und
+übergibt den gewählten Saatpunkt unverändert an `remove_background_region`. Dort werden nur die
+vierfach verbundenen Pixel innerhalb derselben Empfindlichkeit transparent. Das zurückgegebene
+PNG bleibt eine Vorschau; erst seine bewusste Übergabe an `vectorize_image` setzt den Ablauf fort.
+Analyse- und Entfernungsvorschauen werden als indizierte PNGs übertragen. Das erhält Transparenz,
+entspricht der maximalen Farbanzahl des Konverters und verhindert unnötig große ChatGPT-Antworten.
+
+Die Chrome-150-Abnahme vom 20. Juli 2026 verwendete das 1280×876-Pixel-Demologo: ChatGPT erkannte
+Region 1 mit Saatpunkt `{x: 0, y: 0}` als schwarzen Außenhintergrund und entfernte 418.876 Pixel
+beziehungsweise 37,36 Prozent. Der MCP-Vertragstest führt dieselbe stateless Kette anschließend
+bis zur Vektorisierung und SVG-Vorschau mit dem Kreis-Fixture aus.
+
 `vectorize_image` akzeptiert genau eine ChatGPT-Dateireferenz oder einen Base64-Testwert sowie:
 
 - `mode`: `shapes` für evidenzbasierte native Elemente oder `trace` für Pfade.
@@ -588,8 +603,8 @@ Die echte ChatGPT-Abnahme verbindet den lokalen Endpunkt bevorzugt über OpenAI 
 Dafür bleiben Server und Bilder auf dem Entwicklungsrechner; nur ausgehender HTTPS-Verkehr zum
 OpenAI-Tunnel ist nötig. Ein temporärer öffentlicher HTTPS-Tunnel ist eine Alternative. Dauerhaftes
 öffentliches MCP-Hosting wird erst für eine unabhängig vom Entwicklungsrechner verfügbare
-ChatGPT-App erwogen. Der offizielle lokale Inspector prüft bereits beide Werkzeuge, die
-MCP-Apps-Ressource und den vollständigen Fixture-zu-Preview-Datenfluss.
+ChatGPT-App erwogen. Der offizielle lokale Inspector prüft die Werkzeuge, die MCP-Apps-Ressource
+und den vollständigen Bildanalyse-zu-SVG-Datenfluss.
 
 ## Formerkennungs-Fixtures
 

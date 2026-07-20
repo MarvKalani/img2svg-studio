@@ -7,6 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import { downloadImageFile, type ChatGptFileReference } from "./image-input.js";
+import { analyzeImageRegions, removeBackgroundRegion } from "./image-region-service.js";
 import { createPreviewResult, previewResourceUri, previewWidgetHtml } from "./preview-widget.js";
 import { VectorizeError, vectorizeImage } from "./vectorize-service.js";
 
@@ -37,6 +38,23 @@ const parametersSchema = z.object({
   mode: z.enum(["trace", "shapes"]),
 });
 
+const rasterInputSchema = {
+  image: fileReferenceSchema.optional(),
+  image_base64: z.string().optional(),
+};
+
+const normalizedPointSchema = z.object({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+});
+
+const regionStatisticsSchema = z.object({
+  heightPixels: z.number().int().positive(),
+  removedPercent: z.number().min(0).max(100),
+  removedPixelCount: z.number().int().nonnegative(),
+  widthPixels: z.number().int().positive(),
+});
+
 export function createImg2SvgMcpServer(): McpServer {
   const server = new McpServer({ name: "img2svg-studio", version: "0.1.0" });
 
@@ -55,6 +73,130 @@ export function createImg2SvgMcpServer(): McpServer {
       },
     ],
   }));
+
+  registerAppTool(
+    server,
+    "analyze_image",
+    {
+      annotations: {
+        destructiveHint: false,
+        openWorldHint: true,
+        readOnlyHint: true,
+      },
+      description:
+        "Use this before removing a background. It finds deterministic color regions connected to the image edge and returns an annotated image plus numbered regions. Inspect the preview, then copy the chosen region's normalized seed unchanged into remove_background_region. Start sensitivity_percent at 10 for clean artwork and 20 for compressed photographs.",
+      inputSchema: {
+        ...rasterInputSchema,
+        sensitivity_percent: z.number().min(0).max(100),
+      },
+      outputSchema: {
+        heightPixels: z.number().int().positive(),
+        regions: z.array(
+          z.object({
+            coveragePercent: z.number().min(0).max(100),
+            pixelCount: z.number().int().positive(),
+            regionNumber: z.number().int().positive(),
+            sampledColor: z.object({
+              alpha: z.number().int().min(0).max(255),
+              blue: z.number().int().min(0).max(255),
+              green: z.number().int().min(0).max(255),
+              red: z.number().int().min(0).max(255),
+            }),
+            seed: normalizedPointSchema,
+          }),
+        ),
+        widthPixels: z.number().int().positive(),
+      },
+      _meta: {
+        "openai/fileParams": ["image"],
+        "openai/toolInvocation/invoked": "Regions ready",
+        "openai/toolInvocation/invoking": "Analyzing image regions…",
+      },
+    },
+    async (input) => {
+      try {
+        const result = await analyzeImageRegions({
+          ...(await readToolImage(input)),
+          sensitivityPercent: input.sensitivity_percent,
+        });
+        return {
+          content: [
+            {
+              data: result.previewPngBase64,
+              mimeType: "image/png",
+              type: "image" as const,
+            },
+            {
+              text: `Found ${String(result.regions.length)} numbered edge regions. Inspect the annotated preview before removing one.`,
+              type: "text" as const,
+            },
+          ],
+          // The image content already carries the preview. Keeping it out of structured
+          // data avoids sending large raster payloads through ChatGPT twice.
+          structuredContent: {
+            heightPixels: result.heightPixels,
+            regions: result.regions,
+            widthPixels: result.widthPixels,
+          },
+        };
+      } catch (error) {
+        return errorResult(error, "The image regions could not be analyzed.");
+      }
+    },
+  );
+
+  registerAppTool(
+    server,
+    "remove_background_region",
+    {
+      annotations: {
+        destructiveHint: false,
+        openWorldHint: true,
+        readOnlyHint: true,
+      },
+      description:
+        "Use this only after analyze_image. Copy the selected region seed and sensitivity exactly. The operation is stateless: it returns a transparent PNG preview and Base64 PNG without changing the source. Inspect the result, then pass imagePngBase64 as image_base64 to vectorize_image.",
+      inputSchema: {
+        ...rasterInputSchema,
+        seed: normalizedPointSchema,
+        sensitivity_percent: z.number().min(0).max(100),
+      },
+      outputSchema: {
+        imagePngBase64: z.string(),
+        stats: regionStatisticsSchema,
+      },
+      _meta: {
+        "openai/fileParams": ["image"],
+        "openai/toolInvocation/invoked": "Background region removed",
+        "openai/toolInvocation/invoking": "Removing selected region…",
+      },
+    },
+    async (input) => {
+      try {
+        const result = await removeBackgroundRegion({
+          ...(await readToolImage(input)),
+          seed: input.seed,
+          sensitivityPercent: input.sensitivity_percent,
+        });
+        return {
+          content: [
+            {
+              data: result.imagePngBase64,
+              mimeType: "image/png",
+              type: "image" as const,
+            },
+            {
+              text: `Removed ${String(result.stats.removedPixelCount)} connected pixels. Inspect the transparent PNG before vectorizing it.`,
+              type: "text" as const,
+            },
+          ],
+          structuredContent: result,
+        };
+      } catch (error) {
+        return errorResult(error, "The selected background region could not be removed.");
+      }
+    },
+  );
 
   registerAppTool(
     server,
@@ -87,14 +229,10 @@ export function createImg2SvgMcpServer(): McpServer {
     },
     async (input) => {
       try {
-        const imageBytes = input.image
-          ? await downloadImageFile(input.image as ChatGptFileReference)
-          : undefined;
         const result = await vectorizeImage({
           colorCount: input.color_count,
           detailLevel: input.detail_level,
-          imageBase64: input.image_base64,
-          imageBytes,
+          ...(await readToolImage(input)),
           mode: input.mode,
         });
         return {
@@ -176,4 +314,28 @@ function publicFailure(error: unknown): { code: string; message: string; ok: fal
   return error instanceof VectorizeError
     ? { code: error.code, message: error.message, ok: false }
     : { code: "conversion_failed", message: "The image could not be vectorized.", ok: false };
+}
+
+async function readToolImage(input: {
+  image?: unknown;
+  image_base64?: string;
+}): Promise<{ imageBase64?: string; imageBytes?: Uint8Array }> {
+  return input.image
+    ? { imageBytes: await downloadImageFile(input.image as ChatGptFileReference) }
+    : { imageBase64: input.image_base64 };
+}
+
+function errorResult(error: unknown, fallbackMessage: string) {
+  const failure = publicFailure(error);
+  return {
+    content: [
+      {
+        text: JSON.stringify(
+          failure.code === "conversion_failed" ? { ...failure, message: fallbackMessage } : failure,
+        ),
+        type: "text" as const,
+      },
+    ],
+    isError: true,
+  };
 }

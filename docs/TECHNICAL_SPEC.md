@@ -371,6 +371,13 @@ Datei-/Datenschutzfluss werden getrennt vom statischen Browser-Studio getestet u
 Beide Wege teilen den Rust-Konvertierungskern und typisierte Verträge, nicht den flüchtigen
 Browserzustand.
 
+Die Companion-Bildbearbeitung verwendet keine Bildschirmkoordinaten. `analyze_image` dekodiert
+das Originalraster, bildet deterministische vierfach verbundene Randregionen und gibt deren
+Saatpunkte normiert von 0 bis 1 zusammen mit einer beschrifteten PNG-Vorschau zurück.
+`remove_background_region` berechnet dieselbe Maske stateless erneut und setzt ausschließlich die
+Alpha-Kanäle der Auswahl auf null. Das resultierende PNG ist dadurch eine direkt prüf- und
+vektorisierbare Toolausgabe, ohne serverseitige Sitzung oder versteckten Zwischenzustand.
+
 Primärquellen:
 
 - <https://developers.openai.com/apps-sdk/build/mcp-server>

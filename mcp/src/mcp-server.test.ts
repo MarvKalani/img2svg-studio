@@ -29,10 +29,19 @@ describe("Streamable HTTP MCP server", () => {
     const client = await connectClient();
     const tools = await client.listTools();
 
-    expect(tools.tools.map((tool) => tool.name)).toEqual(["vectorize_image", "get_svg_preview"]);
+    expect(tools.tools.map((tool) => tool.name)).toEqual([
+      "analyze_image",
+      "remove_background_region",
+      "vectorize_image",
+      "get_svg_preview",
+    ]);
+    const analyzeTool = tools.tools.find((tool) => tool.name === "analyze_image");
+    const removeTool = tools.tools.find((tool) => tool.name === "remove_background_region");
     const vectorizeTool = tools.tools.find((tool) => tool.name === "vectorize_image");
     const previewTool = tools.tools.find((tool) => tool.name === "get_svg_preview");
     expect(vectorizeTool?._meta?.["openai/fileParams"]).toEqual(["image"]);
+    expect(analyzeTool?._meta?.["openai/fileParams"]).toEqual(["image"]);
+    expect(removeTool?._meta?.["openai/fileParams"]).toEqual(["image"]);
     expect(vectorizeTool?.annotations).toMatchObject({
       openWorldHint: true,
       readOnlyHint: true,
@@ -40,11 +49,39 @@ describe("Streamable HTTP MCP server", () => {
     expect(previewTool?._meta?.ui).toEqual({ resourceUri: "ui://img2svg/preview.html" });
 
     const imageBase64 = (await readFile(circleFixture)).toString("base64");
+    const analysis = await client.callTool({
+      arguments: { image_base64: imageBase64, sensitivity_percent: 0 },
+      name: "analyze_image",
+    });
+    expect(analysis.isError).not.toBe(true);
+    expect(analysis.content).toEqual(
+      expect.arrayContaining([expect.objectContaining({ mimeType: "image/png", type: "image" })]),
+    );
+    expect(analysis.structuredContent).not.toHaveProperty("previewPngBase64");
+    const regions = (
+      analysis.structuredContent as { regions: { seed: { x: number; y: number } }[] }
+    ).regions;
+    expect(regions.length).toBeGreaterThan(0);
+
+    const removed = await client.callTool({
+      arguments: {
+        image_base64: imageBase64,
+        seed: regions[0]?.seed,
+        sensitivity_percent: 0,
+      },
+      name: "remove_background_region",
+    });
+    expect(removed.isError).not.toBe(true);
+    expect(removed.content).toEqual(
+      expect.arrayContaining([expect.objectContaining({ mimeType: "image/png", type: "image" })]),
+    );
+    const editedImageBase64 = (removed.structuredContent as { imagePngBase64: string })
+      .imagePngBase64;
     const result = await client.callTool({
       arguments: {
         color_count: 4,
         detail_level: "low",
-        image_base64: imageBase64,
+        image_base64: editedImageBase64,
         mode: "shapes",
       },
       name: "vectorize_image",
