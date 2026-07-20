@@ -49,6 +49,7 @@ Die Live-Vorschau und bewusste History-Übernahme wurden als Revision `260720.02
 Die vollständige VTracer-Steuerung und das interaktive Handbuch folgen mit `260720.03`.
 Die fachliche Aufteilung von Engine-Optionen und Historien-Styles sowie die Codemap folgen mit
 `260720.04`.
+Der lokale Zauberstab mit sichtbarer Farbauswahl und Empfindlichkeit folgt mit `260720.05`.
 
 ### Sprache
 
@@ -396,6 +397,26 @@ Rechteck, Ellipse, Linie und Polygon aus. Jedes Cluster erzeugt genau ein Elemen
 Mixed-Fixture enthält Kreis, Rechteck, Linie und Dreieck und erscheint deshalb als `<circle>`,
 `<rect>`, `<line>` und `<polygon>` ohne zusätzlichen Pfad. Status und History zählen jede Form
 genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
+
+## Zauberstab
+
+„Zauberstab“ unter „Manuelle Auswahl“ benötigt weder KI-Modell noch GPU. Nach dem Start zeigt die
+Arbeitsfläche das aktuelle Raster und legt eine deckungsgleiche Auswahlfläche darüber. Ein Klick
+markiert den zusammenhängenden Farbbereich türkis. Getrennte Flächen derselben Farbe bleiben
+unberührt.
+
+„Empfindlichkeit“ reicht von 0 bis 100 Prozent. Null wählt nur exakt gleiche RGBA-Werte; höhere
+Werte nehmen stärkere Kanalabweichungen zur angeklickten Farbe auf. Der Slider berechnet die
+sichtbare Maske sofort mit demselben Klickpunkt neu. Verglichen wird immer mit der zuerst
+angeklickten Farbe, sodass sich die Auswahl nicht schrittweise durch einen Verlauf in das Motiv
+ausbreitet.
+
+„Auswahl entfernen“ setzt den Alpha-Kanal der sichtbaren Auswahl auf null und übernimmt
+`<ausgangsname>-zauberstab.png` als „Bearbeitet · V…“. Alle RGB-Werte und nicht ausgewählten
+Alpha-Werte bleiben erhalten. Das Original bleibt wiederherstellbar; bestehende History-Runs
+ändern sich nicht. Die neue Live-SVG-Vorschau gelangt erst durch „Variante übernehmen“ in die
+History. „Verwerfen“ schließt die Auswahl ohne Bildänderung. Der vollständige Ablauf bleibt lokal
+und startet keinen Modelldownload.
 
 ## KI-Manager
 

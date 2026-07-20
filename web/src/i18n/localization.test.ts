@@ -14,6 +14,9 @@ describe("German to English UI translation", () => {
     ["Maske mit 3 Punkten aktualisiert · WebGPU", "Mask updated with 3 points · WebGPU"],
     ["10 Tracing-Parameter", "10 tracing parameters"],
     ["Standard: 2 Stellen", "Default: 2 decimals"],
+    ["Zauberstab-Auswahl lokal entfernt.", "Magic Wand selection removed locally."],
+    ["124 Pixel ausgewählt · Empfindlichkeit 15 %", "124 pixels selected · Sensitivity 15%"],
+    ["Bearbeitet · V2", "Edited · V2"],
   ])("translates %s", (german, english) => {
     expect(translateGermanText(german)).toBe(english);
   });

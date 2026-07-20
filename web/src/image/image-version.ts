@@ -1,5 +1,6 @@
 export const ImageVersionKind = {
   AiResult: "ai-result",
+  ManualResult: "manual-result",
   Original: "original",
 } as const;
 
@@ -11,6 +12,10 @@ export interface ImageVersion {
 }
 
 export function formatImageVersion(version: ImageVersion): string {
-  const kind = version.kind === ImageVersionKind.Original ? "Original" : "KI-Ergebnis";
+  const kind = {
+    [ImageVersionKind.AiResult]: "KI-Ergebnis",
+    [ImageVersionKind.ManualResult]: "Bearbeitet",
+    [ImageVersionKind.Original]: "Original",
+  }[version.kind];
   return `${kind} · V${String(version.id)}`;
 }

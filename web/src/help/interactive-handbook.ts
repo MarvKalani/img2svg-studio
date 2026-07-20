@@ -52,6 +52,12 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
     "Höher erzeugt gröbere Farbstufen und oft weniger Pfade. Null aktiviert diagonale Clusterverbindungen.",
     "16",
   ),
+  magicWand: topic(
+    "Zauberstab",
+    "Wählt nach einem Klick nur den zusammenhängenden Bereich mit ähnlicher Farbe aus.",
+    "Die Empfindlichkeit erweitert die sichtbare Maske; entfernt wird sie erst nach ausdrücklicher Bestätigung.",
+    "15 %",
+  ),
   lengthThreshold: topic(
     "Segmentlänge",
     "Glättet iterativ, bis die Kurvensegmente kürzer als dieser Pixelwert sind.",

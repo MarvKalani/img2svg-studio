@@ -120,6 +120,19 @@ KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechse
 - „Nur Unterschiede“ zeigt jeden abweichenden Parameter genau einmal.
 - Download A und Download B exportieren bytegenau den jeweils ausgewählten Run.
 
+## 6.1 Manuelle Auswahl
+
+Der Zauberstab arbeitet ohne Modell, GPU oder Netzwerk. Ein Klick wählt den zusammenhängenden
+Bereich aus, dessen RGBA-Kanäle innerhalb der gewählten Empfindlichkeit zur angeklickten Farbe
+liegen. Jeder Kandidat wird mit dieser Ausgangsfarbe verglichen, damit die Auswahl nicht durch
+einen Farbverlauf in das Motiv wandert.
+
+Die deckungsgleiche Maske wird vor jeder Änderung sichtbar angezeigt. Eine Änderung der
+Empfindlichkeit von 0 bis 100 Prozent berechnet sie sofort mit demselben Klickpunkt neu.
+„Auswahl entfernen“ setzt nur den Alpha-Kanal der markierten Pixel auf null; „Verwerfen“ ändert
+nichts. Das Ergebnis wird als manuell bearbeitete Eingabeversion übernommen, während Original und
+bereits angenommene History-Runs erhalten bleiben.
+
 ## 7. KI-Manager
 
 Die zentrale Modell-Registry besitzt die Zustände `not-loaded`, `downloading`, `initializing`,

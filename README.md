@@ -28,9 +28,10 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Session history with immutable, individually removable runs, thumbnails, metrics and restorable
   settings.
 - Layer-aligned A/B comparison, a filtered parameter-difference table and exact per-run downloads.
+- A model-free Magic Wand with contiguous color selection, live sensitivity and confirmed removal.
 - Local MODNet background removal with verified, abortable model downloads and WebGPU/WASM fallback.
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
-- Versioned AI results that can be converted, compared and restored to the original image.
+- Versioned manual and AI results that can be converted, compared and restored to the original image.
 - Complete German and English UI with an instant, locally remembered language switch.
 - Installable PWA entry points for OS sharing and desktop PNG, JPEG and WebP file opening.
 - Hardware-filtered typed WebMCP tools that operate the same visible application services as the UI.

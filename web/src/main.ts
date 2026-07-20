@@ -21,6 +21,8 @@ import { initializeImageLoader } from "./image/image-loader";
 import { createImageStore } from "./image/image-store";
 import { initializePwaIngress } from "./pwa/pwa-ingress";
 import { showAppVersion } from "./release/app-version";
+import { initializeMagicWand } from "./selection/magic-wand-controller";
+import { createSelectionActivity } from "./selection/selection-activity";
 import { initializeHistory } from "./history/history-controller";
 import { createHistoryStore } from "./history/history-store";
 import { initializeInteractiveHandbook } from "./help/interactive-handbook";
@@ -47,6 +49,7 @@ const availableModelIds = new Set<"modnet" | "slimsam">([
 showSupportedAiTools(aiCapabilities);
 const workspaceView = initializeWorkspaceView(imageStore);
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
+const selectionActivity = createSelectionActivity();
 const optionsController = initializeConversionOptions();
 const compareController = initializeCompare(createCompareSelection(), workspaceView.showComparison);
 const historyController = initializeHistory(
@@ -55,6 +58,7 @@ const historyController = initializeHistory(
   compareController,
 );
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
+let magicWand: ReturnType<typeof initializeMagicWand>;
 let smartSelect: ReturnType<typeof initializeSmartSelect>;
 let conversionController: ReturnType<typeof initializeConversion>;
 const imageLoader = initializeImageLoader(
@@ -68,13 +72,15 @@ const imageLoader = initializeImageLoader(
     optionsController.showSourceDimensions(image);
     workspaceView.showProcessed();
     backgroundRemoval.imageLoaded();
+    magicWand.imageLoaded();
     smartSelect.imageLoaded();
     conversionController.requestPreview();
   },
   () => optionsController.apply(createLogoDemoOptions()),
 );
 backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
-smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry);
+magicWand = initializeMagicWand(imageStore, imageLoader, selectionActivity);
+smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry, selectionActivity);
 conversionController = initializeConversion(imageStore, optionsController.current, {
   recordRun: historyController.record,
   showPreview: workspaceView.showSvg,

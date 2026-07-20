@@ -9,6 +9,7 @@ export interface LoadedImage {
 
 export interface ImageStore {
   appendAiVersion(file: File, metadata: DecodedImage): LoadedImage;
+  appendManualVersion(file: File, metadata: DecodedImage): LoadedImage;
   current(): LoadedImage | undefined;
   dispose(): void;
   original(): LoadedImage | undefined;
@@ -30,24 +31,33 @@ export function createImageStore(
       version: Object.freeze({ id: nextVersionId++, kind }),
     });
 
-  const releaseCurrentAiPreview = (): void => {
+  const releaseCurrentDerivedPreview = (): void => {
     if (currentImage && currentImage !== originalImage) {
       revokePreviewUrl(currentImage.metadata.previewUrl);
     }
   };
 
+  const appendDerivedVersion = (
+    file: File,
+    metadata: DecodedImage,
+    kind: typeof ImageVersionKind.AiResult | typeof ImageVersionKind.ManualResult,
+  ): LoadedImage => {
+    if (!originalImage) {
+      throw new Error("A derived image version requires an original image.");
+    }
+    releaseCurrentDerivedPreview();
+    currentImage = createVersion(file, metadata, kind);
+    return currentImage;
+  };
+
   return {
-    appendAiVersion: (file, metadata) => {
-      if (!originalImage) {
-        throw new Error("An AI image version requires an original image.");
-      }
-      releaseCurrentAiPreview();
-      currentImage = createVersion(file, metadata, ImageVersionKind.AiResult);
-      return currentImage;
-    },
+    appendAiVersion: (file, metadata) =>
+      appendDerivedVersion(file, metadata, ImageVersionKind.AiResult),
+    appendManualVersion: (file, metadata) =>
+      appendDerivedVersion(file, metadata, ImageVersionKind.ManualResult),
     current: () => currentImage,
     dispose: () => {
-      releaseCurrentAiPreview();
+      releaseCurrentDerivedPreview();
       if (originalImage) {
         revokePreviewUrl(originalImage.metadata.previewUrl);
       }
@@ -56,7 +66,7 @@ export function createImageStore(
     },
     original: () => originalImage,
     replaceOriginal: (file, metadata) => {
-      releaseCurrentAiPreview();
+      releaseCurrentDerivedPreview();
       if (originalImage) {
         revokePreviewUrl(originalImage.metadata.previewUrl);
       }
@@ -68,7 +78,7 @@ export function createImageStore(
       if (!originalImage) {
         return undefined;
       }
-      releaseCurrentAiPreview();
+      releaseCurrentDerivedPreview();
       currentImage = originalImage;
       return currentImage;
     },

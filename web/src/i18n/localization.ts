@@ -12,21 +12,29 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   An: "On",
   Abbrechen: "Cancel",
   Anwenden: "Apply",
+  "Auswahl entfernen": "Remove selection",
+  "Auswahl wird lokal entfernt …": "Removing selection locally …",
   Anwendungsstatus: "Application status",
   Ansichtsmodus: "View mode",
   Arbeitsfläche: "Workspace",
   Aus: "Off",
   Ausgewogen: "Balanced",
   Bereit: "Ready",
+  Bearbeitet: "Edited",
   Benutzerdefiniert: "Custom",
   "Bild wählen": "Choose image",
   "Das Bild ist beschädigt oder kann nicht gelesen werden.":
     "The image is damaged or cannot be read.",
   "Das Bild ist größer als 25 MB. Bitte wähle eine kleinere Datei.":
     "The image is larger than 25 MB. Please choose a smaller file.",
+  "Das Zauberstab-Ergebnis konnte nicht angezeigt werden.":
+    "The Magic Wand result could not be displayed.",
   "Das geteilte Bild konnte nicht geöffnet werden. Bitte teile es erneut.":
     "The shared image could not be opened. Please share it again.",
   "Der Hintergrund konnte nicht entfernt werden.": "The background could not be removed.",
+  "Der Browser konnte das bearbeitete Bild nicht als PNG speichern.":
+    "The browser could not save the edited image as PNG.",
+  "Der Zauberstab konnte nicht ausgeführt werden.": "The Magic Wand could not be run.",
   "Der Verlauf ist noch leer": "History is empty",
   Detailfilter: "Detail filter",
   "Die Bilddaten passen nicht zu den Bildmaßen.":
@@ -38,6 +46,7 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Ein: "On",
   Eingabe: "Input",
   Eingabebild: "Input image",
+  Empfindlichkeit: "Sensitivity",
   Entladen: "Unload",
   "Einstellungen übernehmen": "Apply settings",
   "Ellipse erkennen": "Detect ellipse",
@@ -63,6 +72,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "KI-Manager": "AI Manager",
   "KI-Modelle": "AI models",
   "KI-Werkzeuge": "AI tools",
+  "Klicke auf den zusammenhängenden Farbbereich, den du entfernen möchtest.":
+    "Click the contiguous color region you want to remove.",
   "Keine Netzwerkübertragung": "No network transfer",
   "Keine Parameterunterschiede.": "No parameter differences.",
   "Konvertiere …": "Converting …",
@@ -89,6 +100,7 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "Maske invertieren": "Invert mask",
   "Maske invertiert.": "Mask inverted.",
   "Maske normal.": "Normal mask.",
+  "Manuelle Auswahl": "Manual selection",
   "Native Formen": "Native shapes",
   "Native Formen aktivieren": "Enable native shapes",
   "Nach dem Laden erscheint hier automatisch dein SVG.":
@@ -161,6 +173,14 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Datenschutz: "Privacy",
   Zielgröße: "Target size",
   Zielmaße: "Target dimensions",
+  Zauberstab: "Magic Wand",
+  "Zauberstab-Auswahl": "Magic Wand selection",
+  "Zauberstab-Auswahl lokal entfernt.": "Magic Wand selection removed locally.",
+  "Zauberstab-Empfindlichkeit": "Magic Wand sensitivity",
+  "Zauberstab-Maske und Auswahlfläche": "Magic Wand mask and selection area",
+  "Zauberstab verworfen; Bild unverändert.": "Magic Wand discarded; image unchanged.",
+  "Zauberstab wird vorbereitet …": "Preparing Magic Wand …",
+  "Zusammenhängende Farbe entfernen": "Remove contiguous color",
   "Zweite Variante": "Second variant",
   Zoomsteuerung: "Zoom controls",
   "img2svg Studio Startseite": "img2svg Studio home",
@@ -277,6 +297,10 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Loads a local PNG, JPEG, or WebP image or the bundled logo example.",
   "Das Bild bleibt im Browser; direkt nach dem Laden entsteht automatisch eine Live-Vorschau.":
     "The image stays in the browser; a live preview is created automatically after loading.",
+  "Wählt nach einem Klick nur den zusammenhängenden Bereich mit ähnlicher Farbe aus.":
+    "After one click, selects only the contiguous region with a similar color.",
+  "Die Empfindlichkeit erweitert die sichtbare Maske; entfernt wird sie erst nach ausdrücklicher Bestätigung.":
+    "Sensitivity expands the visible mask; it is removed only after explicit confirmation.",
   "Bündelt Profil, Ausgabegröße und die daraus berechneten Zielmaße.":
     "Groups profile, output size, and the resulting target dimensions.",
   "Die Rastergröße steuert die Analyse; die SVG-Skalierung steuert die endgültige Ausgabegröße.":
@@ -292,6 +316,8 @@ const englishPatterns: readonly Readonly<{
   replace: (...matches: string[]) => string;
 }>[] = Object.freeze([
   pattern(/^Standard: (.*)$/, (value) => `Default: ${translateContent(value)}`),
+  pattern(/^(\d+) Pixel ausgewählt$/, (count) => `${count} pixels selected`),
+  pattern(/^Empfindlichkeit (\d+) %$/, (sensitivity) => `Sensitivity ${sensitivity}%`),
   pattern(/^(\d+) Tracing-Parameter$/, (count) => `${count} tracing parameters`),
   pattern(/^(\d+) Varianten?$/, (count) => `${count} ${count === "1" ? "variant" : "variants"}`),
   pattern(/^(\d+) Pfade?$/, (count) => `${count} ${count === "1" ? "path" : "paths"}`),

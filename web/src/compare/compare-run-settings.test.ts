@@ -13,6 +13,15 @@ describe("run settings comparison", () => {
       { a: "Original · V1", b: "KI-Ergebnis · V2", key: "inputVersion", label: "Eingabe" },
     ]);
   });
+
+  test("Given original and manually edited inputs, when compared, then the input version identifies the edit", () => {
+    const original = run(1, ImageVersionKind.Original);
+    const manualResult = run(2, ImageVersionKind.ManualResult);
+
+    expect(compareRunSettings(original, manualResult, true)).toEqual([
+      { a: "Original · V1", b: "Bearbeitet · V2", key: "inputVersion", label: "Eingabe" },
+    ]);
+  });
 });
 
 function run(inputVersionId: number, inputVersionKind: ImageVersionKind): ConversionRun {

@@ -6,7 +6,7 @@ export async function encodeRasterPng(pixels: RasterPixels, fileName: string): P
   canvas.height = pixels.heightPixels;
   const context = canvas.getContext("2d");
   if (!context) {
-    throw new Error("Der Browser konnte das KI-Ergebnis nicht als PNG speichern.");
+    throw new Error("Der Browser konnte das bearbeitete Bild nicht als PNG speichern.");
   }
   context.putImageData(
     new ImageData(new Uint8ClampedArray(pixels.rgba), pixels.widthPixels, pixels.heightPixels),
@@ -18,7 +18,7 @@ export async function encodeRasterPng(pixels: RasterPixels, fileName: string): P
       if (result) {
         resolve(result);
       } else {
-        reject(new Error("Der Browser konnte das KI-Ergebnis nicht als PNG speichern."));
+        reject(new Error("Der Browser konnte das bearbeitete Bild nicht als PNG speichern."));
       }
     }, "image/png");
   });

@@ -15,6 +15,7 @@ import {
 } from "./sam-selection";
 import type { ModelRegistry, ModelRegistrySnapshot } from "./model-registry";
 import type { AiActionResult } from "./ai-action-result";
+import { SelectionTool, type SelectionActivity } from "../selection/selection-activity";
 
 export interface SmartSelectController {
   applySelection(request: SmartSelectionRequest): Promise<AiActionResult>;
@@ -60,6 +61,7 @@ export function initializeSmartSelect(
   imageStore: ImageStore,
   imageLoader: ImageLoaderController,
   registry: ModelRegistry,
+  selectionActivity: SelectionActivity,
 ): SmartSelectController {
   const elements = readElements();
   let active: ActiveSelection | undefined;
@@ -75,7 +77,8 @@ export function initializeSmartSelect(
       registry.snapshot("slimsam").state.status !== "ready" ||
       starting ||
       applying ||
-      active !== undefined;
+      active !== undefined ||
+      selectionActivity.blocked(SelectionTool.SmartSelect);
   };
 
   const closeSelection = async (): Promise<void> => {
@@ -84,6 +87,7 @@ export function initializeSmartSelect(
     elements.overlay.hidden = true;
     elements.points.replaceChildren();
     renderControls(elements, undefined, pointKind, predicting);
+    selectionActivity.release(SelectionTool.SmartSelect);
     updateAvailability();
     await closing?.session.dispose();
   };
@@ -97,10 +101,11 @@ export function initializeSmartSelect(
 
   const startSelection = async (): Promise<boolean> => {
     const source = imageStore.current();
-    if (!source || starting || active) {
+    if (!source || starting || active || !selectionActivity.acquire(SelectionTool.SmartSelect)) {
       return false;
     }
     if (!imageLoader.showCurrentImage()) {
+      selectionActivity.release(SelectionTool.SmartSelect);
       return false;
     }
     starting = true;
@@ -142,6 +147,9 @@ export function initializeSmartSelect(
       return false;
     } finally {
       starting = false;
+      if (!active) {
+        selectionActivity.release(SelectionTool.SmartSelect);
+      }
       updateAvailability();
     }
   };
@@ -321,6 +329,7 @@ export function initializeSmartSelect(
     }
     updateAvailability();
   });
+  selectionActivity.subscribe(updateAvailability);
   new ResizeObserver(() => {
     if (active) {
       syncOverlayGeometry(elements, active.input);

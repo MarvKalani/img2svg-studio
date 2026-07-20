@@ -29,8 +29,8 @@ flowchart LR
 
 HTML and CSS provide the visible workspace. TypeScript controllers own one user action each:
 image loading, conversion, history, comparison, downloads, model lifecycle, background removal and
-Smart Select. Controllers return typed outcomes so UI buttons and WebMCP tools share validation and
-errors without duplicating behavior.
+Smart Select. A model-free Magic Wand owns contiguous color selection. Controllers return typed
+outcomes so UI buttons and WebMCP tools share validation and errors without duplicating behavior.
 
 ### Conversion engine
 

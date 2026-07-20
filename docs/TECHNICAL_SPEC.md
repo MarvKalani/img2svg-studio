@@ -439,12 +439,20 @@ Geometrie. Punkte akkumulieren, während eine Inferenz läuft keine konkurrieren
 Invertieren ändert nur die sichtbare und anzuwendende Polarität. Anwenden nullt den Alpha-Kanal
 außerhalb der gewählten Maske; Verwerfen berührt weder `ImageStore` noch History.
 
+`magic-wand-selection.ts` flutet vierfach zusammenhängend vom angeklickten Pixel. Die maximale
+Abweichung jedes RGBA-Kanals zur unveränderten Ausgangsfarbe bildet die Empfindlichkeit von 0 bis
+100 Prozent ab. Abgelehnte Pixel stoppen die Flutung; ein Farbverlauf kann die Toleranz daher nicht
+schrittweise erweitern. Der Controller rendert die binäre Maske in Originalauflösung über derselben
+`object-fit: contain`-Fläche. Erst die bestätigte Aktion nullt ausgewählte Alpha-Werte und erzeugt
+eine manuelle Bildversion. Ein gemeinsamer typisierter Aktivitätswächter verhindert gleichzeitig
+aktive Magic-Wand- und SlimSAM-Auswahlen.
+
 `ImageStore` vergibt monoton steigende, typisierte Eingabeversionen und hält das Original neben
-höchstens einer aktuellen KI-Ableitung. Ersetzen oder Wiederherstellen gibt nicht mehr benötigte
-Object-URLs genau einmal frei. Jeder `ConversionRun` friert seine `ImageVersion` gemeinsam mit
-SVG, Dateiname und Optionen ein. Der Run-Vergleich ergänzt die schema-basierte Parametertabelle
-um „Eingabe“; Einzel- und A/B-Downloads lesen den Dateinamen aus dem angezeigten Run statt aus der
-inzwischen möglicherweise gewechselten Eingabe.
+höchstens einer aktuellen manuellen oder KI-Ableitung. Ersetzen oder Wiederherstellen gibt nicht
+mehr benötigte Object-URLs genau einmal frei. Jeder `ConversionRun` friert seine `ImageVersion`
+gemeinsam mit SVG, Dateiname und Optionen ein. Der Run-Vergleich ergänzt die schema-basierte
+Parametertabelle um „Eingabe“; Einzel- und A/B-Downloads lesen den Dateinamen aus dem angezeigten
+Run statt aus der inzwischen möglicherweise gewechselten Eingabe.
 
 `model-artifact-cache.ts` lädt ausschließlich die manifestierten revisionsgebundenen URLs mit dem
 Abortsignal des Versuchs. Jeder Cache- und Netzwerk-Response wird vor der Verwendung gegen

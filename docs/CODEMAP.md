@@ -48,6 +48,7 @@ das sichtbare Produkt.
 | Arbeitsfläche zwischen Raster/SVG wechseln | `workspace-view-controller.ts`, `workspace-view.css` | Konvertierungs- und Vergleichs-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |
 | Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vtracer-handbook.spec.ts` |
+| Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts` |
 | AI-Modell laden/entladen | `model-registry.ts`, `browser-model-loader.ts`, `model-manager.ts` | Model-Unit-Tests, `model-lifecycle.spec.ts` |
 | Hintergrund entfernen | `background-removal-controller.ts`, `modnet-adapter.ts` | Adapter-Tests, `remove-background.spec.ts` |
 | Smart Select | `smart-select-controller.ts`, `sam-selection.ts`, `sam-adapter.ts` | Selection-Tests, `smart-select.spec.ts` |
@@ -108,6 +109,22 @@ sichtbare Nutzeraktion
 Kein Modell wird allein durch den Seitenstart geladen. Eine abgeleitete Version ersetzt das
 Original nicht; Wiederherstellung bleibt möglich.
 
+### Zauberstab zu manueller Bildversion
+
+```text
+magic-wand-controller
+  -> read-raster-pixels
+  -> magic-wand-selection (Klickpunkt, Empfindlichkeit, zusammenhängende Maske)
+  -> sichtbares Masken-Canvas
+  -> ausdrückliche Entfernung
+  -> encode-raster-png
+  -> image-loader als manuelle Version
+  -> normaler Vorschau- und Historienfluss
+```
+
+Die Empfindlichkeit ändert nur die sichtbare Maske. Erst die Schaltfläche „Auswahl entfernen“
+verändert den Alpha-Kanal; ein Modelldownload gehört nicht zu diesem Pfad.
+
 ### WebMCP
 
 ```text
@@ -146,9 +163,11 @@ Dieser Prozess ist bewusst getrennt vom lokalen Browserzustand und hält weder B
 - `conversion-options-controller.ts` ist die UI-Wahrheit für Optionen; Presets und Restore laufen
   durch seine typisierte `apply`-Grenze.
 - `model-registry.ts` besitzt jede geladene AI-Session und deren Freigabe.
+- `selection-activity.ts` lässt höchstens ein interaktives Auswahlwerkzeug die Arbeitsfläche
+  besitzen.
 - Rust validiert Dimensionen und Engine-Optionen erneut; TypeScript-Validierung ersetzt diese
   Vertrauensgrenze nicht.
-- Nutzerbilder, SVG-Runs und AI-Ergebnisse bleiben im Browser. Nur der ausdrücklich verwendete
+- Nutzerbilder, SVG-Runs und abgeleitete Bilder bleiben im Browser. Nur der ausdrücklich verwendete
   ChatGPT-MCP-Pfad verarbeitet eine Eingabe im stateless Companion.
 - Handgeschriebene Dateien bleiben unter 1000 Zeilen. Ab 600 Zeilen wird im Review geprüft, ob
   mehr als eine Verantwortung enthalten ist; `npm run check:lines` erzwingt die Obergrenze.

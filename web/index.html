@@ -393,6 +393,16 @@
             <div id="shape-type-options" class="shape-type-options"></div>
           </section>
 
+          <section class="control-panel selection-panel" data-help-key="magicWand">
+            <h2>Manuelle Auswahl</h2>
+            <p>Zusammenhängende Farbe entfernen</p>
+            <button id="magic-wand" class="ai-tool-button" type="button" disabled>
+              <span aria-hidden="true">✦</span>
+              Zauberstab
+            </button>
+            <output id="magic-wand-status" class="ai-tool-status" aria-live="polite"></output>
+          </section>
+
           <section class="control-panel ai-panel">
             <h2>KI-Werkzeuge</h2>
             <button id="remove-background" class="ai-tool-button" type="button" disabled>
@@ -445,6 +455,37 @@
                   alt=""
                   hidden
                 />
+                <div
+                  id="magic-wand-overlay"
+                  class="magic-wand-overlay"
+                  data-testid="magic-wand-overlay"
+                  hidden
+                >
+                  <canvas
+                    id="magic-wand-canvas"
+                    class="magic-wand-canvas"
+                    data-testid="magic-wand-canvas"
+                    aria-label="Zauberstab-Maske und Auswahlfläche"
+                  ></canvas>
+                  <div class="magic-wand-toolbar" role="toolbar" aria-label="Zauberstab-Auswahl">
+                    <label class="magic-wand-sensitivity">
+                      <span>Empfindlichkeit</span>
+                      <output id="magic-wand-sensitivity-value" for="magic-wand-sensitivity"
+                        >15 %</output
+                      >
+                      <input
+                        id="magic-wand-sensitivity"
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="15"
+                        aria-label="Zauberstab-Empfindlichkeit"
+                      />
+                    </label>
+                    <button id="magic-wand-remove" type="button" disabled>Auswahl entfernen</button>
+                    <button id="magic-wand-discard" type="button">Verwerfen</button>
+                  </div>
+                </div>
                 <div
                   id="sam-selection-overlay"
                   class="sam-selection-overlay"

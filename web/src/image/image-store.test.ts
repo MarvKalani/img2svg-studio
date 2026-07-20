@@ -28,6 +28,18 @@ describe("image store", () => {
     expect(revokePreviewUrl).toHaveBeenCalledExactlyOnceWith("blob:derived");
   });
 
+  test("Given an original, when a manual edit is appended, then its source remains distinguishable from AI output", () => {
+    const store = createImageStore();
+    store.replaceOriginal(imageFile("logo.png"), metadata("blob:original"));
+
+    const edited = store.appendManualVersion(
+      imageFile("logo-zauberstab.png"),
+      metadata("blob:manual"),
+    );
+
+    expect(edited.version).toEqual({ id: 2, kind: ImageVersionKind.ManualResult });
+  });
+
   test("Given an active AI result, when a new original replaces it, then both old preview URLs are released once", () => {
     const revokePreviewUrl = vi.fn();
     const store = createImageStore(revokePreviewUrl);

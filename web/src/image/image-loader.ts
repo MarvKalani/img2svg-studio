@@ -4,6 +4,7 @@ import { formatImageVersion, ImageVersionKind } from "./image-version";
 
 export interface ImageLoaderController {
   loadAiVersion(file: File): Promise<boolean>;
+  loadManualVersion(file: File): Promise<boolean>;
   loadLogoDemo(): Promise<boolean>;
   loadOriginal(file: File): Promise<boolean>;
   reportError(message: string): void;
@@ -27,10 +28,7 @@ export function initializeImageLoader(
       return false;
     }
 
-    const loadedImage =
-      kind === ImageVersionKind.AiResult
-        ? imageStore.appendAiVersion(file, result.image)
-        : imageStore.replaceOriginal(file, result.image);
+    const loadedImage = loadIntoStore(imageStore, file, result.image, kind);
     onImageLoaded(result.image);
     showLoadedImage(elements, loadedImage);
     return true;
@@ -39,6 +37,8 @@ export function initializeImageLoader(
   const loadOriginal = (file: File): Promise<boolean> => loadImage(file, ImageVersionKind.Original);
   const loadAiVersion = (file: File): Promise<boolean> =>
     loadImage(file, ImageVersionKind.AiResult);
+  const loadManualVersion = (file: File): Promise<boolean> =>
+    loadImage(file, ImageVersionKind.ManualResult);
   const reportError = (message: string): void => showImageError(elements, message);
   const loadLogoDemo = async (): Promise<boolean> => {
     try {
@@ -106,12 +106,29 @@ export function initializeImageLoader(
   window.addEventListener("beforeunload", () => imageStore.dispose());
   return Object.freeze({
     loadAiVersion,
+    loadManualVersion,
     loadLogoDemo,
     loadOriginal,
     reportError,
     restoreOriginal,
     showCurrentImage,
   });
+}
+
+function loadIntoStore(
+  imageStore: ImageStore,
+  file: File,
+  metadata: DecodedImage,
+  kind: ImageVersionKind,
+): LoadedImage {
+  switch (kind) {
+    case ImageVersionKind.AiResult:
+      return imageStore.appendAiVersion(file, metadata);
+    case ImageVersionKind.ManualResult:
+      return imageStore.appendManualVersion(file, metadata);
+    case ImageVersionKind.Original:
+      return imageStore.replaceOriginal(file, metadata);
+  }
 }
 
 interface ImageLoaderElements {
