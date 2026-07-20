@@ -1,11 +1,12 @@
 use img2svg_core::{ConversionOptionError, ConversionOptions, convert_rgba_with_options};
 
 #[test]
-fn given_canonical_defaults_when_read_then_all_three_values_are_explicit() {
+fn given_canonical_defaults_when_read_then_all_values_are_explicit() {
     let options = ConversionOptions::default();
 
     assert_eq!(options.color_precision(), 7);
     assert_eq!(options.filter_speckle(), 4);
+    assert_eq!(options.path_precision(), 2);
     assert_eq!(options.scale_percent(), 100);
 }
 
@@ -23,6 +24,37 @@ fn given_invalid_values_when_options_are_created_then_each_range_is_rejected() {
         ConversionOptions::try_new(7, 4, 401),
         Err(ConversionOptionError::ScalePercent)
     );
+    assert_eq!(
+        ConversionOptions::default().try_with_path_precision(5),
+        Err(ConversionOptionError::PathPrecision)
+    );
+}
+
+#[test]
+fn given_the_same_pixels_when_path_precision_is_lowered_then_coordinates_use_fewer_bytes() {
+    let pixels = (0..16 * 16)
+        .flat_map(|index| {
+            let x = index % 16;
+            let y = index / 16;
+            if x > y / 2 && x < 15 - y / 3 {
+                [14, 165, 233, 255]
+            } else {
+                [0, 0, 0, 255]
+            }
+        })
+        .collect::<Vec<_>>();
+    let rounded = ConversionOptions::default()
+        .try_with_path_precision(0)
+        .expect("zero decimal places should be valid");
+    let detailed = ConversionOptions::default();
+
+    let rounded_svg =
+        convert_rgba_with_options(&pixels, 16, 16, rounded).expect("rounded SVG should convert");
+    let detailed_svg =
+        convert_rgba_with_options(&pixels, 16, 16, detailed).expect("detailed SVG should convert");
+
+    assert!(rounded_svg.len() < detailed_svg.len());
+    assert_ne!(rounded_svg, detailed_svg);
 }
 
 #[test]

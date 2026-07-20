@@ -17,5 +17,5 @@
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "e2e", "playwright.config.ts", "vitest.config.ts"]
+  "include": ["src", "e2e", "benchmarks", "playwright.config.ts", "vitest.config.ts"]
 }

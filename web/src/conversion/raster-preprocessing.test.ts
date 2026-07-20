@@ -1,16 +1,38 @@
 import { describe, expect, test } from "vitest";
 import {
   RasterFilterMode,
+  RasterDetailMode,
   RasterResizeKind,
   applyRasterFilter,
+  applyRasterDetail,
   createRasterPreprocessingOptions,
   defaultRasterPreprocessingOptions,
   preprocessedDimensions,
 } from "./raster-preprocessing";
 
 describe("raster preprocessing", () => {
+  test("Given one noisy color pixel, when smoothing runs, then energy spreads while alpha stays unchanged", () => {
+    const rgba = new Uint8Array(3 * 3 * 4);
+    rgba.set([160, 80, 32, 128], (1 * 3 + 1) * 4);
+
+    const smoothed = applyRasterDetail(rgba, 3, 3, RasterDetailMode.Smooth);
+
+    expect(smoothed.slice(16, 20)).toEqual(new Uint8Array([40, 20, 8, 128]));
+    expect(smoothed.slice(0, 4)).toEqual(new Uint8Array([10, 5, 2, 0]));
+    expect(rgba.slice(16, 20)).toEqual(new Uint8Array([160, 80, 32, 128]));
+  });
+
+  test("Given a soft color edge, when sharpening runs, then edge contrast increases without changing alpha", () => {
+    const rgba = new Uint8Array([80, 80, 80, 255, 120, 120, 120, 128, 120, 120, 120, 64]);
+
+    const sharpened = applyRasterDetail(rgba, 3, 1, RasterDetailMode.Sharpen);
+
+    expect([...sharpened]).toEqual([75, 75, 75, 255, 125, 125, 125, 128, 120, 120, 120, 64]);
+  });
+
   test("Given a Full-HD source, when prepared at 2160p, then UHD dimensions preserve its aspect ratio", () => {
     const options = createRasterPreprocessingOptions({
+      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Color,
       monochromeThreshold: 128,
       resize: { heightPixels: 2160, kind: RasterResizeKind.TargetHeight },
@@ -54,6 +76,7 @@ describe("raster preprocessing", () => {
       filterMode: RasterFilterMode.Grayscale,
     });
     const monochrome = applyRasterFilter(rgba, {
+      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Monochrome,
       monochromeThreshold: 128,
       resize: { kind: RasterResizeKind.Original },
@@ -67,6 +90,7 @@ describe("raster preprocessing", () => {
   test("Given an unsupported height or threshold, when options are created, then validation rejects them", () => {
     expect(() =>
       createRasterPreprocessingOptions({
+        detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Color,
         monochromeThreshold: 128,
         resize: { heightPixels: 1081, kind: RasterResizeKind.TargetHeight },
@@ -74,6 +98,7 @@ describe("raster preprocessing", () => {
     ).toThrow();
     expect(() =>
       createRasterPreprocessingOptions({
+        detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Monochrome,
         monochromeThreshold: 256,
         resize: { kind: RasterResizeKind.Original },

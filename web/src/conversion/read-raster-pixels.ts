@@ -1,5 +1,6 @@
 import {
   applyRasterFilter,
+  applyRasterDetail,
   defaultRasterPreprocessingOptions,
   preprocessedDimensions,
   type RasterPreprocessingOptions,
@@ -32,7 +33,15 @@ export async function readRasterPixels(
     const imageData = context.getImageData(0, 0, dimensions.widthPixels, dimensions.heightPixels);
     return {
       ...dimensions,
-      rgba: applyRasterFilter(new Uint8Array(imageData.data), options),
+      rgba: applyRasterFilter(
+        applyRasterDetail(
+          new Uint8Array(imageData.data),
+          dimensions.widthPixels,
+          dimensions.heightPixels,
+          options.detailMode,
+        ),
+        options,
+      ),
     };
   } finally {
     bitmap.close();

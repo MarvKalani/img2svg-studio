@@ -18,9 +18,11 @@ describe("conversion settings diff", () => {
     expect(rows.map((row) => row.label)).toEqual([
       "Rastergröße",
       "Rasterfilter",
+      "Detailfilter",
       "Schwarzweiß-Schwellwert",
       "Farbpräzision",
       "Speckle-Filter",
+      "Pfadpräzision",
       "Zielgröße",
       "Formerkennung",
       "Kreis erkennen",

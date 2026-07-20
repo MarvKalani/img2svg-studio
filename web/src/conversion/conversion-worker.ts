@@ -29,6 +29,7 @@ async function convertInWorker(request: ConversionWorkerRequest): Promise<void> 
       request.heightPixels,
       request.options.colorPrecision,
       request.options.filterSpeckle,
+      request.options.pathPrecision,
       request.options.scalePercent,
       shapeDetectionFlags(request.options.shapeDetection),
     );

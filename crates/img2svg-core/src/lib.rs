@@ -45,6 +45,7 @@ pub enum ConversionErrorCode {
 pub enum ConversionOptionError {
     ColorPrecision,
     FilterSpeckle,
+    PathPrecision,
     ScalePercent,
 }
 
@@ -72,6 +73,7 @@ impl ConversionResult {
 pub struct ConversionOptions {
     color_precision: u8,
     filter_speckle: u16,
+    path_precision: u8,
     scale_percent: u16,
     shape_detection: ShapeDetectionOptions,
 }
@@ -97,6 +99,7 @@ impl ConversionOptions {
                 .map_err(|_| ConversionOptionError::ColorPrecision)?,
             filter_speckle: u16::try_from(filter_speckle)
                 .map_err(|_| ConversionOptionError::FilterSpeckle)?,
+            path_precision: 2,
             scale_percent: u16::try_from(scale_percent)
                 .map_err(|_| ConversionOptionError::ScalePercent)?,
             shape_detection: ShapeDetectionOptions::default(),
@@ -111,6 +114,10 @@ impl ConversionOptions {
         self.filter_speckle
     }
 
+    pub const fn path_precision(self) -> u8 {
+        self.path_precision
+    }
+
     pub const fn scale_percent(self) -> u16 {
         self.scale_percent
     }
@@ -123,6 +130,18 @@ impl ConversionOptions {
         self.shape_detection = shape_detection;
         self
     }
+
+    pub fn try_with_path_precision(
+        mut self,
+        path_precision: u32,
+    ) -> Result<Self, ConversionOptionError> {
+        if path_precision > 4 {
+            return Err(ConversionOptionError::PathPrecision);
+        }
+        self.path_precision =
+            u8::try_from(path_precision).map_err(|_| ConversionOptionError::PathPrecision)?;
+        Ok(self)
+    }
 }
 
 impl Default for ConversionOptions {
@@ -130,6 +149,7 @@ impl Default for ConversionOptions {
         Self {
             color_precision: 7,
             filter_speckle: 4,
+            path_precision: 2,
             scale_percent: 100,
             shape_detection: ShapeDetectionOptions::default(),
         }
@@ -186,6 +206,7 @@ impl fmt::Display for ConversionOptionError {
         match self {
             Self::ColorPrecision => formatter.write_str("color precision"),
             Self::FilterSpeckle => formatter.write_str("speckle filter"),
+            Self::PathPrecision => formatter.write_str("path precision"),
             Self::ScalePercent => formatter.write_str("scale percent"),
         }
     }
@@ -260,7 +281,11 @@ pub fn convert_rgba_with_options_result(
             10,
             PI / 4.0,
         );
-        let (path_data, offset) = compound_path.to_svg_string(true, PointF64::default(), Some(2));
+        let (path_data, offset) = compound_path.to_svg_string(
+            true,
+            PointF64::default(),
+            Some(u32::from(options.path_precision)),
+        );
         if !path_data.is_empty() {
             let candidate = ShapeCandidate {
                 area: cluster.area(),

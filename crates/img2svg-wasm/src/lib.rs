@@ -3,17 +3,21 @@
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
+// Scalar arguments keep this narrow WASM ABI allocation-free; the core immediately groups them.
+#[allow(clippy::too_many_arguments)]
 pub fn convert_rgba(
     pixels: &[u8],
     width: u32,
     height: u32,
     color_precision: u32,
     filter_speckle: u32,
+    path_precision: u32,
     scale_percent: u32,
     shape_detection_flags: u32,
 ) -> Result<String, JsValue> {
     let options =
         img2svg_core::ConversionOptions::try_new(color_precision, filter_speckle, scale_percent)
+            .and_then(|options| options.try_with_path_precision(path_precision))
             .map_err(|_| JsValue::from_f64(4.0))?
             .with_shape_detection(img2svg_core::ShapeDetectionOptions::from_flags(
                 shape_detection_flags,

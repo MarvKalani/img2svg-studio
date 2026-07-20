@@ -73,12 +73,15 @@ Eingabefläche gezogen werden. Beide Wege verwenden dieselbe Decodergrenze.
 
 „Logo-Demo laden“ öffnet ohne Dateidialog das mitgelieferte facettierte Logo des Projekteigentümers.
 Es läuft über denselben Decoder wie eine ausgewählte Datei und aktiviert das vermessene
-Demo-Profil: 576 Pixel Zielhöhe bei festem Seitenverhältnis, 6-Bit-Farbpräzision, 4 Pixel
-Speckle-Filter sowie ausschließlich die konservative Polygonerkennung. Das 1280 × 876-Pixel-JPEG
-wird dadurch vor dem Tracing auf 842 × 576 Pixel vorbereitet. Der Abruf bleibt auf der App-Origin.
+Demo-Profil: 576 Pixel Zielhöhe bei festem Seitenverhältnis, 6-Bit-Farbpräzision, 16 Pixel
+Speckle-Filter, ganzzahlige Pfadkoordinaten sowie ausschließlich die konservative
+Polygonerkennung. Das 1280 × 876-Pixel-JPEG wird dadurch vor dem Tracing auf 842 × 576 Pixel
+vorbereitet. Der Abruf bleibt auf der App-Origin.
 
-Das Profil erhält die sichtbaren Kristallfacetten und erkennt eine streng passende Dreiecksfläche
-als natives Polygon; die übrigen, schattierten oder unregelmäßigen Flächen bleiben bewusst Pfade.
+Das vermessene Profil erhält die sichtbaren Kristallfacetten und reduziert die Ausgabe gegenüber
+dem vorherigen Profil von 2.798 auf 315 Pfade sowie von 1.360.284 auf 389.707 Bytes. Methodik,
+Einzelachsen und Qualitätswerte stehen in
+[`docs/release/LOGO_OPTIMIZATION.md`](release/LOGO_OPTIMIZATION.md).
 Für eine zweite A/B-Variante eignen sich 720 Pixel Zielhöhe und 5-Bit-Farbpräzision. Die kleinen
 geometrischen Ground-Truth-Fixtures bleiben unter `fixtures/shape-recognition/input/` für exakte
 Form- und Geometrietests erhalten und sind nicht der visuelle Jury-Einstieg.
@@ -201,8 +204,8 @@ Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
 
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
-Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Schwellwert,
-Farbpräzision, Speckle-Filter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
+Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Detailfilter, Schwellwert,
+Farbpräzision, Speckle-Filter, Pfadpräzision und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
 Formerkennungsschalter und den fünf Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die
 Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparameter mit „—“.
 
@@ -224,6 +227,11 @@ zu 3840×2160, während Hoch- und Sonderformate weder beschnitten noch verzerrt 
 bleibt in allen Modi erhalten. Die Anzeige „Vorbereitete Rastermaße“ nennt die Pixelgröße vor
 VTracer; „Zielmaße“ berücksichtigt danach zusätzlich die SVG-Skalierung.
 
+Der Detailfilter arbeitet vor dem Farbfilter direkt auf dem dekodierten RGBA-Puffer. „Glätten“
+verwendet einen kleinen 3×3-Gaußfilter gegen einzelne JPEG-Störungen. „Schärfen“ verstärkt Kanten
+mit einer milden Unscharfmaske. „Aus“ erhält die skalierten Pixel unverändert und bleibt Standard.
+Eine BMP-Zwischenkopie ist nicht nötig, weil VTracer bereits rohe RGBA-Pixel erhält.
+
 Rastergröße, Filter und Schwellwert werden unveränderlich im Run gespeichert, über
 „Einstellungen übernehmen“ wiederhergestellt und im A/B-Parametervergleich angezeigt.
 
@@ -236,6 +244,7 @@ Rust-Core:
 |---|---:|---:|---|
 | Farbpräzision | 1–8 Bit | 7 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
 | Speckle-Filter | 0–1000 px | 4 px | entfernt kleine Farbcluster |
+| Pfadpräzision | 0–4 Stellen | 2 Stellen | rundet Pfadkoordinaten und senkt Bytes, nicht die Pfadzahl |
 | SVG-Skalierung | 10–400 % | 100 % | skaliert SVG und ViewBox nach dem Tracing proportional |
 
 Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Prozent direkt an.
@@ -455,7 +464,8 @@ teilt den Rust/WASM-Konvertierungskern mit dem Studio, aber nicht dessen flücht
 - `detail_level`: `low`, `medium` oder `high`.
 
 Die Toolbeschreibung empfiehlt für flache Logos `shapes`, vier Farben und niedrige Details. Eine
-Bitte wie „mach es einfacher“ reduziert Farbanzahl und Detailstufe. Das Ergebnis enthält den
+Bitte wie „mach es einfacher“ reduziert Farbanzahl und Detailstufe. Niedrig, mittel und hoch
+verwenden dabei 0, 1 oder 2 Koordinaten-Nachkommastellen. Das Ergebnis enthält den
 SVG-String, effektive Parameter, Eingabe- und Ausgabemaße, Bytezahl sowie Zählungen für Pfade und
 alle fünf nativen Formtypen.
 

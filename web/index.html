@@ -95,6 +95,14 @@
                 <option value="monochrome">Schwarzweiß</option>
               </select>
             </label>
+            <label>
+              <span>Detailfilter</span>
+              <select id="raster-detail" aria-label="Raster-Detailfilter">
+                <option value="none" selected>Aus</option>
+                <option value="smooth">Glätten</option>
+                <option value="sharpen">Schärfen</option>
+              </select>
+            </label>
             <label id="monochrome-threshold-control" class="range-label" hidden>
               <span>Schwellwert</span>
               <output
@@ -162,6 +170,20 @@
 
           <section class="control-panel">
             <h2>Kurven</h2>
+            <label class="range-label">
+              <span>Pfadpräzision</span>
+              <output id="path-precision-value" for="path-precision" aria-label="Pfadpräzision Wert"
+                >2 Stellen</output
+              >
+              <input
+                id="path-precision"
+                type="range"
+                min="0"
+                max="4"
+                value="2"
+                aria-label="Pfadpräzision"
+              />
+            </label>
             <label class="range-label">
               <span>Speckle-Filter</span>
               <output

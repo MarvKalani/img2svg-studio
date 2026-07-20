@@ -13,6 +13,7 @@ import {
 export interface ConversionOptions {
   colorPrecision: number;
   filterSpeckle: number;
+  pathPrecision: number;
   preprocessing: RasterPreprocessingOptions;
   scalePercent: number;
   shapeDetection: ShapeDetectionOptions;
@@ -21,6 +22,7 @@ export interface ConversionOptions {
 export interface ConversionOptionsInput {
   colorPrecision: number;
   filterSpeckle: number;
+  pathPrecision?: number;
   preprocessing?: RasterPreprocessingOptions;
   scalePercent: number;
   shapeDetection?: ShapeDetectionOptions;
@@ -34,6 +36,7 @@ export interface PixelDimensions {
 export const defaultConversionOptions: Readonly<ConversionOptions> = Object.freeze({
   colorPrecision: 7,
   filterSpeckle: 4,
+  pathPrecision: 2,
   preprocessing: defaultRasterPreprocessingOptions,
   scalePercent: 100,
   shapeDetection: defaultShapeDetectionOptions,
@@ -43,6 +46,7 @@ export function createConversionOptions(input: ConversionOptionsInput): Conversi
   if (
     !isIntegerWithin(input.colorPrecision, 1, 8) ||
     !isIntegerWithin(input.filterSpeckle, 0, 1_000) ||
+    !isIntegerWithin(input.pathPrecision ?? 2, 0, 4) ||
     !isIntegerWithin(input.scalePercent, 10, 400)
   ) {
     throw new ConversionFailure(ConversionFailureCode.InvalidOptions);
@@ -51,6 +55,7 @@ export function createConversionOptions(input: ConversionOptionsInput): Conversi
   return {
     colorPrecision: input.colorPrecision,
     filterSpeckle: input.filterSpeckle,
+    pathPrecision: input.pathPrecision ?? 2,
     preprocessing: createRasterPreprocessingOptions(
       input.preprocessing ?? defaultRasterPreprocessingOptions,
     ),

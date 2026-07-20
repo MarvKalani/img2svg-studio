@@ -22,7 +22,7 @@ aufrufen; die Plattformpfade sind in [`APPS_SDK.md`](APPS_SDK.md) abgegrenzt.
 Datei / Drop / PWA Share Target / Desktop File Handler
   → Browser-Decoder
   → unveränderliches Original-RGBA
-  → proportionale Rastergröße und optionaler Farbfilter
+  → proportionale Rastergröße und optionale Detail- und Farbfilter
   → optional angewendete KI-Maske
   → RGBA + validierte ConversionOptions an WASM-Worker
   → Clustering und Tracing
@@ -45,9 +45,11 @@ unverändert bedienbar.
 ## 3. Zentrale Domänenmodelle
 
 Der implementierte `ConversionOptions`-Kern enthält typisierte Rastervorbereitung, Farbpräzision
-1–8 Bit, Speckle-Filter 0–1000 und proportionale SVG-Zielgröße 10–400 Prozent. Die
+1–8 Bit, Speckle-Filter 0–1000, Pfadpräzision 0–4 Stellen und proportionale SVG-Zielgröße
+10–400 Prozent. Die
 Rastervorbereitung unterscheidet Original, Prozent und feste Zielhöhe sowie Farbe, Graustufen und
-Schwarzweiß. Rust kapselt Enginewerte in `ConversionOptions::try_new`; TypeScript erzeugt den
+Schwarzweiß. Ein Detailmodus wählt Aus, 3×3-Gaußglättung oder milde Unscharfmaske. Rust kapselt
+Enginewerte in `ConversionOptions::try_new`; TypeScript erzeugt den
 vollständigen Vertrag ausschließlich über `createConversionOptions`. Grenztests halten beide
 Seiten synchron.
 
@@ -75,9 +77,10 @@ zurückgegebene Listenkopie werden eingefroren. IDs sind innerhalb der Sitzung m
 Der Store hält höchstens zehn Einträge in Reihenfolge neu nach alt und verwaltet die ausgewählte
 Run-ID getrennt vom aktuellen Eingabeformular.
 
-`createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe, 576 Pixel
-Zielhöhe, 6 Bit Farbpräzision, 4 Pixel Speckle, 100 Prozent SVG-Skalierung und ausschließlich
-Polygonerkennung. Nur der erfolgreiche gebündelte Logo-Ladevorgang wendet dieses Profil an; alle
+`createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe ohne
+Detailfilter, 576 Pixel Zielhöhe, 6 Bit Farbpräzision, 16 Pixel Speckle, 0 Stellen
+Pfadpräzision, 100 Prozent SVG-Skalierung und ausschließlich Polygonerkennung. Nur der erfolgreiche
+gebündelte Logo-Ladevorgang wendet dieses Profil an; alle
 anderen Bildwege behalten die vom Nutzer gesetzten Optionen.
 
 ## 4. Engine-Module
@@ -101,7 +104,7 @@ Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel
 deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
 stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
 `ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
-Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die drei
+Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die vier
 numerischen Optionswerte und ein `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
 Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
 Die schmale WASM-Grenze liefert weiterhin nur den SVG-String; die Web-App liest sichtbare
@@ -208,7 +211,8 @@ die sichtbare Vorschau atomar und gibt die vorherige Objekt-URL beim nächsten g
 oder vor dem Verlassen über den kleinen `imageStore` frei.
 
 `conversionService` berechnet aus Prozent oder Zielhöhe proportionale Rastermaße, skaliert über
-ein kurzlebiges Canvas und wendet danach den gewählten RGB-Filter an. Der Alphakanal bleibt
+ein kurzlebiges Canvas und wendet danach optional eine deterministische 3×3-Gaußglättung oder
+milde Unscharfmaske sowie den gewählten RGB-Filter an. Der Alphakanal bleibt
 unverändert. Erst dieser Buffer wird ohne Kopie an einen dedizierten Worker übertragen. Der Worker
 initialisiert das generierte WASM, ruft den Rust-Core auf und wird nach genau einem Ergebnis
 beendet. Der Controller validiert das
@@ -218,7 +222,9 @@ eine verständliche UI-Meldung zu.
 
 Farbpräzision setzt den Bitverlust der `visioncortex`-Farbnähe. Der Speckle-Wert wird wie im
 Tracing-Fundament zu einer Mindestfläche quadriert und vor der SVG-Assembly nochmals explizit
-angewendet. Die Zielgröße skaliert den bereits vektorisierten Pfad deterministisch und berechnet
+angewendet. Die Pfadpräzision wird an `to_svg_string` weitergereicht und bestimmt ausschließlich
+die Dezimalstellen der Pfadkoordinaten. Die Zielgröße skaliert den bereits vektorisierten Pfad
+deterministisch und berechnet
 positive ganzzahlige Zielmaße mit derselben Rundungsregel in Rust und TypeScript.
 
 Der SVG-Download serialisiert das aktuell gerenderte `svg`-Element mit `XMLSerializer`. Dadurch

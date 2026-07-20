@@ -9,6 +9,14 @@ export const RasterFilterMode = {
 
 export type RasterFilterMode = (typeof RasterFilterMode)[keyof typeof RasterFilterMode];
 
+export const RasterDetailMode = {
+  None: "none",
+  Sharpen: "sharpen",
+  Smooth: "smooth",
+} as const;
+
+export type RasterDetailMode = (typeof RasterDetailMode)[keyof typeof RasterDetailMode];
+
 export const RasterResizeKind = {
   Original: "original",
   Percentage: "percentage",
@@ -21,6 +29,7 @@ export type RasterResizeOptions =
   | { readonly heightPixels: number; readonly kind: typeof RasterResizeKind.TargetHeight };
 
 export interface RasterPreprocessingOptions {
+  readonly detailMode: RasterDetailMode;
   readonly filterMode: RasterFilterMode;
   readonly monochromeThreshold: number;
   readonly resize: RasterResizeOptions;
@@ -62,6 +71,7 @@ export const rasterResizePresets: readonly RasterResizePreset[] = Object.freeze(
 ]);
 
 export const defaultRasterPreprocessingOptions: RasterPreprocessingOptions = Object.freeze({
+  detailMode: RasterDetailMode.None,
   filterMode: RasterFilterMode.Color,
   monochromeThreshold: 128,
   resize: Object.freeze({ kind: RasterResizeKind.Original }),
@@ -73,6 +83,7 @@ export function createRasterPreprocessingOptions(
   input: RasterPreprocessingOptions,
 ): RasterPreprocessingOptions {
   if (
+    !Object.values(RasterDetailMode).includes(input.detailMode) ||
     !Object.values(RasterFilterMode).includes(input.filterMode) ||
     !Number.isInteger(input.monochromeThreshold) ||
     input.monochromeThreshold < 0 ||
@@ -82,6 +93,7 @@ export function createRasterPreprocessingOptions(
   }
 
   return Object.freeze({
+    detailMode: input.detailMode,
     filterMode: input.filterMode,
     monochromeThreshold: input.monochromeThreshold,
     resize: validateResize(input.resize),
@@ -109,6 +121,15 @@ export function formatRasterFilter(mode: RasterFilterMode): string {
     [RasterFilterMode.Color]: "Farbe",
     [RasterFilterMode.Grayscale]: "Graustufen",
     [RasterFilterMode.Monochrome]: "Schwarzweiß",
+  };
+  return labels[mode];
+}
+
+export function formatRasterDetail(mode: RasterDetailMode): string {
+  const labels: Record<RasterDetailMode, string> = {
+    [RasterDetailMode.None]: "Aus",
+    [RasterDetailMode.Sharpen]: "Schärfen",
+    [RasterDetailMode.Smooth]: "Glätten",
   };
   return labels[mode];
 }
@@ -166,6 +187,75 @@ export function applyRasterFilter(
     rgba[offset + 2] = value;
   }
   return rgba;
+}
+
+export function applyRasterDetail(
+  sourceRgba: Uint8Array,
+  widthPixels: number,
+  heightPixels: number,
+  mode: RasterDetailMode,
+): Uint8Array<ArrayBuffer> {
+  const expectedLength = widthPixels * heightPixels * 4;
+  if (
+    !Number.isSafeInteger(widthPixels) ||
+    !Number.isSafeInteger(heightPixels) ||
+    widthPixels < 1 ||
+    heightPixels < 1 ||
+    sourceRgba.length !== expectedLength
+  ) {
+    throw new ConversionFailure(ConversionFailureCode.PixelLength);
+  }
+  if (mode === RasterDetailMode.None) {
+    return new Uint8Array(sourceRgba);
+  }
+
+  const blurred = gaussianBlur(sourceRgba, widthPixels, heightPixels);
+  if (mode === RasterDetailMode.Smooth) {
+    return blurred;
+  }
+  const sharpened = new Uint8Array(sourceRgba);
+  for (let offset = 0; offset < sourceRgba.length; offset += 4) {
+    for (let channel = 0; channel < 3; channel += 1) {
+      const source = sourceRgba[offset + channel]!;
+      sharpened[offset + channel] = clampChannel(
+        source + (source - blurred[offset + channel]!) / 2,
+      );
+    }
+  }
+  return sharpened;
+}
+
+function gaussianBlur(
+  sourceRgba: Uint8Array,
+  widthPixels: number,
+  heightPixels: number,
+): Uint8Array<ArrayBuffer> {
+  const target = new Uint8Array(sourceRgba.length);
+  const weights = [1, 2, 1] as const;
+  for (let y = 0; y < heightPixels; y += 1) {
+    for (let x = 0; x < widthPixels; x += 1) {
+      const targetOffset = (y * widthPixels + x) * 4;
+      for (let channel = 0; channel < 3; channel += 1) {
+        let weightedChannel = 0;
+        for (let kernelY = -1; kernelY <= 1; kernelY += 1) {
+          for (let kernelX = -1; kernelX <= 1; kernelX += 1) {
+            const sourceX = Math.min(widthPixels - 1, Math.max(0, x + kernelX));
+            const sourceY = Math.min(heightPixels - 1, Math.max(0, y + kernelY));
+            const sourceOffset = (sourceY * widthPixels + sourceX) * 4;
+            weightedChannel +=
+              sourceRgba[sourceOffset + channel]! * weights[kernelX + 1]! * weights[kernelY + 1]!;
+          }
+        }
+        target[targetOffset + channel] = Math.round(weightedChannel / 16);
+      }
+      target[targetOffset + 3] = sourceRgba[targetOffset + 3]!;
+    }
+  }
+  return target;
+}
+
+function clampChannel(value: number): number {
+  return Math.min(255, Math.max(0, Math.round(value)));
 }
 
 function validateResize(resize: RasterResizeOptions): RasterResizeOptions {

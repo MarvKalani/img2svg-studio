@@ -1,6 +1,7 @@
 import type { ConversionController } from "../conversion/conversion-controller";
 import { createConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
 import {
+  RasterDetailMode,
   RasterFilterMode,
   RasterResizeKind,
   createRasterPreprocessingOptions,
@@ -23,6 +24,11 @@ const configureSchema = Object.freeze({
   properties: Object.freeze({
     colorPrecision: Object.freeze({ maximum: 8, minimum: 1, type: "integer" }),
     filterSpeckle: Object.freeze({ maximum: 1_000, minimum: 0, type: "integer" }),
+    rasterDetailMode: Object.freeze({
+      enum: Object.freeze(Object.values(RasterDetailMode)),
+      type: "string",
+    }),
+    pathPrecision: Object.freeze({ maximum: 4, minimum: 0, type: "integer" }),
     monochromeThreshold: Object.freeze({ maximum: 255, minimum: 0, type: "integer" }),
     rasterFilterMode: Object.freeze({
       enum: Object.freeze(Object.values(RasterFilterMode)),
@@ -36,7 +42,7 @@ const configureSchema = Object.freeze({
     scalePercent: Object.freeze({ maximum: 400, minimum: 10, type: "integer" }),
     useOriginalRasterSize: Object.freeze({ const: true, type: "boolean" }),
   }),
-  required: Object.freeze(["colorPrecision", "filterSpeckle", "scalePercent"]),
+  required: Object.freeze(["colorPrecision", "filterSpeckle", "pathPrecision", "scalePercent"]),
   type: "object",
 });
 
@@ -54,7 +60,7 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
     description:
-      "Set visible raster preprocessing, color precision, speckle filter, and SVG scale using the same Studio validation.",
+      "Set visible raster preprocessing, color precision, speckle filter, path precision, and SVG scale using the same Studio validation.",
     execute: (input: unknown) => {
       try {
         const values = requireConfigureInput(input);
@@ -109,6 +115,7 @@ function readPreprocessingInput(
             }
           : current.resize;
   return createRasterPreprocessingOptions({
+    detailMode: readDetailMode(input.rasterDetailMode) ?? current.detailMode,
     filterMode: readFilterMode(input.rasterFilterMode) ?? current.filterMode,
     monochromeThreshold:
       input.monochromeThreshold === undefined
@@ -116,6 +123,22 @@ function readPreprocessingInput(
         : requireNumber(input.monochromeThreshold),
     resize,
   });
+}
+
+function readDetailMode(value: unknown): RasterDetailMode | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  switch (value) {
+    case RasterDetailMode.None:
+      return RasterDetailMode.None;
+    case RasterDetailMode.Sharpen:
+      return RasterDetailMode.Sharpen;
+    case RasterDetailMode.Smooth:
+      return RasterDetailMode.Smooth;
+    default:
+      throw new TypeError("Raster detail mode is invalid.");
+  }
 }
 
 function readFilterMode(value: unknown): RasterFilterModeValue | undefined {
@@ -161,6 +184,7 @@ function convertCurrentImageTool(services: ConversionToolServices): WebMcpTool {
 function requireConfigureInput(input: unknown): {
   colorPrecision: number;
   filterSpeckle: number;
+  pathPrecision: number;
   scalePercent: number;
 } {
   if (!isRecord(input)) {
@@ -169,6 +193,7 @@ function requireConfigureInput(input: unknown): {
   return {
     colorPrecision: requireNumber(input.colorPrecision),
     filterSpeckle: requireNumber(input.filterSpeckle),
+    pathPrecision: requireNumber(input.pathPrecision),
     scalePercent: requireNumber(input.scalePercent),
   };
 }

@@ -6,6 +6,7 @@ import {
   type ConversionOptions,
 } from "./conversion-options";
 import {
+  RasterDetailMode,
   RasterFilterMode,
   createRasterPreprocessingOptions,
   preprocessedDimensions,
@@ -40,7 +41,9 @@ export function initializeConversionOptions(): ConversionOptionsController {
     createConversionOptions({
       colorPrecision: elements.colorPrecision.valueAsNumber,
       filterSpeckle: elements.filterSpeckle.valueAsNumber,
+      pathPrecision: elements.pathPrecision.valueAsNumber,
       preprocessing: createRasterPreprocessingOptions({
+        detailMode: readRasterDetailMode(elements.rasterDetail.value),
         filterMode: readRasterFilterMode(elements.rasterFilter.value),
         monochromeThreshold: elements.monochromeThreshold.valueAsNumber,
         resize: readRasterResizePreset(elements.rasterResize.value),
@@ -56,6 +59,7 @@ export function initializeConversionOptions(): ConversionOptionsController {
     const options = current();
     elements.colorPrecisionValue.textContent = `${String(options.colorPrecision)} Bit`;
     elements.filterSpeckleValue.textContent = `${String(options.filterSpeckle)} px`;
+    elements.pathPrecisionValue.textContent = `${String(options.pathPrecision)} ${options.pathPrecision === 1 ? "Stelle" : "Stellen"}`;
     elements.monochromeThresholdValue.textContent = String(
       options.preprocessing.monochromeThreshold,
     );
@@ -79,8 +83,10 @@ export function initializeConversionOptions(): ConversionOptionsController {
 
   elements.colorPrecision.addEventListener("input", render);
   elements.filterSpeckle.addEventListener("input", render);
+  elements.pathPrecision.addEventListener("input", render);
   elements.monochromeThreshold.addEventListener("input", render);
   elements.rasterFilter.addEventListener("change", render);
+  elements.rasterDetail.addEventListener("change", render);
   elements.rasterResize.addEventListener("change", render);
   elements.scalePercent.addEventListener("change", render);
   elements.shapeDetection.addEventListener("click", () => {
@@ -90,6 +96,7 @@ export function initializeConversionOptions(): ConversionOptionsController {
   });
   elements.colorPrecision.value = String(defaultConversionOptions.colorPrecision);
   elements.filterSpeckle.value = String(defaultConversionOptions.filterSpeckle);
+  elements.pathPrecision.value = String(defaultConversionOptions.pathPrecision);
   elements.scalePercent.value = String(defaultConversionOptions.scalePercent);
   elements.shapeDetection.setAttribute(
     "aria-checked",
@@ -102,10 +109,12 @@ export function initializeConversionOptions(): ConversionOptionsController {
       const validatedOptions = createConversionOptions(options);
       elements.colorPrecision.value = String(validatedOptions.colorPrecision);
       elements.filterSpeckle.value = String(validatedOptions.filterSpeckle);
+      elements.pathPrecision.value = String(validatedOptions.pathPrecision);
       elements.monochromeThreshold.value = String(
         validatedOptions.preprocessing.monochromeThreshold,
       );
       elements.rasterFilter.value = validatedOptions.preprocessing.filterMode;
+      elements.rasterDetail.value = validatedOptions.preprocessing.detailMode;
       elements.rasterResize.value = rasterResizePresetId(validatedOptions.preprocessing.resize);
       elements.scalePercent.value = String(validatedOptions.scalePercent);
       elements.shapeDetection.setAttribute(
@@ -134,8 +143,11 @@ interface ConversionOptionElements {
   monochromeThreshold: HTMLInputElement;
   monochromeThresholdControl: HTMLElement;
   monochromeThresholdValue: HTMLOutputElement;
+  pathPrecision: HTMLInputElement;
+  pathPrecisionValue: HTMLOutputElement;
   preparedDimensions: HTMLOutputElement;
   rasterFilter: HTMLSelectElement;
+  rasterDetail: HTMLSelectElement;
   rasterResize: HTMLSelectElement;
   scalePercent: HTMLSelectElement;
   shapeDetection: HTMLButtonElement;
@@ -152,14 +164,28 @@ function readElements(): ConversionOptionElements {
     monochromeThreshold: requireElement("#monochrome-threshold", HTMLInputElement),
     monochromeThresholdControl: requireElement("#monochrome-threshold-control", HTMLElement),
     monochromeThresholdValue: requireElement("#monochrome-threshold-value", HTMLOutputElement),
+    pathPrecision: requireElement("#path-precision", HTMLInputElement),
+    pathPrecisionValue: requireElement("#path-precision-value", HTMLOutputElement),
     preparedDimensions: requireElement("#prepared-raster-dimensions", HTMLOutputElement),
     rasterFilter: requireElement("#raster-filter", HTMLSelectElement),
+    rasterDetail: requireElement("#raster-detail", HTMLSelectElement),
     rasterResize: requireElement("#raster-resize", HTMLSelectElement),
     scalePercent: requireElement("#scale-percent", HTMLSelectElement),
     shapeDetection: requireElement("#shape-detection-enabled", HTMLButtonElement),
     shapeTypeOptions: requireElement("#shape-type-options", HTMLElement),
     targetDimensions: requireElement("#target-dimensions", HTMLOutputElement),
   };
+}
+
+function readRasterDetailMode(value: string): RasterDetailMode {
+  switch (value) {
+    case RasterDetailMode.None:
+    case RasterDetailMode.Sharpen:
+    case RasterDetailMode.Smooth:
+      return value;
+    default:
+      throw new Error("Required raster detail mode is invalid.");
+  }
 }
 
 function readRasterFilterMode(value: string): RasterFilterModeValue {

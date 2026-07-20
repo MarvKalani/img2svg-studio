@@ -87,6 +87,7 @@ export async function vectorizeImage(request: VectorizeRequest): Promise<Vectori
       decoded.heightPixels,
       options.colorPrecision,
       options.filterSpeckle,
+      options.pathPrecision,
       100,
       options.shapeDetectionFlags,
     );

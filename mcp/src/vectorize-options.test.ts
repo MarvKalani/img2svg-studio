@@ -10,6 +10,7 @@ describe("vectorize options", () => {
       detailLevel: "low",
       filterSpeckle: 8,
       mode: "shapes",
+      pathPrecision: 0,
       shapeDetectionFlags: 63,
     });
   });
@@ -32,6 +33,7 @@ describe("vectorize options", () => {
     });
 
     expect([high.filterSpeckle, medium.filterSpeckle, low.filterSpeckle]).toEqual([1, 4, 8]);
+    expect([high.pathPrecision, medium.pathPrecision, low.pathPrecision]).toEqual([2, 1, 0]);
     expect([high.shapeDetectionFlags, medium.shapeDetectionFlags, low.shapeDetectionFlags]).toEqual(
       [0, 0, 0],
     );

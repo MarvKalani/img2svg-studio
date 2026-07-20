@@ -10,7 +10,9 @@ describe("conversion options", () => {
     expect(defaultConversionOptions).toEqual({
       colorPrecision: 7,
       filterSpeckle: 4,
+      pathPrecision: 2,
       preprocessing: {
+        detailMode: "none",
         filterMode: "color",
         monochromeThreshold: 128,
         resize: { kind: "original" },
@@ -25,19 +27,57 @@ describe("conversion options", () => {
 
   test("Given boundary values, when parsed, then only values inside every range are accepted", () => {
     expect(
-      createConversionOptions({ colorPrecision: 1, filterSpeckle: 0, scalePercent: 10 }),
-    ).toMatchObject({ colorPrecision: 1, filterSpeckle: 0, scalePercent: 10 });
+      createConversionOptions({
+        colorPrecision: 1,
+        filterSpeckle: 0,
+        pathPrecision: 0,
+        scalePercent: 10,
+      }),
+    ).toMatchObject({ colorPrecision: 1, filterSpeckle: 0, pathPrecision: 0, scalePercent: 10 });
     expect(
-      createConversionOptions({ colorPrecision: 8, filterSpeckle: 1000, scalePercent: 400 }),
-    ).toMatchObject({ colorPrecision: 8, filterSpeckle: 1000, scalePercent: 400 });
+      createConversionOptions({
+        colorPrecision: 8,
+        filterSpeckle: 1000,
+        pathPrecision: 4,
+        scalePercent: 400,
+      }),
+    ).toMatchObject({
+      colorPrecision: 8,
+      filterSpeckle: 1000,
+      pathPrecision: 4,
+      scalePercent: 400,
+    });
     expect(() =>
-      createConversionOptions({ colorPrecision: 0, filterSpeckle: 4, scalePercent: 100 }),
+      createConversionOptions({
+        colorPrecision: 0,
+        filterSpeckle: 4,
+        pathPrecision: 2,
+        scalePercent: 100,
+      }),
     ).toThrow();
     expect(() =>
-      createConversionOptions({ colorPrecision: 7, filterSpeckle: 1001, scalePercent: 100 }),
+      createConversionOptions({
+        colorPrecision: 7,
+        filterSpeckle: 1001,
+        pathPrecision: 2,
+        scalePercent: 100,
+      }),
     ).toThrow();
     expect(() =>
-      createConversionOptions({ colorPrecision: 7, filterSpeckle: 4, scalePercent: 401 }),
+      createConversionOptions({
+        colorPrecision: 7,
+        filterSpeckle: 4,
+        pathPrecision: 2,
+        scalePercent: 401,
+      }),
+    ).toThrow();
+    expect(() =>
+      createConversionOptions({
+        colorPrecision: 7,
+        filterSpeckle: 4,
+        pathPrecision: 5,
+        scalePercent: 100,
+      }),
     ).toThrow();
   });
 
@@ -45,6 +85,7 @@ describe("conversion options", () => {
     const options = createConversionOptions({
       colorPrecision: 7,
       filterSpeckle: 4,
+      pathPrecision: 2,
       scalePercent: 50,
     });
 

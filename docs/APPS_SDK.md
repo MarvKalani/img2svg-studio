@@ -45,7 +45,7 @@ Inputs:
 - `image_base64`: compatibility input for MCP Inspector and non-ChatGPT hosts.
 - `mode`: `trace` for paths or `shapes` for evidence-backed native SVG elements.
 - `color_count`: requested palette size from 2 to 256; the adapter quantizes before tracing.
-- `detail_level`: `low`, `medium`, or `high`; mapped to explicit speckle and tracing settings.
+- `detail_level`: `low`, `medium`, or `high`; mapped to explicit speckle and path-precision settings.
 
 Exactly one image input is required. The server bounds downloaded and decoded image sizes before
 calling the engine. The output contains the SVG string, effective parameters, byte size, path

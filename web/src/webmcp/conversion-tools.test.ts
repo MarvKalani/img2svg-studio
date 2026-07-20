@@ -18,6 +18,8 @@ describe("WebMCP conversion tools", () => {
       await configure.execute({
         colorPrecision: 5,
         filterSpeckle: 12,
+        pathPrecision: 1,
+        rasterDetailMode: "smooth",
         monochromeThreshold: 140,
         rasterFilterMode: "monochrome",
         rasterResizePercent: 200,
@@ -31,19 +33,23 @@ describe("WebMCP conversion tools", () => {
       properties: {
         colorPrecision: { maximum: 8, minimum: 1, type: "integer" },
         filterSpeckle: { maximum: 1000, minimum: 0, type: "integer" },
+        pathPrecision: { maximum: 4, minimum: 0, type: "integer" },
+        rasterDetailMode: { enum: ["none", "sharpen", "smooth"], type: "string" },
         rasterFilterMode: { enum: ["color", "grayscale", "monochrome"], type: "string" },
         rasterResizePercent: { enum: [25, 50, 75, 125, 150, 200, 400], type: "integer" },
         rasterTargetHeightPixels: { enum: [576, 720, 1080, 2160], type: "integer" },
         scalePercent: { maximum: 400, minimum: 10, type: "integer" },
       },
-      required: ["colorPrecision", "filterSpeckle", "scalePercent"],
+      required: ["colorPrecision", "filterSpeckle", "pathPrecision", "scalePercent"],
       type: "object",
     });
     expect(applyOptions).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         colorPrecision: 5,
         filterSpeckle: 12,
+        pathPrecision: 1,
         preprocessing: {
+          detailMode: "smooth",
           filterMode: "monochrome",
           monochromeThreshold: 140,
           resize: { kind: "percentage", percent: 200 },
@@ -56,7 +62,9 @@ describe("WebMCP conversion tools", () => {
       options: {
         colorPrecision: 5,
         filterSpeckle: 12,
+        pathPrecision: 1,
         preprocessing: {
+          detailMode: "smooth",
           filterMode: "monochrome",
           monochromeThreshold: 140,
           resize: { kind: "percentage", percent: 200 },
@@ -75,7 +83,12 @@ describe("WebMCP conversion tools", () => {
     })[0]!;
 
     const output = JSON.parse(
-      await configure.execute({ colorPrecision: 9, filterSpeckle: 4, scalePercent: 100 }),
+      await configure.execute({
+        colorPrecision: 9,
+        filterSpeckle: 4,
+        pathPrecision: 2,
+        scalePercent: 100,
+      }),
     );
 
     expect(output).toEqual({

@@ -25,6 +25,7 @@ export interface VectorizeOptions {
   detailLevel: DetailLevel;
   filterSpeckle: number;
   mode: VectorizeMode;
+  pathPrecision: number;
   shapeDetectionFlags: number;
 }
 
@@ -33,6 +34,11 @@ const filterSpeckleByDetail: Readonly<Record<DetailLevel, number>> = Object.free
   [DetailLevel.High]: 1,
   [DetailLevel.Low]: 8,
   [DetailLevel.Medium]: 4,
+});
+const pathPrecisionByDetail: Readonly<Record<DetailLevel, number>> = Object.freeze({
+  [DetailLevel.High]: 2,
+  [DetailLevel.Low]: 0,
+  [DetailLevel.Medium]: 1,
 });
 
 export function createVectorizeOptions(input: VectorizeOptionInput): VectorizeOptions {
@@ -53,6 +59,7 @@ export function createVectorizeOptions(input: VectorizeOptionInput): VectorizeOp
     detailLevel: input.detailLevel,
     filterSpeckle: filterSpeckleByDetail[input.detailLevel],
     mode: input.mode,
+    pathPrecision: pathPrecisionByDetail[input.detailLevel],
     shapeDetectionFlags: input.mode === VectorizeMode.Shapes ? allNativeShapeFlags : 0,
   });
 }

@@ -25,13 +25,12 @@ reproducible visual experiment.”
 
 ### 0:15–0:42 — First deterministic run
 
-**Screen:** Choose **Logo demo**, point at the automatic 842×576 target and polygon-only profile,
-then choose **Convert** and show the original beside the faceted SVG.
+**Screen:** Choose **Logo demo**, point at the automatic 842×576 target, Speckle 16 and zero-decimal
+path profile, then choose **Convert** and show the original beside the faceted SVG.
 
 **Voice:** “The image stays in this browser. A Rust and WebAssembly engine traces arbitrary
 content. Before tracing, this 1280 by 876 logo is proportionally prepared to 842 by 576 pixels.
-Strict triangular evidence becomes a native polygon; shaded or ambiguous facets safely remain
-paths.”
+The measured profile keeps the defining crystal facets while reducing the result to 315 paths.”
 
 ### 0:42–1:15 — History and A/B evidence
 
@@ -89,8 +88,8 @@ truth instead of trusting them blindly.”
 
 The product shots passed in Chrome 150 before recording:
 
-- the bundled faceted logo produced 2,798 fallback paths plus one conservative native polygon at
-  842×576; the 1,625-path 1052×720 variant produced two visible A/B differences;
+- the bundled faceted logo produced 315 paths at 842×576 instead of the previous 2,798 paths;
+- Original and the optimized SVG remained aligned at 100 and 156 percent synchronized zoom;
 - SVG B downloaded as a non-empty Marv-Kalani logo SVG;
 - MODNet background removal completed locally through WebGPU;
 - the WebMCP inventory and state-changing tools were operated in the visible Studio; and

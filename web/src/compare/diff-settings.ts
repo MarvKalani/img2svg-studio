@@ -1,6 +1,10 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
 import { nativeShapeSchema } from "../conversion/shape-options";
-import { formatRasterFilter, formatRasterResize } from "../conversion/raster-preprocessing";
+import {
+  formatRasterDetail,
+  formatRasterFilter,
+  formatRasterResize,
+} from "../conversion/raster-preprocessing";
 
 export interface ConversionSettingRow {
   readonly a: string;
@@ -31,6 +35,12 @@ const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freez
     String,
   ),
   setting(
+    "preprocessing.detailMode",
+    "Detailfilter",
+    (options) => formatRasterDetail(options.preprocessing.detailMode),
+    String,
+  ),
+  setting(
     "preprocessing.monochromeThreshold",
     "Schwarzweiß-Schwellwert",
     (options) => options.preprocessing.monochromeThreshold,
@@ -47,6 +57,12 @@ const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freez
     "Speckle-Filter",
     (options) => options.filterSpeckle,
     (value) => `${String(value)} px`,
+  ),
+  setting(
+    "pathPrecision",
+    "Pfadpräzision",
+    (options) => options.pathPrecision,
+    (value) => `${String(value)} Stellen`,
   ),
   setting(
     "scalePercent",
