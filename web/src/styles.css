@@ -120,6 +120,18 @@ a:focus-visible {
   white-space: nowrap;
 }
 
+.language-control select {
+  min-height: 2rem;
+  padding: 0.3rem 1.7rem 0.3rem 0.55rem;
+  border: 1px solid #36566a;
+  border-radius: 0.4rem;
+  color: var(--text-strong);
+  background: #102838;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .view-tabs {
   justify-self: center;
   display: flex;

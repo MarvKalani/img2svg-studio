@@ -28,8 +28,9 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Local MODNet background removal with verified, abortable model downloads and WebGPU/WASM fallback.
 - Local SlimSAM Smart Select with positive and negative points, refinement, inversion and apply/discard.
 - Versioned AI results that can be converted, compared and restored to the original image.
+- Complete German and English UI with an instant, locally remembered language switch.
 - Installable PWA entry points for OS sharing and desktop PNG, JPEG and WebP file opening.
-- Fourteen typed WebMCP tools that operate the same visible application services as the UI.
+- Hardware-filtered typed WebMCP tools that operate the same visible application services as the UI.
 - A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 
@@ -66,10 +67,11 @@ npm run build
 npm --prefix web run preview -- --host 127.0.0.1 --port 4173
 ```
 
-Open `http://127.0.0.1:4173` and choose **Logo-Demo laden** for the bundled faceted logo and its
-original-size Logo preset. The measured 576-pixel optimization remains selectable under **Raster
-size**. The small files under `fixtures/shape-recognition/input/` remain exact engineering fixtures
-for individual native-shape contracts.
+Open `http://127.0.0.1:4173`, switch to **English** in the header if desired, and choose **Load
+logo demo** for the bundled faceted logo and its original-size Logo preset. The measured
+576-pixel optimization remains selectable under **Raster size**. The small files under
+`fixtures/shape-recognition/input/` remain exact engineering fixtures for individual native-shape
+contracts.
 
 On the deployed HTTPS demo, Chrome can install the Studio as an app. Installed platforms expose
 img2svg in **Share with…** for supported images; desktop Chrome can additionally associate PNG,

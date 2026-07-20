@@ -36,6 +36,14 @@ Die Oberfläche besteht aus:
 - einem Verlauf mit Conversion-Runs am unteren Rand.
 - einer schmalen Statuszeile mit Größe, Pfaden, Formen und Laufzeit.
 
+### Sprache
+
+Die Sprachauswahl in der Kopfzeile schaltet die vollständige Oberfläche zwischen Deutsch und
+Englisch um. Das umfasst statische Beschriftungen sowie neu entstehende Statusmeldungen,
+History-Karten, A/B-Werte und Modellzustände. Die Auswahl bleibt lokal im Browser gespeichert;
+Bild-, SVG- und History-Daten werden dadurch nicht persistiert. Deutsch ist die initiale
+Sprache, bis „English“ gewählt wurde.
+
 ### Lokal öffnen
 
 ```bash

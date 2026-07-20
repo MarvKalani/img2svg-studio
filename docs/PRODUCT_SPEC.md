@@ -9,7 +9,9 @@ optionale Browser-KI sowie WebMCP explizit zuschalten.
 `TASKS.md`, ausführbare Tests und Handbuch bilden gemeinsam den verbindlichen Umfang der
 Build-Week-Einreichung.
 
-Die UI-Texte sind deutsch. Code-Bezeichner sind englisch.
+Die UI ist vollständig auf Deutsch und Englisch bedienbar. Eine sichtbare Sprachauswahl ändert
+statische und dynamische Texte ohne Neuladen und speichert ausschließlich die Sprachpräferenz
+lokal. Code-Bezeichner sind englisch.
 
 ## 2. Eingaben und Datenschutz
 

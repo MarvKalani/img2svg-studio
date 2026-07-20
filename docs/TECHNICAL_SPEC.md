@@ -11,6 +11,13 @@ Das Repository wird als Rust-Workspace mit separater Web-Anwendung aufgebaut:
 
 Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-Details.
 
+`i18n/localization.ts` kapselt die zweisprachige Präsentationsschicht. Eine kanonische deutsche
+Quellphrase besitzt genau eine englische Entsprechung; typisierte Regeln formatieren variable
+Zähler und Run-Zustände. Ein einzelner `MutationObserver` lokalisiert auch DOM-Ausgaben der
+bestehenden Controller und bewahrt deren deutsche Quelle für den verlustfreien Sprachwechsel.
+Die Präferenz `de` oder `en` liegt als einziger i18n-Wert in `localStorage`; Domänenzustand,
+SVG-Ausgabe und WebMCP-Verträge bleiben sprachneutral und unverändert.
+
 Ein getrennter ChatGPT-Companion ergänzt diese Architektur über einen stateless Node/TypeScript-
 MCP-Server. Er dekodiert eine explizit übergebene Datei, verwendet denselben kompilierten Rust/WASM-
 Kern und liefert SVG plus Statistiken. Ein Tauri-Adapter kann später denselben Rust-Core nativ
