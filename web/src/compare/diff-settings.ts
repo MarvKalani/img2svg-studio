@@ -1,5 +1,6 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
 import { nativeShapeSchema } from "../conversion/shape-options";
+import { formatRasterFilter, formatRasterResize } from "../conversion/raster-preprocessing";
 
 export interface ConversionSettingRow {
   readonly a: string;
@@ -17,6 +18,24 @@ interface ConversionSettingSchema {
 }
 
 const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freeze([
+  setting(
+    "preprocessing.resize",
+    "Rastergröße",
+    (options) => formatRasterResize(options.preprocessing.resize),
+    String,
+  ),
+  setting(
+    "preprocessing.filterMode",
+    "Rasterfilter",
+    (options) => formatRasterFilter(options.preprocessing.filterMode),
+    String,
+  ),
+  setting(
+    "preprocessing.monochromeThreshold",
+    "Schwarzweiß-Schwellwert",
+    (options) => options.preprocessing.monochromeThreshold,
+    String,
+  ),
   setting(
     "colorPrecision",
     "Farbpräzision",
@@ -71,7 +90,7 @@ export function compareConversionSettings(
   );
 }
 
-function setting<Value extends number | boolean>(
+function setting<Value extends number | boolean | string>(
   key: string,
   label: string,
   read: (options: Readonly<ConversionOptions>) => Value,

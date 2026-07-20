@@ -20,7 +20,9 @@ describe("history store", () => {
       runs.every(
         (run) =>
           Object.isFrozen(run.options.shapeDetection) &&
-          Object.isFrozen(run.options.shapeDetection.types),
+          Object.isFrozen(run.options.shapeDetection.types) &&
+          Object.isFrozen(run.options.preprocessing) &&
+          Object.isFrozen(run.options.preprocessing.resize),
       ),
     ).toBe(true);
   });

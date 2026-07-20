@@ -10,6 +10,11 @@ describe("conversion options", () => {
     expect(defaultConversionOptions).toEqual({
       colorPrecision: 7,
       filterSpeckle: 4,
+      preprocessing: {
+        filterMode: "color",
+        monochromeThreshold: 128,
+        resize: { kind: "original" },
+      },
       scalePercent: 100,
       shapeDetection: {
         enabled: false,

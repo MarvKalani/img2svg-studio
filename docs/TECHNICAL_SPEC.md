@@ -22,7 +22,7 @@ aufrufen; die Plattformpfade sind in [`APPS_SDK.md`](APPS_SDK.md) abgegrenzt.
 Datei / Drop
   → Browser-Decoder
   → unveränderliches Original-RGBA
-  → Transformation und Zielgröße
+  → proportionale Rastergröße und optionaler Farbfilter
   → optional angewendete KI-Maske
   → RGBA + validierte ConversionOptions an WASM-Worker
   → Clustering und Tracing
@@ -37,10 +37,12 @@ Konvertierung reaktionsfähig bleibt.
 
 ## 3. Zentrale Domänenmodelle
 
-Der implementierte `ConversionOptions`-Kern enthält Farbpräzision 1–8 Bit, Speckle-Filter
-0–1000 und proportionale Zielgröße 10–400 Prozent. Die kanonischen Defaults sind 7, 4 und 100.
-Rust kapselt valide Werte in `ConversionOptions::try_new`; TypeScript erzeugt sie ausschließlich
-über `createConversionOptions`. Grenztests halten beide Seiten synchron.
+Der implementierte `ConversionOptions`-Kern enthält typisierte Rastervorbereitung, Farbpräzision
+1–8 Bit, Speckle-Filter 0–1000 und proportionale SVG-Zielgröße 10–400 Prozent. Die
+Rastervorbereitung unterscheidet Original, Prozent und feste Zielhöhe sowie Farbe, Graustufen und
+Schwarzweiß. Rust kapselt Enginewerte in `ConversionOptions::try_new`; TypeScript erzeugt den
+vollständigen Vertrag ausschließlich über `createConversionOptions`. Grenztests halten beide
+Seiten synchron.
 
 `ShapeDetectionOptions` ergänzt einen globalen Schalter und die typisierten Formtypen Kreis,
 Rechteck, Ellipse, Linie und Polygon. Standardmäßig ist die Kette ausgeschaltet, während alle
@@ -193,9 +195,11 @@ Objekt-URL. `image-loader.ts` verbindet Dateiauswahl und Drop mit derselben Funk
 die sichtbare Vorschau atomar und gibt die vorherige Objekt-URL beim nächsten gültigen Bild
 oder vor dem Verlassen über den kleinen `imageStore` frei.
 
-`conversionService` liest RGBA über ein kurzlebiges Canvas und überträgt dessen Buffer ohne
-Kopie an einen dedizierten Worker. Der Worker initialisiert das generierte WASM, ruft den
-Rust-Core auf und wird nach genau einem Ergebnis beendet. Der Controller validiert das
+`conversionService` berechnet aus Prozent oder Zielhöhe proportionale Rastermaße, skaliert über
+ein kurzlebiges Canvas und wendet danach den gewählten RGB-Filter an. Der Alphakanal bleibt
+unverändert. Erst dieser Buffer wird ohne Kopie an einen dedizierten Worker übertragen. Der Worker
+initialisiert das generierte WASM, ruft den Rust-Core auf und wird nach genau einem Ergebnis
+beendet. Der Controller validiert das
 zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die TypeScript-Domäne ergänzt
 die Enginecodes um `WorkerFailed` und `InvalidSvg`; `ConversionFailure` ordnet jedem Code genau
 eine verständliche UI-Meldung zu.

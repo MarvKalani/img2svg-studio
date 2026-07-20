@@ -15,7 +15,14 @@ describe("WebMCP conversion tools", () => {
     const configure = tools[0]!;
 
     const output = JSON.parse(
-      await configure.execute({ colorPrecision: 5, filterSpeckle: 12, scalePercent: 50 }),
+      await configure.execute({
+        colorPrecision: 5,
+        filterSpeckle: 12,
+        monochromeThreshold: 140,
+        rasterFilterMode: "monochrome",
+        rasterResizePercent: 200,
+        scalePercent: 50,
+      }),
     );
 
     expect(configure.name).toBe("configure_conversion");
@@ -24,17 +31,38 @@ describe("WebMCP conversion tools", () => {
       properties: {
         colorPrecision: { maximum: 8, minimum: 1, type: "integer" },
         filterSpeckle: { maximum: 1000, minimum: 0, type: "integer" },
+        rasterFilterMode: { enum: ["color", "grayscale", "monochrome"], type: "string" },
+        rasterResizePercent: { enum: [25, 50, 75, 125, 150, 200, 400], type: "integer" },
+        rasterTargetHeightPixels: { enum: [576, 720, 1080, 2160], type: "integer" },
         scalePercent: { maximum: 400, minimum: 10, type: "integer" },
       },
       required: ["colorPrecision", "filterSpeckle", "scalePercent"],
       type: "object",
     });
     expect(applyOptions).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ colorPrecision: 5, filterSpeckle: 12, scalePercent: 50 }),
+      expect.objectContaining({
+        colorPrecision: 5,
+        filterSpeckle: 12,
+        preprocessing: {
+          filterMode: "monochrome",
+          monochromeThreshold: 140,
+          resize: { kind: "percentage", percent: 200 },
+        },
+        scalePercent: 50,
+      }),
     );
     expect(output).toMatchObject({
       ok: true,
-      options: { colorPrecision: 5, filterSpeckle: 12, scalePercent: 50 },
+      options: {
+        colorPrecision: 5,
+        filterSpeckle: 12,
+        preprocessing: {
+          filterMode: "monochrome",
+          monochromeThreshold: 140,
+          resize: { kind: "percentage", percent: 200 },
+        },
+        scalePercent: 50,
+      },
     });
   });
 

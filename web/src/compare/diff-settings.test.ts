@@ -16,6 +16,9 @@ describe("conversion settings diff", () => {
     const rows = compareConversionSettings(a, b, false);
 
     expect(rows.map((row) => row.label)).toEqual([
+      "Rastergröße",
+      "Rasterfilter",
+      "Schwarzweiß-Schwellwert",
       "Farbpräzision",
       "Speckle-Filter",
       "Zielgröße",

@@ -4,10 +4,16 @@ import {
   defaultShapeDetectionOptions,
   type ShapeDetectionOptions,
 } from "./shape-options";
+import {
+  createRasterPreprocessingOptions,
+  defaultRasterPreprocessingOptions,
+  type RasterPreprocessingOptions,
+} from "./raster-preprocessing";
 
 export interface ConversionOptions {
   colorPrecision: number;
   filterSpeckle: number;
+  preprocessing: RasterPreprocessingOptions;
   scalePercent: number;
   shapeDetection: ShapeDetectionOptions;
 }
@@ -15,6 +21,7 @@ export interface ConversionOptions {
 export interface ConversionOptionsInput {
   colorPrecision: number;
   filterSpeckle: number;
+  preprocessing?: RasterPreprocessingOptions;
   scalePercent: number;
   shapeDetection?: ShapeDetectionOptions;
 }
@@ -27,6 +34,7 @@ export interface PixelDimensions {
 export const defaultConversionOptions: Readonly<ConversionOptions> = Object.freeze({
   colorPrecision: 7,
   filterSpeckle: 4,
+  preprocessing: defaultRasterPreprocessingOptions,
   scalePercent: 100,
   shapeDetection: defaultShapeDetectionOptions,
 });
@@ -43,6 +51,9 @@ export function createConversionOptions(input: ConversionOptionsInput): Conversi
   return {
     colorPrecision: input.colorPrecision,
     filterSpeckle: input.filterSpeckle,
+    preprocessing: createRasterPreprocessingOptions(
+      input.preprocessing ?? defaultRasterPreprocessingOptions,
+    ),
     scalePercent: input.scalePercent,
     shapeDetection: createShapeDetectionOptions(
       input.shapeDetection ?? defaultShapeDetectionOptions,

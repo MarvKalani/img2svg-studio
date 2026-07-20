@@ -72,8 +72,47 @@
             <span id="convert-button-label">Konvertieren</span>
           </button>
 
+          <section class="control-panel preprocessing-panel">
+            <h2>Raster vor Tracing</h2>
+            <label>
+              <span>Rastergröße</span>
+              <select id="raster-resize" aria-label="Rastergröße vor Tracing"></select>
+            </label>
+            <output
+              id="prepared-raster-dimensions"
+              class="target-dimensions"
+              aria-label="Vorbereitete Rastermaße"
+              >—</output
+            >
+            <label>
+              <span>Filter</span>
+              <select id="raster-filter" aria-label="Rasterfilter">
+                <option value="color" selected>Farbe</option>
+                <option value="grayscale">Graustufen</option>
+                <option value="monochrome">Schwarzweiß</option>
+              </select>
+            </label>
+            <label id="monochrome-threshold-control" class="range-label" hidden>
+              <span>Schwellwert</span>
+              <output
+                id="monochrome-threshold-value"
+                for="monochrome-threshold"
+                aria-label="Schwarzweiß-Schwellwert Wert"
+                >128</output
+              >
+              <input
+                id="monochrome-threshold"
+                type="range"
+                min="0"
+                max="255"
+                value="128"
+                aria-label="Schwarzweiß-Schwellwert"
+              />
+            </label>
+          </section>
+
           <section class="control-panel">
-            <h2>Preset &amp; Größe</h2>
+            <h2>SVG-Ausgabe</h2>
             <label>
               <span>Preset</span>
               <select aria-label="Preset">
@@ -81,7 +120,7 @@
               </select>
             </label>
             <label>
-              <span>Zielgröße</span>
+              <span>SVG-Skalierung</span>
               <select id="scale-percent" aria-label="Zielgröße">
                 <option value="25">25 %</option>
                 <option value="50">50 %</option>

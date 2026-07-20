@@ -7,7 +7,7 @@ import type { ConversionOptions } from "./conversion-options";
 import { readRasterPixels } from "./read-raster-pixels";
 
 export async function convertImage(file: File, options: ConversionOptions): Promise<string> {
-  const raster = await readRasterPixels(file);
+  const raster = await readRasterPixels(file, options.preprocessing);
   const request: ConversionWorkerRequest = {
     heightPixels: raster.heightPixels,
     options,

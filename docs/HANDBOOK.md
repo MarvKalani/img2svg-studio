@@ -90,15 +90,16 @@ oder WebP-Datei kann unmittelbar erneut gewählt werden.
 
 ## Konvertieren
 
-Nach dem Laden aktiviert sich „Konvertieren“. Der Browser liest die RGBA-Pixel lokal aus und
-übergibt sie an einen Web Worker. Dort erzeugt der Rust-Core über die schmale WASM-Grenze ein
-SVG, während die Oberfläche bedienbar bleibt. Das Ergebnis ersetzt die Rastervorschau in
-„A · Variante“; die Statuszeile bestätigt den Abschluss.
+Nach dem Laden aktiviert sich „Konvertieren“. Der Browser skaliert und filtert die Rasterpixel
+gemäß „Raster vor Tracing“ und übergibt erst dieses RGBA-Ergebnis an einen Web Worker. Dort
+erzeugt der Rust-Core über die schmale WASM-Grenze ein SVG, während die Oberfläche bedienbar
+bleibt. Das Ergebnis ersetzt die Rastervorschau in „A · Variante“; die Statuszeile bestätigt den
+Abschluss.
 
-Der aktuelle kanonische Lauf verwendet die Originalmaße und deterministische
-`visioncortex`-Standardeinstellungen. Gleiche RGBA-Pixel erzeugen byteidentisches SVG. Die
-Ausgabe besitzt eine passende `viewBox`, und vollständig transparente Bildbereiche erzeugen
-kein Hintergrundelement.
+Der Standardlauf verwendet die Originalmaße, den Farbmodus und deterministische
+`visioncortex`-Standardeinstellungen. Gleiche vorbereitete RGBA-Pixel erzeugen byteidentisches
+SVG. Die Ausgabe besitzt eine passende `viewBox`, und vollständig transparente Bildbereiche
+erzeugen kein Hintergrundelement.
 
 ### SVG herunterladen
 
@@ -113,9 +114,9 @@ erneut bedienbar.
 ## Grundablauf
 
 1. Bild per Drag-and-drop oder Dateiauswahl laden.
-2. „Konvertieren“ mit den kanonischen Standardeinstellungen ausführen.
-3. Das echte SVG in „A · Variante“ prüfen.
-4. Zielgröße und relevante Parameter variieren.
+2. Rastergröße und optionalen Filter vor dem Tracing wählen.
+3. „Konvertieren“ ausführen und das echte SVG in „A · Variante“ prüfen.
+4. Rastervorbereitung, SVG-Skalierung und Tracing-Parameter variieren.
 5. Ergebnis als SVG herunterladen und weitere Runs erzeugen.
 6. Das Original und einen Run oder zwei Runs im Verlauf als A und B auswählen.
 7. Darstellung und Parameterunterschiede vergleichen.
@@ -136,8 +137,8 @@ neu nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
 Das Auswählen einer Karte zeigt ihr gespeichertes SVG wieder in „A · Variante“. Die aktuell
 eingestellten Regler bleiben dabei unverändert. „Einstellungen übernehmen“ kopiert anschließend
-die drei validierten Parameter des ausgewählten Runs in die Eingabemaske und berechnet die
-Zielmaße neu. Das geladene Originalbild, der ausgewählte Run und sein angezeigtes SVG bleiben
+dessen validierte Raster-, Tracing- und SVG-Parameter in die Eingabemaske und berechnet beide
+Maßanzeigen neu. Das geladene Originalbild, der ausgewählte Run und sein angezeigtes SVG bleiben
 dabei unverändert. Eine erneute Konvertierung erzeugt einen neuen Run; bei gleichem Bild und
 gleichen Einstellungen ist dessen SVG byteidentisch zum Ausgangs-Run. Nach dem elften Lauf wird
 nur der älteste Run aus der sichtbaren Session-History entfernt.
@@ -166,16 +167,33 @@ Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
 
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
-Werten in A und B. Ohne den Filter erscheinen Farbpräzision, Speckle-Filter und Zielgröße in
-stabiler Reihenfolge mit Einheiten, gefolgt vom globalen Formerkennungsschalter und den fünf
-Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die Tabelle „Quelle“ und kennzeichnet dort
-nicht vorhandene Konvertierungsparameter mit „—“.
+Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Schwellwert,
+Farbpräzision, Speckle-Filter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
+Formerkennungsschalter und den fünf Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die
+Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparameter mit „—“.
 
 „SVG A“ und „SVG B“ laden jeweils den unveränderten SVG-Text des zugeordneten Runs herunter. Die
 normalisierte Vergleichsdarstellung gelangt nicht in den Export. Dateinamen enthalten Platz und
 Run-ID, beispielsweise `circle-a-run-1.svg`, damit beide Ergebnisse unterscheidbar bleiben.
 
 ## Parameter
+
+### Raster vor Tracing
+
+„Rastergröße“ verändert die Pixel, die VTracer tatsächlich erhält. Verfügbar sind Originalgröße,
+25, 50, 75, 125, 150, 200 und 400 Prozent sowie feste Zielhöhen von 576, 720, 1080 und 2160 Pixeln.
+Die Breite wird immer aus dem Seitenverhältnis berechnet. So wird 1920×1080 bei 2160 Pixeln Höhe
+zu 3840×2160, während Hoch- und Sonderformate weder beschnitten noch verzerrt werden.
+
+„Farbe“ übernimmt RGB unverändert. „Graustufen“ berechnet eine feste Luminanz pro Pixel.
+„Schwarzweiß“ wendet anschließend den einstellbaren Schwellwert von 0 bis 255 an. Der Alphakanal
+bleibt in allen Modi erhalten. Die Anzeige „Vorbereitete Rastermaße“ nennt die Pixelgröße vor
+VTracer; „Zielmaße“ berücksichtigt danach zusätzlich die SVG-Skalierung.
+
+Rastergröße, Filter und Schwellwert werden unveränderlich im Run gespeichert, über
+„Einstellungen übernehmen“ wiederhergestellt und im A/B-Parametervergleich angezeigt.
+
+### Tracing und SVG-Ausgabe
 
 Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:
@@ -184,7 +202,7 @@ Rust-Core:
 |---|---:|---:|---|
 | Farbpräzision | 1–8 Bit | 7 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
 | Speckle-Filter | 0–1000 px | 4 px | entfernt kleine Farbcluster |
-| Zielgröße | 10–400 % | 100 % | skaliert SVG und ViewBox proportional |
+| SVG-Skalierung | 10–400 % | 100 % | skaliert SVG und ViewBox nach dem Tracing proportional |
 
 Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Prozent direkt an.
 Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort an. Ein Lauf mit
@@ -365,8 +383,9 @@ DevTools zusätzlich `#devtools-webmcp-support`. Nach dem Neustart zeigt DevTool
 Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 
 1. `get_capabilities` und `get_workspace_state` lesen.
-2. Mit `configure_conversion` die sichtbaren Werte setzen und mit `convert_current_image`
-   konvertieren.
+2. Mit `configure_conversion` Rastergröße, Filter, Schwellwert, Tracing-Werte und SVG-Skalierung
+   setzen und mit `convert_current_image` konvertieren. Die Rastergröße verwendet genau eines aus
+   `useOriginalRasterSize`, `rasterResizePercent` oder `rasterTargetHeightPixels`.
 3. Runs über `select_history_run` anzeigen. `select_comparison_a` und `select_comparison_b` wählen
    per Run-ID oder `original: true` die sichtbaren Vergleichsquellen;
    `download_selected_svg` exportiert den sichtbaren Run.

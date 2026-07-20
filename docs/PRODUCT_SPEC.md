@@ -48,16 +48,21 @@ abhängig. Transparente Bildbereiche bleiben transparent.
 
 ### 4.2 Verbindliche Parameter
 
-Das MVP stellt bewusst nur drei unmittelbar wirksame Parameter bereit:
+Das MVP trennt Rastervorbereitung vor dem Tracing von der SVG-Skalierung danach:
 
 | Parameter | Bereich | Default | Bedeutung |
 |---|---:|---:|---|
+| Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | Original | VTracer-Eingabepixel bei festem Seitenverhältnis |
+| Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor VTracer |
+| Schwarzweiß-Schwellwert | 0–255 | 128 | Grenze zwischen Schwarz und Weiß |
 | `color_precision` | 1–8 Bit/Kanal | 7 | Farbzusammenfassung |
 | `filter_speckle` | 0–1000 px | 4 | kleine Segmente entfernen |
-| `scale_percent` | 10–400 % | 100 | proportionale Zielgröße |
+| `scale_percent` | 10–400 % | 100 | proportionale SVG-Zielgröße nach dem Tracing |
 
 Eine kanonische Definition speist TypeScript-Validierung, Rust/WASM-Vertrag, UI, Run-Snapshot,
-Parameter-Diff und WebMCP. Ungültige Werte werden abgelehnt und nie still korrigiert.
+Parameter-Diff und WebMCP. Prozent und Zielhöhe sind getrennte typisierte Größenmodi; die jeweils
+andere Dimension wird aus dem Seitenverhältnis berechnet. Ungültige Werte werden abgelehnt und nie
+still korrigiert.
 
 ### 4.3 Optionale native Formen
 

@@ -45,6 +45,10 @@ export function createHistoryStore(): HistoryStore {
         inputVersion: Object.freeze({ ...input.inputVersion }),
         options: Object.freeze({
           ...input.options,
+          preprocessing: Object.freeze({
+            ...input.options.preprocessing,
+            resize: Object.freeze({ ...input.options.preprocessing.resize }),
+          }),
           shapeDetection: Object.freeze({
             ...input.options.shapeDetection,
             types: Object.freeze({ ...input.options.shapeDetection.types }),

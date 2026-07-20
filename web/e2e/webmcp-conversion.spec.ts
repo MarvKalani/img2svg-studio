@@ -90,6 +90,17 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   const unloadResult = await executeTool(page, "unload_model", { modelId: "modnet" });
   expect(unloadResult).toMatchObject({ model: { id: "modnet", status: "not-loaded" }, ok: true });
 
+  await executeTool(page, "configure_conversion", {
+    colorPrecision: 7,
+    filterSpeckle: 4,
+    rasterFilterMode: "grayscale",
+    rasterResizePercent: 200,
+    scalePercent: 100,
+  });
+  await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("percent-200");
+  await expect(page.getByLabel("Rasterfilter")).toHaveValue("grayscale");
+  await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("512 × 512 px");
+
   const capabilities = await executeTool(page, "get_capabilities", {});
   expect(capabilities).toEqual({
     imageLoaded: true,

@@ -1,5 +1,15 @@
 import type { ConversionController } from "../conversion/conversion-controller";
 import { createConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
+import {
+  RasterFilterMode,
+  RasterResizeKind,
+  createRasterPreprocessingOptions,
+  rasterScalePercentages,
+  rasterTargetHeights,
+  type RasterFilterMode as RasterFilterModeValue,
+  type RasterPreprocessingOptions,
+  type RasterResizeOptions,
+} from "../conversion/raster-preprocessing";
 import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
 
 export interface ConversionToolServices {
@@ -13,7 +23,18 @@ const configureSchema = Object.freeze({
   properties: Object.freeze({
     colorPrecision: Object.freeze({ maximum: 8, minimum: 1, type: "integer" }),
     filterSpeckle: Object.freeze({ maximum: 1_000, minimum: 0, type: "integer" }),
+    monochromeThreshold: Object.freeze({ maximum: 255, minimum: 0, type: "integer" }),
+    rasterFilterMode: Object.freeze({
+      enum: Object.freeze(Object.values(RasterFilterMode)),
+      type: "string",
+    }),
+    rasterResizePercent: Object.freeze({ enum: rasterScalePercentages, type: "integer" }),
+    rasterTargetHeightPixels: Object.freeze({
+      enum: rasterTargetHeights,
+      type: "integer",
+    }),
     scalePercent: Object.freeze({ maximum: 400, minimum: 10, type: "integer" }),
+    useOriginalRasterSize: Object.freeze({ const: true, type: "boolean" }),
   }),
   required: Object.freeze(["colorPrecision", "filterSpeckle", "scalePercent"]),
   type: "object",
@@ -33,13 +54,15 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
     description:
-      "Set visible color precision, speckle filter, and scale using the same Studio validation.",
+      "Set visible raster preprocessing, color precision, speckle filter, and SVG scale using the same Studio validation.",
     execute: (input: unknown) => {
       try {
         const values = requireConfigureInput(input);
+        const currentOptions = services.readOptions();
         const options = createConversionOptions({
-          ...services.readOptions(),
+          ...currentOptions,
           ...values,
+          preprocessing: readPreprocessingInput(input, currentOptions.preprocessing),
         });
         services.applyOptions(options);
         return JSON.stringify({ ok: true, options });
@@ -54,6 +77,61 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
     inputSchema: configureSchema,
     name: WebMcpToolName.ConfigureConversion,
   });
+}
+
+function readPreprocessingInput(
+  input: unknown,
+  current: RasterPreprocessingOptions,
+): RasterPreprocessingOptions {
+  if (!isRecord(input)) {
+    throw new TypeError("Conversion tool input must be an object.");
+  }
+  const resizeInputs = [
+    input.useOriginalRasterSize === true,
+    input.rasterResizePercent !== undefined,
+    input.rasterTargetHeightPixels !== undefined,
+  ].filter(Boolean).length;
+  if (resizeInputs > 1) {
+    throw new TypeError("Choose one raster resize mode.");
+  }
+  const resize: RasterResizeOptions =
+    input.useOriginalRasterSize === true
+      ? { kind: RasterResizeKind.Original }
+      : input.rasterResizePercent !== undefined
+        ? {
+            kind: RasterResizeKind.Percentage,
+            percent: requireNumber(input.rasterResizePercent),
+          }
+        : input.rasterTargetHeightPixels !== undefined
+          ? {
+              heightPixels: requireNumber(input.rasterTargetHeightPixels),
+              kind: RasterResizeKind.TargetHeight,
+            }
+          : current.resize;
+  return createRasterPreprocessingOptions({
+    filterMode: readFilterMode(input.rasterFilterMode) ?? current.filterMode,
+    monochromeThreshold:
+      input.monochromeThreshold === undefined
+        ? current.monochromeThreshold
+        : requireNumber(input.monochromeThreshold),
+    resize,
+  });
+}
+
+function readFilterMode(value: unknown): RasterFilterModeValue | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  switch (value) {
+    case RasterFilterMode.Color:
+      return RasterFilterMode.Color;
+    case RasterFilterMode.Grayscale:
+      return RasterFilterMode.Grayscale;
+    case RasterFilterMode.Monochrome:
+      return RasterFilterMode.Monochrome;
+    default:
+      throw new TypeError("Raster filter is invalid.");
+  }
 }
 
 function convertCurrentImageTool(services: ConversionToolServices): WebMcpTool {
