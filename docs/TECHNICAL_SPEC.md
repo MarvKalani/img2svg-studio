@@ -174,11 +174,11 @@ kopiert und kein eigener VTracer-Fork gepflegt. Ein Referenztest hält das Verha
 fest:
 
 | Ground Truth | `is_circle` | `is_ellipse` | `is_quadrilateral` | `is_isosceles_triangle` |
-| --- | ---: | ---: | ---: | ---: |
-| Kreis | ja | ja | nein | nein |
-| Ellipse | nein | ja | nein | nein |
-| Rechteck | nein | nein | nein | nein |
-| Dreieck | nein | nein | ja | ja |
+| ------------ | ----------: | -----------: | -----------------: | ----------------------: |
+| Kreis        |          ja |           ja |               nein |                    nein |
+| Ellipse      |        nein |           ja |               nein |                    nein |
+| Rechteck     |        nein |         nein |               nein |                    nein |
+| Dreieck      |        nein |         nein |                 ja |                      ja |
 
 `is_circle` liefert als zusätzliche Occupancy-Prüfung einen nachgewiesenen Nutzen und wird im
 Produktadapter verwendet. `is_ellipse` dupliziert die bereits strengere lokale Belegungsprüfung.
@@ -407,17 +407,20 @@ Primärquellen:
 
 ### Optionaler ChatGPT-Companion
 
-WebMCP bleibt die primäre Agentenschnittstelle des sichtbaren, lokalen Studios. Der getrennte
-ChatGPT-Companion ergänzt diesen Weg, ersetzt ihn aber nicht und ist keine Voraussetzung für den
-Browserbetrieb.
+WebMCP bleibt die primäre Agentenschnittstelle des sichtbaren Studios. Der ChatGPT-Companion ist
+keine Voraussetzung für den Browserbetrieb, kann aber nach sichtbarer Freigabe dieselben
+WebMCP-Toolobjekte aus ChatGPT heraus bedienen.
 
 Der Companion verwendet einen Streamable-HTTP-MCP-Server und eine UI im ChatGPT-iframe über die
 MCP Apps Bridge. Für Developer Mode erreicht ChatGPT den lokalen Server bevorzugt über OpenAI
 Secure MCP Tunnel; temporäres öffentliches HTTPS bleibt eine Alternative. Dauerhaftes Hosting ist
 nur für eine unabhängig verfügbare ChatGPT-App sinnvoll. Tunnel-, Hosting- und
 Datei-/Datenschutzfluss werden getrennt vom statischen Browser-Studio getestet und dokumentiert.
-Beide Wege teilen den Rust-Konvertierungskern und typisierte Verträge, nicht den flüchtigen
-Browserzustand.
+Die stateless Bildwerkzeuge teilen nur Rust-Kern und Verträge. Ein kleiner In-Memory-Relay teilt
+für höchstens eine zuletzt aktive Browser-Sitzung sechs sichtbare Studio-Aktionen. Das öffentliche
+MCP erreicht den Relay direkt im selben Prozess; Session-Erstellung, Polling und Antworten sind
+hingegen auf `127.0.0.1` beziehungsweise `localhost`, erlaubte Origins und zufällige Tokens
+begrenzt. Befehle laufen nach 30 Sekunden ab; Bildbytes werden nicht übertragen.
 
 Die Companion-Bildbearbeitung verwendet keine Bildschirmkoordinaten. `analyze_image` dekodiert
 das Originalraster, bildet deterministische vierfach verbundene Randregionen und gibt deren

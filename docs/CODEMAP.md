@@ -167,6 +167,23 @@ Streamable HTTP
 
 Dieser Prozess ist bewusst getrennt vom lokalen Browserzustand und hält weder Bilder noch Runs.
 
+
+### Sichtbarer ChatGPT-Studio-Relay
+
+```text
+ChatGPT MCP-Aufruf
+  -> studio-relay-tools (sechs freigegebene Verträge)
+  -> studio-relay (flüchtige Befehlswarteschlange)
+  -> Loopback-HTTP
+  -> studio-relay-client im sichtbaren Tab
+  -> vorhandenes WebMCP-Tool
+  -> derselbe UI-Controller
+```
+
+`studio-relay-http.ts` besitzt Origin-, Host- und Token-Grenzen. Der Relay transportiert nur JSON,
+keine Bilddaten. Der Integrationstest in `mcp-server.test.ts` sichert den vollständigen Hin- und
+Rückweg; `studio-relay-client.test.ts` sichert die Werkzeugfreigabe im Browser.
+
 ## Zustandsbesitz und Invarianten
 
 - `image-store.ts` besitzt Original und aktive Bildversion; Controller kopieren diesen Zustand

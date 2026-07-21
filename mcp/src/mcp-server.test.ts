@@ -26,10 +26,16 @@ afterEach(async () => {
 
 describe("Streamable HTTP MCP server", () => {
   test("Given a stateless client, when tools are listed and the circle fixture is called, then vectorize_image returns SVG statistics", async () => {
-    const client = await connectClient();
+    const { client } = await connectClient();
     const tools = await client.listTools();
 
     expect(tools.tools.map((tool) => tool.name)).toEqual([
+      "get_workspace_state",
+      "list_conversion_presets",
+      "save_conversion_preset",
+      "load_conversion_preset",
+      "configure_conversion",
+      "convert_current_image",
       "analyze_image",
       "remove_background_region",
       "vectorize_image",
@@ -125,15 +131,72 @@ describe("Streamable HTTP MCP server", () => {
       }),
     );
   });
+
+  test("Given a connected visible Studio, when ChatGPT calls a relay tool, then the browser command result completes the MCP call", async () => {
+    const { baseUrl, client } = await connectClient();
+    const origin = "http://127.0.0.1:5173";
+    const sessionResponse = await fetch(`${baseUrl}/studio-relay/sessions`, {
+      headers: { origin },
+      method: "POST",
+    });
+    const session = (await sessionResponse.json()) as { sessionId: string; token: string };
+    const resultPromise = client.callTool({
+      arguments: {},
+      name: "list_conversion_presets",
+    });
+    const command = await pollCommand(baseUrl, origin, session);
+
+    expect(command).toMatchObject({ input: {}, toolName: "list_conversion_presets" });
+    const submitted = await fetch(`${baseUrl}/studio-relay/results`, {
+      body: JSON.stringify({
+        commandId: command.commandId,
+        result: JSON.stringify({ names: ["Jury Logo"], ok: true }),
+      }),
+      headers: {
+        "content-type": "application/json",
+        origin,
+        "x-studio-relay-session": session.sessionId,
+        "x-studio-relay-token": session.token,
+      },
+      method: "POST",
+    });
+
+    expect(submitted.status).toBe(200);
+    await expect(resultPromise).resolves.toMatchObject({
+      content: [{ text: '{"names":["Jury Logo"],"ok":true}', type: "text" }],
+    });
+  });
 });
 
-async function connectClient(): Promise<Client> {
+async function connectClient(): Promise<{ baseUrl: string; client: Client }> {
   const server = createMcpHttpServer();
   openServers.push(server);
   await new Promise<void>((resolveListen) => server.listen(0, "127.0.0.1", resolveListen));
   const port = (server.address() as AddressInfo).port;
   const client = new Client({ name: "img2svg-test", version: "0.1.0" });
   openClients.push(client);
-  await client.connect(new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${port}/mcp`)));
-  return client;
+  const baseUrl = `http://127.0.0.1:${port}`;
+  await client.connect(new StreamableHTTPClientTransport(new URL(`${baseUrl}/mcp`)));
+  return { baseUrl, client };
+}
+
+async function pollCommand(
+  baseUrl: string,
+  origin: string,
+  session: { sessionId: string; token: string },
+): Promise<{ commandId: string; input: unknown; toolName: string }> {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const response = await fetch(`${baseUrl}/studio-relay/commands`, {
+      headers: {
+        origin,
+        "x-studio-relay-session": session.sessionId,
+        "x-studio-relay-token": session.token,
+      },
+    });
+    if (response.status === 200) {
+      return (await response.json()) as { commandId: string; input: unknown; toolName: string };
+    }
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, 10));
+  }
+  throw new Error("The relay command was not queued.");
 }

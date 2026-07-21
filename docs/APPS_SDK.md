@@ -2,9 +2,10 @@
 
 ## Goal
 
-The companion exposes img2svg Studio's deterministic conversion core to ChatGPT while the existing
-browser Studio remains local-first. It is a stateless Node and TypeScript MCP server using the
-official MCP SDK and Streamable HTTP.
+The companion exposes img2svg Studio's deterministic conversion core to ChatGPT and can explicitly
+bridge six commands into the visible local-first browser Studio. It is a Node and TypeScript MCP
+server using the official MCP SDK and Streamable HTTP. Image conversion remains stateless; relay
+sessions exist only in memory while the user keeps the Studio connected.
 
 The first conversational contract is:
 
@@ -83,10 +84,17 @@ and downloads the exact SVG bytes. Conversion remains in the data tool.
 
 ## Hosting and privacy
 
-The browser Studio keeps all images local and needs no MCP server. The ChatGPT companion is a
-separate, explicit path: ChatGPT supplies a short-lived file reference, the stateless server reads
-it for one tool call, converts it in memory, returns the result, and retains neither image nor SVG.
-The documentation and widget state this distinction directly.
+The browser Studio keeps all images local and needs no MCP server for manual use or native WebMCP.
+For the visible ChatGPT demo, the user chooses **Connect ChatGPT**. Chrome then permits the public
+Studio to reach `http://127.0.0.1:8787/studio-relay`; the local server already exposed to ChatGPT
+through `/mcp` relays only tool names, parameters and JSON results. It never relays image bytes.
+
+The six relayed tools are `get_workspace_state`, `list_conversion_presets`,
+`save_conversion_preset`, `load_conversion_preset`, `configure_conversion` and
+`convert_current_image`. The browser executes the same WebMCP tool objects as the native browser
+agent. Relay HTTP endpoints accept only loopback Host headers, the production Studio or local-dev
+Origin, and random session credentials. The most recently polling tab is active; an idle tab
+expires after ten seconds and a command after thirty seconds.
 
 For Developer Mode, the preferred smallest setup keeps `http://127.0.0.1:8787/mcp` local and uses
 OpenAI Secure MCP Tunnel. The tunnel requires its own `tunnel_id` and runtime API key, but it does

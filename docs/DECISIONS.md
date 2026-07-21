@@ -110,8 +110,7 @@ Testdatei bleibt unter 1000 Zeilen. Die ausführbaren Regeln stehen in
 
 **Status:** entschieden
 
-Das Projekt wird für die OpenAI Build Week vorbereitet. Die Einreichungsfrist ist der
-21. Juli 2026 um 17:00 Pacific Time, entsprechend dem 22. Juli 2026 um 02:00 CEST. Wegen der
+Das Projekt wird für die OpenAI Build Week vorbereitet. Die Einreichungsfrist ist der 21. Juli 2026 um 17:00 Pacific Time, entsprechend dem 22. Juli 2026 um 02:00 CEST. Wegen der
 kurzen Restzeit priorisiert `docs/SUBMISSION.md` einen funktionierenden vertikalen Kern als
 erste Ausführungsreihenfolge.
 
@@ -188,25 +187,27 @@ Chrome, kontrolliert sichtbaren Zustand, Tastaturweg, Konsole und Netzwerk und d
 Version sowie Ablauf im Commit. Ein gefundener Mangel hält denselben Task offen, beginnt mit
 einem Regressionstest und wird vor jeder anderen Arbeit nachgebessert.
 
-## D-022 — WebMCP und Apps SDK bedienen unterschiedliche Agentenwege
+## D-022 — Apps SDK verbindet ChatGPT explizit mit dem sichtbaren WebMCP-Zustand
 
-**Status:** entschieden am 20. Juli 2026
+**Status:** ersetzt am 21. Juli 2026
 
 WebMCP bleibt die Primärintegration, weil seine Tools direkt in der sichtbaren Browserseite
 laufen und denselben lokalen Zustand wie der Nutzer verwenden. Die Abnahme aktiviert in Chrome
 149 oder neuer `#enable-webmcp-testing` und `#devtools-webmcp-support` und ruft die registrierten
 Tools im echten Tab auf.
 
-Der Apps-SDK-Weg ergänzt WebMCP als eigener ChatGPT-Kanal. Er verwendet einen stateless
-Streamable-HTTP-MCP-Server und eine ChatGPT-iframe-UI. Wegen der expliziten entfernten Dateiübergabe
-teilt er nicht den flüchtigen Browserzustand, sondern ausschließlich denselben Rust-Konvertierungskern
-und dieselben typisierten Options- und Ergebnisverträge. Sein Deployment- und Datenschutzvertrag
-bleibt vom lokalen Browser-Studio getrennt.
+Der Apps-SDK-Weg bietet weiterhin stateless Bildkonvertierung und ein ChatGPT-Widget. Zusätzlich
+verbindet ein explizit aktivierter Loopback-Companion sechs MCP-Werkzeuge mit den identischen
+WebMCP-Toolobjekten des sichtbaren Studios: Workspace lesen, Presets auflisten, speichern und
+laden, Konvertierung konfigurieren und den Entwurf übernehmen. Dadurch verwendet ChatGPT auch
+Browser-Presets und sichtbaren Zustand, ohne Geschäftslogik zu duplizieren.
 
 Im Developer Mode bleibt der MCP-Server lokal und wird bevorzugt über OpenAI Secure MCP Tunnel
 verbunden. Damit ist kein öffentlicher Ingress nötig. Dauerhaftes öffentliches Hosting folgt nur,
 wenn der ChatGPT-Kanal unabhängig vom Entwicklungsrechner verfügbar sein soll. Das statische
-Studio und sein WebMCP funktionieren in beiden Fällen ohne Anwendungsserver.
+Studio und sein WebMCP funktionieren ohne Companion vollständig manuell weiter. Die Relay-Endpunkte
+akzeptieren ausschließlich Loopback-Hosts, erlaubte Studio-Origins und zufällige Sitzungstoken.
+Übertragen werden Werkzeugname, Parameter und JSON-Ergebnis, niemals Raster- oder SVG-Bytes.
 
 Primärquellen:
 

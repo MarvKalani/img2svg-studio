@@ -52,12 +52,13 @@ the same lifecycle for positive and negative point selection.”
 
 ### 1:48–2:10 — WebMCP
 
-**Screen:** Open Chrome DevTools **Application → WebMCP**, show the registered tools, invoke
-`get_workspace_state`, then invoke `configure_conversion` and show the slider moving in the page.
+**Screen:** In the visible Studio choose **Connect ChatGPT**. In ChatGPT ask: “Inspect the connected
+Studio, list my presets, load Jury Logo and accept the current draft.” Show the preset controls and
+History update in the Studio without manual input there.
 
-**Voice:** “Thirteen typed WebMCP tools let a browser agent inspect and operate this same visible
-workflow. Tools call the same controllers as the UI—there is no hidden automation copy—and the
-complete manual interface still works without WebMCP.”
+**Voice:** “ChatGPT is controlling this same visible Studio through typed WebMCP contracts. It can
+use presets stored only in my browser because the local Companion relays commands, never the image.
+The tools call the same controllers as the UI, and the complete interface still works manually.”
 
 ### 2:10–2:29 — Codex and GPT-5.6
 

@@ -10,6 +10,8 @@ import { downloadImageFile, type ChatGptFileReference } from "./image-input.js";
 import { analyzeImageRegions, removeBackgroundRegion } from "./image-region-service.js";
 import { createPreviewResult, previewResourceUri, previewWidgetHtml } from "./preview-widget.js";
 import { VectorizeError, vectorizeImage } from "./vectorize-service.js";
+import { createStudioRelay, type StudioRelay } from "./studio-relay.js";
+import { registerStudioRelayTools } from "./studio-relay-tools.js";
 
 const fileReferenceSchema = z.object({
   download_url: z.string().min(1),
@@ -55,8 +57,10 @@ const regionStatisticsSchema = z.object({
   widthPixels: z.number().int().positive(),
 });
 
-export function createImg2SvgMcpServer(): McpServer {
+export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay()): McpServer {
   const server = new McpServer({ name: "img2svg-studio", version: "0.1.0" });
+
+  registerStudioRelayTools(server, relay);
 
   registerAppResource(server, "img2svg SVG preview", previewResourceUri, {}, async () => ({
     contents: [

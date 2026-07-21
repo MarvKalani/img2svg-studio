@@ -68,7 +68,7 @@ a:focus-visible {
 .topbar {
   z-index: 2;
   display: grid;
-  grid-template-columns: auto auto auto auto auto minmax(22rem, 1fr) auto;
+  grid-template-columns: auto auto auto auto auto auto minmax(22rem, 1fr) auto;
   align-items: center;
   gap: 1rem;
   min-width: 0;
@@ -886,7 +886,7 @@ a:focus-visible {
 
 @media (max-width: 74rem) {
   .topbar {
-    grid-template-columns: auto auto auto auto minmax(16rem, 1fr) auto;
+    grid-template-columns: auto auto auto auto auto minmax(16rem, 1fr) auto;
   }
 
   .privacy-badge {
@@ -904,7 +904,7 @@ a:focus-visible {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto auto auto;
   }
 
   .view-tabs {

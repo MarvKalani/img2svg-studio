@@ -402,19 +402,19 @@ Pixelvorlage mit sichtbarem Schwellwert. Der Vektorisierungsbereich enthält die
 wirksamen Werte. Seine angezeigten Standards entsprechen der aktuellen Engine; deshalb beträgt die native
 Farbpräzision 6 Bit.
 
-| Parameter | Gültiger Bereich | Standard | Wirkung |
-|---|---:|---:|---|
-| Farbpräzision | 1–8 Bit | 6 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden |
-| Speckle-Filter | 0–1000 px | 4 px | entfernt kleine Farbcluster |
-| Pfadpräzision | 0–4 Stellen | 2 Stellen | rundet Pfadkoordinaten und senkt Bytes, nicht die Pfadzahl |
-| Überlagerung | Gestapelt, Ausschnitte | Gestapelt | erzeugt überlagerte oder aneinanderliegende Farbflächen |
-| Kurvenmodus | Pixel, Polygon, Spline | Spline | erhält Pixelkonturen, vereinfacht zu Polygonen oder glättet als Spline |
-| Verlaufsschritt | 0–255 | 16 | bestimmt den Farbabstand zwischen Verlaufsebenen |
-| Eckenwinkel | 0–180° | 60° | erkennt im Spline-Modus Richtungswechsel als Ecken |
-| Segmentlänge | 3,5–10 px | 4 px | begrenzt die Segmentlänge der iterativen Glättung |
-| Glättungsdurchläufe | 1–20 | 10 | begrenzt die weitere Segmentunterteilung |
-| Verbindungswinkel | 0–180° | 45° | trennt Spline-Abschnitte anhand ihrer Winkeländerung |
-| SVG-Skalierung | 10–400 % | 100 % | skaliert SVG und ViewBox nach dem Tracing proportional |
+| Parameter           |       Gültiger Bereich |  Standard | Wirkung                                                                |
+| ------------------- | ---------------------: | --------: | ---------------------------------------------------------------------- |
+| Farbpräzision       |                1–8 Bit |     6 Bit | bestimmt, wie nah beieinanderliegende Farben gruppiert werden          |
+| Speckle-Filter      |              0–1000 px |      4 px | entfernt kleine Farbcluster                                            |
+| Pfadpräzision       |            0–4 Stellen | 2 Stellen | rundet Pfadkoordinaten und senkt Bytes, nicht die Pfadzahl             |
+| Überlagerung        | Gestapelt, Ausschnitte | Gestapelt | erzeugt überlagerte oder aneinanderliegende Farbflächen                |
+| Kurvenmodus         | Pixel, Polygon, Spline |    Spline | erhält Pixelkonturen, vereinfacht zu Polygonen oder glättet als Spline |
+| Verlaufsschritt     |                  0–255 |        16 | bestimmt den Farbabstand zwischen Verlaufsebenen                       |
+| Eckenwinkel         |                 0–180° |       60° | erkennt im Spline-Modus Richtungswechsel als Ecken                     |
+| Segmentlänge        |              3,5–10 px |      4 px | begrenzt die Segmentlänge der iterativen Glättung                      |
+| Glättungsdurchläufe |                   1–20 |        10 | begrenzt die weitere Segmentunterteilung                               |
+| Verbindungswinkel   |                 0–180° |       45° | trennt Spline-Abschnitte anhand ihrer Winkeländerung                   |
+| SVG-Skalierung      |               10–400 % |     100 % | skaliert SVG und ViewBox nach dem Tracing proportional                 |
 
 Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Prozent direkt an.
 Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort an. Ein Lauf mit
@@ -672,10 +672,29 @@ aber keine Tests oder Paketmetadaten.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 
+### ChatGPT mit dem sichtbaren Studio verbinden
+
+1. Den Companion mit `npm start --workspace=img2svg-studio-mcp` auf Port 8787 starten und seinen
+   `/mcp`-Endpunkt mit der in ChatGPT Developer Mode eingerichteten HTTPS-Verbindung verfügbar
+   machen.
+2. Das Studio öffnen und **ChatGPT verbinden** wählen. Beim öffentlichen Studio bestätigt der
+   Nutzer einmalig Chromes Zugriff auf das lokale Netzwerk.
+3. In ChatGPT die img2svg-App auswählen und zum Beispiel sagen: „Prüfe das verbundene Studio,
+   liste meine Presets, lade Jury Logo und übernimm den aktuellen Entwurf.“
+4. **ChatGPT trennen** beendet die flüchtige Browser-Sitzung sofort.
+
+ChatGPT kann über diese Freigabe `get_workspace_state`, `list_conversion_presets`,
+`save_conversion_preset`, `load_conversion_preset`, `configure_conversion` und
+`convert_current_image` aufrufen. Der Browser führt exakt die bereits registrierten WebMCP-Tools
+aus. Der lokale Relay überträgt nur Toolname, Parameter und JSON-Ergebnis; Bilddaten bleiben im
+Tab. Ist kein Studio verbunden, erhält ChatGPT einen verständlichen Fehler statt einen versteckten
+Ersatzablauf.
+
 ## ChatGPT-MCP-Companion
 
-Der Companion unter `mcp/` ist ein eigener stateless Server für ChatGPT und andere MCP-Hosts. Er
-teilt den Rust/WASM-Konvertierungskern mit dem Studio, aber nicht dessen flüchtigen Browserzustand.
+Der Companion unter `mcp/` bietet ChatGPT zwei enge Wege. Die vier Bildwerkzeuge sind stateless und
+teilen den Rust/WASM-Konvertierungskern. Die sechs Studio-Werkzeuge werden nur bei sichtbarer
+Browserfreigabe an den flüchtigen Zustand des offenen Tabs weitergereicht.
 Für eine kontrollierte Hintergrundentfernung ruft ChatGPT zuerst `analyze_image` auf. Das Werkzeug
 liefert eine beschriftete PNG-Vorschau und bis zu zwölf Randregionen mit Farbwert, Bildanteil und
 normiertem Saatpunkt. Koordinaten von 0 bis 1 beziehen sich immer auf das Originalraster und sind

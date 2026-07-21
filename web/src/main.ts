@@ -7,6 +7,7 @@ import "./workspace-view.css";
 import "./context-menu/context-menu.css";
 import "./layout/layout-preferences.css";
 import "./workspace/workspace-preview-settings.css";
+import "./webmcp/studio-relay.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { detectBrowserAiCapabilities, showSupportedAiTools } from "./ai/browser-ai-capabilities";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
@@ -42,6 +43,7 @@ import {
 } from "./webmcp/webmcp-adapter";
 import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
+import { initializeStudioRelay } from "./webmcp/studio-relay-controller";
 import { initializeContextMenu } from "./context-menu/context-menu-controller";
 import { initializeLayoutPreferences } from "./layout/layout-preferences";
 import {
@@ -171,6 +173,18 @@ const studioTools = createStudioTools(
   },
 );
 const applicationTools = [...conversionTools, ...studioTools];
+const studioRelayToolNames: ReadonlySet<string> = new Set([
+  WebMcpToolName.GetWorkspaceState,
+  WebMcpToolName.ListConversionPresets,
+  WebMcpToolName.SaveConversionPreset,
+  WebMcpToolName.LoadConversionPreset,
+  WebMcpToolName.ConfigureConversion,
+  WebMcpToolName.ConvertCurrentImage,
+]);
+const studioRelayControl = initializeStudioRelay(
+  document,
+  applicationTools.filter((tool) => studioRelayToolNames.has(tool.name)),
+);
 const webMcpToolNames = [
   WebMcpToolName.GetCapabilities,
   ...applicationTools.map((tool) => tool.name),
@@ -187,5 +201,8 @@ void initializeWebMcp(
   webMcpRegistration = registration;
   document.documentElement.dataset.webmcp = registration.status;
 });
-window.addEventListener("beforeunload", () => webMcpRegistration?.dispose());
+window.addEventListener("beforeunload", () => {
+  studioRelayControl.dispose();
+  webMcpRegistration?.dispose();
+});
 document.documentElement.dataset.appReady = "true";

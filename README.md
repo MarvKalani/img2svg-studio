@@ -36,7 +36,8 @@ downloaded only after a visible user action and then run locally through WebGPU 
 - Complete German and English UI with an instant, locally remembered language switch.
 - Installable PWA entry points for OS sharing and desktop PNG, JPEG and WebP file opening.
 - Hardware-filtered typed WebMCP tools that operate the same visible application services as the UI.
-- A stateless Streamable HTTP MCP companion with Rust/WASM vectorization and an inline SVG widget.
+- A Streamable HTTP MCP companion with stateless Rust/WASM conversion, an SVG widget and an
+  explicit local bridge to the visible Studio.
 - Keyboard-operable core workflow, actionable input errors and automated accessibility/privacy audits.
 - Visible dated release plus bilingual legal, privacy and license pages.
 - First-party logo and fictional topography demos with reproducible browser benchmarks.
@@ -103,11 +104,12 @@ npm start --workspace=img2svg-studio-mcp
 ```
 
 The health check is `http://127.0.0.1:8787/` and the Streamable HTTP endpoint is
-`http://127.0.0.1:8787/mcp`. For ChatGPT Developer Mode, keep the server local and connect it with
-OpenAI Secure MCP Tunnel, or expose it temporarily through HTTPS. Permanent public MCP hosting is
-optional and only useful when the ChatGPT app must run independently of the developer machine;
-the browser Studio and WebMCP need no server. The complete connection, privacy and Tauri contracts are in
-[the Apps SDK companion guide](docs/APPS_SDK.md).
+`http://127.0.0.1:8787/mcp`. For ChatGPT Developer Mode, connect that endpoint through Secure MCP
+Tunnel or temporary HTTPS. Open the Studio, choose **Connect ChatGPT**, approve Chrome's local
+network prompt, and ChatGPT can inspect the visible workspace, list or load browser-local presets,
+configure conversion and accept the draft. Only JSON commands and results cross this session;
+image bytes stay in the browser. The complete connection, privacy and Tauri contracts are in the
+[Apps SDK companion guide](docs/APPS_SDK.md).
 
 ## Quality gate
 
@@ -166,8 +168,8 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 ## Privacy and current limits
 
 - In the browser Studio, no image, mask or generated SVG leaves the browser.
-- The optional ChatGPT companion is an explicit remote path: it receives one temporary image,
-  converts it in memory, returns the SVG, and retains neither value.
+- The optional ChatGPT companion either processes one explicitly supplied temporary image or
+  relays a narrow command to a visibly connected Studio. The relay transfers no image bytes.
 - There is no telemetry, tracker or account requirement.
 - Model files are the only intentional cross-origin requests and start only on demand.
 - History is in memory and keeps every run for the current image until the user deletes it;

@@ -3,13 +3,19 @@ import { createServer, type Server } from "node:http";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 
 import { createImg2SvgMcpServer } from "./mcp-app.js";
+import { handleStudioRelayRequest } from "./studio-relay-http.js";
+import { createStudioRelay, type StudioRelay } from "./studio-relay.js";
 
 const mcpPath = "/mcp";
 const mcpMethods = new Set(["DELETE", "GET", "POST"]);
 
-export function createMcpHttpServer(): Server {
+export function createMcpHttpServer(relay: StudioRelay = createStudioRelay()): Server {
   return createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
+
+    if (await handleStudioRelayRequest(request, response, url, relay)) {
+      return;
+    }
 
     if (request.method === "OPTIONS" && url.pathname === mcpPath) {
       response.writeHead(204, corsHeaders()).end();
@@ -28,7 +34,7 @@ export function createMcpHttpServer(): Server {
     for (const [name, value] of Object.entries(corsHeaders())) {
       response.setHeader(name, value);
     }
-    const server = createImg2SvgMcpServer();
+    const server = createImg2SvgMcpServer(relay);
     const transport = new StreamableHTTPServerTransport({
       enableJsonResponse: true,
       sessionIdGenerator: undefined,

@@ -1,8 +1,8 @@
 # Architecture
 
 img2svg Studio is a static, local-first browser application. There is no application server and no
-image upload path. The optional ChatGPT companion is a separate stateless process reached locally
-through Secure MCP Tunnel; it does not change the browser deployment.
+image upload path. The optional ChatGPT companion is reached through an HTTPS connection and can
+use an explicit loopback relay to the visible Studio; it does not change the static deployment.
 
 For concrete ownership, entry points and test routes, use the maintained
 [codemap](CODEMAP.md).
@@ -11,6 +11,8 @@ For concrete ownership, entry points and test routes, use the maintained
 flowchart LR
   Human["Human in the UI"] --> Controllers["Typed application controllers"]
   Agent["Browser agent via WebMCP"] --> Controllers
+  ChatGPT["ChatGPT via local Companion"] --> Relay["Six-command in-memory relay"]
+  Relay --> Controllers
   OS["OS share / file open"] --> PWA["One-time PWA ingress"]
   PWA --> Controllers
   Controllers --> Workspace["Versioned image, history and comparison stores"]
@@ -53,6 +55,11 @@ The adapter feature-detects `document.modelContext` and registers narrow imperat
 handlers call the same controllers as visible controls and report structured success or stable
 error codes. Tool availability never controls UI availability. Origin isolation and the
 `Permissions-Policy: tools=(self)` response header constrain the browser capability to this origin.
+
+The optional Studio Companion does not add a second command implementation. After an explicit
+button click, the tab polls a loopback-only session and dispatches allowed MCP commands to the same
+six WebMCP tool objects. This is why browser-local presets remain available to ChatGPT while image
+bytes never cross the relay.
 
 ### PWA ingress
 
