@@ -28,6 +28,7 @@ test("Given one image, when eleven previews are accepted and unwanted runs are d
   await expect(runCard(1)).toBeVisible();
   await expect(runCard(11)).toContainText("128 × 128");
   await expect(runCard(11)).toContainText("1 Pfad");
+  await expect(runCard(11)).toContainText(/\d+(?: B|,\d{2} KiB)/u);
   await expect(runCard(11)).toContainText("ms");
 
   await page.getByRole("button", { name: "Run 1 als A setzen" }).click();

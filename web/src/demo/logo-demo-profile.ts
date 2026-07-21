@@ -1,9 +1,5 @@
 import { createConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
-import {
-  RasterDetailMode,
-  RasterFilterMode,
-  RasterResizeKind,
-} from "../conversion/raster-preprocessing";
+import { RasterFilterMode, RasterResizeKind } from "../conversion/raster-preprocessing";
 
 export function createLogoDemoOptions(): ConversionOptions {
   return createConversionOptions({
@@ -11,10 +7,11 @@ export function createLogoDemoOptions(): ConversionOptions {
     filterSpeckle: 16,
     pathPrecision: 0,
     preprocessing: {
-      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Color,
       monochromeThreshold: 128,
       resize: { kind: RasterResizeKind.Original },
+      sharpenStrength: 0,
+      smoothStrength: 0,
     },
     scalePercent: 100,
     shapeDetection: {

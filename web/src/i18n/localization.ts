@@ -61,6 +61,7 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "für ein lokales Bild": "for a local image",
   "Geladenes Rasterbild": "Loaded raster image",
   Glätten: "Smooth",
+  Glättungsstärke: "Smoothing strength",
   Graustufen: "Grayscale",
   Hintergrund: "Background",
   "Hintergrund entfernen": "Remove background",
@@ -133,6 +134,7 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Rechteck: "Rectangle",
   "Rechtliche Informationen": "Legal information",
   Schärfen: "Sharpen",
+  Schärfungsstärke: "Sharpening strength",
   Schwarzweiß: "Black and white",
   "Schwarzweiß / Laser": "Black and white / laser",
   "Schwarzweiß-Schwellwert": "Black-and-white threshold",
@@ -303,10 +305,14 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Sets multiple raster, VTracer, and shape-recognition values to a proven profile.",
   "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im VTracer-Bereich wieder her.":
     "After a manual change, Custom appears. The button in the VTracer section restores its defaults.",
-  "Glättet Rauschen oder schärft Kanten im Raster unmittelbar vor dem Tracing.":
-    "Smooths noise or sharpens raster edges immediately before tracing.",
-  "Glätten reduziert oft kleine Cluster; Schärfen kann schwache Kanten erhalten, aber zusätzliche Pfade erzeugen.":
-    "Smoothing often reduces small clusters; sharpening can preserve weak edges but create extra paths.",
+  "Verstärkt Hauptkanten nach der optionalen Glättung mit einer dosierten Unscharfmaske.":
+    "Strengthens main edges after optional smoothing with a controlled unsharp mask.",
+  "Höhere Werte erhalten schwache Kanten, können aber zusätzliche Pfade und Kantenartefakte erzeugen.":
+    "Higher values preserve weak edges but can create extra paths and edge artifacts.",
+  "Mischt das Raster dosiert mit einem kleinen 3×3-Gaußfilter.":
+    "Blends the raster with a small 3×3 Gaussian filter at the selected strength.",
+  "Höhere Werte reduzieren JPEG-Rauschen und kleine Cluster. Schärfen wird danach angewendet.":
+    "Higher values reduce JPEG noise and small clusters. Sharpening is applied afterward.",
   "Übergibt Farbe, Graustufen oder reines Schwarzweiß an VTracer.":
     "Passes color, grayscale, or pure black and white to VTracer.",
   "Graustufen entfernt Farbinformation; Schwarzweiß eignet sich für klare Konturen, Laser und Fräsen.":
@@ -366,6 +372,7 @@ const englishPatterns: readonly Readonly<{
   pattern(/^(\d+) Stellen?$/, (count) => `${count} ${count === "1" ? "decimal" : "decimals"}`),
   pattern(/^(\d+) Bit$/, (count) => `${count} bit`),
   pattern(/^(\d+),(\d+) MiB$/, (integer, fraction) => `${integer}.${fraction} MiB`),
+  pattern(/^(\d+),(\d+) KiB$/, (integer, fraction) => `${integer}.${fraction} KiB`),
   pattern(/^(\d+) % geladen$/, (count) => `${count}% loaded`),
   pattern(/^(\d+) px Höhe(.*)$/, (height, suffix) => `${height} px height${suffix}`),
   pattern(/^A · Variante$/, () => "A · Variant"),

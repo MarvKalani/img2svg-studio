@@ -16,6 +16,8 @@ test("Given a raster image, when resized and filtered before conversion, then VT
   await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("512 × 512 px");
   await page.getByLabel("Rastergröße vor Tracing").selectOption("height-576");
   await page.getByLabel("Rasterfilter").selectOption("monochrome");
+  await page.getByLabel("Glättungsstärke").fill("60");
+  await page.getByLabel("Schärfungsstärke").fill("30");
   await page.getByRole("slider", { name: "Schwarzweiß-Schwellwert" }).fill("128");
 
   await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("576 × 576 px");
@@ -35,4 +37,7 @@ test("Given a raster image, when resized and filtered before conversion, then VT
     }),
   ).toBe(true);
   await expect(page.locator('[data-run-id="1"]')).toContainText("576 × 576");
+  await expect(page.locator('[data-run-id="1"]')).toContainText(/\d+(?: B|,\d{2} KiB)/u);
+  await expect(page.getByLabel("Glättungsstärke")).toHaveValue("60");
+  await expect(page.getByLabel("Schärfungsstärke")).toHaveValue("30");
 });

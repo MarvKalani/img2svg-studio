@@ -34,12 +34,16 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
     colorPrecision: 5,
     filterSpeckle: 12,
     pathPrecision: 2,
+    rasterSharpenStrength: 35,
+    rasterSmoothStrength: 70,
     scalePercent: 50,
   });
   expect(configured).toMatchObject({ ok: true });
   await expect(page.getByRole("slider", { name: "Farbpräzision", exact: true })).toHaveValue("5");
   await expect(page.getByRole("slider", { name: "Speckle-Filter", exact: true })).toHaveValue("12");
   await expect(page.getByLabel("Zielgröße")).toHaveValue("50");
+  await expect(page.getByLabel("Glättungsstärke")).toHaveValue("70");
+  await expect(page.getByLabel("Schärfungsstärke")).toHaveValue("35");
   await expect(page.getByLabel("Zielmaße")).toHaveText("128 × 128 px");
 
   const converted = await executeTool(page, "convert_current_image", {});
@@ -48,6 +52,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
     heightPixels: 128,
     ok: true,
     runId: 1,
+    sizeBytes: expect.any(Number),
     widthPixels: 128,
   });
   await expect(page.getByTestId("svg-output").locator("svg")).toHaveAttribute(
@@ -80,7 +85,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   expect(workspace).toMatchObject({
     comparison: { a: 1, b: 2 },
     history: [{ id: 2 }, { id: 1 }],
-    image: { fileName: "circle.png", loaded: true },
+    image: { fileName: "circle.png", loaded: true, sizeBytes: 3420 },
   });
   await executeTool(page, "select_history_run", { runId: 1 });
   await expect(page.locator("#compare-output")).toBeHidden();

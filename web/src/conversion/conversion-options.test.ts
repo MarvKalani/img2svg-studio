@@ -18,10 +18,11 @@ describe("conversion options", () => {
       maxIterations: 10,
       pathPrecision: 2,
       preprocessing: {
-        detailMode: "none",
         filterMode: "color",
         monochromeThreshold: 128,
         resize: { kind: "original" },
+        sharpenStrength: 0,
+        smoothStrength: 0,
       },
       scalePercent: 100,
       shapeDetection: {

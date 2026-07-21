@@ -26,7 +26,7 @@ test("Given a fresh Studio, when the bundled logo demo is chosen, then it keeps 
   await expect(
     page
       .getByTestId("image-dropzone")
-      .getByText("1280 × 876 · JPEG · Original · V1", { exact: true }),
+      .getByText("1280 × 876 · JPEG · 79,33 KiB · Original · V1", { exact: true }),
   ).toBeVisible();
   await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
   await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("1280 × 876 px");
@@ -60,7 +60,7 @@ test("Given the bundled topography raster, when its demo is chosen, then it load
   await expect(
     page
       .getByTestId("image-dropzone")
-      .getByText("1536 × 1024 · PNG · Original · V1", { exact: true }),
+      .getByText("1536 × 1024 · PNG · 2,57 MiB · Original · V1", { exact: true }),
   ).toBeVisible();
   await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("percent-75");
   await expect(page.getByLabel("Vorbereitete Rastermaße")).toHaveText("1152 × 768 px");
@@ -101,7 +101,7 @@ test("Given a 256 by 256 PNG, when selected, then the same local image and dimen
   await expect(
     page
       .getByTestId("image-dropzone")
-      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
+      .getByText("256 × 256 · PNG · 3,34 KiB · Original · V1", { exact: true }),
   ).toBeVisible();
   const workspaceImage = page.getByTestId("workspace-raster-preview");
   await expect(workspaceImage).toBeVisible();
@@ -128,7 +128,7 @@ test("Given a 256 by 256 PNG, when dropped, then it uses the same visible loadin
   await expect(
     page
       .getByTestId("image-dropzone")
-      .getByText("256 × 256 · PNG · Original · V1", { exact: true }),
+      .getByText("256 × 256 · PNG · 3,34 KiB · Original · V1", { exact: true }),
   ).toBeVisible();
   await dataTransfer.dispose();
 });

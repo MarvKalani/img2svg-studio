@@ -64,7 +64,8 @@ Das MVP trennt Rastervorbereitung vor dem Tracing von der SVG-Skalierung danach:
 |---|---:|---:|---|
 | Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | Original | VTracer-Eingabepixel bei festem Seitenverhältnis |
 | Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor VTracer |
-| Detailfilter | Aus, Glätten, Schärfen | Aus | lokale Glättung oder Kantenverstärkung vor VTracer |
+| Glättungsstärke | 0–100 % | 0 % | dosierte lokale Glättung vor der Schärfung |
+| Schärfungsstärke | 0–100 % | 0 % | dosierte Kantenverstärkung nach der Glättung |
 | Schwarzweiß-Schwellwert | 0–255 | 128 | Grenze zwischen Schwarz und Weiß |
 | `color_precision` | 1–8 Bit/Kanal | 6 | Farbzusammenfassung |
 | `filter_speckle` | 0–1000 px | 4 | kleine Segmente entfernen |
@@ -82,6 +83,9 @@ Eine kanonische Definition speist TypeScript-Validierung, Rust/WASM-Vertrag, UI,
 Parameter-Diff und WebMCP. Prozent und Zielhöhe sind getrennte typisierte Größenmodi; die jeweils
 andere Dimension wird aus dem Seitenverhältnis berechnet. Ungültige Werte werden abgelehnt und nie
 still korrigiert.
+
+Die Oberfläche zeigt die komprimierte Bytegröße des Eingaberasters und die exakte UTF-8-Bytegröße
+jeder SVG-Vorschau und jedes gespeicherten Runs in B, KiB oder MiB.
 
 ### 4.3 Optionale native Formen
 

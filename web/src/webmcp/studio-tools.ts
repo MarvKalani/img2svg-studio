@@ -9,6 +9,7 @@ import type { ConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import type { LoadedImage } from "../image/image-store";
 import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
+import { utf8ByteLength } from "../format-byte-size";
 
 export interface StudioToolServices {
   applySmartSelection(request: SmartSelectionRequest): Promise<AiActionResult>;
@@ -345,6 +346,7 @@ function imageSummary(image: LoadedImage | undefined): Record<string, unknown> {
         fileName: image.file.name,
         heightPixels: image.metadata.heightPixels,
         loaded: true,
+        sizeBytes: image.metadata.sizeBytes,
         version: image.version,
         widthPixels: image.metadata.widthPixels,
       }
@@ -357,6 +359,7 @@ function runSummary(run: ConversionRun): Record<string, unknown> {
     heightPixels: run.heightPixels,
     id: run.id,
     inputVersion: run.inputVersion,
+    sizeBytes: utf8ByteLength(run.svg),
     widthPixels: run.widthPixels,
   };
 }

@@ -13,6 +13,7 @@ describe("German to English UI translation", () => {
     ["Geladenes Rasterbild logo.png", "Loaded raster image logo.png"],
     ["Entladen", "Unload"],
     ["19,76 MiB · Apache-2.0", "19.76 MiB · Apache-2.0"],
+    ["41,25 KiB", "41.25 KiB"],
     ["Maske mit 3 Punkten aktualisiert · WebGPU", "Mask updated with 3 points · WebGPU"],
     ["10 Tracing-Parameter", "10 tracing parameters"],
     ["Standard: 2 Stellen", "Default: 2 decimals"],

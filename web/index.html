@@ -164,13 +164,37 @@
                 <option value="monochrome">Schwarzweiß</option>
               </select>
             </label>
-            <label data-help-key="rasterDetail" data-option-key="rasterDetail">
-              <span>Detailfilter</span>
-              <select id="raster-detail" aria-label="Raster-Detailfilter">
-                <option value="none" selected>Aus</option>
-                <option value="smooth">Glätten</option>
-                <option value="sharpen">Schärfen</option>
-              </select>
+            <label
+              class="range-label"
+              data-help-key="rasterSmoothStrength"
+              data-option-key="rasterSmoothStrength"
+            >
+              <span>Glätten</span>
+              <output id="raster-smooth-strength-value" for="raster-smooth-strength">0 %</output>
+              <input
+                id="raster-smooth-strength"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                aria-label="Glättungsstärke"
+              />
+            </label>
+            <label
+              class="range-label"
+              data-help-key="rasterSharpenStrength"
+              data-option-key="rasterSharpenStrength"
+            >
+              <span>Schärfen</span>
+              <output id="raster-sharpen-strength-value" for="raster-sharpen-strength">0 %</output>
+              <input
+                id="raster-sharpen-strength"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                aria-label="Schärfungsstärke"
+              />
             </label>
             <label
               id="monochrome-threshold-control"

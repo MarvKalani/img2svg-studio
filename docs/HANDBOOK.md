@@ -56,6 +56,8 @@ Revision `260721.03` ergänzt quell- und parameterspezifische Kontextaktionen ü
 Maustaste.
 Revision `260721.04` zeigt beim Tracing den nativen Clusterfortschritt und die Zahl der bereits
 verarbeiteten Farbflächen.
+Revision `260721.05` dosiert Glätten und Schärfen unabhängig und zeigt Raster- sowie SVG-Größen
+als echte Bytes, KiB oder MiB in Vorschau und Verlauf.
 
 ### Sprache
 
@@ -282,7 +284,8 @@ Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
 
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
-Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Detailfilter, Schwellwert,
+Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Glättungs- und
+Schärfungsstärke, Schwellwert,
 alle zehn VTracer-Parameter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
 Formerkennungsschalter und den fünf Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die
 Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparameter mit „—“.
@@ -290,6 +293,8 @@ Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparame
 „SVG A“ und „SVG B“ laden jeweils den unveränderten SVG-Text des zugeordneten Runs herunter. Die
 normalisierte Vergleichsdarstellung gelangt nicht in den Export. Dateinamen enthalten Platz und
 Run-ID, beispielsweise `circle-a-run-1.svg`, damit beide Ergebnisse unterscheidbar bleiben.
+Die Quellkarte zeigt die komprimierte Größe der geladenen Rasterdatei. Entwurf und Runs zeigen die
+exakte UTF-8-Größe ihres SVG in B, KiB oder MiB; damit ist eine Parameteränderung sofort messbar.
 
 ## Parameter
 
@@ -305,10 +310,11 @@ zu 3840×2160, während Hoch- und Sonderformate weder beschnitten noch verzerrt 
 bleibt in allen Modi erhalten. Die Anzeige „Vorbereitete Rastermaße“ nennt die Pixelgröße vor
 VTracer; „Zielmaße“ berücksichtigt danach zusätzlich die SVG-Skalierung.
 
-Der Detailfilter arbeitet vor dem Farbfilter direkt auf dem dekodierten RGBA-Puffer. „Glätten“
-verwendet einen kleinen 3×3-Gaußfilter gegen einzelne JPEG-Störungen. „Schärfen“ verstärkt Kanten
-mit einer milden Unscharfmaske. „Aus“ erhält die skalierten Pixel unverändert und bleibt Standard.
-Eine BMP-Zwischenkopie ist nicht nötig, weil VTracer bereits rohe RGBA-Pixel erhält.
+„Glätten“ und „Schärfen“ sind unabhängige Stärken von 0 bis 100 Prozent. Null schaltet den jeweiligen
+Schritt aus. Die Rasterpipeline skaliert zuerst, mischt dann dosiert einen kleinen 3×3-Gaußfilter
+gegen JPEG-Störungen ein und wendet danach die dosierte Unscharfmaske auf das geglättete Ergebnis
+an. So kann Rauschen reduziert werden, ohne Hauptkanten ungefiltert weich zu lassen. Der Farbfilter
+folgt anschließend. Eine BMP-Zwischenkopie ist nicht nötig, weil VTracer rohe RGBA-Pixel erhält.
 
 Rastergröße, Filter und Schwellwert werden unveränderlich im Run gespeichert, über
 „Einstellungen übernehmen“ wiederhergestellt und im A/B-Parametervergleich angezeigt.
@@ -570,7 +576,8 @@ DevTools zusätzlich `#devtools-webmcp-support`. Nach dem Neustart zeigt DevTool
 Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 
 1. `get_capabilities` und `get_workspace_state` lesen.
-2. Mit `configure_conversion` Rastergröße, Filter, Schwellwert, Tracing-Werte und SVG-Skalierung
+2. Mit `configure_conversion` Rastergröße, Filter, `rasterSmoothStrength`,
+   `rasterSharpenStrength`, Schwellwert, Tracing-Werte und SVG-Skalierung
    setzen; die Live-Vorschau aktualisiert sich automatisch. `convert_current_image` übernimmt das
    aktuelle Ergebnis in den Verlauf. Die Rastergröße verwendet genau eines aus
    `useOriginalRasterSize`, `rasterResizePercent` oder `rasterTargetHeightPixels`.

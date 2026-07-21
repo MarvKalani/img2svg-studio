@@ -37,6 +37,7 @@ das sichtbare Produkt.
 | Bild laden, validieren oder Demo öffnen | `web/src/image/image-loader.ts`, `decode-image.ts`, `image-store.ts` | `load-image.spec.ts`, Image-Unit-Tests |
 | Logo- oder Topografie-Benchmark | `web/benchmarks/benchmark-runner.ts`, jeweilige Benchmark-Konfiguration | produktiver Chrome-Lauf und Ergebnisdokument unter `docs/release/` |
 | Raster vor dem Tracing skalieren oder filtern | `web/src/conversion/raster-preprocessing.ts`, `read-raster-pixels.ts` | `raster-preprocessing.test.ts`, `preprocess-raster.spec.ts` |
+| Raster- und SVG-Bytegrößen formatieren | `web/src/format-byte-size.ts`, `image-loader.ts`, `history-controller.ts` | `format-byte-size.test.ts`, sichtbarer Chrome-Verlauf |
 | VTracer-Parameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vtracer-handbook.spec.ts` |
 | Live-Entwurf gegen Original oder Ergebnis annehmen | `conversion-controller.ts`, `history-controller.ts`, `comparison-source.ts` | `live-preview.spec.ts`, Compare-Unit-Tests |
 | Worker-/WASM-Vertrag | `conversion-worker-contract.ts`, `conversion-worker.ts`, `crates/img2svg-wasm/src/lib.rs` | Typecheck, Web-E2E, Rust-Tests |

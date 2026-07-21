@@ -1,4 +1,5 @@
 import type { ConversionRun, NewConversionRun } from "../history/history-store";
+import { formatByteSize, utf8ByteLength } from "../format-byte-size";
 import type { ImageStore, LoadedImage } from "../image/image-store";
 import { toConversionFailure } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
@@ -262,7 +263,7 @@ function previewMetricsStatus(run: NewConversionRun): string {
     );
   }
   const nativeShapeStatus = nativeShapes.length > 0 ? ` · ${nativeShapes.join(" · ")}` : "";
-  return `${String(run.pathCount)} ${run.pathCount === 1 ? "Pfad" : "Pfade"}${nativeShapeStatus}`;
+  return `${String(run.pathCount)} ${run.pathCount === 1 ? "Pfad" : "Pfade"}${nativeShapeStatus} · ${formatByteSize(utf8ByteLength(run.svg))}`;
 }
 
 interface ConversionElements {

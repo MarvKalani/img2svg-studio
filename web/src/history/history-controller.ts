@@ -12,6 +12,7 @@ import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-st
 import { formatImageVersion } from "../image/image-version";
 import type { LoadedImage } from "../image/image-store";
 import { restoreSelectedRunOptions } from "./restore-run";
+import { formatByteSize, utf8ByteLength } from "../format-byte-size";
 
 export interface HistoryController {
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
@@ -49,7 +50,7 @@ export function initializeHistory(
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
     elements.downloadButton.dataset.sourceFileName = run.fileName;
-    elements.statusImage.textContent = `Run ${String(run.id)} ausgewählt · ${String(run.widthPixels)} × ${String(run.heightPixels)} SVG`;
+    elements.statusImage.textContent = `Run ${String(run.id)} ausgewählt · ${String(run.widthPixels)} × ${String(run.heightPixels)} SVG · ${svgSize(run)}`;
   };
 
   const showOriginal = (image: LoadedImage): void => {
@@ -60,7 +61,7 @@ export function initializeHistory(
     elements.rasterPreview.hidden = false;
     elements.downloadButton.hidden = true;
     delete elements.downloadButton.dataset.sourceFileName;
-    elements.statusImage.textContent = `Original ausgewählt · ${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} Raster`;
+    elements.statusImage.textContent = `Original ausgewählt · ${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
   };
 
   const clearComparison = (): void => {
@@ -245,7 +246,7 @@ function draftItem(
   const dimensions = document.createElement("span");
   dimensions.textContent = `${String(draft.widthPixels)} × ${String(draft.heightPixels)} · ${formatImageVersion(draft.inputVersion)}`;
   const metrics = document.createElement("small");
-  metrics.textContent = `${shapeMetrics(draft)} · ${String(draft.durationMilliseconds)} ms`;
+  metrics.textContent = `${shapeMetrics(draft)} · ${svgSize(draft)} · ${String(draft.durationMilliseconds)} ms`;
   card.append(thumbnail, title, dimensions, metrics);
 
   const actions = document.createElement("div");
@@ -285,7 +286,7 @@ function originalItem(
   const title = document.createElement("strong");
   title.textContent = "Original";
   const dimensions = document.createElement("span");
-  dimensions.textContent = `${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} · Raster`;
+  dimensions.textContent = `${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} · Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
   const version = document.createElement("small");
   version.textContent = formatImageVersion(image.version);
   button.append(thumbnail, title, dimensions, version);
@@ -329,7 +330,7 @@ function runItem(
   const dimensions = document.createElement("span");
   dimensions.textContent = `${String(run.widthPixels)} × ${String(run.heightPixels)} · ${formatImageVersion(run.inputVersion)}`;
   const metrics = document.createElement("small");
-  metrics.textContent = `${shapeMetrics(run)} · ${String(run.durationMilliseconds)} ms`;
+  metrics.textContent = `${shapeMetrics(run)} · ${svgSize(run)} · ${String(run.durationMilliseconds)} ms`;
 
   button.append(thumbnail, title, dimensions, metrics);
   button.addEventListener("click", selectRun);
@@ -375,6 +376,10 @@ function shapeMetrics(run: Readonly<NewConversionRun>): string {
     metrics.push(`${String(run.polygonCount)} ${run.polygonCount === 1 ? "Polygon" : "Polygone"}`);
   }
   return metrics.join(" · ");
+}
+
+function svgSize(run: Readonly<NewConversionRun>): string {
+  return formatByteSize(utf8ByteLength(run.svg));
 }
 
 function compareButton(

@@ -1,10 +1,6 @@
 import type { ConversionOptions } from "../conversion/conversion-options";
 import { nativeShapeSchema } from "../conversion/shape-options";
-import {
-  formatRasterDetail,
-  formatRasterFilter,
-  formatRasterResize,
-} from "../conversion/raster-preprocessing";
+import { formatRasterFilter, formatRasterResize } from "../conversion/raster-preprocessing";
 
 export interface ConversionSettingRow {
   readonly a: string;
@@ -35,10 +31,16 @@ const conversionSettingSchema: readonly ConversionSettingSchema[] = Object.freez
     String,
   ),
   setting(
-    "preprocessing.detailMode",
-    "Detailfilter",
-    (options) => formatRasterDetail(options.preprocessing.detailMode),
-    String,
+    "preprocessing.smoothStrength",
+    "Glätten",
+    (options) => options.preprocessing.smoothStrength,
+    (value) => `${String(value)} %`,
+  ),
+  setting(
+    "preprocessing.sharpenStrength",
+    "Schärfen",
+    (options) => options.preprocessing.sharpenStrength,
+    (value) => `${String(value)} %`,
   ),
   setting(
     "preprocessing.monochromeThreshold",

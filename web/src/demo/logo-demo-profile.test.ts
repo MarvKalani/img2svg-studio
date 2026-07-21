@@ -1,10 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import {
-  RasterDetailMode,
-  RasterFilterMode,
-  RasterResizeKind,
-} from "../conversion/raster-preprocessing";
+import { RasterFilterMode, RasterResizeKind } from "../conversion/raster-preprocessing";
 import { createLogoDemoOptions } from "./logo-demo-profile";
 
 describe("logo demo profile", () => {
@@ -20,10 +16,11 @@ describe("logo demo profile", () => {
       maxIterations: 10,
       pathPrecision: 0,
       preprocessing: {
-        detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Color,
         monochromeThreshold: 128,
         resize: { kind: RasterResizeKind.Original },
+        sharpenStrength: 0,
+        smoothStrength: 0,
       },
       scalePercent: 100,
       shapeDetection: {

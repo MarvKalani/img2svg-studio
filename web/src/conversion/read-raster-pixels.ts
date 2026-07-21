@@ -38,7 +38,7 @@ export async function readRasterPixels(
           new Uint8Array(imageData.data),
           dimensions.widthPixels,
           dimensions.heightPixels,
-          options.detailMode,
+          options,
         ),
         options,
       ),

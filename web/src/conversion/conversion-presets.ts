@@ -6,7 +6,6 @@ import {
   type ConversionOptions,
 } from "./conversion-options";
 import {
-  RasterDetailMode,
   RasterFilterMode,
   RasterResizeKind,
   type RasterResizeOptions,
@@ -45,9 +44,9 @@ export const conversionPresets: readonly ConversionPreset[] = Object.freeze([
     "Foto / detailreich",
     options({
       colorPrecision: 8,
-      detailMode: RasterDetailMode.Smooth,
       filterSpeckle: 4,
       pathPrecision: 2,
+      smoothStrength: 100,
     }),
   ),
   preset(
@@ -81,26 +80,27 @@ export function matchingConversionPresetId(
 
 function options({
   colorPrecision,
-  detailMode = RasterDetailMode.None,
   filterMode = RasterFilterMode.Color,
   filterSpeckle,
   pathPrecision,
+  smoothStrength = 0,
 }: {
   readonly colorPrecision: number;
-  readonly detailMode?: RasterDetailMode;
   readonly filterMode?: RasterFilterMode;
   readonly filterSpeckle: number;
   readonly pathPrecision: number;
+  readonly smoothStrength?: number;
 }): ConversionOptions {
   return createConversionOptions({
     colorPrecision,
     filterSpeckle,
     pathPrecision,
     preprocessing: {
-      detailMode,
       filterMode,
       monochromeThreshold: 128,
       resize: { kind: RasterResizeKind.Original },
+      sharpenStrength: 0,
+      smoothStrength,
     },
     scalePercent: 100,
   });
@@ -127,9 +127,10 @@ function sameOptions(a: Readonly<ConversionOptions>, b: Readonly<ConversionOptio
     a.pathPrecision === b.pathPrecision &&
     a.scalePercent === b.scalePercent &&
     a.spliceThreshold === b.spliceThreshold &&
-    a.preprocessing.detailMode === b.preprocessing.detailMode &&
     a.preprocessing.filterMode === b.preprocessing.filterMode &&
     a.preprocessing.monochromeThreshold === b.preprocessing.monochromeThreshold &&
+    a.preprocessing.sharpenStrength === b.preprocessing.sharpenStrength &&
+    a.preprocessing.smoothStrength === b.preprocessing.smoothStrength &&
     sameResize(a.preprocessing.resize, b.preprocessing.resize) &&
     a.shapeDetection.enabled === b.shapeDetection.enabled &&
     a.shapeDetection.types.circle === b.shapeDetection.types.circle &&

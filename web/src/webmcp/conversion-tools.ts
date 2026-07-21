@@ -6,7 +6,6 @@ import {
   type ConversionOptions,
 } from "../conversion/conversion-options";
 import {
-  RasterDetailMode,
   RasterFilterMode,
   RasterResizeKind,
   createRasterPreprocessingOptions,
@@ -17,6 +16,7 @@ import {
   type RasterResizeOptions,
 } from "../conversion/raster-preprocessing";
 import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
+import { utf8ByteLength } from "../format-byte-size";
 
 export interface ConversionToolServices {
   applyOptions(options: ConversionOptions): void;
@@ -35,10 +35,8 @@ const configureSchema = Object.freeze({
     layerDifference: Object.freeze({ maximum: 255, minimum: 0, type: "integer" }),
     lengthThreshold: Object.freeze({ maximum: 10, minimum: 3.5, type: "number" }),
     maxIterations: Object.freeze({ maximum: 20, minimum: 1, type: "integer" }),
-    rasterDetailMode: Object.freeze({
-      enum: Object.freeze(Object.values(RasterDetailMode)),
-      type: "string",
-    }),
+    rasterSharpenStrength: Object.freeze({ maximum: 100, minimum: 0, type: "integer" }),
+    rasterSmoothStrength: Object.freeze({ maximum: 100, minimum: 0, type: "integer" }),
     pathPrecision: Object.freeze({ maximum: 4, minimum: 0, type: "integer" }),
     monochromeThreshold: Object.freeze({ maximum: 255, minimum: 0, type: "integer" }),
     rasterFilterMode: Object.freeze({
@@ -127,30 +125,21 @@ function readPreprocessingInput(
             }
           : current.resize;
   return createRasterPreprocessingOptions({
-    detailMode: readDetailMode(input.rasterDetailMode) ?? current.detailMode,
     filterMode: readFilterMode(input.rasterFilterMode) ?? current.filterMode,
     monochromeThreshold:
       input.monochromeThreshold === undefined
         ? current.monochromeThreshold
         : requireNumber(input.monochromeThreshold),
     resize,
+    sharpenStrength:
+      input.rasterSharpenStrength === undefined
+        ? current.sharpenStrength
+        : requireNumber(input.rasterSharpenStrength),
+    smoothStrength:
+      input.rasterSmoothStrength === undefined
+        ? current.smoothStrength
+        : requireNumber(input.rasterSmoothStrength),
   });
-}
-
-function readDetailMode(value: unknown): RasterDetailMode | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-  switch (value) {
-    case RasterDetailMode.None:
-      return RasterDetailMode.None;
-    case RasterDetailMode.Sharpen:
-      return RasterDetailMode.Sharpen;
-    case RasterDetailMode.Smooth:
-      return RasterDetailMode.Smooth;
-    default:
-      throw new TypeError("Raster detail mode is invalid.");
-  }
 }
 
 function readFilterMode(value: unknown): RasterFilterModeValue | undefined {
@@ -186,6 +175,7 @@ function convertCurrentImageTool(services: ConversionToolServices): WebMcpTool {
         inputVersion: run.inputVersion,
         ok: true,
         runId: run.id,
+        sizeBytes: utf8ByteLength(run.svg),
         widthPixels: run.widthPixels,
       });
     },

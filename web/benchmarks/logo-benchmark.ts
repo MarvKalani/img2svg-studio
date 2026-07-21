@@ -1,9 +1,8 @@
-import { RasterDetailMode, RasterFilterMode } from "../src/conversion/raster-preprocessing.ts";
+import { RasterFilterMode } from "../src/conversion/raster-preprocessing.ts";
 import { runBenchmark, type BenchmarkScenario } from "./benchmark-runner.ts";
 
 const baseline: BenchmarkScenario = Object.freeze({
   colorPrecision: 6,
-  detailMode: RasterDetailMode.None,
   filterMode: RasterFilterMode.Color,
   filterSpeckle: 4,
   id: "baseline",
@@ -12,6 +11,8 @@ const baseline: BenchmarkScenario = Object.freeze({
   rasterResize: "height-576",
   scalePercent: 100,
   shapeDetection: true,
+  sharpenStrength: 0,
+  smoothStrength: 0,
 });
 
 const scenarios = Object.freeze([
@@ -28,8 +29,8 @@ const scenarios = Object.freeze([
   ...["percent-25", "percent-50", "percent-75", "height-720", "original"].map((value) =>
     variant(`raster-${value}`, { rasterResize: value }),
   ),
-  variant("detail-smooth", { detailMode: RasterDetailMode.Smooth }),
-  variant("detail-sharpen", { detailMode: RasterDetailMode.Sharpen }),
+  variant("detail-smooth", { smoothStrength: 100 }),
+  variant("detail-sharpen", { sharpenStrength: 50 }),
   variant("filter-grayscale", { filterMode: RasterFilterMode.Grayscale }),
   variant("filter-monochrome-64", {
     filterMode: RasterFilterMode.Monochrome,
@@ -45,27 +46,27 @@ const scenarios = Object.freeze([
   variant("shape-detection-off", { shapeDetection: false }),
   variant("combo-balanced", {
     colorPrecision: 5,
-    detailMode: RasterDetailMode.Smooth,
     filterSpeckle: 8,
     pathPrecision: 1,
+    smoothStrength: 100,
   }),
   variant("combo-compact", {
     colorPrecision: 5,
-    detailMode: RasterDetailMode.Smooth,
     filterSpeckle: 16,
     pathPrecision: 1,
     rasterResize: "percent-50",
+    smoothStrength: 100,
   }),
   variant("combo-clean-color", {
-    detailMode: RasterDetailMode.Smooth,
     filterSpeckle: 16,
     pathPrecision: 1,
+    smoothStrength: 100,
   }),
   variant("combo-sharp", {
     colorPrecision: 5,
-    detailMode: RasterDetailMode.Sharpen,
     filterSpeckle: 8,
     pathPrecision: 1,
+    sharpenStrength: 50,
   }),
   variant("combo-fidelity", { filterSpeckle: 16, pathPrecision: 0 }),
   variant("combo-small-raster", { pathPrecision: 0, rasterResize: "percent-25" }),

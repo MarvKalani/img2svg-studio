@@ -8,7 +8,6 @@ import {
   type ConversionOptions,
 } from "./conversion-options";
 import {
-  RasterDetailMode,
   RasterFilterMode,
   createRasterPreprocessingOptions,
   preprocessedDimensions,
@@ -68,10 +67,11 @@ export function initializeConversionOptions(): ConversionOptionsController {
       maxIterations: elements.maxIterations.valueAsNumber,
       pathPrecision: elements.pathPrecision.valueAsNumber,
       preprocessing: createRasterPreprocessingOptions({
-        detailMode: readRasterDetailMode(elements.rasterDetail.value),
         filterMode: readRasterFilterMode(elements.rasterFilter.value),
         monochromeThreshold: elements.monochromeThreshold.valueAsNumber,
         resize: readRasterResizePreset(elements.rasterResize.value),
+        sharpenStrength: elements.rasterSharpenStrength.valueAsNumber,
+        smoothStrength: elements.rasterSmoothStrength.valueAsNumber,
       }),
       scalePercent: Number(elements.scalePercent.value),
       shapeDetection: createShapeDetectionOptions({
@@ -94,6 +94,8 @@ export function initializeConversionOptions(): ConversionOptionsController {
     elements.monochromeThresholdValue.textContent = String(
       options.preprocessing.monochromeThreshold,
     );
+    elements.rasterSharpenStrengthValue.textContent = `${String(options.preprocessing.sharpenStrength)} %`;
+    elements.rasterSmoothStrengthValue.textContent = `${String(options.preprocessing.smoothStrength)} %`;
     elements.monochromeThresholdControl.hidden =
       options.preprocessing.filterMode !== RasterFilterMode.Monochrome;
     if (sourceDimensions) {
@@ -136,7 +138,8 @@ export function initializeConversionOptions(): ConversionOptionsController {
   elements.pathPrecision.addEventListener("input", renderChangedOptions);
   elements.monochromeThreshold.addEventListener("input", renderChangedOptions);
   elements.rasterFilter.addEventListener("change", renderChangedOptions);
-  elements.rasterDetail.addEventListener("change", renderChangedOptions);
+  elements.rasterSharpenStrength.addEventListener("input", renderChangedOptions);
+  elements.rasterSmoothStrength.addEventListener("input", renderChangedOptions);
   elements.rasterResize.addEventListener("change", renderChangedOptions);
   elements.scalePercent.addEventListener("change", renderChangedOptions);
   elements.spliceThreshold.addEventListener("input", renderChangedOptions);
@@ -172,8 +175,9 @@ export function initializeConversionOptions(): ConversionOptionsController {
     elements.pathPrecision.value = String(validatedOptions.pathPrecision);
     elements.monochromeThreshold.value = String(validatedOptions.preprocessing.monochromeThreshold);
     elements.rasterFilter.value = validatedOptions.preprocessing.filterMode;
-    elements.rasterDetail.value = validatedOptions.preprocessing.detailMode;
     elements.rasterResize.value = rasterResizePresetId(validatedOptions.preprocessing.resize);
+    elements.rasterSharpenStrength.value = String(validatedOptions.preprocessing.sharpenStrength);
+    elements.rasterSmoothStrength.value = String(validatedOptions.preprocessing.smoothStrength);
     elements.scalePercent.value = String(validatedOptions.scalePercent);
     elements.spliceThreshold.value = String(validatedOptions.spliceThreshold);
     elements.shapeDetection.setAttribute(
@@ -230,10 +234,6 @@ export function initializeConversionOptions(): ConversionOptionsController {
           matchingConversionPresetId(options) !==
           matchingConversionPresetId(defaultConversionOptions)
         );
-      case ConversionOptionKey.RasterDetail:
-        return (
-          options.preprocessing.detailMode !== defaultConversionOptions.preprocessing.detailMode
-        );
       case ConversionOptionKey.RasterFilter:
         return (
           options.preprocessing.filterMode !== defaultConversionOptions.preprocessing.filterMode
@@ -242,6 +242,16 @@ export function initializeConversionOptions(): ConversionOptionsController {
         return (
           rasterResizePresetId(options.preprocessing.resize) !==
           rasterResizePresetId(defaultConversionOptions.preprocessing.resize)
+        );
+      case ConversionOptionKey.RasterSharpenStrength:
+        return (
+          options.preprocessing.sharpenStrength !==
+          defaultConversionOptions.preprocessing.sharpenStrength
+        );
+      case ConversionOptionKey.RasterSmoothStrength:
+        return (
+          options.preprocessing.smoothStrength !==
+          defaultConversionOptions.preprocessing.smoothStrength
         );
       case ConversionOptionKey.ScalePercent:
         return options.scalePercent !== defaultConversionOptions.scalePercent;
@@ -310,15 +320,22 @@ export function initializeConversionOptions(): ConversionOptionsController {
       case ConversionOptionKey.Preset:
         writeOptions(defaultConversionOptions);
         return;
-      case ConversionOptionKey.RasterDetail:
-        elements.rasterDetail.value = defaultConversionOptions.preprocessing.detailMode;
-        return;
       case ConversionOptionKey.RasterFilter:
         elements.rasterFilter.value = defaultConversionOptions.preprocessing.filterMode;
         return;
       case ConversionOptionKey.RasterResize:
         elements.rasterResize.value = rasterResizePresetId(
           defaultConversionOptions.preprocessing.resize,
+        );
+        return;
+      case ConversionOptionKey.RasterSharpenStrength:
+        elements.rasterSharpenStrength.value = String(
+          defaultConversionOptions.preprocessing.sharpenStrength,
+        );
+        return;
+      case ConversionOptionKey.RasterSmoothStrength:
+        elements.rasterSmoothStrength.value = String(
+          defaultConversionOptions.preprocessing.smoothStrength,
         );
         return;
       case ConversionOptionKey.ScalePercent:
@@ -397,8 +414,11 @@ interface ConversionOptionElements {
   preset: HTMLSelectElement;
   preparedDimensions: HTMLOutputElement;
   rasterFilter: HTMLSelectElement;
-  rasterDetail: HTMLSelectElement;
   rasterResize: HTMLSelectElement;
+  rasterSharpenStrength: HTMLInputElement;
+  rasterSharpenStrengthValue: HTMLOutputElement;
+  rasterSmoothStrength: HTMLInputElement;
+  rasterSmoothStrengthValue: HTMLOutputElement;
   resetTracingOptions: HTMLButtonElement;
   scalePercent: HTMLSelectElement;
   shapeDetection: HTMLButtonElement;
@@ -432,8 +452,11 @@ function readElements(): ConversionOptionElements {
     preset: requireElement("#conversion-preset", HTMLSelectElement),
     preparedDimensions: requireElement("#prepared-raster-dimensions", HTMLOutputElement),
     rasterFilter: requireElement("#raster-filter", HTMLSelectElement),
-    rasterDetail: requireElement("#raster-detail", HTMLSelectElement),
     rasterResize: requireElement("#raster-resize", HTMLSelectElement),
+    rasterSharpenStrength: requireElement("#raster-sharpen-strength", HTMLInputElement),
+    rasterSharpenStrengthValue: requireElement("#raster-sharpen-strength-value", HTMLOutputElement),
+    rasterSmoothStrength: requireElement("#raster-smooth-strength", HTMLInputElement),
+    rasterSmoothStrengthValue: requireElement("#raster-smooth-strength-value", HTMLOutputElement),
     resetTracingOptions: requireElement("#reset-tracing-options", HTMLButtonElement),
     scalePercent: requireElement("#scale-percent", HTMLSelectElement),
     shapeDetection: requireElement("#shape-detection-enabled", HTMLButtonElement),
@@ -462,17 +485,6 @@ function readHierarchicalMode(value: string): HierarchicalMode {
       return value;
     default:
       throw new Error("Required hierarchical mode is invalid.");
-  }
-}
-
-function readRasterDetailMode(value: string): RasterDetailMode {
-  switch (value) {
-    case RasterDetailMode.None:
-    case RasterDetailMode.Sharpen:
-    case RasterDetailMode.Smooth:
-      return value;
-    default:
-      throw new Error("Required raster detail mode is invalid.");
   }
 }
 

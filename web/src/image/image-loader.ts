@@ -1,6 +1,7 @@
 import { SupportedImageMimeType, decodeImage, type DecodedImage } from "./decode-image";
 import type { ImageStore, LoadedImage } from "./image-store";
 import { formatImageVersion, ImageVersionKind } from "./image-version";
+import { formatByteSize } from "../format-byte-size";
 
 export interface ImageLoaderController {
   loadAiVersion(file: File): Promise<boolean>;
@@ -200,6 +201,7 @@ function showLoadedImage(elements: ImageLoaderElements, loadedImage: LoadedImage
   const image = loadedImage.metadata;
   const dimensions = `${String(image.widthPixels)} × ${String(image.heightPixels)}`;
   const format = formatLabel(image.mimeType);
+  const size = formatByteSize(image.sizeBytes);
 
   elements.error.hidden = true;
   elements.error.textContent = "";
@@ -208,7 +210,7 @@ function showLoadedImage(elements: ImageLoaderElements, loadedImage: LoadedImage
   elements.sourceThumbnail.alt = `Vorschau von ${image.fileName}`;
   elements.sourceThumbnail.hidden = false;
   elements.sourceName.textContent = image.fileName;
-  elements.sourceMetadata.textContent = `${dimensions} · ${format} · ${formatImageVersion(loadedImage.version)}`;
+  elements.sourceMetadata.textContent = `${dimensions} · ${format} · ${size} · ${formatImageVersion(loadedImage.version)}`;
   elements.restoreOriginal.hidden = loadedImage.version.kind === ImageVersionKind.Original;
   elements.workspacePlaceholder.hidden = true;
   elements.downloadButton.hidden = true;
@@ -218,7 +220,7 @@ function showLoadedImage(elements: ImageLoaderElements, loadedImage: LoadedImage
   elements.workspaceImage.src = image.previewUrl;
   elements.workspaceImage.alt = `Geladenes Rasterbild ${image.fileName}`;
   elements.workspaceImage.hidden = false;
-  elements.statusImage.textContent = `${dimensions} · ${format}`;
+  elements.statusImage.textContent = `${dimensions} · ${format} · ${size}`;
 }
 
 function showImageError(elements: ImageLoaderElements, message: string): void {

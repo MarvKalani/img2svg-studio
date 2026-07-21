@@ -9,14 +9,6 @@ export const RasterFilterMode = {
 
 export type RasterFilterMode = (typeof RasterFilterMode)[keyof typeof RasterFilterMode];
 
-export const RasterDetailMode = {
-  None: "none",
-  Sharpen: "sharpen",
-  Smooth: "smooth",
-} as const;
-
-export type RasterDetailMode = (typeof RasterDetailMode)[keyof typeof RasterDetailMode];
-
 export const RasterResizeKind = {
   Original: "original",
   Percentage: "percentage",
@@ -28,8 +20,12 @@ export type RasterResizeOptions =
   | { readonly kind: typeof RasterResizeKind.Percentage; readonly percent: number }
   | { readonly heightPixels: number; readonly kind: typeof RasterResizeKind.TargetHeight };
 
-export interface RasterPreprocessingOptions {
-  readonly detailMode: RasterDetailMode;
+export interface RasterDetailOptions {
+  readonly sharpenStrength: number;
+  readonly smoothStrength: number;
+}
+
+export interface RasterPreprocessingOptions extends RasterDetailOptions {
   readonly filterMode: RasterFilterMode;
   readonly monochromeThreshold: number;
   readonly resize: RasterResizeOptions;
@@ -71,10 +67,11 @@ export const rasterResizePresets: readonly RasterResizePreset[] = Object.freeze(
 ]);
 
 export const defaultRasterPreprocessingOptions: RasterPreprocessingOptions = Object.freeze({
-  detailMode: RasterDetailMode.None,
   filterMode: RasterFilterMode.Color,
   monochromeThreshold: 128,
   resize: Object.freeze({ kind: RasterResizeKind.Original }),
+  sharpenStrength: 0,
+  smoothStrength: 0,
 });
 
 const maximumPreparedPixelCount = 16_777_216;
@@ -83,20 +80,22 @@ export function createRasterPreprocessingOptions(
   input: RasterPreprocessingOptions,
 ): RasterPreprocessingOptions {
   if (
-    !Object.values(RasterDetailMode).includes(input.detailMode) ||
     !Object.values(RasterFilterMode).includes(input.filterMode) ||
     !Number.isInteger(input.monochromeThreshold) ||
     input.monochromeThreshold < 0 ||
-    input.monochromeThreshold > 255
+    input.monochromeThreshold > 255 ||
+    !isPercentage(input.sharpenStrength) ||
+    !isPercentage(input.smoothStrength)
   ) {
     throw new ConversionFailure(ConversionFailureCode.InvalidOptions);
   }
 
   return Object.freeze({
-    detailMode: input.detailMode,
     filterMode: input.filterMode,
     monochromeThreshold: input.monochromeThreshold,
     resize: validateResize(input.resize),
+    sharpenStrength: input.sharpenStrength,
+    smoothStrength: input.smoothStrength,
   });
 }
 
@@ -121,15 +120,6 @@ export function formatRasterFilter(mode: RasterFilterMode): string {
     [RasterFilterMode.Color]: "Farbe",
     [RasterFilterMode.Grayscale]: "Graustufen",
     [RasterFilterMode.Monochrome]: "Schwarzweiß",
-  };
-  return labels[mode];
-}
-
-export function formatRasterDetail(mode: RasterDetailMode): string {
-  const labels: Record<RasterDetailMode, string> = {
-    [RasterDetailMode.None]: "Aus",
-    [RasterDetailMode.Sharpen]: "Schärfen",
-    [RasterDetailMode.Smooth]: "Glätten",
   };
   return labels[mode];
 }
@@ -193,7 +183,7 @@ export function applyRasterDetail(
   sourceRgba: Uint8Array,
   widthPixels: number,
   heightPixels: number,
-  mode: RasterDetailMode,
+  options: Readonly<RasterDetailOptions>,
 ): Uint8Array<ArrayBuffer> {
   const expectedLength = widthPixels * heightPixels * 4;
   if (
@@ -205,24 +195,50 @@ export function applyRasterDetail(
   ) {
     throw new ConversionFailure(ConversionFailureCode.PixelLength);
   }
-  if (mode === RasterDetailMode.None) {
+  if (options.smoothStrength === 0 && options.sharpenStrength === 0) {
     return new Uint8Array(sourceRgba);
   }
 
-  const blurred = gaussianBlur(sourceRgba, widthPixels, heightPixels);
-  if (mode === RasterDetailMode.Smooth) {
-    return blurred;
+  let prepared = new Uint8Array(sourceRgba);
+  if (options.smoothStrength > 0) {
+    prepared = blendRgb(
+      prepared,
+      gaussianBlur(prepared, widthPixels, heightPixels),
+      options.smoothStrength / 100,
+    );
   }
-  const sharpened = new Uint8Array(sourceRgba);
-  for (let offset = 0; offset < sourceRgba.length; offset += 4) {
+  if (options.sharpenStrength === 0) {
+    return prepared;
+  }
+
+  const blurred = gaussianBlur(prepared, widthPixels, heightPixels);
+  const sharpened = new Uint8Array(prepared);
+  for (let offset = 0; offset < prepared.length; offset += 4) {
     for (let channel = 0; channel < 3; channel += 1) {
-      const source = sourceRgba[offset + channel]!;
+      const source = prepared[offset + channel]!;
       sharpened[offset + channel] = clampChannel(
-        source + (source - blurred[offset + channel]!) / 2,
+        source + (source - blurred[offset + channel]!) * (options.sharpenStrength / 100),
       );
     }
   }
   return sharpened;
+}
+
+function blendRgb(
+  sourceRgba: Uint8Array,
+  targetRgba: Uint8Array,
+  targetWeight: number,
+): Uint8Array<ArrayBuffer> {
+  const blended = new Uint8Array(sourceRgba);
+  for (let offset = 0; offset < sourceRgba.length; offset += 4) {
+    for (let channel = 0; channel < 3; channel += 1) {
+      const source = sourceRgba[offset + channel]!;
+      blended[offset + channel] = clampChannel(
+        source + (targetRgba[offset + channel]! - source) * targetWeight,
+      );
+    }
+  }
+  return blended;
 }
 
 function gaussianBlur(
@@ -256,6 +272,10 @@ function gaussianBlur(
 
 function clampChannel(value: number): number {
   return Math.min(255, Math.max(0, Math.round(value)));
+}
+
+function isPercentage(value: number): boolean {
+  return Number.isInteger(value) && value >= 0 && value <= 100;
 }
 
 function validateResize(resize: RasterResizeOptions): RasterResizeOptions {

@@ -9,9 +9,10 @@ describe("topography demo profile", () => {
       filterSpeckle: 12,
       pathPrecision: 1,
       preprocessing: {
-        detailMode: "none",
         filterMode: "color",
         resize: { kind: "percentage", percent: 75 },
+        sharpenStrength: 0,
+        smoothStrength: 0,
       },
       shapeDetection: { enabled: false },
     });

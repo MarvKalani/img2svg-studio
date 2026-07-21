@@ -1,9 +1,5 @@
 import { createConversionOptions, type ConversionOptions } from "../conversion/conversion-options";
-import {
-  RasterDetailMode,
-  RasterFilterMode,
-  RasterResizeKind,
-} from "../conversion/raster-preprocessing";
+import { RasterFilterMode, RasterResizeKind } from "../conversion/raster-preprocessing";
 
 export function createTopographyDemoOptions(): ConversionOptions {
   return createConversionOptions({
@@ -11,10 +7,11 @@ export function createTopographyDemoOptions(): ConversionOptions {
     filterSpeckle: 12,
     pathPrecision: 1,
     preprocessing: {
-      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Color,
       monochromeThreshold: 128,
       resize: { kind: RasterResizeKind.Percentage, percent: 75 },
+      sharpenStrength: 0,
+      smoothStrength: 0,
     },
     scalePercent: 100,
   });

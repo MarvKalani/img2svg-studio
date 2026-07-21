@@ -94,7 +94,8 @@ Glättung und Schwellwerte. LightBurn bietet zusätzlich Unsharp Masking an; sei
 reduziert mit Smoothness und Optimize die Knotenzahl. LaserGRBL beschreibt Downsampling explizit
 als Weg, unwichtige Rasterdetails zu verlieren. Das Studio stellt deshalb einen deterministischen
 3×3-Gaußfilter und eine milde Unscharfmaske ohne neue Laufzeitabhängigkeit bereit. Beim Testlogo
-bleibt der Detailfilter aus: Glätten spart nur 318 Pfade, Schärfen erhöht die Zahl um 253.
+bleiben beide Detailstärken null: Die damalige Messung mit 100 Prozent Glätten sparte nur 318
+Pfade, 50 Prozent Schärfen erhöhte die Zahl um 253.
 
 Quellen: [VTracer README](https://github.com/visioncortex/vtracer),
 [LightBurn Image Tracing](https://docs.lightburnsoftware.com/legacy/Tools/TracingImages),

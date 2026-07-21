@@ -24,14 +24,14 @@ describe("original comparison settings", () => {
       true,
     );
 
-    expect(rows).toHaveLength(22);
+    expect(rows).toHaveLength(23);
     expect(rows[0]).toEqual({
       a: "Original · V1",
       b: "Run 1 · Original · V1",
       key: "source",
       label: "Quelle",
     });
-    expect(rows[5]).toEqual({
+    expect(rows[6]).toEqual({
       a: "—",
       b: "6 Bit",
       key: "colorPrecision",
@@ -50,7 +50,7 @@ describe("original comparison settings", () => {
       key: "source",
       label: "Quelle",
     });
-    expect(rows).toHaveLength(22);
+    expect(rows).toHaveLength(23);
   });
 });
 

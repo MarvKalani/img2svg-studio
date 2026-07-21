@@ -1,7 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
   RasterFilterMode,
-  RasterDetailMode,
   RasterResizeKind,
   applyRasterFilter,
   applyRasterDetail,
@@ -15,7 +14,10 @@ describe("raster preprocessing", () => {
     const rgba = new Uint8Array(3 * 3 * 4);
     rgba.set([160, 80, 32, 128], (1 * 3 + 1) * 4);
 
-    const smoothed = applyRasterDetail(rgba, 3, 3, RasterDetailMode.Smooth);
+    const smoothed = applyRasterDetail(rgba, 3, 3, {
+      sharpenStrength: 0,
+      smoothStrength: 100,
+    });
 
     expect(smoothed.slice(16, 20)).toEqual(new Uint8Array([40, 20, 8, 128]));
     expect(smoothed.slice(0, 4)).toEqual(new Uint8Array([10, 5, 2, 0]));
@@ -25,17 +27,40 @@ describe("raster preprocessing", () => {
   test("Given a soft color edge, when sharpening runs, then edge contrast increases without changing alpha", () => {
     const rgba = new Uint8Array([80, 80, 80, 255, 120, 120, 120, 128, 120, 120, 120, 64]);
 
-    const sharpened = applyRasterDetail(rgba, 3, 1, RasterDetailMode.Sharpen);
+    const sharpened = applyRasterDetail(rgba, 3, 1, {
+      sharpenStrength: 50,
+      smoothStrength: 0,
+    });
 
     expect([...sharpened]).toEqual([75, 75, 75, 255, 125, 125, 125, 128, 120, 120, 120, 64]);
   });
 
+  test("Given smoothing and sharpening strengths, when both run, then smoothing is applied before sharpening", () => {
+    const rgba = new Uint8Array([40, 40, 40, 255, 120, 120, 120, 255, 200, 200, 200, 255]);
+
+    const combined = applyRasterDetail(rgba, 3, 1, {
+      sharpenStrength: 100,
+      smoothStrength: 50,
+    });
+    const smoothed = applyRasterDetail(rgba, 3, 1, {
+      sharpenStrength: 0,
+      smoothStrength: 50,
+    });
+    const expected = applyRasterDetail(smoothed, 3, 1, {
+      sharpenStrength: 100,
+      smoothStrength: 0,
+    });
+
+    expect(combined).toEqual(expected);
+  });
+
   test("Given a Full-HD source, when prepared at 2160p, then UHD dimensions preserve its aspect ratio", () => {
     const options = createRasterPreprocessingOptions({
-      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Color,
       monochromeThreshold: 128,
       resize: { heightPixels: 2160, kind: RasterResizeKind.TargetHeight },
+      sharpenStrength: 0,
+      smoothStrength: 0,
     });
 
     expect(preprocessedDimensions(1920, 1080, options)).toEqual({
@@ -76,10 +101,11 @@ describe("raster preprocessing", () => {
       filterMode: RasterFilterMode.Grayscale,
     });
     const monochrome = applyRasterFilter(rgba, {
-      detailMode: RasterDetailMode.None,
       filterMode: RasterFilterMode.Monochrome,
       monochromeThreshold: 128,
       resize: { kind: RasterResizeKind.Original },
+      sharpenStrength: 0,
+      smoothStrength: 0,
     });
 
     expect([...grayscale]).toEqual([127, 127, 127, 128]);
@@ -90,18 +116,29 @@ describe("raster preprocessing", () => {
   test("Given an unsupported height or threshold, when options are created, then validation rejects them", () => {
     expect(() =>
       createRasterPreprocessingOptions({
-        detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Color,
         monochromeThreshold: 128,
         resize: { heightPixels: 1081, kind: RasterResizeKind.TargetHeight },
+        sharpenStrength: 0,
+        smoothStrength: 0,
       }),
     ).toThrow();
     expect(() =>
       createRasterPreprocessingOptions({
-        detailMode: RasterDetailMode.None,
         filterMode: RasterFilterMode.Monochrome,
         monochromeThreshold: 256,
         resize: { kind: RasterResizeKind.Original },
+        sharpenStrength: 0,
+        smoothStrength: 0,
+      }),
+    ).toThrow();
+    expect(() =>
+      createRasterPreprocessingOptions({
+        filterMode: RasterFilterMode.Color,
+        monochromeThreshold: 128,
+        resize: { kind: RasterResizeKind.Original },
+        sharpenStrength: 101,
+        smoothStrength: 0,
       }),
     ).toThrow();
   });

@@ -96,8 +96,8 @@ die ausgewählte Run-ID getrennt vom aktuellen Eingabeformular. Die Einträge bl
 gezielten Löschen oder zum Laden eines anderen Originals erhalten. `remove` gibt den entfernten Run
 zurück und bereinigt dessen Auswahlzustand.
 
-`createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe ohne
-Detailfilter, 576 Pixel Zielhöhe, 6 Bit Farbpräzision, 16 Pixel Speckle, 0 Stellen
+`createLogoDemoOptions` ist die typisierte Quelle des sichtbaren Jury-Profils: Farbe mit
+Glättungs- und Schärfungsstärke null, Original-Rastergröße, 6 Bit Farbpräzision, 16 Pixel Speckle, 0 Stellen
 Pfadpräzision, 100 Prozent SVG-Skalierung und ausschließlich Polygonerkennung. Nur der erfolgreiche
 gebündelte Logo-Ladevorgang wendet dieses Profil an; alle
 anderen Bildwege behalten die vom Nutzer gesetzten Optionen.
@@ -328,6 +328,8 @@ KI-Modellverwaltung und beide KI-Aktionen. Eine
 typisierte und getestete Capability Map ordnet jedes sichtbare Application Command genau einem
 UI- und einem WebMCP-Einstieg zu. Smart Select nimmt normierte Koordinaten von 0 bis 1 an und
 führt dieselben akkumulierten Maskenverfeinerungen wie die Pointer-Oberfläche aus.
+`configure_conversion` setzt Glättungs- und Schärfungsstärke unabhängig im Bereich 0 bis 100;
+Workspace- und Run-Antworten nennen die jeweilige exakte Bytegröße.
 Jedes Tool besitzt:
 
 - einen stabilen, aktionsorientierten Namen.

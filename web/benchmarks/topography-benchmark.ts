@@ -1,9 +1,8 @@
-import { RasterDetailMode, RasterFilterMode } from "../src/conversion/raster-preprocessing.ts";
+import { RasterFilterMode } from "../src/conversion/raster-preprocessing.ts";
 import { runBenchmark, type BenchmarkScenario } from "./benchmark-runner.ts";
 
 const baseline: BenchmarkScenario = Object.freeze({
   colorPrecision: 7,
-  detailMode: RasterDetailMode.None,
   filterMode: RasterFilterMode.Color,
   filterSpeckle: 8,
   id: "illustration-original",
@@ -12,6 +11,8 @@ const baseline: BenchmarkScenario = Object.freeze({
   rasterResize: "original",
   scalePercent: 100,
   shapeDetection: false,
+  sharpenStrength: 0,
+  smoothStrength: 0,
 });
 
 const scenarios = Object.freeze([
@@ -24,10 +25,10 @@ const scenarios = Object.freeze([
   }),
   variant("compact-50", {
     colorPrecision: 5,
-    detailMode: RasterDetailMode.Smooth,
     filterSpeckle: 16,
     pathPrecision: 0,
     rasterResize: "percent-50",
+    smoothStrength: 100,
   }),
   variant("contours-grayscale-50", {
     colorPrecision: 5,

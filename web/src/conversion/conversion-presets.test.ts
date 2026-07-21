@@ -38,7 +38,7 @@ describe("conversion presets", () => {
     );
     expect(readConversionPreset(ConversionPresetId.Photo).options).toMatchObject({
       colorPrecision: 8,
-      preprocessing: { detailMode: "smooth", resize: { kind: "original" } },
+      preprocessing: { resize: { kind: "original" }, smoothStrength: 100 },
     });
     expect(() => readConversionPreset("unknown")).toThrow("Unknown conversion preset.");
   });

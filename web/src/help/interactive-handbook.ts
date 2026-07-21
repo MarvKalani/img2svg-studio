@@ -97,11 +97,17 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
     "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im VTracer-Bereich wieder her.",
     "Ausgewogen",
   ),
-  rasterDetail: topic(
-    "Detailfilter",
-    "Glättet Rauschen oder schärft Kanten im Raster unmittelbar vor dem Tracing.",
-    "Glätten reduziert oft kleine Cluster; Schärfen kann schwache Kanten erhalten, aber zusätzliche Pfade erzeugen.",
-    "Aus",
+  rasterSharpenStrength: topic(
+    "Schärfen",
+    "Verstärkt Hauptkanten nach der optionalen Glättung mit einer dosierten Unscharfmaske.",
+    "Höhere Werte erhalten schwache Kanten, können aber zusätzliche Pfade und Kantenartefakte erzeugen.",
+    "0 %",
+  ),
+  rasterSmoothStrength: topic(
+    "Glätten",
+    "Mischt das Raster dosiert mit einem kleinen 3×3-Gaußfilter.",
+    "Höhere Werte reduzieren JPEG-Rauschen und kleine Cluster. Schärfen wird danach angewendet.",
+    "0 %",
   ),
   rasterFilter: topic(
     "Rasterfilter",

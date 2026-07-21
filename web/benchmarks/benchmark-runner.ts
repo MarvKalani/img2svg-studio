@@ -2,14 +2,12 @@ import { chromium, type Page } from "playwright";
 
 import {
   RasterFilterMode,
-  type RasterDetailMode as RasterDetailModeValue,
   type RasterFilterMode as RasterFilterModeValue,
 } from "../src/conversion/raster-preprocessing.ts";
 import { measureLogoQuality, type RgbaRaster } from "../src/optimization/logo-quality.ts";
 
 export interface BenchmarkScenario {
   readonly colorPrecision: number;
-  readonly detailMode: RasterDetailModeValue;
   readonly filterMode: RasterFilterModeValue;
   readonly filterSpeckle: number;
   readonly id: string;
@@ -18,6 +16,8 @@ export interface BenchmarkScenario {
   readonly rasterResize: string;
   readonly scalePercent: number;
   readonly shapeDetection: boolean;
+  readonly sharpenStrength: number;
+  readonly smoothStrength: number;
 }
 
 export interface BenchmarkPlan {
@@ -118,7 +118,8 @@ async function applyScenario(page: Page, scenario: BenchmarkScenario): Promise<v
   await colorPrecision.fill(String(scenario.colorPrecision === 8 ? 7 : 8));
   await page.getByLabel("Rastergröße vor Tracing").selectOption(scenario.rasterResize);
   await page.getByLabel("Rasterfilter", { exact: true }).selectOption(scenario.filterMode);
-  await page.getByLabel("Raster-Detailfilter").selectOption(scenario.detailMode);
+  await page.getByLabel("Glättungsstärke").fill(String(scenario.smoothStrength));
+  await page.getByLabel("Schärfungsstärke").fill(String(scenario.sharpenStrength));
   if (scenario.filterMode === RasterFilterMode.Monochrome) {
     await page
       .getByLabel("Schwarzweiß-Schwellwert", { exact: true })
