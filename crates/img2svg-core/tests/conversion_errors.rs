@@ -26,3 +26,23 @@ fn given_an_invalid_rgba_length_when_converted_then_the_error_reports_both_lengt
     );
     assert_eq!(error.to_string(), "RGBA byte length is 4; expected 8.");
 }
+
+#[test]
+fn given_all_preferred_keys_are_visible_when_converted_then_an_unused_key_is_found() {
+    let pixels = [
+        [255, 0, 255, 255],
+        [0, 255, 255, 255],
+        [255, 255, 0, 255],
+        [255, 0, 0, 255],
+        [0, 255, 0, 255],
+        [0, 0, 255, 255],
+        [255, 255, 255, 255],
+        [1, 1, 1, 255],
+        [0, 0, 0, 0],
+    ]
+    .concat();
+
+    let svg = convert_rgba(&pixels, 9, 1).expect("canvas RGBA should remain convertible");
+
+    assert!(svg.starts_with("<svg"));
+}

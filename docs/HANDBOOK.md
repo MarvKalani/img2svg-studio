@@ -58,6 +58,8 @@ Revision `260721.04` zeigt beim Tracing den nativen Clusterfortschritt und die Z
 verarbeiteten Farbflächen.
 Revision `260721.05` dosiert Glätten und Schärfen unabhängig und zeigt Raster- sowie SVG-Größen
 als echte Bytes, KiB oder MiB in Vorschau und Verlauf.
+Revision `260721.06` verarbeitet jedes im Canvas dekodierbare Raster weiter und sucht nötige
+Transparenzschlüssel deterministisch im vollständigen RGB-Farbraum.
 
 ### Sprache
 
@@ -127,7 +129,10 @@ Form- und Geometrietests erhalten und sind nicht der visuelle Jury-Einstieg.
 
 Unterstützt werden PNG, JPEG und WebP bis 25 MB. Nach erfolgreichem Laden zeigt die Oberfläche
 Dateiname, Format, echte Pixelmaße, eine Miniatur und die große Vorschau. Die Vorschau verwendet
-eine lokale `blob:`-URL; die Bilddaten werden nicht übertragen.
+eine lokale `blob:`-URL; die Bilddaten werden nicht übertragen. Jedes Bild, das der Browser in ein
+Canvas dekodieren kann, wird als RGBA verarbeitet. Vollständig deckende Bilder benötigen keinen
+Transparenzschlüssel; bei Bildern mit transparenten Pixeln wählt der Core deterministisch eine im
+sichtbaren Bild unbenutzte RGB-Farbe aus dem gesamten Farbraum.
 
 ## Installieren, teilen und mit img2svg öffnen
 

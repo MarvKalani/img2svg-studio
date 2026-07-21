@@ -120,10 +120,13 @@ Der kompatible Basiskontrakt lautet
 Engine-Grenze `convert_rgba_with_options_result` liefert `ConversionResult` mit SVG und
 typisierten Shape-Zählungen. Sie validiert positive
 Maße und die exakte RGBA-Länge, verwendet für vollständig transparente Pixel einen
-deterministisch gewählten unbenutzten RGB-Schlüssel und assembliert SVG- und Pfadattribute in
-stabiler Reihenfolge. `ConversionError::code()` liefert einen öffentlichen
-`ConversionErrorCode` für ungültige Maße, abweichende Pixellänge oder einen nicht verfügbaren
-Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße, die zehn
+deterministisch gewählten unbenutzten RGB-Schlüssel aus dem gesamten 24-Bit-Farbraum und
+assembliert SVG- und Pfadattribute in stabiler Reihenfolge. Falls ein synthetisches Bild tatsächlich
+alle RGB-Farben sichtbar verwendet, reserviert der Core eine Schlüsselfarbe durch eine minimale
+Änderung genau dieser sichtbaren Farbe, statt das Canvas-Bild abzulehnen. Der numerische Fehlercode
+für einen nicht verfügbaren Transparenzschlüssel bleibt ausschließlich zur ABI-Kompatibilität
+reserviert und wird von diesem Pfad nicht mehr ausgegeben. Die WASM-Grenze akzeptiert
+`Uint8Array`, zwei `u32`-Maße, die zehn
 VTracer-Werte als validierte Zahlen beziehungsweise Enum-Codes, die SVG-Skalierung und ein
 `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
 Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.

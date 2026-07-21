@@ -180,7 +180,7 @@ pub fn convert_rgba_with_options_and_progress(
         pixels: pixels.to_vec(),
         width,
     };
-    let (key_color, keying_action) = prepare_transparency(&mut image)?;
+    let (key_color, keying_action) = prepare_transparency(&mut image);
     let minimum_cluster_area = usize::from(options.filter_speckle()).pow(2);
     let has_visible_pixels = pixels.chunks_exact(4).any(|pixel| pixel[3] != 0);
     let mut clusters = run_clusters(
@@ -394,18 +394,24 @@ fn expected_rgba_length(width: usize, height: usize) -> Result<usize, Conversion
         .ok_or(ConversionError::InvalidDimensions)
 }
 
-fn prepare_transparency(image: &mut ColorImage) -> Result<(Color, KeyingAction), ConversionError> {
+fn prepare_transparency(image: &mut ColorImage) -> (Color, KeyingAction) {
     if !image.pixels.chunks_exact(4).any(|pixel| pixel[3] == 0) {
-        return Ok((Color::default(), KeyingAction::Keep));
+        return (Color::default(), KeyingAction::Keep);
     }
 
     // visioncortex compares RGB channels while clustering. Replacing fully transparent pixels
     // with an unused deterministic RGB key prevents them from merging with visible black.
-    let key_color = TRANSPARENT_KEY_CANDIDATES
-        .into_iter()
-        .map(|(red, green, blue)| Color::new(red, green, blue))
-        .find(|candidate| !rgb_exists(image, candidate))
-        .ok_or(ConversionError::TransparentKeyUnavailable)?;
+    let key_color = find_unused_transparency_key(image).unwrap_or_else(|| {
+        let reserved = Color::new(255, 0, 255);
+        for pixel in image.pixels.chunks_exact_mut(4) {
+            if pixel[3] != 0 && pixel[0..3] == [reserved.r, reserved.g, reserved.b] {
+                // A canvas can theoretically contain every RGB color. Nudging only the reserved
+                // visible color by one level keeps those pixels instead of rejecting the image.
+                pixel[2] = 254;
+            }
+        }
+        reserved
+    });
 
     for pixel in image.pixels.chunks_exact_mut(4) {
         if pixel[3] == 0 {
@@ -413,14 +419,52 @@ fn prepare_transparency(image: &mut ColorImage) -> Result<(Color, KeyingAction),
         }
     }
 
-    Ok((key_color, KeyingAction::Discard))
+    (key_color, KeyingAction::Discard)
 }
 
-fn rgb_exists(image: &ColorImage, color: &Color) -> bool {
-    image
-        .pixels
-        .chunks_exact(4)
-        .any(|pixel| pixel[0] == color.r && pixel[1] == color.g && pixel[2] == color.b)
+fn find_unused_transparency_key(image: &ColorImage) -> Option<Color> {
+    const RGB_COLOR_COUNT: usize = 1 << 24;
+    const BITS_PER_BYTE: usize = 8;
+
+    if let Some(preferred) = TRANSPARENT_KEY_CANDIDATES
+        .into_iter()
+        .map(|(red, green, blue)| Color::new(red, green, blue))
+        .find(|candidate| !rgb_exists_in_visible_pixels(image, candidate))
+    {
+        return Some(preferred);
+    }
+
+    // The fixed 2 MiB bitmap bounds memory independently of the image dimensions and is only
+    // allocated for the unusual case where every preferred key is visibly occupied.
+    let mut occupied_colors = vec![0_u8; RGB_COLOR_COUNT / BITS_PER_BYTE];
+    for pixel in image.pixels.chunks_exact(4).filter(|pixel| pixel[3] != 0) {
+        let index = rgb_index(pixel[0], pixel[1], pixel[2]);
+        occupied_colors[index / BITS_PER_BYTE] |= 1 << (index % BITS_PER_BYTE);
+    }
+
+    occupied_colors
+        .iter()
+        .enumerate()
+        .find(|(_, occupied)| **occupied != u8::MAX)
+        .and_then(|(byte_index, occupied)| {
+            (0..BITS_PER_BYTE)
+                .find(|bit_index| occupied & (1 << bit_index) == 0)
+                .map(|bit_index| color_from_rgb_index(byte_index * BITS_PER_BYTE + bit_index))
+        })
+}
+
+fn rgb_exists_in_visible_pixels(image: &ColorImage, color: &Color) -> bool {
+    image.pixels.chunks_exact(4).any(|pixel| {
+        pixel[3] != 0 && pixel[0] == color.r && pixel[1] == color.g && pixel[2] == color.b
+    })
+}
+
+const fn rgb_index(red: u8, green: u8, blue: u8) -> usize {
+    ((red as usize) << 16) | ((green as usize) << 8) | blue as usize
+}
+
+fn color_from_rgb_index(index: usize) -> Color {
+    Color::new((index >> 16) as u8, (index >> 8) as u8, index as u8)
 }
 
 fn svg_path(path_data: &str, color: Color, offset: PointF64, scale_percent: u16) -> String {
