@@ -53,6 +53,7 @@ das sichtbare Produkt.
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
 | Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |
+| TypeScript-Version oder Compilerleistung | `package.json`, alle `tsconfig.json`, `docs/TYPESCRIPT_7.md` | `typescript-platform.test.ts`, `npm run typecheck` |
 | Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vectorization-handbook.spec.ts` |
 | Rechtsklick-Aktionen und Einzelreset | `context-menu/context-menu-controller.ts`, `conversion-option-key.ts`, `conversion-options-controller.ts` | `context-menu.spec.ts`, Option-Key-Unit-Test |
 | Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts` |

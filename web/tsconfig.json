@@ -2,7 +2,8 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
-    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "lib": ["ES2024", "DOM"],
+    "libReplacement": false,
     "module": "ESNext",
     "moduleDetection": "force",
     "moduleResolution": "Bundler",
@@ -14,6 +15,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2024",
+    "types": ["node"],
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true
   },

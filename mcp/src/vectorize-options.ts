@@ -1,11 +1,11 @@
-export const VectorizeMode = Object.freeze({
+export const VectorizeMode: Readonly<{ Shapes: "shapes"; Trace: "trace" }> = Object.freeze({
   Shapes: "shapes",
   Trace: "trace",
 } as const);
 
 export type VectorizeMode = (typeof VectorizeMode)[keyof typeof VectorizeMode];
 
-export const DetailLevel = Object.freeze({
+export const DetailLevel: Readonly<{ High: "high"; Low: "low"; Medium: "medium" }> = Object.freeze({
   High: "high",
   Low: "low",
   Medium: "medium",

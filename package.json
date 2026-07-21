@@ -18,7 +18,8 @@
     "lint": "oxlint --deny-warnings --ignore-pattern 'web/src/wasm-pkg/**' integrations mcp/src mcp/*.ts scripts web/public/*.js web/src web/e2e web/benchmarks web/*.ts",
     "test": "vitest run",
     "test:all": "npm test && npm test --workspace=img2svg-studio-web && npm test --workspace=img2svg-studio-mcp",
-    "typecheck": "tsc -b tsconfig.json web/tsconfig.json mcp/tsconfig.json"
+    "typecheck": "tsc -b tsconfig.json web/tsconfig.json mcp/tsconfig.json",
+    "typecheck:watch": "tsc -b tsconfig.json web/tsconfig.json mcp/tsconfig.json --watch"
   },
   "devDependencies": {
     "@types/node": "26.1.1",

@@ -2,14 +2,21 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "erasableSyntaxOnly": true,
+    "isolatedDeclarations": true,
+    "libReplacement": false,
     "module": "ESNext",
+    "moduleDetection": "force",
     "moduleResolution": "Bundler",
+    "noUncheckedSideEffectImports": true,
     "noUncheckedIndexedAccess": true,
     "outDir": "dist",
     "rootDir": "src",
+    "skipLibCheck": true,
     "strict": true,
     "target": "ES2024",
-    "types": ["node"]
+    "types": ["node"],
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"]

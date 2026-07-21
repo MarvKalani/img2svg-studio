@@ -11,6 +11,13 @@ Das Repository wird als Rust-Workspace mit separater Web-Anwendung aufgebaut:
 
 Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-Details.
 
+TypeScript `7.0.2` läuft als stabiler nativer Compiler. Alle drei Projekte verwenden explizite
+ESM-, Typ- und Standardbibliotheksgrenzen; der MCP aktiviert zusätzlich `isolatedDeclarations`,
+damit öffentliche Deklarationen dateiweise erzeugt werden können. Die automatische
+TS-7-Parallelisierung bleibt aktiv, weil sie im lokalen M4-Benchmark schneller als feste Checker-
+oder Builderzahlen war. Gründe, Messwerte und Regeln für auffällig explizite Exporttypen stehen in
+[`TYPESCRIPT_7.md`](TYPESCRIPT_7.md).
+
 `i18n/localization.ts` kapselt die zweisprachige Präsentationsschicht. Eine kanonische deutsche
 Quellphrase besitzt genau eine englische Entsprechung; typisierte Regeln formatieren variable
 Zähler und Run-Zustände. Ein einzelner `MutationObserver` lokalisiert auch DOM-Ausgaben der

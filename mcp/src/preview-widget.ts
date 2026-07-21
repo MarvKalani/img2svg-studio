@@ -37,7 +37,7 @@ function countElements(svg: string, elementName: string): number {
   return [...svg.matchAll(new RegExp(`<${elementName}(?:\\s|>)`, "gu"))].length;
 }
 
-export const previewWidgetHtml = String.raw`<!doctype html>
+export const previewWidgetHtml: string = String.raw`<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />

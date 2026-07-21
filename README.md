@@ -131,7 +131,9 @@ Web Worker into a small WASM boundary and the Rust engine. The stateless MCP com
 WASM boundary from Node. AI model sessions stay behind a lifecycle registry that owns download
 verification, cancellation, inference barriers and disposal. See the
 [architecture overview](docs/ARCHITECTURE.md) for the stable boundaries and the
-[codemap](docs/CODEMAP.md) for concrete change entry points.
+[codemap](docs/CODEMAP.md) for concrete change entry points. The
+[TypeScript 7 decisions](docs/TYPESCRIPT_7.md) explain native-compiler settings, explicit MCP
+export annotations and measured parallelization.
 
 Core technology:
 

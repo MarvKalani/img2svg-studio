@@ -66,6 +66,8 @@ Revision `260721.08` ergänzt persistente Layoutmodi, echten Worker-Abbruch und 
 Hardwaremessung für die Start-Rastergröße.
 Revision `260721.09` verwendet in Oberfläche und Benutzeranleitung neutrale
 Vektorisierungsbegriffe, damit die Tracing-Engine austauschbar bleibt.
+Revision `260721.10` härtet den stabilen nativen TypeScript-7-Build, beschleunigt den vollständigen
+Typcheck und dokumentiert Compilergrenzen sowie Benchmarks für spätere Erweiterungen.
 
 ### Sprache
 
