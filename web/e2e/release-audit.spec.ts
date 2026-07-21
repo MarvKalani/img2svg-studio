@@ -79,6 +79,7 @@ test("Given local conversion and an explicit model action, when network traffic 
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
   expect(remoteRequests).toEqual([]);
 
+  await page.getByRole("button", { name: "Original", exact: true }).click();
   await page.getByRole("button", { name: "Hintergrund entfernen", exact: true }).click();
   await expect(page.locator("#background-removal-status")).toContainText(
     "Hintergrund lokal entfernt",

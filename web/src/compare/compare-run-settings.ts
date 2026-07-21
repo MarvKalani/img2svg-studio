@@ -1,10 +1,10 @@
-import type { ConversionRun } from "../history/history-store";
+import type { NewConversionRun } from "../history/history-store";
 import { formatImageVersion } from "../image/image-version";
 import { compareConversionSettings, type ConversionSettingRow } from "./diff-settings";
 
 export function compareRunSettings(
-  a: ConversionRun,
-  b: ConversionRun,
+  a: Readonly<NewConversionRun>,
+  b: Readonly<NewConversionRun>,
   onlyDifferences: boolean,
 ): readonly ConversionSettingRow[] {
   const inputDiffers = a.inputVersion.id !== b.inputVersion.id;

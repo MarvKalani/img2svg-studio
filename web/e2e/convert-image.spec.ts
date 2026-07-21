@@ -14,7 +14,7 @@ test("Given the loaded circle fixture, when its live preview is accepted, then a
 
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
-  const svgOutput = page.getByTestId("svg-output");
+  const svgOutput = page.locator("#compare-content-b");
   await expect(svgOutput.locator("svg")).toHaveAttribute("viewBox", "0 0 256 256");
   await expect(svgOutput.locator("path").first()).toBeVisible();
   await expect(page.getByRole("status", { name: "Anwendungsstatus" })).toContainText(

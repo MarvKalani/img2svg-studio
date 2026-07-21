@@ -2,7 +2,12 @@ import { parseSvgDocument } from "../conversion/svg-document";
 import type { ConversionOptions } from "../conversion/conversion-options";
 import type { CompareController } from "../compare/compare-controller";
 import type { CompareSlot } from "../compare/compare-selection";
-import { ComparisonSourceKind, originalSource, runSource } from "../compare/comparison-source";
+import {
+  ComparisonSourceKind,
+  draftSource,
+  originalSource,
+  runSource,
+} from "../compare/comparison-source";
 import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-store";
 import { formatImageVersion } from "../image/image-version";
 import type { LoadedImage } from "../image/image-store";
@@ -17,6 +22,7 @@ export interface HistoryController {
   runs(): readonly ConversionRun[];
   select(runId: number): ConversionRun | undefined;
   selected(): ConversionRun | undefined;
+  setDraft(input: NewConversionRun): void;
   setOriginal(image: LoadedImage): void;
 }
 
@@ -28,6 +34,7 @@ export function initializeHistory(
   const elements = readElements();
   let originalImage: LoadedImage | undefined;
   let originalSelected = false;
+  let previewDraft: NewConversionRun | undefined;
 
   elements.restoreButton.addEventListener("click", () => {
     const restoredOptions = restoreSelectedRunOptions(store, applyOptions);
@@ -138,6 +145,19 @@ export function initializeHistory(
             ),
           ]
         : []),
+      ...(previewDraft
+        ? [
+            draftItem(
+              previewDraft,
+              comparedRuns.a?.kind === ComparisonSourceKind.Draft,
+              comparedRuns.b?.kind === ComparisonSourceKind.Draft,
+              (slot) => {
+                compareController.assign(slot, draftSource(previewDraft!));
+                render();
+              },
+            ),
+          ]
+        : []),
       ...runs.map((run) =>
         runItem(
           run,
@@ -157,7 +177,8 @@ export function initializeHistory(
         ),
       ),
     );
-    elements.variantCount.textContent = `${String(runs.length)} ${runs.length === 1 ? "Variante" : "Varianten"}`;
+    const variantLabel = `${String(runs.length)} ${runs.length === 1 ? "Variante" : "Varianten"}`;
+    elements.variantCount.textContent = previewDraft ? `${variantLabel} · 1 Entwurf` : variantLabel;
     elements.restoreButton.hidden = runs.length === 0 || originalSelected;
   };
 
@@ -167,7 +188,9 @@ export function initializeHistory(
     clearComparison,
     record: (input) => {
       const run = store.add(input);
+      previewDraft = undefined;
       originalSelected = false;
+      compareController.assign("b", runSource(run));
       render();
       return run;
     },
@@ -175,6 +198,16 @@ export function initializeHistory(
     runs: store.runs,
     select,
     selected: store.selected,
+    setDraft: (input) => {
+      previewDraft = input;
+      originalSelected = false;
+      if (originalImage) {
+        compareController.clear();
+        compareController.assign("a", originalSource(originalImage));
+        compareController.assign("b", draftSource(input));
+      }
+      render();
+    },
     setOriginal: (image) => {
       const sourceChanged = originalImage?.version.id !== image.version.id;
       if (originalImage && sourceChanged) {
@@ -182,11 +215,47 @@ export function initializeHistory(
       }
       originalImage = image;
       if (sourceChanged) {
+        previewDraft = undefined;
         originalSelected = true;
       }
       render();
     },
   };
+}
+
+function draftItem(
+  draft: NewConversionRun,
+  comparedAsA: boolean,
+  comparedAsB: boolean,
+  compareDraft: (slot: CompareSlot) => void,
+): HTMLElement {
+  const item = document.createElement("article");
+  item.className = "history-item history-draft-item";
+  const card = document.createElement("div");
+  card.className = "history-card";
+  card.dataset.testid = "history-draft-card";
+
+  const thumbnail = document.createElement("span");
+  thumbnail.className = "history-thumbnail";
+  thumbnail.setAttribute("aria-hidden", "true");
+  thumbnail.append(parseSvgDocument(draft.svg));
+
+  const title = document.createElement("strong");
+  title.textContent = "Entwurf · ungespeichert";
+  const dimensions = document.createElement("span");
+  dimensions.textContent = `${String(draft.widthPixels)} × ${String(draft.heightPixels)} · ${formatImageVersion(draft.inputVersion)}`;
+  const metrics = document.createElement("small");
+  metrics.textContent = `${shapeMetrics(draft)} · ${String(draft.durationMilliseconds)} ms`;
+  card.append(thumbnail, title, dimensions, metrics);
+
+  const actions = document.createElement("div");
+  actions.className = "history-compare-actions";
+  actions.append(
+    draftCompareButton("a", comparedAsA, compareDraft),
+    draftCompareButton("b", comparedAsB, compareDraft),
+  );
+  item.append(card, actions);
+  return item;
 }
 
 function originalItem(
@@ -286,7 +355,7 @@ function deleteButton(run: ConversionRun, removeRun: () => void): HTMLButtonElem
   return button;
 }
 
-function shapeMetrics(run: ConversionRun): string {
+function shapeMetrics(run: Readonly<NewConversionRun>): string {
   const metrics = [`${String(run.pathCount)} ${run.pathCount === 1 ? "Pfad" : "Pfade"}`];
   if (run.circleCount > 0) {
     metrics.push(`${String(run.circleCount)} ${run.circleCount === 1 ? "Kreis" : "Kreise"}`);
@@ -339,6 +408,21 @@ function originalCompareButton(
   button.setAttribute("aria-pressed", String(assigned));
   button.dataset.compareOriginalSlot = slot;
   button.addEventListener("click", () => compareOriginal(slot));
+  return button;
+}
+
+function draftCompareButton(
+  slot: CompareSlot,
+  assigned: boolean,
+  compareDraft: (slot: CompareSlot) => void,
+): HTMLButtonElement {
+  const button = document.createElement("button");
+  const label = slot.toUpperCase();
+  button.type = "button";
+  button.textContent = label;
+  button.setAttribute("aria-label", `Entwurf als ${label} setzen`);
+  button.setAttribute("aria-pressed", String(assigned));
+  button.addEventListener("click", () => compareDraft(slot));
   return button;
 }
 

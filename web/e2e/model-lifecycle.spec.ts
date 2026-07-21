@@ -38,10 +38,15 @@ test("Given an offline MODNet load, when connectivity returns, then retry runs i
   await page.goto("/");
   await page.evaluate(async () => caches.delete("transformers-cache"));
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
+  await expect(page.getByRole("button", { name: "A/B Vergleich", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   await page.getByRole("button", { name: "KI-Manager" }).click();
   await page.route("https://huggingface.co/**", (route) => route.abort("internetdisconnected"));
 
   const card = page.locator("[data-model-id='modnet']");
+  await page.getByRole("button", { name: "Original", exact: true }).click();
   await page.getByRole("button", { name: "Hintergrund entfernen", exact: true }).click();
   await expect(card).toHaveAttribute("data-model-state", "error");
   await expect(card.getByRole("alert")).toContainText("Prüfe die Netzwerkverbindung");

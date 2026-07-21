@@ -259,7 +259,7 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 - `imageService`: Laden, Dekodieren, Transformation und Größenänderung.
 - `conversionService`: Rastervorbereitung, Worker und WASM-Lebenszyklus.
 - `settingsStore`: validierte Einstellungen.
-- `historyStore`: unveränderliche Runs und A/B-Auswahl.
+- `historyStore`: ausschließlich unveränderliche angenommene Runs.
 - `exportService`: bytegenauer SVG-Download.
 - `modelRegistry`: Zustandsautomat und deduplizierte Modell-Ladevorgänge.
 - `webMcpAdapter`: Tool-Registrierung und Mapping auf dieselben Services.
@@ -267,8 +267,9 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
 
-`historyController` rendert das Rasteroriginal vor allen Run-Karten der aktuellen Bild-Session und
-projiziert eine gewählte Quelle zurück in die Arbeitsfläche. Ein neues Original startet eine leere
+`historyController` rendert Rasteroriginal, einen optionalen ungespeicherten Entwurf und alle
+Run-Karten der aktuellen Bild-Session. Der Entwurf bleibt bewusst außerhalb des `historyStore` und
+wird bei der Übernahme durch den neuen Run ersetzt. Ein neues Original startet eine leere
 Run-History; KI-Versionen behalten dieselbe Originalquelle. Das Löschen eines ausgewählten Runs
 wählt das Original; das Löschen einer A/B-Quelle leert den Vergleich. Der Controller schreibt
 keine alten Optionen in das Formular. `restoreSelectedRunOptions` validiert den ausgewählten
@@ -277,7 +278,7 @@ explizite Pfad schreibt numerische
 Werte, globalen Formerkennungszustand und Typauswahl und rendert die abgeleiteten Zielmaße neu;
 Store, SVG und Bildzustand bleiben unverändert.
 
-`compareSelection` hält je eine typisierte Original- oder Run-Quelle für A und B. Die Zuweisung
+`compareSelection` hält je eine typisierte Original-, Entwurfs- oder Run-Quelle für A und B. Die Zuweisung
 derselben Quelle in den anderen Platz entfernt sie aus dem bisherigen Platz. `compareController`
 rendert erst bei zwei vollständigen Plätzen. Beide Quellen verwenden denselben proportionalen
 Canvas. Zwei feste Clip-Fenster zeigen A links und B rechts; der direkt ziehbare Trenner und der

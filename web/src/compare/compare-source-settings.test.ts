@@ -3,7 +3,7 @@ import { defaultConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import { ImageVersionKind } from "../image/image-version";
 import { compareSourceSettings } from "./compare-source-settings";
-import { originalSource, runSource } from "./comparison-source";
+import { draftSource, originalSource, runSource } from "./comparison-source";
 
 describe("original comparison settings", () => {
   test("Given the raster original and one run, when differences are requested, then source and all conversion parameters stay explicit", () => {
@@ -38,7 +38,36 @@ describe("original comparison settings", () => {
       label: "Farbpräzision",
     });
   });
+
+  test("Given the raster original and an unsaved draft, when compared, then the draft exposes the same conversion settings as a run", () => {
+    const conversion = run();
+    const { id: _id, ...draft } = conversion;
+    const rows = compareSourceSettings(originalSource(original()), draftSource(draft), true);
+
+    expect(rows[0]).toEqual({
+      a: "Original · V1",
+      b: "Entwurf · Original · V1",
+      key: "source",
+      label: "Quelle",
+    });
+    expect(rows).toHaveLength(22);
+  });
 });
+
+function original() {
+  return {
+    file: new File([], "circle.png", { type: "image/png" }),
+    metadata: {
+      fileName: "circle.png",
+      heightPixels: 256,
+      mimeType: "image/png",
+      previewUrl: "blob:circle",
+      sizeBytes: 0,
+      widthPixels: 256,
+    },
+    version: { id: 1, kind: ImageVersionKind.Original },
+  } as const;
+}
 
 function run(): ConversionRun {
   return {

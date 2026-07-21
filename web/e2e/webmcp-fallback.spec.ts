@@ -25,7 +25,7 @@ test("Given WebMCP is unavailable, when the studio starts, then the complete vis
   await page.getByLabel("Rasterbild auswählen").setInputFiles(circleFixturePath);
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
 
-  await expect(page.getByTestId("svg-output").locator("svg")).toBeVisible();
+  await expect(page.locator("#compare-content-b svg")).toBeVisible();
   await expect(page.locator('[data-run-id="1"]')).toBeVisible();
   expect(javascriptErrors).toEqual([]);
 });

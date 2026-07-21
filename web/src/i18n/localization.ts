@@ -182,6 +182,11 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "Zauberstab-Maske und Auswahlfläche": "Magic Wand mask and selection area",
   "Zauberstab verworfen; Bild unverändert.": "Magic Wand discarded; image unchanged.",
   "Zauberstab wird vorbereitet …": "Preparing Magic Wand …",
+  "Raster bearbeiten": "Edit raster",
+  "Direkte Pixelwerkzeuge für Original und Verarbeitet":
+    "Direct pixel tools for Original and Processed views",
+  Entwurf: "Draft",
+  "Entwurf · ungespeichert": "Draft · unsaved",
   "Zusammenhängende Farbe entfernen": "Remove contiguous color",
   "Zweite Variante": "Second variant",
   Zoomsteuerung: "Zoom controls",
@@ -218,8 +223,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "VTracer-Verlaufsschritt": "VTracer gradient step",
   "Zeigt die Erklärung des Elements unter der Maus.":
     "Shows the explanation for the element under the pointer.",
-  "Die Live-Vorschau selbst bleibt flüchtig und füllt den Verlauf nicht bei jeder Änderung.":
-    "The live preview stays temporary and does not fill History after every change.",
+  "Der sichtbare Entwurf wird ersetzt; erst die Übernahme erzeugt eine gespeicherte Variante.":
+    "The visible draft is replaced; only acceptance creates a saved variant.",
   "Speichert genau die aktuell sichtbare Vorschau als unveränderlichen Run im Verlauf.":
     "Saves exactly the currently visible preview as an immutable History run.",
   "Legt fest, wie viele Bits jedes RGB-Farbkanals für die Clusterbildung unterscheiden.":
@@ -297,8 +302,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "This value does not change the pixels VTracer analyzes. Raster size does that.",
   "Lädt ein lokales PNG-, JPEG- oder WebP-Bild oder das mitgelieferte Logo-Beispiel.":
     "Loads a local PNG, JPEG, or WebP image or the bundled logo example.",
-  "Das Bild bleibt im Browser; direkt nach dem Laden entsteht automatisch eine Live-Vorschau.":
-    "The image stays in the browser; a live preview is created automatically after loading.",
+  "Das Bild bleibt im Browser; die Live-Vorschau erscheint automatisch als B gegen Original A.":
+    "The image stays in the browser; the live preview automatically appears as B against original A.",
   "Wählt nach einem Klick nur den zusammenhängenden Bereich mit ähnlicher Farbe aus.":
     "After one click, selects only the contiguous region with a similar color.",
   "Die Empfindlichkeit erweitert die sichtbare Maske; entfernt wird sie erst nach ausdrücklicher Bestätigung.":
@@ -322,6 +327,10 @@ const englishPatterns: readonly Readonly<{
   pattern(/^Empfindlichkeit (\d+) %$/, (sensitivity) => `Sensitivity ${sensitivity}%`),
   pattern(/^(\d+) Tracing-Parameter$/, (count) => `${count} tracing parameters`),
   pattern(/^(\d+) Varianten?$/, (count) => `${count} ${count === "1" ? "variant" : "variants"}`),
+  pattern(
+    /^(\d+) (?:Entwurf|Entwürfe)$/,
+    (count) => `${count} ${count === "1" ? "draft" : "drafts"}`,
+  ),
   pattern(/^(\d+) Pfade?$/, (count) => `${count} ${count === "1" ? "path" : "paths"}`),
   pattern(/^(\d+) Kreise?$/, (count) => `${count} ${count === "1" ? "circle" : "circles"}`),
   pattern(
@@ -338,6 +347,7 @@ const englishPatterns: readonly Readonly<{
   pattern(/^(\d+) px Höhe(.*)$/, (height, suffix) => `${height} px height${suffix}`),
   pattern(/^A · Variante$/, () => "A · Variant"),
   pattern(/^B · Variante$/, () => "B · Variant"),
+  pattern(/^([AB]) · Entwurf$/, (slot) => `${slot} · Draft`),
   pattern(/^Bereit (.*)$/, (suffix) => `Ready ${suffix}`),
   pattern(/^Bereit$/, () => "Ready"),
   pattern(
@@ -365,6 +375,8 @@ const englishPatterns: readonly Readonly<{
   ),
   pattern(/^MODNet wird lokal vorbereitet(.*)$/, (suffix) => `Preparing MODNet locally${suffix}`),
   pattern(/^Original als ([AB]) setzen$/, (slot) => `Set original as ${slot}`),
+  pattern(/^Entwurf als ([AB]) setzen$/, (slot) => `Set draft as ${slot}`),
+  pattern(/^Entwurf · (.*)$/, (suffix) => `Draft · ${translateContent(suffix)}`),
   pattern(/^Run (\d+) als ([AB]) setzen$/, (runId, slot) => `Set run ${runId} as ${slot}`),
   pattern(/^Run (\d+) ausgewählt$/, (runId) => `Run ${runId} selected`),
   pattern(/^Run (\d+) gelöscht$/, (runId) => `Run ${runId} deleted`),

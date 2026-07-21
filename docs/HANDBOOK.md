@@ -50,6 +50,8 @@ Die vollständige VTracer-Steuerung und das interaktive Handbuch folgen mit `260
 Die fachliche Aufteilung von Engine-Optionen und Historien-Styles sowie die Codemap folgen mit
 `260720.04`.
 Der lokale Zauberstab mit sichtbarer Farbauswahl und Empfindlichkeit folgt mit `260720.05`.
+Revision `260721.02` zeigt die automatische Vorschau sofort als ungespeicherten A/B-Entwurf
+gegen das Original und trennt direkte Rasterwerkzeuge vom Tracing.
 
 ### Sprache
 
@@ -161,6 +163,12 @@ Filtern, Preset, Tracing-Werten, Skalierung oder Formerkennung aktualisiert dies
 einer kurzen Entprellung. Schnelle Reglerbewegungen erzeugen dadurch keinen Verlaufsmüll;
 veraltete Berechnungen dürfen ein neueres Ergebnis nicht überschreiben.
 
+Sobald die Vorschau fertig ist, öffnet sich der deckungsgleiche A/B-Vergleich automatisch:
+Das unveränderte Original steht auf A und die aktuelle, ungespeicherte SVG-Vorschau als
+„Entwurf“ auf B. Der Entwurf besitzt eine eigene History-Karte, zählt aber nicht als Variante.
+Jede Parameteränderung ersetzt denselben Entwurf. „Variante übernehmen“ ersetzt die Entwurfskarte
+durch einen unveränderlichen Run und lässt ihn auf B gegen das Original stehen.
+
 Der Browser skaliert und filtert die Rasterpixel gemäß „Raster vor Tracing“ und übergibt erst
 dieses RGBA-Ergebnis an einen Web Worker. Dort erzeugt der Rust-Core über die schmale WASM-Grenze
 ein SVG, während die Oberfläche bedienbar bleibt. „Variante übernehmen“ speichert erst das
@@ -197,15 +205,16 @@ Dieser Ablauf wird mit jedem vertikalen Slice ergänzt und erst dann als verfüg
 wenn er im Browser getestet wurde.
 
 Die Kopfzeile schaltet die gemeinsame Arbeitsfläche gezielt zwischen SVG, der aktuellen
-verarbeiteten Rasterversion, dem unveränderten Original und dem A/B-Vergleich um. Nach dem Laden
-öffnet sich „Verarbeitet“, nach einer Live-Vorschau „SVG“ und bei einer vollständigen A/B-Zuweisung
-automatisch der Vergleich.
+verarbeiteten Rasterversion, dem unveränderten Original und dem A/B-Vergleich um. Während der
+kurzen Berechnung ist „Verarbeitet“ sichtbar; die fertige Live-Vorschau öffnet automatisch den
+Vergleich mit Original A und Entwurf B.
 
 ## Verlauf und A/B-Vergleich
 
 Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
-und wie jeder Run als A oder B gewählt werden. Jede bewusste Übernahme erzeugt genau einen
-unveränderlichen Run; reine Vorschauänderungen bleiben flüchtig. Der Verlauf hält alle Runs von neu
+und wie jeder Run als A oder B gewählt werden. Die ungespeicherte Vorschau steht als „Entwurf“
+direkt dahinter. Jede bewusste Übernahme erzeugt genau einen unveränderlichen Run; weitere
+Vorschauänderungen ersetzen wieder nur die eine Entwurfskarte. Der Verlauf hält alle Runs von neu
 nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
 - die fortlaufende Run-ID.
@@ -407,7 +416,11 @@ genau einmal. Eine wiederholte Konvertierung erzeugt dasselbe SVG byteidentisch.
 
 ## Zauberstab
 
-„Zauberstab“ unter „Manuelle Auswahl“ benötigt weder KI-Modell noch GPU. Nach dem Start zeigt die
+„Zauberstab“ unter „Raster bearbeiten“ benötigt weder KI-Modell noch GPU. Der Bereich enthält auch
+Hintergrundentfernung und Smart Select. Diese direkten Pixelwerkzeuge sind nur in „Original“ und
+„Verarbeitet“ aktiv; in SVG und A/B sind sie sichtbar deaktiviert. So ist eindeutig, auf welches
+Raster eine Auswahl angewendet wird. Tracing-Parameter bleiben im A/B-Vergleich bedienbar, weil
+sie den Entwurf auf B unmittelbar aktualisieren. Nach dem Start zeigt die
 Arbeitsfläche das aktuelle Raster und legt eine deckungsgleiche Auswahlfläche darüber. Ein Klick
 markiert den zusammenhängenden Farbbereich türkis. Getrennte Flächen derselben Farbe bleiben
 unberührt.

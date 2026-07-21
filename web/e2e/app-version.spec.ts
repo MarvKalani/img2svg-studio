@@ -5,6 +5,6 @@ test("Given the Studio is loaded, when the footer is shown, then the dated relea
 }) => {
   await page.goto("/");
 
-  await expect(page.locator("#app-version")).toHaveText("260720.05");
-  await expect(page.locator("html")).toHaveAttribute("data-app-version", "260720.05");
+  await expect(page.locator("#app-version")).toHaveText("260721.02");
+  await expect(page.locator("html")).toHaveAttribute("data-app-version", "260721.02");
 });

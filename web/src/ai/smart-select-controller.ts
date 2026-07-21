@@ -16,6 +16,7 @@ import {
 import type { ModelRegistry, ModelRegistrySnapshot } from "./model-registry";
 import type { AiActionResult } from "./ai-action-result";
 import { SelectionTool, type SelectionActivity } from "../selection/selection-activity";
+import type { WorkspaceViewController } from "../workspace/workspace-view-controller";
 
 export interface SmartSelectController {
   applySelection(request: SmartSelectionRequest): Promise<AiActionResult>;
@@ -62,6 +63,7 @@ export function initializeSmartSelect(
   imageLoader: ImageLoaderController,
   registry: ModelRegistry,
   selectionActivity: SelectionActivity,
+  workspaceView: WorkspaceViewController,
 ): SmartSelectController {
   const elements = readElements();
   let active: ActiveSelection | undefined;
@@ -73,7 +75,7 @@ export function initializeSmartSelect(
 
   const updateAvailability = (): void => {
     elements.start.disabled =
-      imageStore.current() === undefined ||
+      workspaceView.rasterSource() === undefined ||
       registry.snapshot("slimsam").state.status !== "ready" ||
       starting ||
       applying ||
@@ -99,8 +101,7 @@ export function initializeSmartSelect(
     updateAvailability();
   };
 
-  const startSelection = async (): Promise<boolean> => {
-    const source = imageStore.current();
+  const startSelection = async (source = workspaceView.rasterSource()): Promise<boolean> => {
     if (!source || starting || active || !selectionActivity.acquire(SelectionTool.SmartSelect)) {
       return false;
     }
@@ -119,7 +120,7 @@ export function initializeSmartSelect(
         }
         return model.createSelection(input);
       });
-      if (imageStore.current() !== source) {
+      if (imageStore.original() !== source && imageStore.current() !== source) {
         await session.dispose();
         return false;
       }
@@ -153,6 +154,8 @@ export function initializeSmartSelect(
       updateAvailability();
     }
   };
+
+  workspaceView.subscribe(updateAvailability);
 
   const predict = async (event: PointerEvent): Promise<void> => {
     const selection = currentSelection();
@@ -243,7 +246,7 @@ export function initializeSmartSelect(
     if (active || predicting || applying || starting) {
       return { message: "Smart Select ist bereits aktiv.", ok: false };
     }
-    if (!(await startSelection())) {
+    if (!(await startSelection(imageStore.current()))) {
       return {
         message: elements.status.textContent || "Smart Select konnte nicht starten.",
         ok: false,

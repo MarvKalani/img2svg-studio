@@ -125,6 +125,11 @@
   background: #142f3e;
 }
 
+.history-draft-item .history-card {
+  border-style: dashed;
+  border-color: #b796f4;
+}
+
 .history-card span,
 .history-card small {
   color: #8fa3b0;

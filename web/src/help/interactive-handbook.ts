@@ -9,7 +9,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   accept: topic(
     "Variante übernehmen",
     "Speichert genau die aktuell sichtbare Vorschau als unveränderlichen Run im Verlauf.",
-    "Die Live-Vorschau selbst bleibt flüchtig und füllt den Verlauf nicht bei jeder Änderung.",
+    "Der sichtbare Entwurf wird ersetzt; erst die Übernahme erzeugt eine gespeicherte Variante.",
   ),
   colorPrecision: topic(
     "Farbpräzision",
@@ -120,7 +120,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   source: topic(
     "Eingabebild",
     "Lädt ein lokales PNG-, JPEG- oder WebP-Bild oder das mitgelieferte Logo-Beispiel.",
-    "Das Bild bleibt im Browser; direkt nach dem Laden entsteht automatisch eine Live-Vorschau.",
+    "Das Bild bleibt im Browser; die Live-Vorschau erscheint automatisch als B gegen Original A.",
   ),
   spliceThreshold: topic(
     "Verbindungswinkel",

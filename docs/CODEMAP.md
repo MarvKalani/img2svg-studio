@@ -38,7 +38,7 @@ das sichtbare Produkt.
 | Logo- oder Topografie-Benchmark | `web/benchmarks/benchmark-runner.ts`, jeweilige Benchmark-Konfiguration | produktiver Chrome-Lauf und Ergebnisdokument unter `docs/release/` |
 | Raster vor dem Tracing skalieren oder filtern | `web/src/conversion/raster-preprocessing.ts`, `read-raster-pixels.ts` | `raster-preprocessing.test.ts`, `preprocess-raster.spec.ts` |
 | VTracer-Parameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vtracer-handbook.spec.ts` |
-| Live-Vorschau oder Ergebnis annehmen | `conversion-controller.ts`, `conversion-service.ts` | `live-preview.spec.ts`, `convert-image.spec.ts` |
+| Live-Entwurf gegen Original oder Ergebnis annehmen | `conversion-controller.ts`, `history-controller.ts`, `comparison-source.ts` | `live-preview.spec.ts`, Compare-Unit-Tests |
 | Worker-/WASM-Vertrag | `conversion-worker-contract.ts`, `conversion-worker.ts`, `crates/img2svg-wasm/src/lib.rs` | Typecheck, Web-E2E, Rust-Tests |
 | Rust-Tracing oder SVG-Ausgabe | `crates/img2svg-core/src/lib.rs` | `default_conversion.rs`, `conversion_errors.rs` |
 | Engine-Optionen und Validierung | `crates/img2svg-core/src/conversion_options.rs` | `conversion_options.rs` in Core-Tests |
@@ -46,7 +46,7 @@ das sichtbare Produkt.
 | Historie und Wiederherstellung | `history-store.ts`, `history-controller.ts`, `restore-run.ts`, `history.css` | History-Unit-Tests, `history.spec.ts`, `restore-run.spec.ts` |
 | A/B-Auswahl und Parameter-Diff | `compare-selection.ts`, `compare-controller.ts`, `diff-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts` |
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
-| Arbeitsfläche zwischen Raster/SVG wechseln | `workspace-view-controller.ts`, `workspace-view.css` | Konvertierungs- und Vergleichs-E2E |
+| Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |
 | Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vtracer-handbook.spec.ts` |
 | Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts` |
@@ -78,11 +78,14 @@ image-loader
   -> conversion-worker
   -> img2svg-wasm
   -> img2svg-core
-  -> workspace-view-controller (sichtbare, noch nicht angenommene Vorschau)
+  -> history-controller (eine ungespeicherte Entwurfsquelle)
+  -> compare-selection (Original A, Entwurf B)
+  -> workspace-view-controller + viewport-controller
 ```
 
-Nur `conversion-controller.convert()` übergibt eine Vorschau an die Historie. Ein
-Sliderwechsel verändert daher sofort das Bild, erzeugt aber noch keinen Run.
+Der Entwurf ist sichtbar in der Historie, bleibt aber außerhalb des `history-store`. Nur
+`conversion-controller.convert()` ersetzt ihn durch einen unveränderlichen Run. Ein Sliderwechsel
+aktualisiert daher sofort B, erzeugt aber noch keine Variante.
 
 ### Angenommener Run zu A/B-Vergleich
 
@@ -90,7 +93,7 @@ Sliderwechsel verändert daher sofort das Bild, erzeugt aber noch keinen Run.
 conversion-controller
   -> history-controller.record
   -> history-store (unveränderlicher Run mit SVG, Metriken und Optionen)
-  -> compare-selection (Original oder Run für A/B)
+  -> compare-selection (Original A, angenommener Run B)
   -> compare-controller
   -> workspace-view-controller + viewport-controller
 ```

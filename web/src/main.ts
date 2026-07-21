@@ -80,12 +80,23 @@ const imageLoader = initializeImageLoader(
   () => optionsController.apply(createLogoDemoOptions()),
   () => optionsController.apply(createTopographyDemoOptions()),
 );
-backgroundRemoval = initializeBackgroundRemoval(imageStore, imageLoader, modelRegistry);
-magicWand = initializeMagicWand(imageStore, imageLoader, selectionActivity);
-smartSelect = initializeSmartSelect(imageStore, imageLoader, modelRegistry, selectionActivity);
+backgroundRemoval = initializeBackgroundRemoval(
+  imageStore,
+  imageLoader,
+  modelRegistry,
+  workspaceView,
+);
+magicWand = initializeMagicWand(imageLoader, selectionActivity, workspaceView);
+smartSelect = initializeSmartSelect(
+  imageStore,
+  imageLoader,
+  modelRegistry,
+  selectionActivity,
+  workspaceView,
+);
 conversionController = initializeConversion(imageStore, optionsController.current, {
   recordRun: historyController.record,
-  showPreview: workspaceView.showSvg,
+  showPreview: historyController.setDraft,
 });
 optionsController.subscribe(conversionController.requestPreview);
 void initializePwaIngress(imageLoader);

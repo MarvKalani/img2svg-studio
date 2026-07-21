@@ -38,11 +38,11 @@ test("Given image and SVG content, when the view tabs are used, then each reques
   );
 
   await page.getByRole("button", { name: "Logo-Demo laden" }).click();
-  await expect(page.getByRole("button", { name: "Verarbeitet", exact: true })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "A/B Vergleich", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
-  await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
+  await expect(page.locator("#compare-output")).toBeVisible();
 
   await page.getByRole("button", { name: "Original", exact: true }).click();
   await expect(page.getByRole("button", { name: "Original", exact: true })).toHaveAttribute(
@@ -52,6 +52,11 @@ test("Given image and SVG content, when the view tabs are used, then each reques
   await expect(page.getByTestId("workspace-raster-preview")).toBeVisible();
 
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
+  await expect(page.getByRole("button", { name: "A/B Vergleich", exact: true })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.getByRole("button", { name: "SVG", exact: true }).click();
   await expect(page.getByRole("button", { name: "SVG", exact: true })).toHaveAttribute(
     "aria-pressed",
     "true",

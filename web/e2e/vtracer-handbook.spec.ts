@@ -5,7 +5,7 @@ test("Given advanced tracing controls, when changed and reset, then live preview
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Logo-Demo laden" }).click();
-  await expect(page.getByTestId("svg-output")).toBeVisible();
+  await expect(page.locator("#compare-content-b svg")).toBeVisible();
 
   await expect(page.getByText("10 Tracing-Parameter")).toBeVisible();
   await page.getByText("Erweiterte Parameter · 7").click();

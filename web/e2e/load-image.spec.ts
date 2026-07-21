@@ -75,7 +75,7 @@ test("Given a fresh Studio, when presets are inspected and adjusted, then useful
   await page.goto("/");
 
   const preset = page.getByLabel("Preset");
-  await expect(preset.locator("option")).toHaveCount(6);
+  await expect(preset.locator("option")).toHaveCount(7);
   await expect(preset).toHaveValue("balanced");
   await expect(page.getByLabel("Rastergröße vor Tracing")).toHaveValue("original");
 

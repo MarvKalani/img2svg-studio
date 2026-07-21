@@ -5,6 +5,7 @@ import { encodeRasterPng } from "./encode-raster-png";
 import { isLoadedModnetModel } from "./modnet-adapter";
 import type { ModelRegistry } from "./model-registry";
 import type { AiActionResult } from "./ai-action-result";
+import type { WorkspaceViewController } from "../workspace/workspace-view-controller";
 
 export interface BackgroundRemovalController {
   imageLoaded(): void;
@@ -15,23 +16,26 @@ export function initializeBackgroundRemoval(
   imageStore: ImageStore,
   imageLoader: ImageLoaderController,
   registry: ModelRegistry,
+  workspaceView: WorkspaceViewController,
 ): BackgroundRemovalController {
   const button = requireElement("#remove-background", HTMLButtonElement);
   const status = requireElement("#background-removal-status", HTMLOutputElement);
   let processing = false;
 
-  const imageLoaded = (): void => {
-    if (!processing) {
-      button.disabled = false;
-    }
+  const updateAvailability = (): void => {
+    button.disabled = processing || workspaceView.rasterSource() === undefined;
   };
 
+  const imageLoaded = updateAvailability;
+
   button.addEventListener("click", () => {
-    void removeBackground();
+    const source = workspaceView.rasterSource();
+    if (source) {
+      void removeBackground(source);
+    }
   });
 
-  async function removeBackground(): Promise<AiActionResult> {
-    const source = imageStore.current();
+  async function removeBackground(source = imageStore.current()): Promise<AiActionResult> {
     if (!source) {
       return { message: "Es ist kein Eingabebild geladen.", ok: false };
     }
@@ -64,7 +68,7 @@ export function initializeBackgroundRemoval(
         }
         return model.removeBackground(await readRasterPixels(source.file));
       });
-      if (imageStore.current() !== source) {
+      if (imageStore.original() !== source && imageStore.current() !== source) {
         throw new Error("Das Eingabebild wurde während der Hintergrundentfernung gewechselt.");
       }
       const resultFile = await encodeRasterPng(result, resultFileName(source.file.name));
@@ -79,11 +83,12 @@ export function initializeBackgroundRemoval(
       return { message, ok: false };
     } finally {
       processing = false;
-      button.disabled = imageStore.current() === undefined;
+      updateAvailability();
       button.removeAttribute("aria-busy");
     }
   }
 
+  workspaceView.subscribe(updateAvailability);
   return Object.freeze({ imageLoaded, removeBackground });
 }
 

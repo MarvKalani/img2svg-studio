@@ -17,6 +17,7 @@ test("Given a flat background, when the Magic Wand sensitivity is previewed and 
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
   await expect(page.getByTestId("history-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Original", exact: true }).click();
 
   const magicWand = page.getByRole("button", { name: "Zauberstab", exact: true });
   await expect(magicWand).toBeEnabled();
@@ -49,6 +50,7 @@ test("Given a flat background, when the Magic Wand sensitivity is previewed and 
   await expect(page.locator("#magic-wand-status")).toContainText("lokal entfernt");
   await expect(overlay).toBeHidden();
   await expect(page.getByTestId("history-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Verarbeitet", exact: true }).click();
   const alpha = await previewAlpha(page);
   expect(alpha.background).toBe(0);
   expect(alpha.foreground).toBe(255);

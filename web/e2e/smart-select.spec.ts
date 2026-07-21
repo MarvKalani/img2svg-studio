@@ -24,6 +24,7 @@ test("Given loaded SlimSAM, when two positive and one negative point refine the 
   await page.getByLabel("Rasterbild auswählen").setInputFiles(portraitFixturePath);
   await page.getByRole("button", { name: "Variante übernehmen" }).click();
   await expect(page.getByTestId("history-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Original", exact: true }).click();
 
   await page.getByRole("button", { name: "KI-Manager" }).click();
   const modelCard = page.locator("[data-model-id='slimsam']");
@@ -68,6 +69,7 @@ test("Given loaded SlimSAM, when two positive and one negative point refine the 
   });
   await expect(page.locator("#smart-select-status")).toContainText("lokal angewendet");
   await expect(page.getByTestId("history-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Verarbeitet", exact: true }).click();
   const alpha = await previewAlpha(page);
   expect(alpha.background).toBeLessThan(64);
   expect(alpha.foreground).toBeGreaterThan(192);

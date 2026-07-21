@@ -34,6 +34,7 @@ test("Given SlimSAM and a local image, when the WebMCP agent applies normalized 
   await expect(page.getByText("portrait-smart-select.png", { exact: true })).toBeVisible();
   await expect(page.locator("#source-metadata")).toContainText("KI-Ergebnis · V2");
   await expect(page.getByTestId("sam-selection-overlay")).toBeHidden();
+  await page.getByRole("button", { name: "Verarbeitet", exact: true }).click();
   const alpha = await previewAlpha(page);
   expect(alpha.background).toBeLessThan(64);
   expect(alpha.foreground).toBeGreaterThan(192);

@@ -14,6 +14,7 @@ test("Given the Studio, when English is selected, then static and dynamic workfl
   await expect(page.getByRole("button", { name: "Accept variant" })).toBeDisabled();
 
   await page.getByRole("button", { name: "Load logo demo" }).click();
+  await expect(page.locator("#status-variant-count")).toHaveText("0 variants · 1 draft");
   await page.getByRole("button", { name: "Accept variant" }).click();
   await expect(page.getByRole("button", { name: "Delete run 1" })).toBeVisible();
   await expect(page.locator("#status-variant-count")).toHaveText("1 variant");

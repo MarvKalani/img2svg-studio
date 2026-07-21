@@ -100,10 +100,11 @@ darf keine Kontur doppelt ausgeben.
 - Laufzeit, Dateigröße und Pfad-/Formanzahlen.
 - Transparenzstatus und nicht fatale Warnungen.
 
-Bild- und Parameteränderungen erzeugen nach kurzer Entprellung automatisch eine flüchtige
-SVG-Vorschau. Nur „Variante übernehmen“ erzeugt daraus einen unveränderlichen Run mit stabiler ID
-und Zeitstempel. Die Session-History hält das unveränderliche Rasteroriginal und alle übernommenen
-Runs des aktuellen Bildes im Arbeitsspeicher. Einzelne Runs können gezielt gelöscht werden.
+Bild- und Parameteränderungen erzeugen nach kurzer Entprellung automatisch genau einen
+ungespeicherten SVG-Entwurf. Die Session-History zeigt Original, Entwurf und alle übernommenen
+Runs; nur die Runs liegen im `historyStore` und zählen als Varianten. Der Entwurf steht sofort auf
+B gegen Original A. „Variante übernehmen“ ersetzt ihn durch einen unveränderlichen Run mit stabiler
+ID. Einzelne Runs können gezielt gelöscht werden.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder
@@ -111,7 +112,7 @@ KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechse
 
 ## 6. A/B-Vergleich
 
-- Original und Run oder zwei Runs werden tastaturbedienbar als A und B markiert.
+- Original und Entwurf, Original und Run oder zwei Runs werden tastaturbedienbar als A und B markiert.
 - Ein Slider beschneidet beide Ergebnisse deckungsgleich von 0 bis 100 Prozent.
 - Unterschiedliche Maße werden in derselben Vergleichs-ViewBox normalisiert.
 - Zoom von 25 bis 800 Prozent und Pan verwenden für A und B denselben Viewport-Zustand; Mausrad,
@@ -121,6 +122,10 @@ KI-Eingabeversion; Run-Auswahl und Downloads bleiben von späteren Eingabewechse
 - Download A und Download B exportieren bytegenau den jeweils ausgewählten Run.
 
 ## 6.1 Manuelle Auswahl
+
+Zauberstab, Hintergrundentfernung und Smart Select bilden gemeinsam den Bereich „Raster
+bearbeiten“. Sie sind ausschließlich in den Ansichten „Original“ und „Verarbeitet“ aktiv.
+Tracing-Parameter bleiben im A/B-Vergleich aktiv und ersetzen den Entwurf auf B.
 
 Der Zauberstab arbeitet ohne Modell, GPU oder Netzwerk. Ein Klick wählt den zusammenhängenden
 Bereich aus, dessen RGBA-Kanäle innerhalb der gewählten Empfindlichkeit zur angeklickten Farbe

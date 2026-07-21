@@ -25,7 +25,7 @@ export interface ConversionController {
 
 export interface ConversionControllerActions {
   recordRun(run: NewConversionRun): ConversionRun;
-  showPreview(): void;
+  showPreview(run: NewConversionRun): void;
 }
 
 interface PreviewResult {
@@ -77,7 +77,7 @@ export function initializeConversion(
         }
         currentPreview = preview.run;
         showPreview(elements, preview);
-        actions.showPreview();
+        actions.showPreview(preview.run);
       })
       .catch((error: unknown) => {
         if (revision !== requestedRevision) {

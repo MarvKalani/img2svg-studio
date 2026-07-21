@@ -1,6 +1,6 @@
 import { parseSvgDocument } from "../conversion/svg-document";
 import { downloadSvgFile, svgFileName } from "../conversion/svg-download";
-import type { ConversionRun } from "../history/history-store";
+import type { NewConversionRun } from "../history/history-store";
 import type { ComparedRuns, CompareSelection, CompareSlot } from "./compare-selection";
 import { compareSourceSettings } from "./compare-source-settings";
 import {
@@ -139,7 +139,7 @@ function settingCell(value: string): HTMLElement {
   return cell;
 }
 
-function normalizedSvg(run: ConversionRun): SVGSVGElement {
+function normalizedSvg(run: Readonly<NewConversionRun>): SVGSVGElement {
   const source = parseSvgDocument(run.svg);
   if (!(source instanceof SVGSVGElement)) {
     throw new TypeError("Conversion output must have an SVG root element.");
@@ -190,7 +190,7 @@ function initializeDividerDrag(elements: CompareElements, render: () => void): v
 }
 
 function renderSource(source: ComparisonSource): SVGSVGElement | HTMLImageElement {
-  if (source.kind === ComparisonSourceKind.Run) {
+  if (source.kind !== ComparisonSourceKind.Original) {
     return normalizedSvg(source.run);
   }
   const image = document.createElement("img");

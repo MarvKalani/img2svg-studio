@@ -394,18 +394,17 @@
             <div id="shape-type-options" class="shape-type-options"></div>
           </section>
 
-          <section class="control-panel selection-panel" data-help-key="magicWand">
-            <h2>Manuelle Auswahl</h2>
-            <p>Zusammenhängende Farbe entfernen</p>
+          <section
+            class="control-panel selection-panel raster-edit-panel"
+            data-help-key="magicWand"
+          >
+            <h2>Raster bearbeiten</h2>
+            <p>Direkte Pixelwerkzeuge für Original und Verarbeitet</p>
             <button id="magic-wand" class="ai-tool-button" type="button" disabled>
               <span aria-hidden="true">✦</span>
               Zauberstab
             </button>
             <output id="magic-wand-status" class="ai-tool-status" aria-live="polite"></output>
-          </section>
-
-          <section class="control-panel ai-panel">
-            <h2>KI-Werkzeuge</h2>
             <button id="remove-background" class="ai-tool-button" type="button" disabled>
               <span aria-hidden="true">◌</span>
               Hintergrund entfernen
@@ -420,6 +419,10 @@
               Smart Select
             </button>
             <output id="smart-select-status" class="ai-tool-status" aria-live="polite"></output>
+          </section>
+
+          <section class="control-panel ai-panel">
+            <h2>KI-Modelle</h2>
             <button
               id="model-manager-toggle"
               type="button"

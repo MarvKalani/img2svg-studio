@@ -4,7 +4,7 @@ import {
   ComparisonSourceKind,
   comparisonSourceLabel,
   type ComparisonSource,
-  type RunComparisonSource,
+  type ConvertedComparisonSource,
 } from "./comparison-source";
 import { compareRunSettings } from "./compare-run-settings";
 
@@ -13,11 +13,11 @@ export function compareSourceSettings(
   b: ComparisonSource,
   onlyDifferences: boolean,
 ): readonly ConversionSettingRow[] {
-  if (a.kind === ComparisonSourceKind.Run && b.kind === ComparisonSourceKind.Run) {
+  if (isConvertedSource(a) && isConvertedSource(b)) {
     return compareRunSettings(a.run, b.run, onlyDifferences);
   }
 
-  const runSource = a.kind === ComparisonSourceKind.Run ? a : asRunSource(b);
+  const runSource = isConvertedSource(a) ? a : asConvertedSource(b);
   const conversionRows = compareConversionSettings(
     runSource.run.options,
     runSource.run.options,
@@ -33,18 +33,22 @@ export function compareSourceSettings(
     ...conversionRows.map((row) =>
       Object.freeze({
         ...row,
-        a: a.kind === ComparisonSourceKind.Original ? "—" : row.a,
-        b: b.kind === ComparisonSourceKind.Original ? "—" : row.b,
+        a: isConvertedSource(a) ? row.a : "—",
+        b: isConvertedSource(b) ? row.b : "—",
       }),
     ),
   ]);
 }
 
-function asRunSource(source: ComparisonSource): RunComparisonSource {
-  if (source.kind !== ComparisonSourceKind.Run) {
-    throw new Error("A comparison requires at least one conversion run.");
+function asConvertedSource(source: ComparisonSource): ConvertedComparisonSource {
+  if (!isConvertedSource(source)) {
+    throw new Error("A comparison requires at least one converted source.");
   }
   return source;
+}
+
+function isConvertedSource(source: ComparisonSource): source is ConvertedComparisonSource {
+  return source.kind === ComparisonSourceKind.Draft || source.kind === ComparisonSourceKind.Run;
 }
 
 function sourceDescription(source: ComparisonSource): string {

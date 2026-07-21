@@ -20,6 +20,7 @@ test("Given an applied AI mask, when original and derived inputs are converted a
   const run1 = page.locator('[data-run-id="1"]');
   await expect(run1).toContainText("Original · V1");
 
+  await page.getByRole("button", { name: "Original", exact: true }).click();
   await page.getByRole("button", { name: "Hintergrund entfernen", exact: true }).click();
   await expect(page.locator("#background-removal-status")).toContainText(
     "Hintergrund lokal entfernt",

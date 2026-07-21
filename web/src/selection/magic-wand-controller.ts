@@ -2,13 +2,14 @@ import "./magic-wand.css";
 import { encodeRasterPng } from "../ai/encode-raster-png";
 import { readRasterPixels, type RasterPixels } from "../conversion/read-raster-pixels";
 import type { ImageLoaderController } from "../image/image-loader";
-import type { ImageStore, LoadedImage } from "../image/image-store";
+import type { LoadedImage } from "../image/image-store";
 import {
   createMagicWandMask,
   removeMagicWandSelection,
   type MagicWandMask,
 } from "./magic-wand-selection";
 import { SelectionTool, type SelectionActivity } from "./selection-activity";
+import type { WorkspaceViewController } from "../workspace/workspace-view-controller";
 
 export interface MagicWandController {
   imageLoaded(): void;
@@ -37,9 +38,9 @@ interface MagicWandElements {
 const defaultSensitivityPercent = 15;
 
 export function initializeMagicWand(
-  imageStore: ImageStore,
   imageLoader: ImageLoaderController,
   selectionActivity: SelectionActivity,
+  workspaceView: WorkspaceViewController,
 ): MagicWandController {
   const elements = readElements();
   let active: ActiveMagicWand | undefined;
@@ -49,7 +50,7 @@ export function initializeMagicWand(
 
   const updateAvailability = (): void => {
     elements.start.disabled =
-      imageStore.current() === undefined ||
+      workspaceView.rasterSource() === undefined ||
       active !== undefined ||
       starting ||
       applying ||
@@ -80,7 +81,7 @@ export function initializeMagicWand(
   };
 
   const startSelection = async (): Promise<void> => {
-    const source = imageStore.current();
+    const source = workspaceView.rasterSource();
     if (
       !source ||
       starting ||
@@ -99,7 +100,7 @@ export function initializeMagicWand(
     elements.status.textContent = "Zauberstab wird vorbereitet …";
     try {
       const input = await readRasterPixels(source.file);
-      if (imageStore.current() !== source) {
+      if (workspaceView.rasterSource() !== source) {
         return;
       }
       active = { input, mask: undefined, seed: undefined, source };
@@ -121,6 +122,8 @@ export function initializeMagicWand(
       updateAvailability();
     }
   };
+
+  workspaceView.subscribe(updateAvailability);
 
   const refreshMask = (): void => {
     if (!active?.seed) {

@@ -10,21 +10,35 @@ export const WorkspaceViewMode = {
 export type WorkspaceViewMode = (typeof WorkspaceViewMode)[keyof typeof WorkspaceViewMode];
 
 export interface WorkspaceViewController {
+  current(): WorkspaceViewMode;
+  rasterEditingEnabled(): boolean;
+  rasterSource(): LoadedImage | undefined;
   showComparison(): void;
   showOriginal(): void;
   showProcessed(): void;
   showSvg(): void;
+  subscribe(listener: (mode: WorkspaceViewMode) => void): () => void;
+}
+
+export function isRasterEditingMode(mode: WorkspaceViewMode): boolean {
+  return mode === WorkspaceViewMode.Original || mode === WorkspaceViewMode.Processed;
 }
 
 export function initializeWorkspaceView(imageStore: ImageStore): WorkspaceViewController {
   const elements = readElements();
+  const listeners = new Set<(mode: WorkspaceViewMode) => void>();
+  let currentMode: WorkspaceViewMode = WorkspaceViewMode.Svg;
 
   const activate = (mode: WorkspaceViewMode): void => {
+    currentMode = mode;
     elements.stage.dataset.viewMode = mode;
     for (const [buttonMode, button] of elements.buttons) {
       const active = buttonMode === mode;
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", String(active));
+    }
+    for (const listener of listeners) {
+      listener(mode);
     }
   };
 
@@ -42,6 +56,14 @@ export function initializeWorkspaceView(imageStore: ImageStore): WorkspaceViewCo
   };
 
   const controller: WorkspaceViewController = Object.freeze({
+    current: () => currentMode,
+    rasterEditingEnabled: () => isRasterEditingMode(currentMode),
+    rasterSource: () =>
+      currentMode === WorkspaceViewMode.Original
+        ? imageStore.original()
+        : currentMode === WorkspaceViewMode.Processed
+          ? imageStore.current()
+          : undefined,
     showComparison: () => {
       activate(WorkspaceViewMode.Comparison);
       elements.label.textContent = "A · Variante";
@@ -56,6 +78,11 @@ export function initializeWorkspaceView(imageStore: ImageStore): WorkspaceViewCo
       elements.output.hidden = !hasSvg;
       elements.placeholder.hidden = hasSvg;
       elements.download.hidden = !hasSvg;
+    },
+    subscribe: (listener: (mode: WorkspaceViewMode) => void) => {
+      listeners.add(listener);
+      listener(currentMode);
+      return () => listeners.delete(listener);
     },
   });
 
