@@ -26,9 +26,29 @@ test("Given an image is loaded, when the live preview completes, then original A
   await expect(acceptButton).toBeEnabled();
   await expect(acceptButton).toContainText("Variante übernehmen");
 
+  const layerA = page.getByTestId("compare-content-a");
+  const layerB = page.getByTestId("compare-content-b");
+  const canvas = page.getByTestId("compare-canvas");
+  await page.getByRole("button", { name: "Vergrößern" }).click();
+  const bounds = await canvas.boundingBox();
+  expect(bounds).not.toBeNull();
+  if (bounds) {
+    await page.mouse.move(bounds.x + bounds.width / 3, bounds.y + bounds.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(bounds.x + bounds.width / 3 + 24, bounds.y + bounds.height / 2 + 16);
+    await page.mouse.up();
+  }
+  await page.locator("#compare-slider").fill("37");
+  const preservedTransform = await layerA.getAttribute("style");
+  expect(preservedTransform).toContain("translate(24px, 16px) scale(1.25)");
+
   await page.getByLabel("Zielgröße").selectOption("50");
 
   await expect(preview).toHaveAttribute("viewBox", "0 0 128 128");
+  await expect(layerA).toHaveAttribute("style", preservedTransform ?? "");
+  await expect(layerB).toHaveAttribute("style", preservedTransform ?? "");
+  await expect(page.locator("#compare-slider")).toHaveValue("37");
+  await expect(page.getByTestId("zoom-value")).toHaveText("125%");
   await expect(page.locator("#compare-label-b")).toHaveText("B · Entwurf");
   await expect(page.getByTestId("history-draft-card")).toContainText("128 × 128");
   await expect(page.getByTestId("history-card")).toHaveCount(0);
@@ -43,6 +63,13 @@ test("Given an image is loaded, when the live preview completes, then original A
   await expect(page.locator("#compare-label-b")).toHaveText("B · Run 1");
   await expect(acceptButton).toBeDisabled();
   await expect(acceptButton).toContainText("Im Verlauf gespeichert");
+
+  await page.getByRole("button", { name: "Vergrößern" }).click();
+  await page.locator("#compare-slider").fill("42");
+  await page.getByLabel("Zielgröße").selectOption("75");
+  await expect(page.locator("#compare-label-b")).toHaveText("B · Entwurf");
+  await expect(page.getByTestId("zoom-value")).toHaveText("125%");
+  await expect(page.locator("#compare-slider")).toHaveValue("42");
 
   await page.locator("#view-original").click();
   await expect(page.getByRole("button", { name: "Zauberstab" })).toBeEnabled();

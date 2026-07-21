@@ -51,6 +51,7 @@ das sichtbare Produkt.
 | Laufende Konvertierung abbrechen | `conversion-service.ts`, `conversion-controller.ts` | Worker-Lifecycle-Test, `cancel-conversion.spec.ts` |
 | A/B-Auswahl und Parameter-Diff | `comparison-source.ts`, `compare-selection.ts`, `compare-controller.ts`, `compare-source-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts`, `magic-wand.spec.ts` |
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
+| Icon-Zielvorschau oder Arbeitsflächenfarbe | `workspace/workspace-preview-settings.ts`, `workspace-preview-settings.css` | `workspace-preview-settings.spec.ts` |
 | Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |
 | TypeScript-Version oder Compilerleistung | `package.json`, alle `tsconfig.json`, `docs/TYPESCRIPT_7.md` | `typescript-platform.test.ts`, `npm run typecheck` |

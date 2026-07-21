@@ -30,6 +30,7 @@ export function initializeViewport(): ViewportController {
     elements.contentA.style.transform = transform;
     elements.contentB.style.transform = transform;
     elements.value.textContent = `${String(Math.round(viewport.scale * 100))}%`;
+    elements.value.setAttribute("aria-valuenow", String(Math.round(viewport.scale * 100)));
   };
 
   const canvasCenter = (): ViewportPoint => ({
@@ -56,6 +57,19 @@ export function initializeViewport(): ViewportController {
 
   elements.zoomIn.addEventListener("click", () => zoom(viewport.scale * zoomStep));
   elements.zoomOut.addEventListener("click", () => zoom(viewport.scale / zoomStep));
+  elements.value.addEventListener("click", selectZoomValue);
+  elements.value.addEventListener("blur", () => commitZoomValue(elements.value, zoom, render));
+  elements.value.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitZoomValue(elements.value, zoom, render);
+      elements.value.blur();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      render();
+      elements.value.blur();
+    }
+  });
   elements.canvas.addEventListener(
     "wheel",
     (event) => {
@@ -138,9 +152,35 @@ export function initializeViewport(): ViewportController {
     setEnabled: (enabled: boolean) => {
       elements.zoomIn.disabled = !enabled;
       elements.zoomOut.disabled = !enabled;
+      elements.value.contentEditable = String(enabled);
+      elements.value.setAttribute("aria-disabled", String(!enabled));
       elements.canvas.tabIndex = enabled ? 0 : -1;
     },
   });
+}
+
+function commitZoomValue(
+  element: HTMLElement,
+  zoom: (requestedScale: number) => void,
+  restore: () => void,
+): void {
+  const percent = Number.parseFloat(element.textContent?.replace("%", "") ?? "");
+  if (!Number.isFinite(percent)) {
+    restore();
+    return;
+  }
+  zoom(percent / 100);
+}
+
+function selectZoomValue(): void {
+  const selection = window.getSelection();
+  if (!selection || !(document.activeElement instanceof HTMLElement)) {
+    return;
+  }
+  const range = document.createRange();
+  range.selectNodeContents(document.activeElement);
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 function keyboardPan(key: string): ViewportPoint | undefined {

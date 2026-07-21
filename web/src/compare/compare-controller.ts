@@ -5,6 +5,7 @@ import type { ComparedRuns, CompareSelection, CompareSlot } from "./compare-sele
 import { compareSourceSettings } from "./compare-source-settings";
 import {
   ComparisonSourceKind,
+  comparisonSourceKey,
   comparisonSourceLabel,
   type ComparisonSource,
 } from "./comparison-source";
@@ -15,6 +16,8 @@ export interface CompareController {
   clear(): void;
   current(): ComparedRuns;
   download(slot: CompareSlot): boolean;
+  replacePreservingViewport(slot: CompareSlot, source: ComparisonSource): void;
+  resetViewport(): void;
 }
 
 export function initializeCompare(
@@ -23,6 +26,7 @@ export function initializeCompare(
 ): CompareController {
   const elements = readElements();
   const viewport = initializeViewport();
+  let renderedPairKey: string | undefined;
 
   const renderSplit = (): void => {
     const aPercent = elements.slider.valueAsNumber;
@@ -54,14 +58,16 @@ export function initializeCompare(
     elements.settingsEmpty.hidden = rows.length > 0;
   };
 
-  const render = (): void => {
+  const render = (preserveViewport = false): void => {
     const comparedRuns = selection.current();
     const complete = comparedRuns.a !== undefined && comparedRuns.b !== undefined;
+    const pairKey = comparisonPairKey(comparedRuns);
     elements.output.hidden = !complete;
     elements.stage.classList.toggle("compare-active", complete);
     viewport.setEnabled(complete);
     renderSettings();
     if (!complete) {
+      renderedPairKey = undefined;
       return;
     }
 
@@ -71,7 +77,10 @@ export function initializeCompare(
     elements.contentB.replaceChildren(renderSource(comparedRuns.b));
     renderDownload(elements.downloadA, comparedRuns.a, "A");
     renderDownload(elements.downloadB, comparedRuns.b, "B");
-    viewport.reset();
+    if (!preserveViewport && pairKey !== renderedPairKey) {
+      viewport.reset();
+    }
+    renderedPairKey = pairKey;
     renderSplit();
   };
 
@@ -97,7 +106,20 @@ export function initializeCompare(
     },
     current: selection.current,
     download,
+    replacePreservingViewport: (slot, source) => {
+      selection.assign(slot, source);
+      render(true);
+      showComparison();
+    },
+    resetViewport: viewport.reset,
   };
+}
+
+function comparisonPairKey(comparedRuns: ComparedRuns): string | undefined {
+  if (!comparedRuns.a || !comparedRuns.b) {
+    return undefined;
+  }
+  return `${comparisonSourceKey(comparedRuns.a)}|${comparisonSourceKey(comparedRuns.b)}`;
 }
 
 function downloadComparedSource(source: ComparisonSource | undefined, slot: CompareSlot): boolean {

@@ -90,7 +90,18 @@
 
         <div class="zoom-controls" aria-label="Zoomsteuerung">
           <button id="zoom-out" type="button" aria-label="Verkleinern" disabled>−</button>
-          <span id="zoom-value" data-testid="zoom-value">100%</span>
+          <span
+            id="zoom-value"
+            data-testid="zoom-value"
+            role="spinbutton"
+            aria-label="Zoom in Prozent"
+            aria-valuemin="25"
+            aria-valuemax="800"
+            aria-valuenow="100"
+            aria-disabled="true"
+            inputmode="decimal"
+            >100%</span
+          >
           <button id="zoom-in" type="button" aria-label="Vergrößern" disabled>+</button>
         </div>
       </header>
@@ -761,6 +772,49 @@
                     <dd id="workspace-source">—</dd>
                   </div>
                 </dl>
+              </details>
+              <details id="icon-preview" class="icon-preview">
+                <summary>
+                  <span>Icon-Vorschau</span> · <output id="icon-preview-size">128 px</output>
+                </summary>
+                <div class="icon-preview-popover">
+                  <div class="icon-preview-controls">
+                    <label>
+                      <span>Vorschaugröße</span>
+                      <select id="icon-preview-size-select" aria-label="Vorschaugröße">
+                        <option value="64">64 px</option>
+                        <option value="128" selected>128 px</option>
+                        <option value="256">256 px</option>
+                        <option value="512">512 px</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>Arbeitsflächenfarbe</span>
+                      <select id="workspace-background-mode" aria-label="Arbeitsflächenfarbe">
+                        <option value="white">Weiß</option>
+                        <option value="black">Schwarz</option>
+                        <option value="custom">Eigene Farbe</option>
+                      </select>
+                    </label>
+                    <label id="workspace-custom-background-field" hidden>
+                      <span>Eigene Arbeitsflächenfarbe</span>
+                      <input
+                        id="workspace-custom-background"
+                        type="color"
+                        value="#eef2f3"
+                        aria-label="Eigene Arbeitsflächenfarbe"
+                      />
+                    </label>
+                  </div>
+                  <div
+                    id="icon-preview-frame"
+                    class="icon-preview-frame"
+                    data-testid="icon-preview-frame"
+                  >
+                    <div id="icon-preview-output" class="icon-preview-output"></div>
+                    <span id="icon-preview-empty">SVG wird nach der Konvertierung angezeigt.</span>
+                  </div>
+                </div>
               </details>
             </div>
           </section>

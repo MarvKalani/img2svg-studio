@@ -41,9 +41,11 @@ export function initializeContextMenu(dependencies: ContextMenuDependencies): vo
     }
     const target = event.target.closest<HTMLElement>("[data-option-key]");
     const optionKey = readConversionOptionKey(target?.dataset.optionKey);
-    const commands = optionKey
-      ? parameterCommands(dependencies, optionKey, target!)
-      : imageCommands(event.target, event.clientX, dependencies, elements);
+    const commands = event.target.closest("#zoom-value")
+      ? [command("Zoom auf 100 % zurücksetzen", true, dependencies.compare.resetViewport)]
+      : optionKey
+        ? parameterCommands(dependencies, optionKey, target!)
+        : imageCommands(event.target, event.clientX, dependencies, elements);
     if (commands.length === 0) {
       return;
     }

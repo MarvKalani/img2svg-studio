@@ -6,6 +6,7 @@ import "./compare-split.css";
 import "./workspace-view.css";
 import "./context-menu/context-menu.css";
 import "./layout/layout-preferences.css";
+import "./workspace/workspace-preview-settings.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { detectBrowserAiCapabilities, showSupportedAiTools } from "./ai/browser-ai-capabilities";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
@@ -32,6 +33,7 @@ import { initializeInteractiveHandbook } from "./help/interactive-handbook";
 import { initializeLocalization } from "./i18n/localization";
 import { initializeWorkspaceView } from "./workspace/workspace-view-controller";
 import { initializeWorkspaceMetadata } from "./workspace/workspace-metadata";
+import { initializeWorkspacePreviewSettings } from "./workspace/workspace-preview-settings";
 import {
   initializeWebMcp,
   WebMcpToolName,
@@ -63,6 +65,7 @@ const availableModelIds = new Set<"modnet" | "slimsam">([
 showSupportedAiTools(aiCapabilities);
 const workspaceView = initializeWorkspaceView(imageStore);
 const workspaceMetadata = initializeWorkspaceMetadata();
+initializeWorkspacePreviewSettings();
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const selectionActivity = createSelectionActivity();
 const optionsController = initializeConversionOptions(hardwareRasterResize(hardwareProfile));

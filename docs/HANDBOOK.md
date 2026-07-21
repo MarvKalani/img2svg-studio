@@ -74,6 +74,8 @@ Revision `260721.12` verhindert, dass ein vorübergehend fehlendes Worker-Asset 
 zwischengespeichert wird, und prüft dessen Inhaltstyp vor jeder Veröffentlichung.
 Revision `260721.13` führt die aktuelle verarbeitete Rasterversion als eigene History- und
 A/B-Quelle neben Original, SVG-Entwurf und Runs.
+Revision `260721.14` hält den Prüfausschnitt bei Entwurfsänderungen stabil und ergänzt exakte
+Zoomeingabe, kleine Icon-Zielvorschauen sowie eine persistente Arbeitsflächenfarbe.
 
 ### Sprache
 
@@ -218,6 +220,12 @@ durch einen unveränderlichen Run und lässt ihn auf B gegen das Original stehen
 Unter der Arbeitsfläche zeigt „SVG“ beziehungsweise „Raster“ die aktuelle Dateigröße unmittelbar.
 Aufklappen ergänzt Abmessungen, Pfad- und Formanzahl, Rechenzeit sowie die verwendete Quelle.
 
+„Icon-Vorschau“ zeigt dasselbe aktuelle SVG wahlweise in einer 64, 128, 256 oder 512 Pixel großen
+quadratischen Zielbox. Diese Größe verändert weder SVG noch Vektorisierungsparameter; sie dient der
+Beurteilung eines Logos in seiner tatsächlichen späteren Anzeigegröße. Im selben aufklappbaren
+Bereich gilt Weiß, Schwarz oder eine frei gewählte Farbe für Arbeitsfläche und Icon-Vorschau. Die
+Ansichtsfarbe wird lokal gespeichert und verändert keine Raster- oder SVG-Daten.
+
 Der Browser skaliert und filtert die Rasterpixel gemäß „Raster vor Tracing“ und übergibt erst
 dieses RGBA-Ergebnis an einen Web Worker. Dort erzeugt der Rust-Core über die schmale WASM-Grenze
 ein SVG, während die Oberfläche bedienbar bleibt. „Variante übernehmen“ speichert erst das
@@ -329,7 +337,11 @@ Die Zoomtasten verändern den gemeinsamen Ausschnitt von 25 bis 800 Prozent. Mau
 Trackpad zoomen um die Zeigerposition; Drag verschiebt den Ausschnitt. Auf Touch-Geräten steuern
 zwei Finger Zoom und Position als Pinch-Geste. Beide Ebenen erhalten immer exakt dieselbe
 Transformation. Pfeiltasten verschieben den fokussierten Vergleich tastaturbedienbar, ein
-Doppelklick setzt Zoom und Position auf 100 Prozent zurück.
+Doppelklick setzt Zoom und Position auf 100 Prozent zurück. Die Prozentanzeige in der Kopfzeile
+nimmt nach einem Klick auch einen exakten Wert per Eingabetaste an. Ihr Kontextmenü setzt Zoom und
+Position unmittelbar auf 100 Prozent zurück. Aktualisiert eine Parameteränderung nur den
+ungespeicherten Entwurf, bleiben Zoom, Position und Trenner erhalten; erst eine tatsächlich andere
+manuell gewählte A/B-Quellenkombination startet wieder zentriert bei 100 Prozent.
 
 Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie die Eingabewerte.
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen

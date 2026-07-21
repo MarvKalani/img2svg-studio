@@ -29,3 +29,15 @@
   background: #0873c4;
   box-shadow: 0 0.2rem 0.65rem rgb(0 0 0 / 25%);
 }
+
+.zoom-controls [contenteditable="true"] {
+  min-width: 4rem;
+  border-radius: 0.25rem;
+  cursor: text;
+  text-align: center;
+}
+
+.zoom-controls [contenteditable="true"]:focus {
+  outline: 2px solid #35d6f5;
+  outline-offset: 1px;
+}

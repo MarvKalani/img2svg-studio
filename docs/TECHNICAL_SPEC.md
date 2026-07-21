@@ -293,6 +293,7 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 - `contextMenuController`: DOM-Grenze für typisierte Quellen- und Parameterkommandos.
 - `layoutPreferences`: validierte, persistente Standard-/Dock-/Einklappmodi.
 - `hardwareProfile`: einmaliger kurzer Rasterbenchmark und persistente Startskalierung.
+- `workspacePreviewSettings`: rein lokale Zielgröße und Farbe für die Darstellung des aktuellen SVG.
 
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
@@ -324,6 +325,12 @@ Tastatur-Regler verändern dieselbe Prozentposition. `viewportController` transf
 Inhalte hinter den Clip-Fenstern und projiziert Skalierung und Pixelversatz identisch auf beide
 Layer. Tasten, Mausrad, Pointer-Drag, Zwei-Pointer-Pinch und Pfeiltasten verwenden denselben
 Zoom-/Pan-Kern; jede neue A/B-Kombination startet bei 100 Prozent und zentrierter Position.
+Der Entwurf besitzt dabei den stabilen Quellschlüssel `draft`: Eine neue Berechnung ersetzt dessen
+SVG-DOM, ohne Viewport oder Trenner anzutasten. Auch der parameterspezifische Wechsel von einem Run
+zum neuen Entwurf verwendet diesen expliziten Ersatzpfad; manuelle A/B-Zuweisungen setzen den
+Viewport zurück. `workspacePreviewSettings` beobachtet ausschließlich das bereits gerenderte SVG,
+klont es in eine gewählte Pixelbox und schreibt die validierte Ansichtsfarbe als CSS-Variable.
+Diese Ansicht besitzt keinen Rückkanal in Bild-, Optionen- oder History-Stores.
 
 `compareConversionSettings` projiziert beide Options-Snapshots über eine typisierte, stabile
 Schemafolge in formatierte Tabellenzeilen. Der standardmäßig aktive Differenzfilter vergleicht

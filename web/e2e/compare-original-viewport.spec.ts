@@ -38,6 +38,19 @@ test("Given an original and one SVG run, when compared and navigated, then zoom 
   await page.mouse.up();
 
   await expectSharedTransform(layerA, layerB, "translate(30px, 20px)");
+
+  const zoomValue = page.getByTestId("zoom-value");
+  await zoomValue.click();
+  await zoomValue.press(process.platform === "darwin" ? "Meta+A" : "Control+A");
+  await zoomValue.pressSequentially("175");
+  await zoomValue.press("Enter");
+  await expect(zoomValue).toHaveText("175%");
+  await expectSharedTransform(layerA, layerB, "scale(1.75)");
+
+  await zoomValue.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Zoom auf 100 % zurücksetzen" }).click();
+  await expect(zoomValue).toHaveText("100%");
+  await expectSharedTransform(layerA, layerB, "translate(0px, 0px) scale(1)");
 });
 
 async function expectSharedTransform(

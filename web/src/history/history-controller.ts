@@ -244,7 +244,15 @@ export function initializeHistory(
     setDraft: (input) => {
       previewDraft = input;
       selectedRaster = undefined;
-      if (originalImage) {
+      const comparedRuns = compareController.current();
+      if (comparedRuns.a?.kind === ComparisonSourceKind.Draft) {
+        compareController.replacePreservingViewport("a", draftSource(input));
+      } else if (comparedRuns.b?.kind === ComparisonSourceKind.Draft) {
+        compareController.replacePreservingViewport("b", draftSource(input));
+      } else if (comparedRuns.a && comparedRuns.b) {
+        const replacedSlot = comparedRuns.b.kind === ComparisonSourceKind.Original ? "a" : "b";
+        compareController.replacePreservingViewport(replacedSlot, draftSource(input));
+      } else if (originalImage) {
         compareController.clear();
         compareController.assign("a", originalSource(originalImage));
         compareController.assign("b", draftSource(input));
