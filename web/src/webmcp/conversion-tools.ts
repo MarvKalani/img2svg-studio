@@ -17,12 +17,16 @@ import {
 } from "../conversion/raster-preprocessing";
 import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
 import { utf8ByteLength } from "../format-byte-size";
+import type { SavedConversionPreset } from "../conversion/saved-presets";
 
 export interface ConversionToolServices {
   applyOptions(options: ConversionOptions): void;
   cancel: ConversionController["cancel"];
   convert: ConversionController["convert"];
+  listPresets(): readonly SavedConversionPreset[];
+  loadPreset(name: string): SavedConversionPreset | undefined;
   readOptions(): ConversionOptions;
+  savePreset(name: string): SavedConversionPreset;
 }
 
 const configureSchema = Object.freeze({
@@ -63,12 +67,77 @@ const emptyObjectSchema = Object.freeze({
   type: "object",
 });
 
+const presetNameSchema = Object.freeze({
+  additionalProperties: false,
+  properties: Object.freeze({
+    name: Object.freeze({ maxLength: 60, minLength: 1, type: "string" }),
+  }),
+  required: Object.freeze(["name"]),
+  type: "object",
+});
+
 export function createConversionTools(services: ConversionToolServices): readonly WebMcpTool[] {
   return Object.freeze([
     configureConversionTool(services),
     convertCurrentImageTool(services),
     cancelConversionTool(services),
+    listConversionPresetsTool(services),
+    saveConversionPresetTool(services),
+    loadConversionPresetTool(services),
   ]);
+}
+
+function listConversionPresetsTool(services: ConversionToolServices): WebMcpTool {
+  return Object.freeze({
+    annotations: Object.freeze({ readOnlyHint: true, untrustedContentHint: false }),
+    description: "List locally saved conversion presets that can be loaded in the visible Studio.",
+    execute: () => JSON.stringify({ ok: true, presets: services.listPresets() }),
+    inputSchema: emptyObjectSchema,
+    name: WebMcpToolName.ListConversionPresets,
+  });
+}
+
+function saveConversionPresetTool(services: ConversionToolServices): WebMcpTool {
+  return presetTool(
+    WebMcpToolName.SaveConversionPreset,
+    "Save the complete visible conversion configuration as a named local browser preset.",
+    (name) => services.savePreset(name),
+  );
+}
+
+function loadConversionPresetTool(services: ConversionToolServices): WebMcpTool {
+  return presetTool(
+    WebMcpToolName.LoadConversionPreset,
+    "Load one named local browser preset into every visible conversion control and refresh the preview.",
+    (name) => services.loadPreset(name),
+  );
+}
+
+function presetTool(
+  name: WebMcpToolName,
+  description: string,
+  action: (presetName: string) => SavedConversionPreset | undefined,
+): WebMcpTool {
+  return Object.freeze({
+    annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
+    description,
+    execute: (input: unknown) => {
+      const presetName = readPresetName(input);
+      if (!presetName) {
+        return JSON.stringify({ code: "invalid_preset_name", ok: false });
+      }
+      try {
+        const preset = action(presetName);
+        return preset
+          ? JSON.stringify({ ok: true, preset })
+          : JSON.stringify({ code: "preset_not_found", ok: false });
+      } catch {
+        return JSON.stringify({ code: "preset_not_saved", ok: false });
+      }
+    },
+    inputSchema: presetNameSchema,
+    name,
+  });
 }
 
 function cancelConversionTool(services: ConversionToolServices): WebMcpTool {
@@ -250,6 +319,12 @@ function requireNumber(value: unknown): number {
     throw new TypeError("Conversion tool values must be numbers.");
   }
   return value;
+}
+
+function readPresetName(input: unknown): string | undefined {
+  if (!isRecord(input) || typeof input.name !== "string") return undefined;
+  const name = input.name.trim();
+  return name.length > 0 && name.length <= 60 ? name : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

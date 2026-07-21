@@ -46,6 +46,23 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
   await expect(page.getByLabel("Schärfungsstärke")).toHaveValue("35");
   await expect(page.getByLabel("Zielmaße")).toHaveText("128 × 128 px");
 
+  expect(await executeTool(page, "save_conversion_preset", { name: "Agent Logo" })).toMatchObject({
+    ok: true,
+    preset: { name: "Agent Logo" },
+  });
+  expect(await executeTool(page, "list_conversion_presets", {})).toMatchObject({
+    ok: true,
+    presets: [{ name: "Agent Logo" }],
+  });
+  await executeTool(page, "configure_conversion", {
+    colorPrecision: 7,
+    filterSpeckle: 4,
+    pathPrecision: 2,
+    scalePercent: 100,
+  });
+  await executeTool(page, "load_conversion_preset", { name: "Agent Logo" });
+  await expect(page.getByRole("slider", { name: "Farbpräzision", exact: true })).toHaveValue("5");
+
   const converted = await executeTool(page, "convert_current_image", {});
   expect(converted).toMatchObject({
     fileName: "circle.png",
@@ -124,6 +141,9 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
       "configure_conversion",
       "convert_current_image",
       "cancel_conversion",
+      "list_conversion_presets",
+      "save_conversion_preset",
+      "load_conversion_preset",
       "get_workspace_state",
       "select_history_run",
       "delete_history_run",

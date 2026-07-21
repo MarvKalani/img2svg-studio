@@ -1,4 +1,4 @@
-export const appVersion = "260721.10" as const;
+export const appVersion = "260721.11" as const;
 
 export const versionedAssetFileNames = Object.freeze({
   asset: `assets/[name]-v${appVersion}-[hash][extname]`,

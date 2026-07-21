@@ -259,6 +259,18 @@
               <span>Preset</span>
               <select id="conversion-preset" aria-label="Preset"></select>
             </label>
+            <div class="preset-actions">
+              <input
+                id="saved-preset-name"
+                type="text"
+                maxlength="60"
+                aria-label="Name für eigene Einstellung"
+                placeholder="Eigenes Preset"
+              />
+              <button id="save-preset" type="button">Preset speichern</button>
+              <button id="delete-preset" type="button" disabled>Preset löschen</button>
+              <output id="preset-status" aria-live="polite"></output>
+            </div>
             <label data-help-key="scalePercent" data-option-key="scalePercent">
               <span>SVG-Skalierung</span>
               <select id="scale-percent" aria-label="Zielgröße">
@@ -725,6 +737,31 @@
                   <output id="compare-slider-value" for="compare-slider">50 % A · 50 % B</output>
                 </label>
               </div>
+              <details id="workspace-metadata" class="workspace-metadata" hidden>
+                <summary id="workspace-metadata-summary">Dateiinformationen</summary>
+                <dl>
+                  <div>
+                    <dt>Dateigröße</dt>
+                    <dd id="workspace-file-size">—</dd>
+                  </div>
+                  <div>
+                    <dt>Abmessungen</dt>
+                    <dd id="workspace-dimensions">—</dd>
+                  </div>
+                  <div>
+                    <dt>Elemente</dt>
+                    <dd id="workspace-elements">—</dd>
+                  </div>
+                  <div>
+                    <dt>Rechenzeit</dt>
+                    <dd id="workspace-duration">—</dd>
+                  </div>
+                  <div>
+                    <dt>Quelle</dt>
+                    <dd id="workspace-source">—</dd>
+                  </div>
+                </dl>
+              </details>
             </div>
           </section>
 

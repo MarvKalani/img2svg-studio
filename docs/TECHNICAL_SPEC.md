@@ -22,9 +22,9 @@ oder Builderzahlen war. Gründe, Messwerte und Regeln für auffällig explizite 
 Quellphrase besitzt genau eine englische Entsprechung; typisierte Regeln formatieren variable
 Zähler und Run-Zustände. Ein einzelner `MutationObserver` lokalisiert auch DOM-Ausgaben der
 bestehenden Controller und bewahrt deren deutsche Quelle für den verlustfreien Sprachwechsel.
-Die Sprachpräferenz, drei Layoutmodi und das einmal gemessene Hardwareprofil liegen unter getrennten
-versionierten Schlüsseln in `localStorage`; Conversion-Runs, SVG-Ausgabe und WebMCP-Verträge bleiben
-flüchtig beziehungsweise sprachneutral.
+Die Sprachpräferenz, drei Layoutmodi, benannte Conversion-Presets und das einmal gemessene
+Hardwareprofil liegen unter getrennten Schlüsseln in `localStorage`; Conversion-Runs und
+SVG-Ausgabe bleiben flüchtig. UI und WebMCP teilen sich denselben validierten Preset-Store.
 
 `release/app-version.ts` hält die sichtbare Produktversion an einer Stelle. Das Format
 `YYMMDD.RR` verbindet das Veröffentlichungsdatum mit einer zweistelligen Tagesrevision und wird

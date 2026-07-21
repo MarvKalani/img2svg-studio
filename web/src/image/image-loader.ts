@@ -2,6 +2,7 @@ import { SupportedImageMimeType, decodeImage, type DecodedImage } from "./decode
 import type { ImageStore, LoadedImage } from "./image-store";
 import { formatImageVersion, ImageVersionKind } from "./image-version";
 import { formatByteSize } from "../format-byte-size";
+import type { WorkspaceMetadataController } from "../workspace/workspace-metadata";
 
 export interface ImageLoaderController {
   loadAiVersion(file: File): Promise<boolean>;
@@ -39,6 +40,7 @@ export function initializeImageLoader(
   onImageLoaded: (image: DecodedImage) => void,
   onLogoDemoLoaded: () => void,
   onTopographyDemoLoaded: () => void,
+  workspaceMetadata: WorkspaceMetadataController,
 ): ImageLoaderController {
   const elements = readImageLoaderElements();
 
@@ -52,6 +54,7 @@ export function initializeImageLoader(
     const loadedImage = loadIntoStore(imageStore, file, result.image, kind);
     onImageLoaded(result.image);
     showLoadedImage(elements, loadedImage);
+    workspaceMetadata.showImage(loadedImage);
     return true;
   };
 

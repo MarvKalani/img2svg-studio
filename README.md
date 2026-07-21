@@ -133,7 +133,10 @@ verification, cancellation, inference barriers and disposal. See the
 [architecture overview](docs/ARCHITECTURE.md) for the stable boundaries and the
 [codemap](docs/CODEMAP.md) for concrete change entry points. The
 [TypeScript 7 decisions](docs/TYPESCRIPT_7.md) explain native-compiler settings, explicit MCP
-export annotations and measured parallelization.
+export annotations and measured parallelization. The
+[vectorization feature review](docs/VECTORIZATION_FEATURE_REVIEW.md) prioritizes measured next
+steps; the [test-strategy review](docs/TEST_STRATEGY_REVIEW.md) records where tests actually found
+defects and where a leaner acceptance is sufficient.
 
 Core technology:
 

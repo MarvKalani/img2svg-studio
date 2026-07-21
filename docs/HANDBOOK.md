@@ -68,6 +68,8 @@ Revision `260721.09` verwendet in Oberfläche und Benutzeranleitung neutrale
 Vektorisierungsbegriffe, damit die Tracing-Engine austauschbar bleibt.
 Revision `260721.10` härtet den stabilen nativen TypeScript-7-Build, beschleunigt den vollständigen
 Typcheck und dokumentiert Compilergrenzen sowie Benchmarks für spätere Erweiterungen.
+Revision `260721.11` dockt den Verlauf auf Mobilgeräten als sichtbares unteres Panel an, hält die
+Layoutauswahl im Vordergrund, speichert eigene Presets und zeigt Dateiinformationen direkt am Bild.
 
 ### Sprache
 
@@ -186,9 +188,11 @@ oder WebP-Datei kann unmittelbar erneut gewählt werden.
 
 „Layout“ in der Kopfzeile konfiguriert Header, Seitenleiste und Verlauf unabhängig. „Standard“
 behält die bisherige Position. „Angedockt“ hält den Bereich beim Arbeiten sichtbar; der Verlauf
-wird dabei auf breiten Bildschirmen zur rechten Spalte. „Eingeklappt“ reduziert den Bereich auf
-seine schmale Orientierung beziehungsweise Überschrift. Die Auswahl wird lokal gespeichert und
-beim nächsten Start wiederhergestellt. Auch bei eingeklapptem Header bleibt „Layout“ erreichbar.
+wird dabei auf breiten Bildschirmen zur rechten Spalte und auf Mobilgeräten zu einem permanent
+sichtbaren unteren Panel. „Eingeklappt“ reduziert den Bereich auf seine schmale Orientierung
+beziehungsweise Überschrift. Die Auswahl wird lokal gespeichert und beim nächsten Start
+wiederhergestellt. Auch bei eingeklapptem Header und über angedockten Panels bleibt „Layout“ im
+Vordergrund erreichbar.
 
 Beim allerersten Start misst das Studio einmalig eine kurze rasterähnliche CPU-/Speicheroperation
 und berücksichtigt logische Kerne sowie den vom Browser gemeldeten Gerätespeicher. Daraus folgt
@@ -206,6 +210,9 @@ Das unveränderte Original steht auf A und die aktuelle, ungespeicherte SVG-Vors
 „Entwurf“ auf B. Der Entwurf besitzt eine eigene History-Karte, zählt aber nicht als Variante.
 Jede Parameteränderung ersetzt denselben Entwurf. „Variante übernehmen“ ersetzt die Entwurfskarte
 durch einen unveränderlichen Run und lässt ihn auf B gegen das Original stehen.
+
+Unter der Arbeitsfläche zeigt „SVG“ beziehungsweise „Raster“ die aktuelle Dateigröße unmittelbar.
+Aufklappen ergänzt Abmessungen, Pfad- und Formanzahl, Rechenzeit sowie die verwendete Quelle.
 
 Der Browser skaliert und filtert die Rasterpixel gemäß „Raster vor Tracing“ und übergibt erst
 dieses RGBA-Ergebnis an einen Web Worker. Dort erzeugt der Rust-Core über die schmale WASM-Grenze
@@ -362,8 +369,11 @@ Default, „Logo / Icon“ reduziert Farben und Koordinaten, „Illustration“ 
 und rundet Koordinaten, „Foto / detailreich“ erhält mehr Farbinformation und glättet das
 Eingaberaster, „Schwarzweiß /
 Laser“ erzeugt eine binäre Vorlage. Eine manuelle Abweichung wird sichtbar als
-„Benutzerdefiniert“ markiert. Alle Presets starten mit Original-Rastergröße und 100 Prozent
-SVG-Skalierung.
+„Benutzerdefiniert“ markiert. Ein eigener Name speichert alle sichtbaren Einstellungen lokal im
+Browser; das Preset kann danach aus derselben Liste geladen oder gelöscht werden. Mit
+`list_conversion_presets`, `save_conversion_preset` und `load_conversion_preset` verwendet
+WebMCP exakt denselben Preset-Speicher. Alle mitgelieferten Presets starten mit
+Original-Rastergröße und 100 Prozent SVG-Skalierung.
 
 Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:
@@ -617,6 +627,8 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
    setzen; die Live-Vorschau aktualisiert sich automatisch. `convert_current_image` übernimmt das
    aktuelle Ergebnis in den Verlauf. Die Rastergröße verwendet genau eines aus
    `useOriginalRasterSize`, `rasterResizePercent` oder `rasterTargetHeightPixels`.
+   Eigene Profile werden mit `list_conversion_presets`, `save_conversion_preset` und
+   `load_conversion_preset` aufgelistet, gespeichert und sichtbar geladen.
 3. Runs über `select_history_run` anzeigen und mit `delete_history_run` entfernen.
    `select_comparison_a` und `select_comparison_b` wählen
    per Run-ID oder `original: true` die sichtbaren Vergleichsquellen;

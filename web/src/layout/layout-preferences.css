@@ -1,5 +1,6 @@
 .layout-settings {
   position: relative;
+  z-index: 110;
   justify-self: end;
 }
 
@@ -22,7 +23,7 @@
   position: absolute;
   top: calc(100% + 0.45rem);
   right: 0;
-  z-index: 30;
+  z-index: 120;
   display: grid;
   gap: 0.55rem;
   width: 15rem;
@@ -151,9 +152,26 @@ html[data-history-mode="collapsed"] .history-list {
 }
 
 @media (max-width: 54rem) {
+  .topbar {
+    position: relative;
+    z-index: 100;
+  }
+
+  .layout-settings-fields {
+    position: fixed;
+    top: 3.5rem;
+    right: 0.55rem;
+    z-index: 120;
+    width: min(15rem, calc(100vw - 1.1rem));
+  }
+
+  html[data-history-mode="docked"] .app-shell {
+    padding-bottom: clamp(11rem, 35svh, 20rem);
+  }
+
   html[data-history-mode="docked"] .workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(22rem, 1fr) auto minmax(10rem, 35svh);
+    grid-template-rows: minmax(22rem, 1fr) auto;
   }
 
   html[data-history-mode="docked"] .comparison,
@@ -163,6 +181,49 @@ html[data-history-mode="collapsed"] .history-list {
   }
 
   html[data-history-mode="docked"] .history-panel {
+    position: fixed;
+    right: 0.55rem;
+    bottom: env(safe-area-inset-bottom, 0);
+    left: 0.55rem;
+    z-index: 80;
+    grid-row: auto;
+    height: clamp(11rem, 35svh, 20rem);
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 -0.65rem 1.6rem rgb(0 0 0 / 35%);
+  }
+
+  html[data-history-mode="docked"] .history-panel .section-heading {
+    align-items: baseline;
+    flex-direction: row;
+  }
+
+  html[data-history-mode="docked"] .history-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
+@media (max-width: 36rem) {
+  .topbar {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .layout-settings {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .language-control {
+    grid-column: 1;
     grid-row: 3;
+    justify-self: start;
+  }
+
+  .zoom-controls {
+    grid-column: 2 / -1;
+    grid-row: 3;
+    justify-self: end;
   }
 }

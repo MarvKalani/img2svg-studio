@@ -6,6 +6,7 @@ import type { ConversionOptions } from "./conversion-options";
 import { presentConversionProgress, type ConversionProgressUpdate } from "./conversion-progress";
 import { convertImage } from "./conversion-service";
 import { parseSvgDocument, readSvgMetrics } from "./svg-document";
+import type { WorkspaceMetadataController } from "../workspace/workspace-metadata";
 
 export const ConversionAttemptCode = {
   ConversionFailed: "conversion-failed",
@@ -42,6 +43,7 @@ export function initializeConversion(
   imageStore: ImageStore,
   readOptions: () => ConversionOptions,
   actions: ConversionControllerActions,
+  workspaceMetadata: WorkspaceMetadataController,
 ): ConversionController {
   const elements = readConversionElements();
   let requestedRevision = 0;
@@ -93,6 +95,7 @@ export function initializeConversion(
         }
         currentPreview = preview.run;
         showPreview(elements, preview);
+        workspaceMetadata.showVector(preview.run);
         actions.showPreview(preview.run);
       })
       .catch((error: unknown) => {

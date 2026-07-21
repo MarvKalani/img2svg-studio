@@ -11,7 +11,10 @@ describe("WebMCP conversion tools", () => {
       applyOptions,
       cancel: vi.fn(),
       convert: vi.fn(),
+      listPresets: () => [],
+      loadPreset: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
+      savePreset: vi.fn(),
     });
     const configure = tools[0]!;
 
@@ -106,7 +109,10 @@ describe("WebMCP conversion tools", () => {
       applyOptions,
       cancel: vi.fn(),
       convert: vi.fn(),
+      listPresets: () => [],
+      loadPreset: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
+      savePreset: vi.fn(),
     })[0]!;
 
     const output = JSON.parse(
@@ -132,7 +138,10 @@ describe("WebMCP conversion tools", () => {
       applyOptions: vi.fn(),
       cancel: vi.fn(),
       convert,
+      listPresets: () => [],
+      loadPreset: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
+      savePreset: vi.fn(),
     })[1]!;
 
     const output = JSON.parse(await tool.execute({}));
@@ -156,7 +165,10 @@ describe("WebMCP conversion tools", () => {
       applyOptions: vi.fn(),
       cancel,
       convert: vi.fn(),
+      listPresets: () => [],
+      loadPreset: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
+      savePreset: vi.fn(),
     })[2]!;
 
     const output = JSON.parse(await tool.execute({}));
@@ -164,6 +176,38 @@ describe("WebMCP conversion tools", () => {
     expect(tool.name).toBe("cancel_conversion");
     expect(cancel).toHaveBeenCalledOnce();
     expect(output).toEqual({ cancelled: true, ok: true });
+  });
+
+  test("Given visible settings, when WebMCP saves, lists and loads a preset, then it uses the shared preset services", async () => {
+    const preset = { name: "Agent Logo", options: defaultConversionOptions };
+    const savePreset = vi.fn(() => preset);
+    const loadPreset = vi.fn(() => preset);
+    const tools = createConversionTools({
+      applyOptions: vi.fn(),
+      cancel: vi.fn(),
+      convert: vi.fn(),
+      listPresets: () => [preset],
+      loadPreset,
+      readOptions: () => ({ ...defaultConversionOptions }),
+      savePreset,
+    });
+
+    expect(tools.map((tool) => tool.name)).toEqual([
+      "configure_conversion",
+      "convert_current_image",
+      "cancel_conversion",
+      "list_conversion_presets",
+      "save_conversion_preset",
+      "load_conversion_preset",
+    ]);
+    expect(JSON.parse(await tools[3]!.execute({}))).toMatchObject({
+      ok: true,
+      presets: [{ name: "Agent Logo" }],
+    });
+    expect(JSON.parse(await tools[4]!.execute({ name: "Agent Logo" }))).toMatchObject({ ok: true });
+    expect(JSON.parse(await tools[5]!.execute({ name: "Agent Logo" }))).toMatchObject({ ok: true });
+    expect(savePreset).toHaveBeenCalledWith("Agent Logo");
+    expect(loadPreset).toHaveBeenCalledWith("Agent Logo");
   });
 });
 

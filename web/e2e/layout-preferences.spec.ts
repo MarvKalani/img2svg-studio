@@ -39,3 +39,28 @@ test("Given explicit panel modes, when the Studio reloads, then docked and colla
   await expect(page.locator("#history-content")).toBeHidden();
   await expect(page.getByRole("heading", { name: "Verlauf" })).toBeVisible();
 });
+
+test("Given a phone viewport, when History is docked, then History and its layout control remain in the foreground", async ({
+  page,
+}) => {
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto("/");
+  await page.evaluate(() => localStorage.removeItem("img2svg-layout-preferences"));
+  await page.reload();
+  await page.locator("#layout-settings summary").click();
+  await page.getByLabel("Verlaufs-Layout").selectOption("docked");
+
+  const history = page.locator(".history-panel");
+  await expect(history).toBeInViewport();
+  await expect(history).toHaveCSS("position", "fixed");
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(history).toBeInViewport();
+  await expect(page.locator(".layout-settings-fields")).toBeInViewport();
+
+  const stacking = await page.evaluate(() => ({
+    history: Number(getComputedStyle(document.querySelector(".history-panel")!).zIndex),
+    layout: Number(getComputedStyle(document.querySelector(".layout-settings-fields")!).zIndex),
+  }));
+  expect(stacking.layout).toBeGreaterThan(stacking.history);
+});

@@ -73,9 +73,16 @@ export function matchingConversionPresetId(
   options: Readonly<ConversionOptions>,
 ): ConversionPresetId | typeof customConversionPresetId {
   return (
-    conversionPresets.find((preset) => sameOptions(preset.options, options))?.id ??
+    conversionPresets.find((preset) => sameConversionOptions(preset.options, options))?.id ??
     customConversionPresetId
   );
+}
+
+export function sameConversionOptions(
+  left: Readonly<ConversionOptions>,
+  right: Readonly<ConversionOptions>,
+): boolean {
+  return sameOptions(left, right);
 }
 
 function options({

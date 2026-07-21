@@ -31,6 +31,7 @@ import { createHistoryStore } from "./history/history-store";
 import { initializeInteractiveHandbook } from "./help/interactive-handbook";
 import { initializeLocalization } from "./i18n/localization";
 import { initializeWorkspaceView } from "./workspace/workspace-view-controller";
+import { initializeWorkspaceMetadata } from "./workspace/workspace-metadata";
 import {
   initializeWebMcp,
   WebMcpToolName,
@@ -61,6 +62,7 @@ const availableModelIds = new Set<"modnet" | "slimsam">([
 ]);
 showSupportedAiTools(aiCapabilities);
 const workspaceView = initializeWorkspaceView(imageStore);
+const workspaceMetadata = initializeWorkspaceMetadata();
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const selectionActivity = createSelectionActivity();
 const optionsController = initializeConversionOptions(hardwareRasterResize(hardwareProfile));
@@ -69,6 +71,7 @@ const historyController = initializeHistory(
   createHistoryStore(),
   optionsController.apply,
   compareController,
+  workspaceMetadata,
 );
 let backgroundRemoval: ReturnType<typeof initializeBackgroundRemoval>;
 let magicWand: ReturnType<typeof initializeMagicWand>;
@@ -91,6 +94,7 @@ const imageLoader = initializeImageLoader(
   },
   () => optionsController.apply(createLogoDemoOptions()),
   () => optionsController.apply(createTopographyDemoOptions()),
+  workspaceMetadata,
 );
 backgroundRemoval = initializeBackgroundRemoval(
   imageStore,
@@ -106,10 +110,15 @@ smartSelect = initializeSmartSelect(
   selectionActivity,
   workspaceView,
 );
-conversionController = initializeConversion(imageStore, optionsController.current, {
-  recordRun: historyController.record,
-  showPreview: historyController.setDraft,
-});
+conversionController = initializeConversion(
+  imageStore,
+  optionsController.current,
+  {
+    recordRun: historyController.record,
+    showPreview: historyController.setDraft,
+  },
+  workspaceMetadata,
+);
 optionsController.subscribe(conversionController.requestPreview);
 void initializePwaIngress(imageLoader);
 const svgDownloadController = initializeSvgDownload();
@@ -127,7 +136,10 @@ const conversionTools = createConversionTools({
   applyOptions: optionsController.apply,
   cancel: conversionController.cancel,
   convert: conversionController.convert,
+  listPresets: optionsController.presets,
+  loadPreset: optionsController.loadPreset,
   readOptions: optionsController.current,
+  savePreset: optionsController.savePreset,
 });
 const studioTools = createStudioTools(
   {

@@ -22,7 +22,14 @@ import {
   customConversionPresetId,
   matchingConversionPresetId,
   readConversionPreset,
+  sameConversionOptions,
 } from "./conversion-presets";
+import {
+  createBrowserSavedPresetStore,
+  savedPresetNameFromOption,
+  savedPresetOptionValue,
+  type SavedConversionPreset,
+} from "./saved-presets";
 import {
   createShapeDetectionOptions,
   defaultShapeDetectionOptions,
@@ -36,7 +43,10 @@ export interface ConversionOptionsController {
   apply(options: ConversionOptions): void;
   canReset(key: ConversionOptionKey): boolean;
   current(): ConversionOptions;
+  loadPreset(name: string): SavedConversionPreset | undefined;
+  presets(): readonly SavedConversionPreset[];
   reset(key: ConversionOptionKey): boolean;
+  savePreset(name: string): SavedConversionPreset;
   showSourceDimensions(image: DecodedImage): void;
   subscribe(listener: () => void): () => void;
 }
@@ -45,18 +55,32 @@ export function initializeConversionOptions(
   initialResize: RasterResizeOptions = defaultConversionOptions.preprocessing.resize,
 ): ConversionOptionsController {
   const elements = readElements();
+  const savedPresets = createBrowserSavedPresetStore();
   elements.rasterResize.replaceChildren(
     ...rasterResizePresets.map((preset) => new Option(preset.label, preset.id)),
-  );
-  const customPresetOption = new Option("Benutzerdefiniert", customConversionPresetId);
-  customPresetOption.disabled = true;
-  elements.preset.replaceChildren(
-    ...conversionPresets.map((preset) => new Option(preset.label, preset.id)),
-    customPresetOption,
   );
   const shapeTypeInputs = createShapeTypeInputs(elements.shapeTypeOptions);
   const listeners = new Set<() => void>();
   let sourceDimensions: { heightPixels: number; widthPixels: number } | undefined;
+  let activeSavedPresetName: string | undefined;
+
+  const renderPresetOptions = (): void => {
+    const builtIn = document.createElement("optgroup");
+    builtIn.label = "Mitgelieferte Presets";
+    builtIn.append(...conversionPresets.map((preset) => new Option(preset.label, preset.id)));
+    const customPresetOption = new Option("Benutzerdefiniert", customConversionPresetId);
+    customPresetOption.disabled = true;
+    builtIn.append(customPresetOption);
+    const user = document.createElement("optgroup");
+    user.label = "Eigene Presets";
+    user.append(
+      ...savedPresets
+        .list()
+        .map((preset) => new Option(preset.name, savedPresetOptionValue(preset.name))),
+    );
+    elements.preset.replaceChildren(builtIn, user);
+  };
+  renderPresetOptions();
 
   const current = (): ConversionOptions =>
     createConversionOptions({
@@ -117,13 +141,21 @@ export function initializeConversionOptions(
     elements.lengthThreshold.disabled = !splineControlsEnabled;
     elements.maxIterations.disabled = !splineControlsEnabled;
     elements.spliceThreshold.disabled = !splineControlsEnabled;
-    elements.preset.value = matchingConversionPresetId(options);
+    const activeSavedPreset = activeSavedPresetName
+      ? savedPresets.load(activeSavedPresetName)
+      : undefined;
+    elements.preset.value =
+      activeSavedPreset && sameConversionOptions(activeSavedPreset.options, options)
+        ? savedPresetOptionValue(activeSavedPreset.name)
+        : matchingConversionPresetId(options);
+    elements.deletePreset.disabled = activeSavedPreset === undefined;
     for (const input of shapeTypeInputs.values()) {
       input.disabled = !shapeDetectionEnabled;
     }
   };
 
   const renderChangedOptions = (): void => {
+    activeSavedPresetName = undefined;
     render();
     for (const listener of listeners) {
       listener();
@@ -155,8 +187,33 @@ export function initializeConversionOptions(
     input.addEventListener("change", renderChangedOptions);
   }
   elements.preset.addEventListener("change", () => {
+    const savedName = savedPresetNameFromOption(elements.preset.value);
+    if (savedName) {
+      loadSavedPreset(savedName);
+      return;
+    }
+    activeSavedPresetName = undefined;
     writeOptions(readConversionPreset(elements.preset.value).options);
-    renderChangedOptions();
+    notifyChangedOptions();
+  });
+  elements.savePreset.addEventListener("click", () => {
+    try {
+      const saved = savedPresets.save(elements.savedPresetName.value, current());
+      activeSavedPresetName = saved.name;
+      elements.savedPresetName.value = saved.name;
+      elements.presetStatus.textContent = `Preset „${saved.name}“ gespeichert`;
+      renderPresetOptions();
+      render();
+    } catch {
+      elements.presetStatus.textContent = "Bitte einen Preset-Namen mit 1 bis 60 Zeichen eingeben.";
+    }
+  });
+  elements.deletePreset.addEventListener("click", () => {
+    if (!activeSavedPresetName || !savedPresets.remove(activeSavedPresetName)) return;
+    elements.presetStatus.textContent = `Preset „${activeSavedPresetName}“ gelöscht`;
+    activeSavedPresetName = undefined;
+    renderPresetOptions();
+    render();
   });
   elements.resetTracingOptions.addEventListener("click", () => {
     writeTracingOptions(defaultConversionOptions);
@@ -212,6 +269,22 @@ export function initializeConversionOptions(
     elements.maxIterations.value = String(options.maxIterations);
     elements.pathPrecision.value = String(options.pathPrecision);
     elements.spliceThreshold.value = String(options.spliceThreshold);
+  }
+
+  function notifyChangedOptions(): void {
+    render();
+    for (const listener of listeners) listener();
+  }
+
+  function loadSavedPreset(name: string): SavedConversionPreset | undefined {
+    const preset = savedPresets.load(name);
+    if (!preset) return undefined;
+    activeSavedPresetName = preset.name;
+    elements.savedPresetName.value = preset.name;
+    elements.presetStatus.textContent = `Preset „${preset.name}“ geladen`;
+    writeOptions(preset.options);
+    notifyChangedOptions();
+    return preset;
   }
 
   function canReset(key: ConversionOptionKey): boolean {
@@ -385,12 +458,24 @@ export function initializeConversionOptions(
 
   return {
     apply: (options) => {
+      activeSavedPresetName = undefined;
       writeOptions(options);
       renderChangedOptions();
     },
     canReset,
     current,
+    loadPreset: loadSavedPreset,
+    presets: savedPresets.list,
     reset,
+    savePreset: (name) => {
+      const preset = savedPresets.save(name, current());
+      activeSavedPresetName = preset.name;
+      elements.savedPresetName.value = preset.name;
+      elements.presetStatus.textContent = `Preset „${preset.name}“ gespeichert`;
+      renderPresetOptions();
+      render();
+      return preset;
+    },
     showSourceDimensions: (image) => {
       sourceDimensions = image;
       render();
@@ -408,6 +493,7 @@ interface ConversionOptionElements {
   cornerThreshold: HTMLInputElement;
   cornerThresholdValue: HTMLOutputElement;
   curveFitting: HTMLSelectElement;
+  deletePreset: HTMLButtonElement;
   filterSpeckle: HTMLInputElement;
   filterSpeckleValue: HTMLOutputElement;
   hierarchical: HTMLSelectElement;
@@ -423,6 +509,7 @@ interface ConversionOptionElements {
   pathPrecision: HTMLInputElement;
   pathPrecisionValue: HTMLOutputElement;
   preset: HTMLSelectElement;
+  presetStatus: HTMLOutputElement;
   preparedDimensions: HTMLOutputElement;
   rasterFilter: HTMLSelectElement;
   rasterResize: HTMLSelectElement;
@@ -431,6 +518,8 @@ interface ConversionOptionElements {
   rasterSmoothStrength: HTMLInputElement;
   rasterSmoothStrengthValue: HTMLOutputElement;
   resetTracingOptions: HTMLButtonElement;
+  savedPresetName: HTMLInputElement;
+  savePreset: HTMLButtonElement;
   scalePercent: HTMLSelectElement;
   shapeDetection: HTMLButtonElement;
   shapeTypeOptions: HTMLElement;
@@ -446,6 +535,7 @@ function readElements(): ConversionOptionElements {
     cornerThreshold: requireElement("#corner-threshold", HTMLInputElement),
     cornerThresholdValue: requireElement("#corner-threshold-value", HTMLOutputElement),
     curveFitting: requireElement("#curve-fitting", HTMLSelectElement),
+    deletePreset: requireElement("#delete-preset", HTMLButtonElement),
     filterSpeckle: requireElement("#filter-speckle", HTMLInputElement),
     filterSpeckleValue: requireElement("#filter-speckle-value", HTMLOutputElement),
     hierarchical: requireElement("#hierarchical-mode", HTMLSelectElement),
@@ -461,6 +551,7 @@ function readElements(): ConversionOptionElements {
     pathPrecision: requireElement("#path-precision", HTMLInputElement),
     pathPrecisionValue: requireElement("#path-precision-value", HTMLOutputElement),
     preset: requireElement("#conversion-preset", HTMLSelectElement),
+    presetStatus: requireElement("#preset-status", HTMLOutputElement),
     preparedDimensions: requireElement("#prepared-raster-dimensions", HTMLOutputElement),
     rasterFilter: requireElement("#raster-filter", HTMLSelectElement),
     rasterResize: requireElement("#raster-resize", HTMLSelectElement),
@@ -469,6 +560,8 @@ function readElements(): ConversionOptionElements {
     rasterSmoothStrength: requireElement("#raster-smooth-strength", HTMLInputElement),
     rasterSmoothStrengthValue: requireElement("#raster-smooth-strength-value", HTMLOutputElement),
     resetTracingOptions: requireElement("#reset-tracing-options", HTMLButtonElement),
+    savedPresetName: requireElement("#saved-preset-name", HTMLInputElement),
+    savePreset: requireElement("#save-preset", HTMLButtonElement),
     scalePercent: requireElement("#scale-percent", HTMLSelectElement),
     shapeDetection: requireElement("#shape-detection-enabled", HTMLButtonElement),
     shapeTypeOptions: requireElement("#shape-type-options", HTMLElement),

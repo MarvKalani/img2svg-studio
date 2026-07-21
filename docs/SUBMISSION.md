@@ -56,7 +56,7 @@ refines a mask from positive and negative points. Models download only after an 
 their files are checked by size and SHA-256, and they can be cancelled, retried and unloaded. An
 applied AI result becomes a versioned conversion input while the original remains restorable.
 
-Chrome's WebMCP imperative API exposes fourteen narrow tools for workspace inspection, parameter
+Chrome's WebMCP imperative API exposes eighteen narrow tools for workspace inspection, parameter
 changes, conversion, history, A/B selection, downloads and model actions. Those tools call the same
 typed controllers as the visible UI, so agent actions remain visible and manual operation still
 works when WebMCP is unavailable.

@@ -13,6 +13,7 @@ import { formatImageVersion } from "../image/image-version";
 import type { LoadedImage } from "../image/image-store";
 import { restoreSelectedRunOptions } from "./restore-run";
 import { formatByteSize, utf8ByteLength } from "../format-byte-size";
+import type { WorkspaceMetadataController } from "../workspace/workspace-metadata";
 
 export interface HistoryController {
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
@@ -31,6 +32,7 @@ export function initializeHistory(
   store: HistoryStore,
   applyOptions: (options: ConversionOptions) => void,
   compareController: CompareController,
+  workspaceMetadata: WorkspaceMetadataController,
 ): HistoryController {
   const elements = readElements();
   let originalImage: LoadedImage | undefined;
@@ -50,6 +52,7 @@ export function initializeHistory(
     elements.output.hidden = false;
     elements.downloadButton.hidden = false;
     elements.downloadButton.dataset.sourceFileName = run.fileName;
+    workspaceMetadata.showVector(run);
     elements.statusImage.textContent = `Run ${String(run.id)} ausgewählt · ${String(run.widthPixels)} × ${String(run.heightPixels)} SVG · ${svgSize(run)}`;
   };
 
@@ -61,6 +64,7 @@ export function initializeHistory(
     elements.rasterPreview.hidden = false;
     elements.downloadButton.hidden = true;
     delete elements.downloadButton.dataset.sourceFileName;
+    workspaceMetadata.showImage(image);
     elements.statusImage.textContent = `Original ausgewählt · ${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
   };
 

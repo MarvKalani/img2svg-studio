@@ -94,7 +94,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   preset: topic(
     "Preset",
     "Setzt mehrere Raster-, Tracing- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.",
-    "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im Vektorisierungsbereich wieder her.",
+    "Eigene Einstellungen lassen sich benannt im Browser speichern, erneut laden und über WebMCP steuern.",
     "Ausgewogen",
   ),
   rasterSharpenStrength: topic(

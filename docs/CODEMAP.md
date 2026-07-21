@@ -37,8 +37,8 @@ das sichtbare Produkt.
 | Bild laden, validieren oder Demo öffnen | `web/src/image/image-loader.ts`, `decode-image.ts`, `image-store.ts` | `load-image.spec.ts`, Image-Unit-Tests |
 | Logo- oder Topografie-Benchmark | `web/benchmarks/benchmark-runner.ts`, jeweilige Benchmark-Konfiguration | produktiver Chrome-Lauf und Ergebnisdokument unter `docs/release/` |
 | Raster vor dem Tracing skalieren oder filtern | `web/src/conversion/raster-preprocessing.ts`, `read-raster-pixels.ts` | `raster-preprocessing.test.ts`, `preprocess-raster.spec.ts` |
-| Raster- und SVG-Bytegrößen formatieren | `web/src/format-byte-size.ts`, `image-loader.ts`, `history-controller.ts` | `format-byte-size.test.ts`, sichtbarer Chrome-Verlauf |
-| Vektorisierungsparameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vectorization-handbook.spec.ts` |
+| Raster- und SVG-Dateiinformationen | `web/src/format-byte-size.ts`, `workspace/workspace-metadata.ts`, `history-controller.ts` | `format-byte-size.test.ts`, `workspace-metadata.spec.ts` |
+| Vektorisierungsparameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts`, `saved-presets.ts` | zugehörige Unit-Tests, `saved-presets.spec.ts`, `vectorization-handbook.spec.ts` |
 | Live-Entwurf gegen Original oder Ergebnis annehmen | `conversion-controller.ts`, `history-controller.ts`, `comparison-source.ts` | `live-preview.spec.ts`, Compare-Unit-Tests |
 | Worker-/WASM-Vertrag | `conversion-worker-contract.ts`, `conversion-worker.ts`, `crates/img2svg-wasm/src/lib.rs` | Typecheck, Web-E2E, Rust-Tests |
 | Tracing-Fortschritt | `conversion-progress.ts`, `conversion-controller.ts`, `img2svg-core/src/lib.rs` | Progress-Unit-/Rust-Tests, `conversion-progress.spec.ts` |
@@ -46,7 +46,7 @@ das sichtbare Produkt.
 | Engine-Optionen und Validierung | `crates/img2svg-core/src/conversion_options.rs` | `conversion_options.rs` in Core-Tests |
 | Native Formerkennung | `shape_detection.rs`, `visioncortex_shape.rs` | `detect_*.rs`, `shape_detection_fallback.rs`, passende Browser-Specs |
 | Historie und Wiederherstellung | `history-store.ts`, `history-controller.ts`, `restore-run.ts`, `history.css` | History-Unit-Tests, `history.spec.ts`, `restore-run.spec.ts` |
-| Header, Sidebar oder Verlauf anordnen | `layout/layout-preferences.ts`, `layout-preferences.css` | Layout-Unit-Test, `layout-preferences.spec.ts` |
+| Header, Sidebar oder Verlauf anordnen | `layout/layout-preferences.ts`, `layout-preferences.css` | Layout-Unit-Test, Desktop- und Mobile-Szenarien in `layout-preferences.spec.ts` |
 | Startleistung und Rasterempfehlung | `hardware/hardware-profile.ts`, `conversion-options-controller.ts` | Hardware-Unit-Test, `hardware-profile.spec.ts` |
 | Laufende Konvertierung abbrechen | `conversion-service.ts`, `conversion-controller.ts` | Worker-Lifecycle-Test, `cancel-conversion.spec.ts` |
 | A/B-Auswahl und Parameter-Diff | `compare-selection.ts`, `compare-controller.ts`, `diff-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts` |
