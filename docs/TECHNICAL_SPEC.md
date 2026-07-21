@@ -15,8 +15,9 @@ Die Engine kennt keine DOM- oder Dateiauswahl. Die Web-App kennt keine Tracing-D
 Quellphrase besitzt genau eine englische Entsprechung; typisierte Regeln formatieren variable
 Zähler und Run-Zustände. Ein einzelner `MutationObserver` lokalisiert auch DOM-Ausgaben der
 bestehenden Controller und bewahrt deren deutsche Quelle für den verlustfreien Sprachwechsel.
-Die Präferenz `de` oder `en` liegt als einziger i18n-Wert in `localStorage`; Domänenzustand,
-SVG-Ausgabe und WebMCP-Verträge bleiben sprachneutral und unverändert.
+Die Sprachpräferenz, drei Layoutmodi und das einmal gemessene Hardwareprofil liegen unter getrennten
+versionierten Schlüsseln in `localStorage`; Conversion-Runs, SVG-Ausgabe und WebMCP-Verträge bleiben
+flüchtig beziehungsweise sprachneutral.
 
 `release/app-version.ts` hält die sichtbare Produktversion an einer Stelle. Das Format
 `YYMMDD.RR` verbindet das Veröffentlichungsdatum mit einer zweistelligen Tagesrevision und wird
@@ -250,7 +251,10 @@ milde Unscharfmaske sowie den gewählten RGB-Filter an. Der Alphakanal bleibt
 unverändert. Erst dieser Buffer wird ohne Kopie an einen dedizierten Worker übertragen. Der Worker
 initialisiert das generierte WASM, ruft den Rust-Core auf und wird nach genau einem Ergebnis
 beendet. Der Conversion-Controller entprellt Optionsänderungen um 120 Millisekunden, serialisiert
-gleichzeitige Anforderungen und verwirft Ergebnisse älterer Revisionsstände. Er validiert das
+gleichzeitige Anforderungen und verwirft Ergebnisse älterer Revisionsstände. Ein `AbortController`
+terminiert den Worker bei ausdrücklichem Abbruch oder sobald eine neuere Revision den Lauf ersetzt.
+UI und WebMCP verwenden dafür denselben Controllerpfad. Der Abbruch besitzt einen typisierten
+Fehlercode und einen sichtbaren Neustartpfad. Der Controller validiert das
 zurückgegebene XML als SVG, bevor es die Rastervorschau ersetzt. Die Vorschau enthält bereits den
 vollständigen typisierten Run-Kandidaten, bleibt jedoch flüchtig. Erst die explizite Übernahme
 reicht diesen Kandidaten an den History-Store weiter. Die TypeScript-Domäne ergänzt
@@ -278,6 +282,8 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 - `modelRegistry`: Zustandsautomat und deduplizierte Modell-Ladevorgänge.
 - `webMcpAdapter`: Tool-Registrierung und Mapping auf dieselben Services.
 - `contextMenuController`: DOM-Grenze für typisierte Quellen- und Parameterkommandos.
+- `layoutPreferences`: validierte, persistente Standard-/Dock-/Einklappmodi.
+- `hardwareProfile`: einmaliger kurzer Rasterbenchmark und persistente Startskalierung.
 
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.

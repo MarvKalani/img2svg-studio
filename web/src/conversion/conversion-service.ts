@@ -11,8 +11,11 @@ export async function convertImage(
   file: File,
   options: ConversionOptions,
   reportProgress: (progress: ConversionProgressUpdate) => void,
+  signal: AbortSignal,
 ): Promise<string> {
+  throwIfCancelled(signal);
   const raster = await readRasterPixels(file, options.preprocessing);
+  throwIfCancelled(signal);
   const request: ConversionWorkerRequest = {
     heightPixels: raster.heightPixels,
     options,
@@ -20,36 +23,77 @@ export async function convertImage(
     widthPixels: raster.widthPixels,
   };
 
-  return runWorker(request, reportProgress);
+  return runConversionWorker(request, reportProgress, signal);
 }
 
-function runWorker(
+export interface ConversionWorkerPort {
+  addEventListener(
+    type: "error" | "message",
+    listener: (event: ErrorEvent | MessageEvent<ConversionWorkerResponse>) => void,
+    options?: AddEventListenerOptions,
+  ): void;
+  postMessage(request: ConversionWorkerRequest, transfer: readonly Transferable[]): void;
+  terminate(): void;
+}
+
+export function runConversionWorker(
   request: ConversionWorkerRequest,
   reportProgress: (progress: ConversionProgressUpdate) => void,
+  signal: AbortSignal,
+  createWorker: () => ConversionWorkerPort = browserWorker,
 ): Promise<string> {
-  const worker = new Worker(new URL("./conversion-worker.ts", import.meta.url), { type: "module" });
+  const worker = createWorker();
 
   return new Promise((resolve, reject) => {
-    worker.addEventListener("message", (event: MessageEvent<ConversionWorkerResponse>) => {
-      if ("progress" in event.data) {
-        reportProgress(event.data.progress);
+    let settled = false;
+    const finish = (complete: () => void): void => {
+      if (settled) return;
+      settled = true;
+      signal.removeEventListener("abort", cancel);
+      worker.terminate();
+      complete();
+    };
+    const cancel = (): void => {
+      finish(() => reject(new ConversionFailure(ConversionFailureCode.Cancelled)));
+    };
+    signal.addEventListener("abort", cancel, { once: true });
+    if (signal.aborted) {
+      cancel();
+      return;
+    }
+
+    worker.addEventListener("message", (event) => {
+      if (!(event instanceof MessageEvent)) return;
+      const response = event.data as ConversionWorkerResponse;
+      if ("progress" in response) {
+        reportProgress(response.progress);
         return;
       }
-      worker.terminate();
-      if (event.data.ok) {
-        resolve(event.data.svg);
+      if (response.ok) {
+        finish(() => resolve(response.svg));
       } else {
-        reject(new ConversionFailure(event.data.failureCode));
+        finish(() => reject(new ConversionFailure(response.failureCode)));
       }
     });
     worker.addEventListener(
       "error",
       () => {
-        worker.terminate();
-        reject(new ConversionFailure(ConversionFailureCode.WorkerFailed));
+        finish(() => reject(new ConversionFailure(ConversionFailureCode.WorkerFailed)));
       },
       { once: true },
     );
     worker.postMessage(request, [request.rgbaBuffer]);
   });
+}
+
+function browserWorker(): ConversionWorkerPort {
+  return new Worker(new URL("./conversion-worker.ts", import.meta.url), {
+    type: "module",
+  }) as ConversionWorkerPort;
+}
+
+function throwIfCancelled(signal: AbortSignal): void {
+  if (signal.aborted) {
+    throw new ConversionFailure(ConversionFailureCode.Cancelled);
+  }
 }

@@ -62,6 +62,8 @@ Revision `260721.06` verarbeitet jedes im Canvas dekodierbare Raster weiter und 
 Transparenzschlüssel deterministisch im vollständigen RGB-Farbraum.
 Revision `260721.07` verwendet dieselbe sichtbare Version für Asset-Dateinamen, Service-Worker-
 Updates und den kurzlebigen PWA-Share-Cache.
+Revision `260721.08` ergänzt persistente Layoutmodi, echten Worker-Abbruch und eine einmalige
+Hardwaremessung für die Start-Rastergröße.
 
 ### Sprache
 
@@ -176,6 +178,20 @@ oder WebP-Datei kann unmittelbar erneut gewählt werden.
 
 ## Live-Vorschau und Übernahme
 
+### Layout anpassen
+
+„Layout“ in der Kopfzeile konfiguriert Header, Seitenleiste und Verlauf unabhängig. „Standard“
+behält die bisherige Position. „Angedockt“ hält den Bereich beim Arbeiten sichtbar; der Verlauf
+wird dabei auf breiten Bildschirmen zur rechten Spalte. „Eingeklappt“ reduziert den Bereich auf
+seine schmale Orientierung beziehungsweise Überschrift. Die Auswahl wird lokal gespeichert und
+beim nächsten Start wiederhergestellt. Auch bei eingeklapptem Header bleibt „Layout“ erreichbar.
+
+Beim allerersten Start misst das Studio einmalig eine kurze rasterähnliche CPU-/Speicheroperation
+und berücksichtigt logische Kerne sowie den vom Browser gemeldeten Gerätespeicher. Daraus folgt
+eine Start-Rastergröße von Original, 75, 50 oder 25 Prozent. Das Ergebnis wird dauerhaft lokal
+gespeichert und nicht bei jedem Release neu gemessen. Die Rastergröße bleibt danach normal
+auswählbar; „Auf Standard zurücksetzen“ führt weiterhin zum kanonischen Originalwert zurück.
+
 Nach dem Laden erzeugt das Studio automatisch eine SVG-Vorschau. Jede Änderung an Rastergröße,
 Filtern, Preset, Tracing-Werten, Skalierung oder Formerkennung aktualisiert dieselbe Vorschau nach
 einer kurzen Entprellung. Schnelle Reglerbewegungen erzeugen dadurch keinen Verlaufsmüll;
@@ -193,7 +209,7 @@ ein SVG, während die Oberfläche bedienbar bleibt. „Variante übernehmen“ s
 sichtbar geprüfte Ergebnis als unveränderlichen Run im Verlauf. Nach der Übernahme bleibt der
 Button deaktiviert, bis Bild oder Parameter wieder eine neue Vorschau erzeugen.
 
-Der Standardlauf verwendet die Originalmaße, den Farbmodus und deterministische
+Der erste Lauf verwendet die einmalig empfohlene Rastergröße, den Farbmodus und deterministische
 `visioncortex`-Standardeinstellungen. Gleiche vorbereitete RGBA-Pixel erzeugen byteidentisches
 SVG. Die Ausgabe besitzt eine passende `viewBox`, und vollständig transparente Bildbereiche
 erzeugen kein Hintergrundelement.
@@ -228,7 +244,11 @@ Während der lokalen Konvertierung erscheint oben in der Arbeitsfläche ein Fort
 „Farbflächen erkennen“ und bei Ausschnitten „Ausschnitte aufbereiten“ zeigen den nativen
 Visioncortex-Fortschritt. „SVG-Konturen erzeugen“ nennt verarbeitete und gesamte Farbflächen. Die
 Phasen haben bewusst keinen erfundenen gemeinsamen Prozentwert. Nach fertiger Vorschau oder einem
-Fehler verschwindet das Feld; die Statuszeile zeigt anschließend wieder das Ergebnis.
+Fehler verschwindet das Feld; die Statuszeile zeigt anschließend wieder das Ergebnis. „Abbrechen“
+beendet auch den zugehörigen Worker, statt nur die Anzeige zu schließen. „Vorschau neu starten“
+erzeugt anschließend wieder einen normalen Entwurf. Eine neue Parameteränderung beendet einen
+veralteten laufenden Worker automatisch und startet nur die aktuelle Revision.
+Die KI verwendet über WebMCP mit `cancel_conversion` denselben Abbruchpfad wie der sichtbare Button.
 
 ## Kontextaktionen
 

@@ -68,7 +68,7 @@ a:focus-visible {
 .topbar {
   z-index: 2;
   display: grid;
-  grid-template-columns: auto auto auto auto minmax(22rem, 1fr) auto;
+  grid-template-columns: auto auto auto auto auto minmax(22rem, 1fr) auto;
   align-items: center;
   gap: 1rem;
   min-width: 0;
@@ -433,6 +433,12 @@ a:focus-visible {
   accent-color: #35d6f5;
 }
 
+.hardware-profile-summary {
+  color: #7893a3;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
 .workspace {
   display: grid;
   grid-template-rows: minmax(22rem, 1fr) auto auto;
@@ -463,7 +469,7 @@ a:focus-visible {
   left: 50%;
   z-index: 10;
   display: grid;
-  grid-template-columns: auto minmax(8rem, 14rem) auto;
+  grid-template-columns: auto minmax(8rem, 14rem) auto auto;
   align-items: center;
   gap: 0.65rem;
   padding: 0.55rem 0.75rem;
@@ -474,7 +480,6 @@ a:focus-visible {
   box-shadow: 0 0.3rem 1rem rgb(0 0 0 / 22%);
   font-size: 0.78rem;
   font-weight: 700;
-  pointer-events: none;
   transform: translateX(-50%);
 }
 
@@ -491,6 +496,15 @@ a:focus-visible {
   min-width: 4.5rem;
   color: #bfeefa;
   text-align: right;
+}
+
+.conversion-progress button {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #98626a;
+  border-radius: 0.35rem;
+  color: #ffdce0;
+  background: #4b2027;
+  font: inherit;
 }
 
 .comparison-stage[data-view-mode="comparison"].compare-active > .preview-pane,
@@ -786,7 +800,7 @@ a:focus-visible {
 
 @media (max-width: 74rem) {
   .topbar {
-    grid-template-columns: auto auto auto minmax(16rem, 1fr) auto;
+    grid-template-columns: auto auto auto auto minmax(16rem, 1fr) auto;
   }
 
   .privacy-badge {
@@ -804,7 +818,7 @@ a:focus-visible {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto auto;
   }
 
   .view-tabs {

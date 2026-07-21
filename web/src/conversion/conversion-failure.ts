@@ -5,6 +5,7 @@ export const ConversionFailureCode = {
   InvalidOptions: 4,
   WorkerFailed: 5,
   InvalidSvg: 6,
+  Cancelled: 7,
 } as const;
 
 export type ConversionFailureCode =
@@ -19,6 +20,7 @@ const failureMessages: Record<ConversionFailureCode, string> = {
   [ConversionFailureCode.WorkerFailed]:
     "Die lokale Konvertierung ist fehlgeschlagen. Bitte versuche es erneut.",
   [ConversionFailureCode.InvalidSvg]: "Die Engine hat kein gültiges SVG erzeugt.",
+  [ConversionFailureCode.Cancelled]: "Die Konvertierung wurde abgebrochen.",
 };
 
 export class ConversionFailure extends Error {

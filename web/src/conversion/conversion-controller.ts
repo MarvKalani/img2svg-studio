@@ -1,7 +1,7 @@
 import type { ConversionRun, NewConversionRun } from "../history/history-store";
 import { formatByteSize, utf8ByteLength } from "../format-byte-size";
 import type { ImageStore, LoadedImage } from "../image/image-store";
-import { toConversionFailure } from "./conversion-failure";
+import { ConversionFailureCode, toConversionFailure } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
 import { presentConversionProgress, type ConversionProgressUpdate } from "./conversion-progress";
 import { convertImage } from "./conversion-service";
@@ -21,6 +21,7 @@ export type ConversionAttempt =
     };
 
 export interface ConversionController {
+  cancel(): boolean;
   convert(): Promise<ConversionAttempt>;
   requestPreview(): void;
 }
@@ -47,7 +48,9 @@ export function initializeConversion(
   let previewTimer: number | undefined;
   let activePreview: Promise<void> | undefined;
   let activeRevision: number | undefined;
+  let activeAbortController: AbortController | undefined;
   let currentPreview: NewConversionRun | undefined;
+  let previewCancelled = false;
 
   const refreshPreview = async (): Promise<void> => {
     if (previewTimer !== undefined) {
@@ -71,12 +74,19 @@ export function initializeConversion(
 
     const revision = requestedRevision;
     const options = readOptions();
+    const abortController = new AbortController();
     activeRevision = revision;
-    activePreview = createPreview(loadedImage, options, (progress) => {
-      if (revision === requestedRevision) {
-        showConversionProgress(elements, progress);
-      }
-    })
+    activeAbortController = abortController;
+    activePreview = createPreview(
+      loadedImage,
+      options,
+      (progress) => {
+        if (revision === requestedRevision) {
+          showConversionProgress(elements, progress);
+        }
+      },
+      abortController.signal,
+    )
       .then((preview) => {
         if (revision !== requestedRevision) {
           return;
@@ -89,11 +99,20 @@ export function initializeConversion(
         if (revision !== requestedRevision) {
           return;
         }
-        showPreviewFailure(elements, error);
+        const failure = toConversionFailure(error);
+        if (failure.code === ConversionFailureCode.Cancelled) {
+          previewCancelled = true;
+          showCancelledPreview(elements);
+        } else {
+          showPreviewFailure(elements, failure);
+        }
       })
       .finally(() => {
         activePreview = undefined;
         activeRevision = undefined;
+        if (activeAbortController === abortController) {
+          activeAbortController = undefined;
+        }
       });
     await activePreview;
 
@@ -105,6 +124,9 @@ export function initializeConversion(
   const requestPreview = (): void => {
     requestedRevision += 1;
     currentPreview = undefined;
+    previewCancelled = false;
+    // A superseded WASM run has no useful output, so release its worker before queuing the latest.
+    activeAbortController?.abort();
     if (!imageStore.current()) {
       showNoImage(elements);
       return;
@@ -117,6 +139,20 @@ export function initializeConversion(
       previewTimer = undefined;
       void refreshPreview();
     }, previewDelayMilliseconds);
+  };
+
+  const cancel = (): boolean => {
+    if (previewTimer === undefined && activeAbortController === undefined) {
+      return false;
+    }
+    if (previewTimer !== undefined) {
+      window.clearTimeout(previewTimer);
+      previewTimer = undefined;
+    }
+    activeAbortController?.abort();
+    previewCancelled = true;
+    showCancelledPreview(elements);
+    return true;
   };
 
   const convert = async (): Promise<ConversionAttempt> => {
@@ -142,18 +178,24 @@ export function initializeConversion(
   };
 
   elements.button.addEventListener("click", () => {
-    void convert();
+    if (previewCancelled) {
+      requestPreview();
+    } else {
+      void convert();
+    }
   });
-  return Object.freeze({ convert, requestPreview });
+  elements.cancelButton.addEventListener("click", cancel);
+  return Object.freeze({ cancel, convert, requestPreview });
 }
 
 async function createPreview(
   loadedImage: LoadedImage,
   options: ConversionOptions,
   reportProgress: (progress: ConversionProgressUpdate) => void,
+  signal: AbortSignal,
 ): Promise<PreviewResult> {
   const startedAtMilliseconds = Date.now();
-  const svg = await convertImage(loadedImage.file, options, reportProgress);
+  const svg = await convertImage(loadedImage.file, options, reportProgress, signal);
   const renderedSvg = parseSvgDocument(svg);
   const metrics = readSvgMetrics(renderedSvg);
   return {
@@ -216,6 +258,14 @@ function showPreviewFailure(elements: ConversionElements, error: unknown): void 
   hideProgress(elements);
 }
 
+function showCancelledPreview(elements: ConversionElements): void {
+  elements.error.hidden = true;
+  elements.statusImage.textContent = "Vorschau abgebrochen";
+  elements.button.disabled = false;
+  elements.buttonLabel.textContent = "Vorschau neu starten";
+  hideProgress(elements);
+}
+
 function showNoImage(elements: ConversionElements): void {
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Variante übernehmen";
@@ -269,6 +319,7 @@ function previewMetricsStatus(run: NewConversionRun): string {
 interface ConversionElements {
   button: HTMLButtonElement;
   buttonLabel: HTMLElement;
+  cancelButton: HTMLButtonElement;
   downloadButton: HTMLButtonElement;
   error: HTMLParagraphElement;
   output: HTMLElement;
@@ -284,6 +335,7 @@ function readConversionElements(): ConversionElements {
   return {
     button: requireElement("#convert-button", HTMLButtonElement),
     buttonLabel: requireElement("#convert-button-label", HTMLElement),
+    cancelButton: requireElement("#cancel-conversion", HTMLButtonElement),
     downloadButton: requireElement("#download-svg", HTMLButtonElement),
     error: requireElement("#image-error", HTMLParagraphElement),
     output: requireElement("#svg-output", HTMLElement),

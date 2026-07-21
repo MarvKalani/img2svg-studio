@@ -1,6 +1,7 @@
 export const WebMcpToolName = {
   ApplyBackgroundRemoval: "apply_background_removal",
   ApplySmartSelection: "apply_smart_selection",
+  CancelConversion: "cancel_conversion",
   ConfigureConversion: "configure_conversion",
   ConvertCurrentImage: "convert_current_image",
   DownloadSelectedSvg: "download_selected_svg",

@@ -20,6 +20,7 @@ import { utf8ByteLength } from "../format-byte-size";
 
 export interface ConversionToolServices {
   applyOptions(options: ConversionOptions): void;
+  cancel: ConversionController["cancel"];
   convert: ConversionController["convert"];
   readOptions(): ConversionOptions;
 }
@@ -63,7 +64,22 @@ const emptyObjectSchema = Object.freeze({
 });
 
 export function createConversionTools(services: ConversionToolServices): readonly WebMcpTool[] {
-  return Object.freeze([configureConversionTool(services), convertCurrentImageTool(services)]);
+  return Object.freeze([
+    configureConversionTool(services),
+    convertCurrentImageTool(services),
+    cancelConversionTool(services),
+  ]);
+}
+
+function cancelConversionTool(services: ConversionToolServices): WebMcpTool {
+  return Object.freeze({
+    annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
+    description:
+      "Cancel the pending or active SVG preview conversion and terminate its worker immediately. The preview can be restarted afterwards.",
+    execute: () => JSON.stringify({ cancelled: services.cancel(), ok: true }),
+    inputSchema: emptyObjectSchema,
+    name: WebMcpToolName.CancelConversion,
+  });
 }
 
 function configureConversionTool(services: ConversionToolServices): WebMcpTool {

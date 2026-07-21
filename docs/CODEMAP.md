@@ -46,6 +46,9 @@ das sichtbare Produkt.
 | Engine-Optionen und Validierung | `crates/img2svg-core/src/conversion_options.rs` | `conversion_options.rs` in Core-Tests |
 | Native Formerkennung | `shape_detection.rs`, `visioncortex_shape.rs` | `detect_*.rs`, `shape_detection_fallback.rs`, passende Browser-Specs |
 | Historie und Wiederherstellung | `history-store.ts`, `history-controller.ts`, `restore-run.ts`, `history.css` | History-Unit-Tests, `history.spec.ts`, `restore-run.spec.ts` |
+| Header, Sidebar oder Verlauf anordnen | `layout/layout-preferences.ts`, `layout-preferences.css` | Layout-Unit-Test, `layout-preferences.spec.ts` |
+| Startleistung und Rasterempfehlung | `hardware/hardware-profile.ts`, `conversion-options-controller.ts` | Hardware-Unit-Test, `hardware-profile.spec.ts` |
+| Laufende Konvertierung abbrechen | `conversion-service.ts`, `conversion-controller.ts` | Worker-Lifecycle-Test, `cancel-conversion.spec.ts` |
 | A/B-Auswahl und Parameter-Diff | `compare-selection.ts`, `compare-controller.ts`, `diff-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts` |
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
 | Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |

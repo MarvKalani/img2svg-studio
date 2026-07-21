@@ -123,6 +123,7 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
       "get_capabilities",
       "configure_conversion",
       "convert_current_image",
+      "cancel_conversion",
       "get_workspace_state",
       "select_history_run",
       "delete_history_run",

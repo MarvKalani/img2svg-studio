@@ -30,7 +30,8 @@ lokal. Code-Bezeichner sind englisch.
 
 Der akzeptierte Entwurf besteht aus:
 
-- Kopfzeile und Statusanzeige.
+- Kopfzeile, Seitenleiste und Verlauf mit persistenten Modi Standard, angedockt und eingeklappt.
+- Statusanzeige und abbrechbare lokale Konvertierung.
 - linker Leiste für Bild, Zielgröße, wenige Konvertierungsparameter und KI-Manager.
 - zentraler Arbeitsfläche für Original, SVG und deckungsgleichen A/B-Split.
 - Parameter-Diff unter dem Vergleich.
@@ -62,7 +63,7 @@ Das MVP trennt Rastervorbereitung vor dem Tracing von der SVG-Skalierung danach:
 
 | Parameter | Bereich | Default | Bedeutung |
 |---|---:|---:|---|
-| Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | Original | VTracer-Eingabepixel bei festem Seitenverhältnis |
+| Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | einmalig gemessen: Original/75/50/25 % | VTracer-Eingabepixel bei festem Seitenverhältnis |
 | Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor VTracer |
 | Glättungsstärke | 0–100 % | 0 % | dosierte lokale Glättung vor der Schärfung |
 | Schärfungsstärke | 0–100 % | 0 % | dosierte Kantenverstärkung nach der Glättung |
@@ -110,7 +111,8 @@ Bild- und Parameteränderungen erzeugen nach kurzer Entprellung automatisch gena
 ungespeicherten SVG-Entwurf. Die Session-History zeigt Original, Entwurf und alle übernommenen
 Runs; nur die Runs liegen im `historyStore` und zählen als Varianten. Der Entwurf steht sofort auf
 B gegen Original A. „Variante übernehmen“ ersetzt ihn durch einen unveränderlichen Run mit stabiler
-ID. Einzelne Runs können gezielt gelöscht werden.
+ID. Einzelne Runs können gezielt gelöscht werden. Eine laufende Vorschau kann den Worker beenden
+und anschließend explizit neu gestartet werden; eine neuere Parameterrevision beendet ältere Arbeit.
 
 Ein Run kann angezeigt, als A oder B gewählt, als SVG heruntergeladen und zum Wiederherstellen
 seiner Einstellungen verwendet werden. Er referenziert unveränderlich die aktive Original- oder

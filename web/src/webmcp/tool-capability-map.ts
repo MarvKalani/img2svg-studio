@@ -10,6 +10,7 @@ export const toolCapabilityMap: readonly ToolCapability[] = Object.freeze([
   capability(WebMcpToolName.GetWorkspaceState, ".workspace"),
   capability(WebMcpToolName.ConfigureConversion, ".sidebar"),
   capability(WebMcpToolName.ConvertCurrentImage, "#convert-button"),
+  capability(WebMcpToolName.CancelConversion, "#cancel-conversion"),
   capability(WebMcpToolName.SelectHistoryRun, "#history-content"),
   capability(WebMcpToolName.DeleteHistoryRun, ".history-delete-button"),
   capability(

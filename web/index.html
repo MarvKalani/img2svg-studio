@@ -51,6 +51,36 @@
           </select>
         </label>
 
+        <details id="layout-settings" class="layout-settings">
+          <summary>Layout</summary>
+          <div class="layout-settings-fields">
+            <label>
+              <span>Header</span>
+              <select id="header-layout-mode" aria-label="Header-Layout">
+                <option value="standard">Standard</option>
+                <option value="docked">Angedockt</option>
+                <option value="collapsed">Eingeklappt</option>
+              </select>
+            </label>
+            <label>
+              <span>Seitenleiste</span>
+              <select id="sidebar-layout-mode" aria-label="Seitenleisten-Layout">
+                <option value="standard">Standard</option>
+                <option value="docked">Angedockt</option>
+                <option value="collapsed">Eingeklappt</option>
+              </select>
+            </label>
+            <label>
+              <span>Verlauf</span>
+              <select id="history-layout-mode" aria-label="Verlaufs-Layout">
+                <option value="standard">Standard</option>
+                <option value="docked">Angedockt</option>
+                <option value="collapsed">Eingeklappt</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
         <nav class="view-tabs" aria-label="Ansichtsmodus">
           <button id="view-svg" class="active" type="button" aria-pressed="true">SVG</button>
           <button id="view-processed" type="button" aria-pressed="false">Verarbeitet</button>
@@ -103,6 +133,7 @@
 
       <div class="studio-grid">
         <aside class="sidebar" aria-label="Konvertierungsparameter">
+          <div class="sidebar-mode-bar" aria-hidden="true">Parameter</div>
           <section
             class="source-card"
             aria-label="Eingabebild"
@@ -150,6 +181,7 @@
               <span>Rastergröße</span>
               <select id="raster-resize" aria-label="Rastergröße vor Tracing"></select>
             </label>
+            <output id="hardware-profile-summary" class="hardware-profile-summary"></output>
             <output
               id="prepared-raster-dimensions"
               class="target-dimensions"
@@ -521,6 +553,7 @@
                   max="100"
                 ></progress>
                 <output id="conversion-progress-detail">…</output>
+                <button id="cancel-conversion" type="button">Abbrechen</button>
               </div>
               <article id="primary-preview-pane" class="preview-pane">
                 <span id="primary-preview-label" class="preview-label">SVG</span>

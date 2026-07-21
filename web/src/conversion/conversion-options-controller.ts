@@ -14,6 +14,7 @@ import {
   rasterResizePresetId,
   rasterResizePresets,
   readRasterResizePreset,
+  type RasterResizeOptions,
   type RasterFilterMode as RasterFilterModeValue,
 } from "./raster-preprocessing";
 import {
@@ -40,7 +41,9 @@ export interface ConversionOptionsController {
   subscribe(listener: () => void): () => void;
 }
 
-export function initializeConversionOptions(): ConversionOptionsController {
+export function initializeConversionOptions(
+  initialResize: RasterResizeOptions = defaultConversionOptions.preprocessing.resize,
+): ConversionOptionsController {
   const elements = readElements();
   elements.rasterResize.replaceChildren(
     ...rasterResizePresets.map((preset) => new Option(preset.label, preset.id)),
@@ -159,7 +162,15 @@ export function initializeConversionOptions(): ConversionOptionsController {
     writeTracingOptions(defaultConversionOptions);
     renderChangedOptions();
   });
-  writeOptions(defaultConversionOptions);
+  writeOptions(
+    createConversionOptions({
+      ...defaultConversionOptions,
+      preprocessing: {
+        ...defaultConversionOptions.preprocessing,
+        resize: initialResize,
+      },
+    }),
+  );
   render();
 
   function writeOptions(options: Readonly<ConversionOptions>): void {

@@ -5,6 +5,7 @@ import "./footer.css";
 import "./compare-split.css";
 import "./workspace-view.css";
 import "./context-menu/context-menu.css";
+import "./layout/layout-preferences.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { detectBrowserAiCapabilities, showSupportedAiTools } from "./ai/browser-ai-capabilities";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
@@ -39,10 +40,19 @@ import {
 import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
 import { initializeContextMenu } from "./context-menu/context-menu-controller";
+import { initializeLayoutPreferences } from "./layout/layout-preferences";
+import {
+  hardwareRasterResize,
+  resolveHardwareProfile,
+  showHardwareProfile,
+} from "./hardware/hardware-profile";
 
 initializeLocalization();
+initializeLayoutPreferences();
 const handbookController = initializeInteractiveHandbook();
 showAppVersion();
+const hardwareProfile = resolveHardwareProfile();
+showHardwareProfile(hardwareProfile);
 const imageStore = createImageStore();
 const aiCapabilities = await detectBrowserAiCapabilities();
 const availableModelIds = new Set<"modnet" | "slimsam">([
@@ -53,7 +63,7 @@ showSupportedAiTools(aiCapabilities);
 const workspaceView = initializeWorkspaceView(imageStore);
 const modelRegistry = createModelRegistry(browserModelManifest, createBrowserModelLoader());
 const selectionActivity = createSelectionActivity();
-const optionsController = initializeConversionOptions();
+const optionsController = initializeConversionOptions(hardwareRasterResize(hardwareProfile));
 const compareController = initializeCompare(createCompareSelection(), workspaceView.showComparison);
 const historyController = initializeHistory(
   createHistoryStore(),
@@ -115,6 +125,7 @@ initializeModelManager(modelRegistry, availableModelIds);
 let webMcpRegistration: WebMcpRegistration | undefined;
 const conversionTools = createConversionTools({
   applyOptions: optionsController.apply,
+  cancel: conversionController.cancel,
   convert: conversionController.convert,
   readOptions: optionsController.current,
 });

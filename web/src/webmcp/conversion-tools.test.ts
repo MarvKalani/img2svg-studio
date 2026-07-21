@@ -9,6 +9,7 @@ describe("WebMCP conversion tools", () => {
     const applyOptions = vi.fn();
     const tools = createConversionTools({
       applyOptions,
+      cancel: vi.fn(),
       convert: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
     });
@@ -103,6 +104,7 @@ describe("WebMCP conversion tools", () => {
     const applyOptions = vi.fn();
     const configure = createConversionTools({
       applyOptions,
+      cancel: vi.fn(),
       convert: vi.fn(),
       readOptions: () => ({ ...defaultConversionOptions }),
     })[0]!;
@@ -128,6 +130,7 @@ describe("WebMCP conversion tools", () => {
     const convert = vi.fn().mockResolvedValue({ ok: true, run: conversionRun() });
     const tool = createConversionTools({
       applyOptions: vi.fn(),
+      cancel: vi.fn(),
       convert,
       readOptions: () => ({ ...defaultConversionOptions }),
     })[1]!;
@@ -145,6 +148,22 @@ describe("WebMCP conversion tools", () => {
       sizeBytes: 11,
       widthPixels: 256,
     });
+  });
+
+  test("Given an active preview, when cancel_conversion executes, then the shared controller cancels it", async () => {
+    const cancel = vi.fn().mockReturnValue(true);
+    const tool = createConversionTools({
+      applyOptions: vi.fn(),
+      cancel,
+      convert: vi.fn(),
+      readOptions: () => ({ ...defaultConversionOptions }),
+    })[2]!;
+
+    const output = JSON.parse(await tool.execute({}));
+
+    expect(tool.name).toBe("cancel_conversion");
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(output).toEqual({ cancelled: true, ok: true });
   });
 });
 
