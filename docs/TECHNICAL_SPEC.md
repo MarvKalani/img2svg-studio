@@ -263,9 +263,16 @@ Die UI verwendet kleine Feature-Module und zentrale Application Services:
 - `exportService`: bytegenauer SVG-Download.
 - `modelRegistry`: Zustandsautomat und deduplizierte Modell-Ladevorgänge.
 - `webMcpAdapter`: Tool-Registrierung und Mapping auf dieselben Services.
+- `contextMenuController`: DOM-Grenze für typisierte Quellen- und Parameterkommandos.
 
 Der sichtbare UI-Zustand wird aus diesen Stores gerendert. WebMCP besitzt keinen zweiten,
 abweichenden Schattenzustand.
+
+`contextMenuController` hält keinen eigenen Anwendungszustand. Es liest die aktuelle
+`compareSelection`, validiert `data-option-key` gegen `ConversionOptionKey` und ruft ausschließlich
+bestehende Controller auf. `conversionOptionsController.reset` schreibt genau den kanonischen
+Default des gewählten Parameters und löst denselben Preview-Listener wie eine manuelle Änderung
+aus. Handbuchthemen werden über `InteractiveHandbookController.showTopic` geöffnet.
 
 `historyController` rendert Rasteroriginal, einen optionalen ungespeicherten Entwurf und alle
 Run-Karten der aktuellen Bild-Session. Der Entwurf bleibt bewusst außerhalb des `historyStore` und

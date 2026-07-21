@@ -4,6 +4,7 @@ import { translateGermanText } from "./localization";
 describe("German to English UI translation", () => {
   test.each([
     ["Variante übernehmen", "Accept variant"],
+    ["Auf Standard zurücksetzen", "Reset to default"],
     ["  Noch kein Bild  ", "  No image yet  "],
     ["3 Varianten", "3 variants"],
     ["0 Varianten · 1 Entwurf", "0 variants · 1 draft"],
@@ -15,6 +16,8 @@ describe("German to English UI translation", () => {
     ["Maske mit 3 Punkten aktualisiert · WebGPU", "Mask updated with 3 points · WebGPU"],
     ["10 Tracing-Parameter", "10 tracing parameters"],
     ["Standard: 2 Stellen", "Default: 2 decimals"],
+    ["Kreis erkennen", "Detect circle"],
+    ["Standard: Ein", "Default: On"],
     ["Zauberstab-Auswahl lokal entfernt.", "Magic Wand selection removed locally."],
     ["124 Pixel ausgewählt · Empfindlichkeit 15 %", "124 pixels selected · Sensitivity 15%"],
     ["Bearbeitet · V2", "Edited · V2"],

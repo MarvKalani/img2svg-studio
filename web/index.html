@@ -146,7 +146,7 @@
 
           <section class="control-panel preprocessing-panel" data-help-key="preprocessing">
             <h2>Raster vor Tracing</h2>
-            <label data-help-key="rasterResize">
+            <label data-help-key="rasterResize" data-option-key="rasterResize">
               <span>Rastergröße</span>
               <select id="raster-resize" aria-label="Rastergröße vor Tracing"></select>
             </label>
@@ -156,7 +156,7 @@
               aria-label="Vorbereitete Rastermaße"
               >—</output
             >
-            <label data-help-key="rasterFilter">
+            <label data-help-key="rasterFilter" data-option-key="rasterFilter">
               <span>Filter</span>
               <select id="raster-filter" aria-label="Rasterfilter">
                 <option value="color" selected>Farbe</option>
@@ -164,7 +164,7 @@
                 <option value="monochrome">Schwarzweiß</option>
               </select>
             </label>
-            <label data-help-key="rasterDetail">
+            <label data-help-key="rasterDetail" data-option-key="rasterDetail">
               <span>Detailfilter</span>
               <select id="raster-detail" aria-label="Raster-Detailfilter">
                 <option value="none" selected>Aus</option>
@@ -176,6 +176,7 @@
               id="monochrome-threshold-control"
               class="range-label"
               data-help-key="monochromeThreshold"
+              data-option-key="monochromeThreshold"
               hidden
             >
               <span>Schwellwert</span>
@@ -198,11 +199,11 @@
 
           <section class="control-panel" data-help-key="svgOutput">
             <h2>SVG-Ausgabe</h2>
-            <label data-help-key="preset">
+            <label data-help-key="preset" data-option-key="preset">
               <span>Preset</span>
               <select id="conversion-preset" aria-label="Preset"></select>
             </label>
-            <label data-help-key="scalePercent">
+            <label data-help-key="scalePercent" data-option-key="scalePercent">
               <span>SVG-Skalierung</span>
               <select id="scale-percent" aria-label="Zielgröße">
                 <option value="25">25 %</option>
@@ -221,7 +222,11 @@
 
           <section class="control-panel" data-help-key="colors">
             <h2>Farben</h2>
-            <label class="range-label" data-help-key="colorPrecision">
+            <label
+              class="range-label"
+              data-help-key="colorPrecision"
+              data-option-key="colorPrecision"
+            >
               <span>Farbpräzision</span>
               <output
                 id="color-precision-value"
@@ -251,7 +256,11 @@
                 Standardwerte
               </button>
             </div>
-            <label class="range-label" data-help-key="pathPrecision">
+            <label
+              class="range-label"
+              data-help-key="pathPrecision"
+              data-option-key="pathPrecision"
+            >
               <span>Pfadpräzision</span>
               <output id="path-precision-value" for="path-precision" aria-label="Pfadpräzision Wert"
                 >2 Stellen</output
@@ -266,7 +275,11 @@
               />
               <small>Standard: 2 Stellen</small>
             </label>
-            <label class="range-label" data-help-key="filterSpeckle">
+            <label
+              class="range-label"
+              data-help-key="filterSpeckle"
+              data-option-key="filterSpeckle"
+            >
               <span>Speckle-Filter</span>
               <output
                 id="filter-speckle-value"
@@ -287,7 +300,7 @@
             <details class="advanced-options">
               <summary>Erweiterte Parameter · 7</summary>
               <div class="advanced-options-content">
-                <label data-help-key="hierarchical">
+                <label data-help-key="hierarchical" data-option-key="hierarchical">
                   <span>Überlagerung</span>
                   <select id="hierarchical-mode" aria-label="VTracer-Überlagerung">
                     <option value="stacked" selected>Gestapelt</option>
@@ -295,7 +308,7 @@
                   </select>
                   <small>Standard: Gestapelt</small>
                 </label>
-                <label data-help-key="curveFitting">
+                <label data-help-key="curveFitting" data-option-key="curveFitting">
                   <span>Kurvenmodus</span>
                   <select id="curve-fitting" aria-label="VTracer-Kurvenmodus">
                     <option value="pixel">Pixel</option>
@@ -304,7 +317,11 @@
                   </select>
                   <small>Standard: Spline</small>
                 </label>
-                <label class="range-label" data-help-key="layerDifference">
+                <label
+                  class="range-label"
+                  data-help-key="layerDifference"
+                  data-option-key="layerDifference"
+                >
                   <span>Verlaufsschritt</span>
                   <output id="layer-difference-value" for="layer-difference">16</output>
                   <input
@@ -317,7 +334,11 @@
                   />
                   <small>Standard: 16</small>
                 </label>
-                <label class="range-label" data-help-key="cornerThreshold">
+                <label
+                  class="range-label"
+                  data-help-key="cornerThreshold"
+                  data-option-key="cornerThreshold"
+                >
                   <span>Eckenwinkel</span>
                   <output id="corner-threshold-value" for="corner-threshold">60°</output>
                   <input
@@ -330,7 +351,11 @@
                   />
                   <small>Standard: 60°</small>
                 </label>
-                <label class="range-label" data-help-key="lengthThreshold">
+                <label
+                  class="range-label"
+                  data-help-key="lengthThreshold"
+                  data-option-key="lengthThreshold"
+                >
                   <span>Segmentlänge</span>
                   <output id="length-threshold-value" for="length-threshold">4,0 px</output>
                   <input
@@ -344,7 +369,11 @@
                   />
                   <small>Standard: 4,0 px</small>
                 </label>
-                <label class="range-label" data-help-key="maxIterations">
+                <label
+                  class="range-label"
+                  data-help-key="maxIterations"
+                  data-option-key="maxIterations"
+                >
                   <span>Glättungsdurchläufe</span>
                   <output id="max-iterations-value" for="max-iterations">10</output>
                   <input
@@ -357,7 +386,11 @@
                   />
                   <small>Standard: 10</small>
                 </label>
-                <label class="range-label" data-help-key="spliceThreshold">
+                <label
+                  class="range-label"
+                  data-help-key="spliceThreshold"
+                  data-option-key="spliceThreshold"
+                >
                   <span>Verbindungswinkel</span>
                   <output id="splice-threshold-value" for="splice-threshold">45°</output>
                   <input
@@ -386,6 +419,8 @@
                 type="button"
                 role="switch"
                 aria-checked="false"
+                data-help-key="shapeDetection"
+                data-option-key="shapeDetection"
               >
                 <span></span>
                 <span class="visually-hidden">Native Formen aktivieren</span>
@@ -673,6 +708,13 @@
         </nav>
       </footer>
     </div>
+    <div
+      id="context-menu"
+      class="context-menu"
+      role="menu"
+      aria-label="Kontextaktionen"
+      hidden
+    ></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

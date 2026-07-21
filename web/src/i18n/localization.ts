@@ -205,6 +205,12 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "Hilfe beim Überfahren": "Help on hover",
   "Interaktives Handbuch": "Interactive handbook",
   Kontexthilfe: "Context help",
+  Kontextaktionen: "Context actions",
+  "Im Handbuch erklären": "Explain in handbook",
+  "Auf Standard zurücksetzen": "Reset to default",
+  "Original öffnen": "Open original",
+  "SVG anzeigen": "Show SVG",
+  "Entwurf übernehmen": "Accept draft",
   Kurvenmodus: "Curve mode",
   Pixel: "Pixel",
   Segmentlänge: "Segment length",
@@ -223,6 +229,14 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "VTracer-Verlaufsschritt": "VTracer gradient step",
   "Zeigt die Erklärung des Elements unter der Maus.":
     "Shows the explanation for the element under the pointer.",
+  "Ersetzt passende VTracer-Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.":
+    "Replaces matching VTracer contours with native SVG circles, rectangles, ellipses, lines, or polygons.",
+  "Der Hauptschalter aktiviert die Erkennung; die einzelnen Typen begrenzen, welche Formen ersetzt werden dürfen.":
+    "The main switch enables detection; individual types limit which shapes may be replaced.",
+  "Erlaubt, geeignete Konturen dieses Typs als natives SVG-Element auszugeben.":
+    "Allows suitable contours of this type to be emitted as a native SVG element.",
+  "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein VTracer-Pfad.":
+    "Only applies while native-shape detection is enabled; otherwise the contour remains a VTracer path.",
   "Der sichtbare Entwurf wird ersetzt; erst die Übernahme erzeugt eine gespeicherte Variante.":
     "The visible draft is replaced; only acceptance creates a saved variant.",
   "Speichert genau die aktuell sichtbare Vorschau als unveränderlichen Run im Verlauf.":

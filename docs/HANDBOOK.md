@@ -52,6 +52,8 @@ Die fachliche Aufteilung von Engine-Optionen und Historien-Styles sowie die Code
 Der lokale Zauberstab mit sichtbarer Farbauswahl und Empfindlichkeit folgt mit `260720.05`.
 Revision `260721.02` zeigt die automatische Vorschau sofort als ungespeicherten A/B-Entwurf
 gegen das Original und trennt direkte Rasterwerkzeuge vom Tracing.
+Revision `260721.03` ergänzt quell- und parameterspezifische Kontextaktionen über die rechte
+Maustaste.
 
 ### Sprache
 
@@ -203,6 +205,22 @@ wird die Vorschau erneut berechnet.
 
 Dieser Ablauf wird mit jedem vertikalen Slice ergänzt und erst dann als verfügbar bezeichnet,
 wenn er im Browser getestet wurde.
+
+## Kontextaktionen
+
+Ein Rechtsklick auf die Arbeitsfläche öffnet ein Menü für die tatsächlich darunterliegende
+Quelle. Im A/B-Vergleich bestimmt die Trennerposition, ob A oder B gemeint ist. Das Original kann
+direkt geöffnet werden; ein Entwurf bietet SVG-Ansicht, Download und Übernahme, ein gespeicherter
+Run seinen Download. In „Original“ und „Verarbeitet“ zeigt derselbe Rechtsklick Zauberstab,
+Hintergrundentfernung und – bei verfügbarer Browserunterstützung – Smart Select. Noch nicht
+einsatzbereite Werkzeuge bleiben sichtbar deaktiviert.
+
+Ein Rechtsklick auf einen einzelnen Parameter bietet „Im Handbuch erklären“ und „Auf Standard
+zurücksetzen“. Der Handbuchbefehl öffnet sofort das passende Thema. Der Reset ändert ausschließlich
+diesen Wert und aktualisiert den Live-Entwurf; beim Sammelparameter „Preset“ bedeutet der
+Standardwert das vollständige Profil „Ausgewogen“. Hauptschalter und einzelne Typen der nativen
+Formerkennung lassen sich ebenso unabhängig auf ihre Standards zurücksetzen. Escape, ein Klick außerhalb oder eine
+ausgeführte Aktion schließen das Menü. Pfeiltasten bewegen den Fokus zwischen verfügbaren Aktionen.
 
 Die Kopfzeile schaltet die gemeinsame Arbeitsfläche gezielt zwischen SVG, der aktuellen
 verarbeiteten Rasterversion, dem unveränderten Original und dem A/B-Vergleich um. Während der

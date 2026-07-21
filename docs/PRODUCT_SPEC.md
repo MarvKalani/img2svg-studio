@@ -35,6 +35,7 @@ Der akzeptierte Entwurf besteht aus:
 - zentraler Arbeitsfläche für Original, SVG und deckungsgleichen A/B-Split.
 - Parameter-Diff unter dem Vergleich.
 - Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
+- quell- und parameterspezifischen Kontextaktionen über die rechte Maustaste.
 - Fußbereich mit einer sichtbaren Version im Format `YYMMDD.RR`.
 - direkt erreichbaren, zweisprachigen Seiten für Impressum, Datenschutz und Lizenzen.
 
@@ -137,6 +138,14 @@ Empfindlichkeit von 0 bis 100 Prozent berechnet sie sofort mit demselben Klickpu
 „Auswahl entfernen“ setzt nur den Alpha-Kanal der markierten Pixel auf null; „Verwerfen“ ändert
 nichts. Das Ergebnis wird als manuell bearbeitete Eingabeversion übernommen, während Original und
 bereits angenommene History-Runs erhalten bleiben.
+
+## 6.2 Kontextaktionen
+
+Das Kontextmenü löst die angeklickte A/B-Seite anhand der sichtbaren Trennerposition auf. Raster,
+Entwurf und gespeicherter Run erhalten jeweils nur passende Kommandos; vorübergehend nicht
+verfügbare Werkzeuge sind deaktiviert. Parameter mit `data-option-key` bieten einen validierten
+Einzelreset und den direkten Sprung in ihr Handbuchthema. Das Menü ist per Escape, Tab sowie
+Auf-/Ab-Pfeil bedienbar und schließt nach jeder ausgeführten Aktion.
 
 ## 7. KI-Manager
 

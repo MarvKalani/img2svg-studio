@@ -14,6 +14,7 @@ export interface CompareController {
   assign(slot: CompareSlot, source: ComparisonSource): void;
   clear(): void;
   current(): ComparedRuns;
+  download(slot: CompareSlot): boolean;
 }
 
 export function initializeCompare(
@@ -77,12 +78,10 @@ export function initializeCompare(
   elements.slider.addEventListener("input", renderSplit);
   initializeDividerDrag(elements, renderSplit);
   elements.onlyDifferences.addEventListener("change", renderSettings);
-  elements.downloadA.addEventListener("click", () =>
-    downloadComparedSource(selection.current().a, "a"),
-  );
-  elements.downloadB.addEventListener("click", () =>
-    downloadComparedSource(selection.current().b, "b"),
-  );
+  const download = (slot: CompareSlot): boolean =>
+    downloadComparedSource(selection.current()[slot], slot);
+  elements.downloadA.addEventListener("click", () => download("a"));
+  elements.downloadB.addEventListener("click", () => download("b"));
 
   return {
     assign: (slot, run) => {
@@ -97,12 +96,13 @@ export function initializeCompare(
       render();
     },
     current: selection.current,
+    download,
   };
 }
 
-function downloadComparedSource(source: ComparisonSource | undefined, slot: CompareSlot): void {
+function downloadComparedSource(source: ComparisonSource | undefined, slot: CompareSlot): boolean {
   if (!source || source.kind !== ComparisonSourceKind.Run) {
-    return;
+    return false;
   }
   const { run } = source;
 
@@ -110,6 +110,7 @@ function downloadComparedSource(source: ComparisonSource | undefined, slot: Comp
     bytes: run.svg,
     fileName: svgFileName(run.fileName).replace(/\.svg$/u, `-${slot}-run-${String(run.id)}.svg`),
   });
+  return true;
 }
 
 function renderDownload(

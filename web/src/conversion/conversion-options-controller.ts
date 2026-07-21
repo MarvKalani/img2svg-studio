@@ -30,10 +30,13 @@ import {
   type NativeShapeType,
   type NativeShapeTypes,
 } from "./shape-options";
+import { ConversionOptionKey, shapeOptionKey } from "./conversion-option-key";
 
 export interface ConversionOptionsController {
   apply(options: ConversionOptions): void;
+  canReset(key: ConversionOptionKey): boolean;
   current(): ConversionOptions;
+  reset(key: ConversionOptionKey): boolean;
   showSourceDimensions(image: DecodedImage): void;
   subscribe(listener: () => void): () => void;
 }
@@ -196,12 +199,170 @@ export function initializeConversionOptions(): ConversionOptionsController {
     elements.spliceThreshold.value = String(options.spliceThreshold);
   }
 
+  function canReset(key: ConversionOptionKey): boolean {
+    const options = current();
+    switch (key) {
+      case ConversionOptionKey.ColorPrecision:
+        return options.colorPrecision !== defaultConversionOptions.colorPrecision;
+      case ConversionOptionKey.CornerThreshold:
+        return options.cornerThreshold !== defaultConversionOptions.cornerThreshold;
+      case ConversionOptionKey.CurveFitting:
+        return options.curveFitting !== defaultConversionOptions.curveFitting;
+      case ConversionOptionKey.FilterSpeckle:
+        return options.filterSpeckle !== defaultConversionOptions.filterSpeckle;
+      case ConversionOptionKey.Hierarchical:
+        return options.hierarchical !== defaultConversionOptions.hierarchical;
+      case ConversionOptionKey.LayerDifference:
+        return options.layerDifference !== defaultConversionOptions.layerDifference;
+      case ConversionOptionKey.LengthThreshold:
+        return options.lengthThreshold !== defaultConversionOptions.lengthThreshold;
+      case ConversionOptionKey.MaxIterations:
+        return options.maxIterations !== defaultConversionOptions.maxIterations;
+      case ConversionOptionKey.MonochromeThreshold:
+        return (
+          options.preprocessing.monochromeThreshold !==
+          defaultConversionOptions.preprocessing.monochromeThreshold
+        );
+      case ConversionOptionKey.PathPrecision:
+        return options.pathPrecision !== defaultConversionOptions.pathPrecision;
+      case ConversionOptionKey.Preset:
+        return (
+          matchingConversionPresetId(options) !==
+          matchingConversionPresetId(defaultConversionOptions)
+        );
+      case ConversionOptionKey.RasterDetail:
+        return (
+          options.preprocessing.detailMode !== defaultConversionOptions.preprocessing.detailMode
+        );
+      case ConversionOptionKey.RasterFilter:
+        return (
+          options.preprocessing.filterMode !== defaultConversionOptions.preprocessing.filterMode
+        );
+      case ConversionOptionKey.RasterResize:
+        return (
+          rasterResizePresetId(options.preprocessing.resize) !==
+          rasterResizePresetId(defaultConversionOptions.preprocessing.resize)
+        );
+      case ConversionOptionKey.ScalePercent:
+        return options.scalePercent !== defaultConversionOptions.scalePercent;
+      case ConversionOptionKey.ShapeCircle:
+        return options.shapeDetection.types.circle !== defaultShapeDetectionOptions.types.circle;
+      case ConversionOptionKey.ShapeDetection:
+        return options.shapeDetection.enabled !== defaultShapeDetectionOptions.enabled;
+      case ConversionOptionKey.ShapeEllipse:
+        return options.shapeDetection.types.ellipse !== defaultShapeDetectionOptions.types.ellipse;
+      case ConversionOptionKey.ShapeLine:
+        return options.shapeDetection.types.line !== defaultShapeDetectionOptions.types.line;
+      case ConversionOptionKey.ShapePolygon:
+        return options.shapeDetection.types.polygon !== defaultShapeDetectionOptions.types.polygon;
+      case ConversionOptionKey.ShapeRectangle:
+        return (
+          options.shapeDetection.types.rectangle !== defaultShapeDetectionOptions.types.rectangle
+        );
+      case ConversionOptionKey.SpliceThreshold:
+        return options.spliceThreshold !== defaultConversionOptions.spliceThreshold;
+    }
+  }
+
+  function reset(key: ConversionOptionKey): boolean {
+    if (!canReset(key)) {
+      return false;
+    }
+    writeDefaultOption(key);
+    renderChangedOptions();
+    return true;
+  }
+
+  function writeDefaultOption(key: ConversionOptionKey): void {
+    switch (key) {
+      case ConversionOptionKey.ColorPrecision:
+        elements.colorPrecision.value = String(defaultConversionOptions.colorPrecision);
+        return;
+      case ConversionOptionKey.CornerThreshold:
+        elements.cornerThreshold.value = String(defaultConversionOptions.cornerThreshold);
+        return;
+      case ConversionOptionKey.CurveFitting:
+        elements.curveFitting.value = defaultConversionOptions.curveFitting;
+        return;
+      case ConversionOptionKey.FilterSpeckle:
+        elements.filterSpeckle.value = String(defaultConversionOptions.filterSpeckle);
+        return;
+      case ConversionOptionKey.Hierarchical:
+        elements.hierarchical.value = defaultConversionOptions.hierarchical;
+        return;
+      case ConversionOptionKey.LayerDifference:
+        elements.layerDifference.value = String(defaultConversionOptions.layerDifference);
+        return;
+      case ConversionOptionKey.LengthThreshold:
+        elements.lengthThreshold.value = String(defaultConversionOptions.lengthThreshold);
+        return;
+      case ConversionOptionKey.MaxIterations:
+        elements.maxIterations.value = String(defaultConversionOptions.maxIterations);
+        return;
+      case ConversionOptionKey.MonochromeThreshold:
+        elements.monochromeThreshold.value = String(
+          defaultConversionOptions.preprocessing.monochromeThreshold,
+        );
+        return;
+      case ConversionOptionKey.PathPrecision:
+        elements.pathPrecision.value = String(defaultConversionOptions.pathPrecision);
+        return;
+      case ConversionOptionKey.Preset:
+        writeOptions(defaultConversionOptions);
+        return;
+      case ConversionOptionKey.RasterDetail:
+        elements.rasterDetail.value = defaultConversionOptions.preprocessing.detailMode;
+        return;
+      case ConversionOptionKey.RasterFilter:
+        elements.rasterFilter.value = defaultConversionOptions.preprocessing.filterMode;
+        return;
+      case ConversionOptionKey.RasterResize:
+        elements.rasterResize.value = rasterResizePresetId(
+          defaultConversionOptions.preprocessing.resize,
+        );
+        return;
+      case ConversionOptionKey.ScalePercent:
+        elements.scalePercent.value = String(defaultConversionOptions.scalePercent);
+        return;
+      case ConversionOptionKey.ShapeCircle:
+        requireShapeInput(shapeTypeInputs, "circle").checked =
+          defaultShapeDetectionOptions.types.circle;
+        return;
+      case ConversionOptionKey.ShapeDetection:
+        elements.shapeDetection.setAttribute(
+          "aria-checked",
+          String(defaultShapeDetectionOptions.enabled),
+        );
+        return;
+      case ConversionOptionKey.ShapeEllipse:
+        requireShapeInput(shapeTypeInputs, "ellipse").checked =
+          defaultShapeDetectionOptions.types.ellipse;
+        return;
+      case ConversionOptionKey.ShapeLine:
+        requireShapeInput(shapeTypeInputs, "line").checked =
+          defaultShapeDetectionOptions.types.line;
+        return;
+      case ConversionOptionKey.ShapePolygon:
+        requireShapeInput(shapeTypeInputs, "polygon").checked =
+          defaultShapeDetectionOptions.types.polygon;
+        return;
+      case ConversionOptionKey.ShapeRectangle:
+        requireShapeInput(shapeTypeInputs, "rectangle").checked =
+          defaultShapeDetectionOptions.types.rectangle;
+        return;
+      case ConversionOptionKey.SpliceThreshold:
+        elements.spliceThreshold.value = String(defaultConversionOptions.spliceThreshold);
+    }
+  }
+
   return {
     apply: (options) => {
       writeOptions(options);
       renderChangedOptions();
     },
+    canReset,
     current,
+    reset,
     showSourceDimensions: (image) => {
       sourceDimensions = image;
       render();
@@ -338,6 +499,9 @@ function createShapeTypeInputs(
     inputs.set(shape.key, input);
 
     const label = document.createElement("label");
+    const optionKey = shapeOptionKey(shape.key);
+    label.dataset.helpKey = optionKey;
+    label.dataset.optionKey = optionKey;
     label.append(input, shape.label);
     return label;
   });

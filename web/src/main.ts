@@ -4,6 +4,7 @@ import "./help/interactive-handbook.css";
 import "./footer.css";
 import "./compare-split.css";
 import "./workspace-view.css";
+import "./context-menu/context-menu.css";
 import { initializeBackgroundRemoval } from "./ai/background-removal-controller";
 import { detectBrowserAiCapabilities, showSupportedAiTools } from "./ai/browser-ai-capabilities";
 import { createBrowserModelLoader } from "./ai/browser-model-loader";
@@ -37,9 +38,10 @@ import {
 } from "./webmcp/webmcp-adapter";
 import { createConversionTools } from "./webmcp/conversion-tools";
 import { createStudioTools } from "./webmcp/studio-tools";
+import { initializeContextMenu } from "./context-menu/context-menu-controller";
 
 initializeLocalization();
-initializeInteractiveHandbook();
+const handbookController = initializeInteractiveHandbook();
 showAppVersion();
 const imageStore = createImageStore();
 const aiCapabilities = await detectBrowserAiCapabilities();
@@ -101,6 +103,14 @@ conversionController = initializeConversion(imageStore, optionsController.curren
 optionsController.subscribe(conversionController.requestPreview);
 void initializePwaIngress(imageLoader);
 const svgDownloadController = initializeSvgDownload();
+initializeContextMenu({
+  compare: compareController,
+  conversion: conversionController,
+  download: svgDownloadController,
+  handbook: handbookController,
+  options: optionsController,
+  workspace: workspaceView,
+});
 initializeModelManager(modelRegistry, availableModelIds);
 let webMcpRegistration: WebMcpRegistration | undefined;
 const conversionTools = createConversionTools({

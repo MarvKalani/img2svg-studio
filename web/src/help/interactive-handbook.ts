@@ -5,6 +5,10 @@ interface HelpTopic {
   readonly title: string;
 }
 
+export interface InteractiveHandbookController {
+  showTopic(key: string, target?: HTMLElement): boolean;
+}
+
 const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   accept: topic(
     "Variante übernehmen",
@@ -117,6 +121,17 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
     "Dieser Wert verändert nicht die Pixel, die VTracer analysiert. Dafür dient die Rastergröße.",
     "Original · 100 %",
   ),
+  shapeDetection: topic(
+    "Native Formen",
+    "Ersetzt passende VTracer-Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.",
+    "Der Hauptschalter aktiviert die Erkennung; die einzelnen Typen begrenzen, welche Formen ersetzt werden dürfen.",
+    "Aus",
+  ),
+  shapeCircle: shapeTypeTopic("Kreis erkennen"),
+  shapeEllipse: shapeTypeTopic("Ellipse erkennen"),
+  shapeLine: shapeTypeTopic("Linie erkennen"),
+  shapePolygon: shapeTypeTopic("Polygon erkennen"),
+  shapeRectangle: shapeTypeTopic("Rechteck erkennen"),
   source: topic(
     "Eingabebild",
     "Lädt ein lokales PNG-, JPEG- oder WebP-Bild oder das mitgelieferte Logo-Beispiel.",
@@ -140,7 +155,16 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   ),
 });
 
-export function initializeInteractiveHandbook(): void {
+function shapeTypeTopic(title: string): HelpTopic {
+  return topic(
+    title,
+    "Erlaubt, geeignete Konturen dieses Typs als natives SVG-Element auszugeben.",
+    "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein VTracer-Pfad.",
+    "Ein",
+  );
+}
+
+export function initializeInteractiveHandbook(): InteractiveHandbookController {
   const elements = readElements();
   let enabled = true;
   let highlighted: HTMLElement | undefined;
@@ -166,6 +190,19 @@ export function initializeInteractiveHandbook(): void {
   });
   elements.index.replaceChildren(...createIndexEntries());
 
+  const controller: InteractiveHandbookController = Object.freeze({
+    showTopic: (key: string, target?: HTMLElement) => {
+      if (!helpTopics[key]) {
+        return false;
+      }
+      setOpen(true);
+      renderTopic(key, target);
+      // Opening the drawer shifts controls and may synthesize hover over another topic.
+      requestAnimationFrame(() => renderTopic(key, target));
+      return true;
+    },
+  });
+
   function setOpen(open: boolean): void {
     elements.drawer.hidden = !open;
     elements.open.setAttribute("aria-expanded", String(open));
@@ -181,13 +218,20 @@ export function initializeInteractiveHandbook(): void {
     }
     const helpTarget = target.closest<HTMLElement>("[data-help-key]");
     const key = helpTarget?.dataset.helpKey;
-    const selected = key ? helpTopics[key] : undefined;
-    if (!selected || !helpTarget) {
+    if (!key || !helpTopics[key] || !helpTarget) {
+      return;
+    }
+    renderTopic(key, helpTarget);
+  }
+
+  function renderTopic(key: string, helpTarget?: HTMLElement): void {
+    const selected = helpTopics[key];
+    if (!selected) {
       return;
     }
     highlighted?.classList.remove("help-target-active");
     highlighted = helpTarget;
-    highlighted.classList.add("help-target-active");
+    highlighted?.classList.add("help-target-active");
     elements.title.textContent = selected.title;
     elements.description.textContent = selected.description;
     elements.effect.textContent = selected.effect;
@@ -195,6 +239,8 @@ export function initializeInteractiveHandbook(): void {
       ? `Standard: ${selected.defaultValue}`
       : "";
   }
+
+  return controller;
 }
 
 function createIndexEntries(): HTMLElement[] {
