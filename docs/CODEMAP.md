@@ -28,7 +28,7 @@ das sichtbare Produkt.
 | Rust-Core | `crates/img2svg-core/src/lib.rs` | RGBA validieren, Tracing ausführen und SVG zusammensetzen |
 | MCP-Prozess | `mcp/src/server.ts` | Stateless Streamable-HTTP-Server starten |
 | MCP-App | `mcp/src/mcp-app.ts` | Tools und Widget-Ressource registrieren |
-| PWA | `web/public/manifest.webmanifest`, `web/public/service-worker.js` | Share-/File-Eingang ohne dauerhaften App-Cache |
+| PWA und Cache-Version | `release/app-version.ts`, `vite.config.ts`, `web/public/_headers`, `web/public/service-worker.js` | versionierte Assets und Share-/File-Eingang ohne dauerhaften App-Cache |
 
 ## Änderungskarte
 

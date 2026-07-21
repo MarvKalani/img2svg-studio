@@ -75,3 +75,8 @@ Vite emits static files to `web/dist`. Cloudflare Pages serves that directory an
 checked-in `_headers` file. The deployment has no secret, database, function or paid runtime. The
 same end-to-end contract runs against local preview and the public URL; see
 [release deployment](release/DEPLOYMENT.md).
+
+The visible `YYMMDD.RR` release is also the cache namespace. Vite embeds it together with a content
+hash in every main-thread and worker asset filename. HTML and the service worker revalidate on each
+visit, while only those versioned assets are immutable. The PWA share bridge uses the same release
+in its temporary Cache Storage name and removes older bridge namespaces during activation.

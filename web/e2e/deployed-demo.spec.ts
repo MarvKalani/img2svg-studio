@@ -1,6 +1,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
-import { resolve } from "node:path";
+import { basename, resolve } from "node:path";
 import { expect, test } from "@playwright/test";
+import { appVersion } from "../src/release/app-version";
 
 const buildOutputPath = resolve(import.meta.dirname, "../dist");
 const cloudflarePagesMaximumAssetBytes = 25 * 1024 * 1024;
@@ -14,6 +15,13 @@ test("Given the static production build, when every asset is measured, then each
     }
   }
   expect(oversizedAssets).toEqual([]);
+
+  const builtAssets = await collectFilePaths(resolve(buildOutputPath, "assets"));
+  expect(
+    builtAssets
+      .map((assetPath) => basename(assetPath))
+      .every((name) => name.includes(`-v${appVersion}-`)),
+  ).toBe(true);
 });
 
 test("Given a fresh public demo, when the example is converted, compared, and exported, then the complete workflow survives a direct visit and reload", async ({

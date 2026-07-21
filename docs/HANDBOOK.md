@@ -60,6 +60,8 @@ Revision `260721.05` dosiert Glätten und Schärfen unabhängig und zeigt Raster
 als echte Bytes, KiB oder MiB in Vorschau und Verlauf.
 Revision `260721.06` verarbeitet jedes im Canvas dekodierbare Raster weiter und sucht nötige
 Transparenzschlüssel deterministisch im vollständigen RGB-Farbraum.
+Revision `260721.07` verwendet dieselbe sichtbare Version für Asset-Dateinamen, Service-Worker-
+Updates und den kurzlebigen PWA-Share-Cache.
 
 ### Sprache
 
@@ -150,6 +152,11 @@ Bei „Teilen mit …“ legt der Service Worker das Bild unter einem zufällige
 eigenen Cache ab, navigiert das Studio zu diesem Token und löscht den Cache-Eintrag beim ersten
 Lesen. Er besitzt keinen App-Shell-, History-, SVG- oder Modellcache. Das Bild bleibt damit lokal
 und wird nicht an einen Anwendungsserver gesendet.
+
+Jede veröffentlichte Produktversion erhält eigene JavaScript-, CSS-, WASM- und gebündelte
+Bildadressen. Der Browser kann diese Dateien dauerhaft wiederverwenden, ohne eine neue Revision zu
+übersehen. HTML, Manifest und Service Worker werden bei jedem Aufruf revalidiert; die neue Seite
+verweist dadurch automatisch ausschließlich auf Assets ihrer sichtbaren Versionsnummer.
 
 Das Candy-App-Icon wurde bewusst mit dem Produkt selbst erstellt: Das Raster-Original liegt unter
 [`docs/assets/app-icon-candy-source.png`](assets/app-icon-candy-source.png). Der img2svg-WASM-Kern

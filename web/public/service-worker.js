@@ -1,5 +1,6 @@
-const shareBridgeCache = "img2svg-share-bridge-v1";
 const shareBridgePrefix = "img2svg-share-bridge-";
+const workerVersion = new URL(self.location.href).searchParams.get("version") ?? "unversioned";
+const shareBridgeCache = `${shareBridgePrefix}${workerVersion}`;
 const shareTargetRoute = "/share-target";
 const sharedImageRoute = "/__shared-image/";
 const acceptedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);

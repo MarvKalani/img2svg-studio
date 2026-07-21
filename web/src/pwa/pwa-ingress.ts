@@ -1,3 +1,5 @@
+import { appVersion } from "../release/app-version";
+
 const sharedImageParameter = "shared-image";
 const sharedImageRoute = "/__shared-image/";
 
@@ -32,6 +34,10 @@ interface NavigatorWithPwaApis extends Navigator {
 
 export async function initializePwaIngress(loader: PwaImageLoader): Promise<void> {
   await startPwaIngress(loader, createBrowserPort());
+}
+
+export function serviceWorkerScriptUrl(): string {
+  return `/service-worker.js?version=${encodeURIComponent(appVersion)}`;
 }
 
 export async function startPwaIngress(
@@ -86,7 +92,7 @@ function createBrowserPort(): PwaBrowserPort {
     },
     async registerServiceWorker(): Promise<void> {
       if ("serviceWorker" in pwaNavigator) {
-        await pwaNavigator.serviceWorker.register("/service-worker.js", { scope: "/" });
+        await pwaNavigator.serviceWorker.register(serviceWorkerScriptUrl(), { scope: "/" });
       }
     },
     removeSharedImageToken(): void {

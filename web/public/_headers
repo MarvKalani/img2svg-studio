@@ -1,6 +1,11 @@
 /*
+  Cache-Control: no-cache
   Origin-Agent-Cluster: ?1
   Permissions-Policy: tools=(self)
+
+/assets/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31556952, immutable
 
 /service-worker.js
   Cache-Control: no-cache

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { appVersion } from "../src/release/app-version";
 
 const sharedFixture = "../fixtures/shape-recognition/input/mixed.png";
 
@@ -32,10 +33,10 @@ test("Given the installed-app share target, when an image is posted, then the no
   await expect(page.locator("#source-name")).toHaveText("mixed.png");
   await expect(page.locator("#convert-button")).toBeEnabled();
   await expect.poll(() => new URL(page.url()).searchParams.has("shared-image")).toBe(false);
-  const remainingSharedImages = await page.evaluate(async () => {
-    const cache = await caches.open("img2svg-share-bridge-v1");
+  const remainingSharedImages = await page.evaluate(async (cacheName) => {
+    const cache = await caches.open(cacheName);
     return (await cache.keys()).length;
-  });
+  }, `img2svg-share-bridge-${appVersion}`);
   expect(remainingSharedImages).toBe(0);
 });
 

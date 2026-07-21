@@ -31,8 +31,20 @@ describe("PWA assets", () => {
   test("Given the share-target worker, then shared bytes use a one-time cache bridge", () => {
     const workerSource = readFileSync(new URL("service-worker.js", publicDirectory), "utf8");
 
+    expect(workerSource).toContain("new URL(self.location.href).searchParams.get");
+    expect(workerSource).toContain("`${shareBridgePrefix}${workerVersion}`");
+    expect(workerSource).not.toContain("img2svg-share-bridge-v1");
     expect(workerSource).toContain("request.formData()");
     expect(workerSource).toContain("cache.delete(request)");
     expect(workerSource).toContain("Response.redirect");
+  });
+
+  test("Given Cloudflare serves the build, then HTML revalidates while versioned assets stay immutable", () => {
+    const headers = readFileSync(new URL("_headers", publicDirectory), "utf8");
+
+    expect(headers).toContain("/*\n  Cache-Control: no-cache");
+    expect(headers).toContain(
+      "/assets/*\n  ! Cache-Control\n  Cache-Control: public, max-age=31556952, immutable",
+    );
   });
 });

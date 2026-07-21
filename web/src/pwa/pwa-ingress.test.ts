@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { startPwaIngress, type PwaBrowserPort } from "./pwa-ingress";
+import { serviceWorkerScriptUrl, startPwaIngress, type PwaBrowserPort } from "./pwa-ingress";
 
 function createBrowserPort(overrides: Partial<PwaBrowserPort> = {}): PwaBrowserPort {
   return {
@@ -14,6 +14,10 @@ function createBrowserPort(overrides: Partial<PwaBrowserPort> = {}): PwaBrowserP
 }
 
 describe("PWA image ingress", () => {
+  test("Given the current release, when the worker URL is created, then its update key matches the visible version", () => {
+    expect(serviceWorkerScriptUrl()).toBe("/service-worker.js?version=260721.07");
+  });
+
   test("Given a shared-image token, when the app starts, then the bridged file is loaded and the URL is cleaned", async () => {
     const sharedFile = new File([new Uint8Array([1, 2, 3])], "candy.png", {
       type: "image/png",

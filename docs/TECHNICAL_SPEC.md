@@ -20,7 +20,9 @@ SVG-Ausgabe und WebMCP-Verträge bleiben sprachneutral und unverändert.
 
 `release/app-version.ts` hält die sichtbare Produktversion an einer Stelle. Das Format
 `YYMMDD.RR` verbindet das Veröffentlichungsdatum mit einer zweistelligen Tagesrevision und wird
-beim Start in den Seitenfuß sowie als `data-app-version` am Wurzeldokument geschrieben.
+beim Start in den Seitenfuß sowie als `data-app-version` am Wurzeldokument geschrieben. Vite nutzt
+dieselbe Konstante für alle Haupt- und Worker-Assets im Dateimuster
+`[name]-vYYMMDD.RR-[hash]`; die Service-Worker-Registrierung übergibt sie als Updateparameter.
 
 `public/impressum.html`, `public/datenschutz.html` und `public/licenses.html` sind eigenständige
 statische Dokumente mit Canonical-URL, gemeinsamer `legal.css` und progressiver Sprachumschaltung
@@ -58,6 +60,11 @@ Service Worker fängt nur `POST /share-target` und den einmaligen Leseweg unter
 versionierten Cache ab und löscht ihn beim ersten Lesen. Die App-Shell und Modellartefakte werden
 nicht von diesem Worker gecacht. Eine fehlgeschlagene Registrierung lässt den normalen Tab
 unverändert bedienbar.
+
+Cloudflare revalidiert alle nicht versionierten Antworten mit `Cache-Control: no-cache`. Nur der
+Vite-Ordner `/assets/*` wird für ein Jahr als `immutable` markiert, weil Versionsnummer und
+Inhaltshash gemeinsam den Dateinamen bilden. Der Share-Bridge-Cache verwendet die übergebene
+Produktversion als Namespace; beim Aktivieren entfernt der Worker ältere Namespaces.
 
 ## 3. Zentrale Domänenmodelle
 
