@@ -36,7 +36,21 @@ describe("vectorize image", () => {
       colorCount: 4,
       detailLevel: "low",
       mode: "shapes",
+      scalePercent: 100,
     });
+  });
+
+  test("Given a 50 percent target, when vectorized, then the SVG preserves aspect ratio at half size", async () => {
+    const result = await vectorizeImage({
+      colorCount: 256,
+      detailLevel: "high",
+      imageBytes: await readFile(circleFixture),
+      mode: "trace",
+      scalePercent: 50,
+    });
+
+    expect(result.parameters.scalePercent).toBe(50);
+    expect(result.stats).toMatchObject({ outputHeightPixels: 128, outputWidthPixels: 128 });
   });
 
   test("Given an oversized encoded input, when vectorization starts, then a stable public error is returned before decoding", async () => {

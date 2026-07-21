@@ -66,8 +66,9 @@ Inputs:
 - `image_base64`: compatibility input for MCP Inspector and non-ChatGPT hosts.
 - `background_removal`: optional normalized seed and sensitivity from the region analysis.
 - `mode`: `trace` for paths or `shapes` for evidence-backed native SVG elements.
-- `color_count`: requested palette size from 2 to 256; the adapter quantizes before tracing.
+- `color_count`: requested palette size from 2 to 256; 256 selects the full 8-bit palette.
 - `detail_level`: `low`, `medium`, or `high`; mapped to explicit speckle and path-precision settings.
+- `scale_percent`: optional proportional SVG output size from 10 to 400; defaults to 100.
 
 Exactly one image input is required. The server bounds downloaded and decoded image sizes before
 calling the engine. ChatGPT receives effective parameters, byte size, path count, native shape
@@ -76,8 +77,9 @@ counts, source dimensions, and output dimensions. The attached widget alone rece
 the transparent raster. This avoids sending a large intermediate PNG through the model.
 
 The description teaches the model to start flat logos with `shapes`, four colors, and low detail;
-illustrations with 16 colors and medium detail; and photographs with 64 colors and high detail. A
-request such as “make it simpler” lowers detail and color count on the next call.
+illustrations with 16 colors and medium detail; and photographs with 64 colors and high detail. It
+uses 256 colors only when the user explicitly asks for full 8-bit palette quality. A request such
+as “make it simpler” lowers detail and color count on the next call.
 
 ### `get_svg_preview`
 

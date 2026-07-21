@@ -38,6 +38,7 @@ const parametersSchema = z.object({
   colorCount: z.number().int().min(2).max(256),
   detailLevel: z.enum(["low", "medium", "high"]),
   mode: z.enum(["trace", "shapes"]),
+  scalePercent: z.number().int().min(10).max(400),
 });
 
 const rasterInputSchema = {
@@ -217,7 +218,7 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
         readOnlyHint: true,
       },
       description:
-        "Use this when the user wants to convert an attached raster image to SVG. Choose shapes, 4 colors, and low detail for flat logos; trace, 16 colors, and medium detail for illustrations; or trace, 64 colors, and high detail for photographs. When the user asks for a simpler result, lower color_count and detail_level. For a connected edge background, pass background_removal with its normalized seed and sensitivity so removal and tracing happen in one call without sending a large intermediate PNG through the model. Provide exactly one image or image_base64. The tool renders its own SVG preview and download widget; do not pass the SVG to another tool.",
+        "Use this when the user wants to convert an attached raster image to SVG. Choose shapes, 4 colors, and low detail for flat logos; trace, 16 colors, and medium detail for illustrations; or trace, 64 colors, and high detail for photographs. Use color_count 256 when the user explicitly requests full 8-bit palette quality. scale_percent defaults to 100 and resizes the SVG proportionally. When the user asks for a simpler result, lower color_count and detail_level. For a connected edge background, pass background_removal with its normalized seed and sensitivity so removal and tracing happen in one call without sending a large intermediate PNG through the model. Provide exactly one image or image_base64. The tool renders its own SVG preview and download widget; do not pass the SVG to another tool.",
       inputSchema: {
         background_removal: backgroundRemovalSchema.optional(),
         color_count: z.number().int().min(2).max(256),
@@ -225,6 +226,7 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
         image: fileReferenceSchema.optional(),
         image_base64: z.string().optional(),
         mode: z.enum(["trace", "shapes"]),
+        scale_percent: z.number().int().min(10).max(400).optional(),
       },
       outputSchema: {
         backgroundRemoval: regionStatisticsSchema.optional(),
@@ -254,6 +256,7 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
           detailLevel: input.detail_level,
           ...(backgroundResult ? { imageBase64: backgroundResult.imagePngBase64 } : rasterImage),
           mode: input.mode,
+          scalePercent: input.scale_percent,
         });
         const backgroundMessage = backgroundResult
           ? ` Removed ${String(backgroundResult.stats.removedPixelCount)} connected background pixels first.`

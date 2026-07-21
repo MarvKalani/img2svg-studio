@@ -737,8 +737,11 @@ bis zur Vektorisierung und SVG-Vorschau mit dem Kreis-Fixture aus.
 `vectorize_image` akzeptiert genau eine ChatGPT-Dateireferenz oder einen Base64-Testwert sowie:
 
 - `mode`: `shapes` für evidenzbasierte native Elemente oder `trace` für Pfade.
-- `color_count`: gewünschte Palette von 2 bis 256 Farben.
+- `color_count`: gewünschte Palette von 2 bis 256 Farben; 256 entspricht der vollständigen
+  8-Bit-Palette.
 - `detail_level`: `low`, `medium` oder `high`.
+- `scale_percent`: optionale proportionale SVG-Zielgröße von 10 bis 400 Prozent; Standard ist
+  100 Prozent.
 
 Die Toolbeschreibung empfiehlt für flache Logos `shapes`, vier Farben und niedrige Details. Eine
 Bitte wie „mach es einfacher“ reduziert Farbanzahl und Detailstufe. Niedrig, mittel und hoch

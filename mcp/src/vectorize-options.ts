@@ -17,6 +17,7 @@ export interface VectorizeOptionInput {
   colorCount: number;
   detailLevel: unknown;
   mode: unknown;
+  scalePercent?: number;
 }
 
 export interface VectorizeOptions {
@@ -26,6 +27,7 @@ export interface VectorizeOptions {
   filterSpeckle: number;
   mode: VectorizeMode;
   pathPrecision: number;
+  scalePercent: number;
   shapeDetectionFlags: number;
 }
 
@@ -42,10 +44,14 @@ const pathPrecisionByDetail: Readonly<Record<DetailLevel, number>> = Object.free
 });
 
 export function createVectorizeOptions(input: VectorizeOptionInput): VectorizeOptions {
+  const scalePercent = input.scalePercent ?? 100;
   if (
     !Number.isSafeInteger(input.colorCount) ||
     input.colorCount < 2 ||
     input.colorCount > 256 ||
+    !Number.isSafeInteger(scalePercent) ||
+    scalePercent < 10 ||
+    scalePercent > 400 ||
     !isDetailLevel(input.detailLevel) ||
     !isVectorizeMode(input.mode)
   ) {
@@ -60,6 +66,7 @@ export function createVectorizeOptions(input: VectorizeOptionInput): VectorizeOp
     filterSpeckle: filterSpeckleByDetail[input.detailLevel],
     mode: input.mode,
     pathPrecision: pathPrecisionByDetail[input.detailLevel],
+    scalePercent,
     shapeDetectionFlags: input.mode === VectorizeMode.Shapes ? allNativeShapeFlags : 0,
   });
 }

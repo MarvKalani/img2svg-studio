@@ -42,6 +42,7 @@ export interface VectorizeRequest extends RasterImageInput {
   colorCount: number;
   detailLevel: DetailLevel;
   mode: VectorizeMode;
+  scalePercent?: number;
 }
 
 export interface VectorizeResult extends Record<string, unknown> {
@@ -49,6 +50,7 @@ export interface VectorizeResult extends Record<string, unknown> {
     colorCount: number;
     detailLevel: DetailLevel;
     mode: VectorizeMode;
+    scalePercent: number;
   }>;
   stats: Readonly<{
     byteSize: number;
@@ -107,7 +109,7 @@ export async function vectorizeImage(request: VectorizeRequest): Promise<Vectori
       vtracerDefaults.lengthThresholdTenths,
       vtracerDefaults.maxIterations,
       vtracerDefaults.spliceThresholdDegrees,
-      100,
+      options.scalePercent,
       options.shapeDetectionFlags,
     );
   } catch (error) {
@@ -121,6 +123,7 @@ export async function vectorizeImage(request: VectorizeRequest): Promise<Vectori
       colorCount: options.colorCount,
       detailLevel: options.detailLevel,
       mode: options.mode,
+      scalePercent: options.scalePercent,
     }),
     stats: readSvgStatistics(svg, decoded.widthPixels, decoded.heightPixels),
     svg,

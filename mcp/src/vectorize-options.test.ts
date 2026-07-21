@@ -11,6 +11,7 @@ describe("vectorize options", () => {
       filterSpeckle: 8,
       mode: "shapes",
       pathPrecision: 0,
+      scalePercent: 100,
       shapeDetectionFlags: 63,
     });
   });
@@ -44,6 +45,8 @@ describe("vectorize options", () => {
     { colorCount: 257, detailLevel: "medium", mode: "trace" },
     { colorCount: 4, detailLevel: "maximum", mode: "trace" },
     { colorCount: 4, detailLevel: "low", mode: "automatic" },
+    { colorCount: 4, detailLevel: "low", mode: "trace", scalePercent: 9 },
+    { colorCount: 4, detailLevel: "low", mode: "trace", scalePercent: 401 },
   ])("Given invalid tool values, when options are created, then they are rejected", (input) => {
     expect(() => createVectorizeOptions(input)).toThrow("invalid_parameters");
   });
