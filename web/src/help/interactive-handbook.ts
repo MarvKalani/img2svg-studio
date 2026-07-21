@@ -275,7 +275,12 @@ function topic(
   effect: string,
   defaultValue?: string,
 ): HelpTopic {
-  return Object.freeze({ defaultValue, description, effect, title });
+  return Object.freeze({
+    ...(defaultValue === undefined ? {} : { defaultValue }),
+    description,
+    effect,
+    title,
+  });
 }
 
 function readElements(): {

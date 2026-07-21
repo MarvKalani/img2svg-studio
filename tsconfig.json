@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "erasableSyntaxOnly": true,
+    "exactOptionalPropertyTypes": true,
     "lib": ["ES2024"],
     "libReplacement": false,
     "module": "ESNext",
@@ -8,7 +9,9 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
     "noUncheckedSideEffectImports": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,

@@ -117,6 +117,26 @@ describe("model lifecycle", () => {
     expect(new Uint8Array(await cached!.arrayBuffer())).toEqual(verifiedBytes);
   });
 
+  it("Given a volatile cache, when an artifact is addressed as a Request, then its URL finds the cached response", async () => {
+    vi.stubGlobal("caches", undefined);
+    try {
+      const verifiedBytes = new Uint8Array([5, 6, 7]);
+      const model = await tinyModel(verifiedBytes);
+      const artifactUrl = modelArtifactUrl(model, model.files[0]!);
+
+      const cache = await prepareModelArtifactCache(
+        model,
+        () => undefined,
+        new AbortController().signal,
+        { fetchArtifact: async () => new Response(verifiedBytes, { status: 200 }) },
+      );
+
+      await expect(cache.match(new Request(artifactUrl))).resolves.toBeDefined();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("Given repeated dispose calls, when MODNet owns one session, then the session closes once", async () => {
     const dispose = vi.fn(async () => undefined);
     const session: ModnetSession = {
@@ -204,14 +224,16 @@ function createMemoryCache(initial: readonly (readonly [string, Response])[]): R
 }> {
   const entries = new Map(initial);
   const deleteArtifact = vi.fn(async (request: RequestInfo | URL) =>
-    entries.delete(String(request)),
+    entries.delete(request instanceof Request ? request.url : request.toString()),
   );
   return {
     cache: {
       delete: deleteArtifact,
-      match: async (request) => entries.get(String(request))?.clone(),
+      match: async (request) =>
+        entries.get(request instanceof Request ? request.url : request.toString())?.clone(),
       put: async (request, response) => {
-        entries.set(String(request), response.clone());
+        const key = request instanceof Request ? request.url : request.toString();
+        entries.set(key, response.clone());
       },
     },
     deleteArtifact,

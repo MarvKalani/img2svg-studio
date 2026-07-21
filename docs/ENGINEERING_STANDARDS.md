@@ -229,7 +229,13 @@ Benchmark oder sichtbares Problem. Der schnelle TDD-Zyklus selbst ist ein Qualit
 - Das Webprojekt pinnt TypeScript `7.0.2`, die am 19. Juli 2026 aktuelle stabile Version.
 - Nightly- und Preview-Versionen sind nicht Teil reproduzierbarer Builds.
 - `strict` wird explizit aktiviert, auch wenn TypeScript 7 es standardmäßig aktiviert.
-- Weitere strenge Optionen werden einzeln gewählt, wenn sie reale Fehlerklassen verhindern.
+- `noUncheckedIndexedAccess` und `noImplicitReturns` sichern Arrayzugriffe und Kontrollflüsse in
+  allen eigenen TypeScript-Projekten ab.
+- `exactOptionalPropertyTypes` trennt in Browser- und Integrationscode fehlende Eigenschaften
+  von explizitem `undefined`. Der MCP-Build aktiviert die Option erst, sobald der verwendete
+  Transportvertrag damit strukturell kompatibel ist.
+- Oxlint führt mit `oxlint-tsgolint` schnelle typbasierte Regeln aus. Warnungen, überflüssige
+  Ausnahmen und typbasierte Fehler brechen das gemeinsame Qualitäts-Gate ab.
 - Compiler und Editor verwenden die Workspace-Version.
 - Ein Versionsupdate ist ein eigener, getesteter Dependency-Slice.
 

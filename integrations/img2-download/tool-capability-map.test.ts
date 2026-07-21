@@ -21,11 +21,16 @@ describe("img2.download WebMCP capability map", () => {
 
   test("Given the deployable adapter, when audited, then it uses document.modelContext and registers exactly the mapped tools", async () => {
     const source = await readFile(new URL("./webmcp.js", import.meta.url), "utf8");
-    const registeredNames = [...source.matchAll(/name: "([a-z_]+)"/gu)].map((match) => match[1]);
+    const registeredNames = [...source.matchAll(/name: "([a-z_]+)"/gu)].flatMap((match) => {
+      const name = match[1];
+      return name === undefined ? [] : [name];
+    });
 
     expect(source).toContain("document.modelContext");
     expect(source).not.toContain("navigator.modelContext");
-    expect(registeredNames.sort()).toEqual(Object.values(PredecessorToolName).sort());
+    expect(registeredNames.sort((left, right) => left.localeCompare(right))).toEqual(
+      Object.values(PredecessorToolName).sort((left, right) => left.localeCompare(right)),
+    );
   });
 });
 import { readFile } from "node:fs/promises";

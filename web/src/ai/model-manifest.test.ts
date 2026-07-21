@@ -4,10 +4,14 @@ import { browserModelManifest, totalModelBytes, validateModelManifest } from "./
 describe("browser model manifest", () => {
   it("Given published MODNet and SAM entries, when validated, then revisions, artifacts, IO, runtime, and commercial licenses are complete", () => {
     const validatedModels = validateModelManifest(browserModelManifest);
+    const [modnet, slimSam] = validatedModels;
+    if (!modnet || !slimSam) {
+      throw new Error("The browser model manifest must contain MODNet and SlimSAM");
+    }
 
     expect(validatedModels.map((model) => model.id)).toEqual(["modnet", "slimsam"]);
-    expect(totalModelBytes(validatedModels[0])).toBe(25_889_088);
-    expect(totalModelBytes(validatedModels[1])).toBe(20_721_620);
+    expect(totalModelBytes(modnet)).toBe(25_889_088);
+    expect(totalModelBytes(slimSam)).toBe(20_721_620);
   });
 
   it.each([

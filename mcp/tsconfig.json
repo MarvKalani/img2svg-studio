@@ -8,6 +8,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "moduleResolution": "Bundler",
+    "noImplicitReturns": true,
     "noUncheckedSideEffectImports": true,
     "noUncheckedIndexedAccess": true,
     "outDir": "dist",

@@ -89,7 +89,9 @@ function expectPointsWithinTolerance(value: string | null, expected: [number, nu
   expect(actual).toHaveLength(expected.length);
   for (const [index, [actualX, actualY]] of actual.entries()) {
     const expectedPoint = expected[index];
-    expect(expectedPoint).toBeDefined();
+    if (!expectedPoint) {
+      throw new Error(`Missing expected shape point at index ${index}`);
+    }
     expect(Math.abs((actualX ?? Number.NaN) - expectedPoint[0])).toBeLessThanOrEqual(2);
     expect(Math.abs((actualY ?? Number.NaN) - expectedPoint[1])).toBeLessThanOrEqual(2);
   }

@@ -88,12 +88,16 @@ async function openModelArtifactCache(): Promise<ModelArtifactCache> {
 function createMemoryCache(): ModelArtifactCache {
   const entries = new Map<string, Response>();
   return {
-    delete: async (request) => entries.delete(String(request)),
-    match: async (request) => entries.get(String(request))?.clone(),
+    delete: async (request) => entries.delete(requestCacheKey(request)),
+    match: async (request) => entries.get(requestCacheKey(request))?.clone(),
     put: async (request, response) => {
-      entries.set(String(request), response.clone());
+      entries.set(requestCacheKey(request), response.clone());
     },
   };
+}
+
+function requestCacheKey(request: RequestInfo | URL): string {
+  return request instanceof Request ? request.url : request.toString();
 }
 
 async function readResponseBytes(

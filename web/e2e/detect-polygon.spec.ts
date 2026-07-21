@@ -44,7 +44,9 @@ function parsePoints(value: string | null): [number, number][] {
 function expectWithinTolerance(actual: [number, number][], expected: [number, number][]): void {
   for (const [index, actualPoint] of actual.entries()) {
     const expectedPoint = expected[index];
-    expect(expectedPoint).toBeDefined();
+    if (!expectedPoint) {
+      throw new Error(`Missing expected polygon point at index ${index}`);
+    }
     expect(Math.abs(actualPoint[0] - expectedPoint[0])).toBeLessThanOrEqual(2);
     expect(Math.abs(actualPoint[1] - expectedPoint[1])).toBeLessThanOrEqual(2);
   }

@@ -15,7 +15,7 @@
     "check:rust": "tsx scripts/check-rust.ts",
     "format": "oxfmt --write .github integrations mcp/src mcp/*.ts scripts web/index.html web/public/*.css web/public/*.html web/public/*.js web/public/*.webmanifest web/public/*.xml web/src web/e2e web/benchmarks web/*.ts *.json",
     "format:check": "oxfmt --check .github integrations mcp/src mcp/*.ts scripts web/index.html web/public/*.css web/public/*.html web/public/*.js web/public/*.webmanifest web/public/*.xml web/src web/e2e web/benchmarks web/*.ts *.json",
-    "lint": "oxlint --deny-warnings --ignore-pattern 'web/src/wasm-pkg/**' integrations mcp/src mcp/*.ts scripts web/public/*.js web/src web/e2e web/benchmarks web/*.ts",
+    "lint": "oxlint --type-aware --max-warnings=0 --report-unused-disable-directives --ignore-pattern 'web/src/wasm-pkg/**' integrations mcp/src mcp/*.ts scripts web/public/*.js web/src web/e2e web/benchmarks web/*.ts",
     "test": "vitest run",
     "test:all": "npm test && npm test --workspace=img2svg-studio-web && npm test --workspace=img2svg-studio-mcp",
     "typecheck": "tsc -b tsconfig.json web/tsconfig.json mcp/tsconfig.json",
@@ -25,6 +25,7 @@
     "@types/node": "26.1.1",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
+    "oxlint-tsgolint": "0.25.0",
     "tsx": "4.23.1",
     "typescript": "7.0.2",
     "vitest": "4.1.10"

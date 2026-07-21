@@ -25,5 +25,5 @@ test("Given the model manager, when no download was requested, then both local A
   await expect(card.locator(".model-status")).toHaveText("Nicht geladen");
   await expect(card.getByRole("button", { name: "Laden: SlimSAM 77 Uniform" })).toBeEnabled();
   await expect(page.locator('[data-model-id="modnet"]')).toContainText("MODNet Portrait Matting");
-  await expect(unexpectedRequests).toEqual([]);
+  expect(unexpectedRequests).toEqual([]);
 });
