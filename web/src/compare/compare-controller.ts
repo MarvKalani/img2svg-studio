@@ -191,11 +191,11 @@ function initializeDividerDrag(elements: CompareElements, render: () => void): v
 }
 
 function renderSource(source: ComparisonSource): SVGSVGElement | HTMLImageElement {
-  if (source.kind !== ComparisonSourceKind.Original) {
+  if (source.kind === ComparisonSourceKind.Draft || source.kind === ComparisonSourceKind.Run) {
     return normalizedSvg(source.run);
   }
   const image = document.createElement("img");
-  image.alt = `Original ${source.image.file.name}`;
+  image.alt = `${comparisonSourceLabel(source)} ${source.image.file.name}`;
   image.draggable = false;
   image.src = source.image.metadata.previewUrl;
   return image;

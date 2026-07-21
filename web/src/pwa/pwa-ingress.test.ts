@@ -15,7 +15,7 @@ function createBrowserPort(overrides: Partial<PwaBrowserPort> = {}): PwaBrowserP
 
 describe("PWA image ingress", () => {
   test("Given the current release, when the worker URL is created, then its update key matches the visible version", () => {
-    expect(serviceWorkerScriptUrl()).toBe("/service-worker.js?version=260721.12");
+    expect(serviceWorkerScriptUrl()).toBe("/service-worker.js?version=260721.13");
   });
 
   test("Given a shared-image token, when the app starts, then the bridged file is loaded and the URL is cleaned", async () => {

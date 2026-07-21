@@ -303,10 +303,12 @@ bestehende Controller auf. `conversionOptionsController.reset` schreibt genau de
 Default des gewählten Parameters und löst denselben Preview-Listener wie eine manuelle Änderung
 aus. Handbuchthemen werden über `InteractiveHandbookController.showTopic` geöffnet.
 
-`historyController` rendert Rasteroriginal, einen optionalen ungespeicherten Entwurf und alle
-Run-Karten der aktuellen Bild-Session. Der Entwurf bleibt bewusst außerhalb des `historyStore` und
-wird bei der Übernahme durch den neuen Run ersetzt. Ein neues Original startet eine leere
-Run-History; KI-Versionen behalten dieselbe Originalquelle. Das Löschen eines ausgewählten Runs
+`historyController` rendert Rasteroriginal, die optionale aktuelle verarbeitete Rasterversion,
+einen optionalen ungespeicherten Entwurf und alle Run-Karten der aktuellen Bild-Session. Raster und
+Entwurf bleiben bewusst außerhalb des `historyStore`; der verarbeitete Blob gehört dem
+`imageStore`. Der Entwurf wird bei der Übernahme durch den neuen Run ersetzt; die verarbeitete
+Rasterversion bleibt bis zur nächsten Rasterbearbeitung verfügbar. Ein neues Original startet
+eine leere Run-History; KI-Versionen behalten dieselbe Originalquelle. Das Löschen eines ausgewählten Runs
 wählt das Original; das Löschen einer A/B-Quelle leert den Vergleich. Der Controller schreibt
 keine alten Optionen in das Formular. `restoreSelectedRunOptions` validiert den ausgewählten
 Snapshot erneut und reicht eine Kopie an `conversionOptionsController.apply` weiter. Dieser
@@ -314,9 +316,9 @@ explizite Pfad schreibt numerische
 Werte, globalen Formerkennungszustand und Typauswahl und rendert die abgeleiteten Zielmaße neu;
 Store, SVG und Bildzustand bleiben unverändert.
 
-`compareSelection` hält je eine typisierte Original-, Entwurfs- oder Run-Quelle für A und B. Die Zuweisung
-derselben Quelle in den anderen Platz entfernt sie aus dem bisherigen Platz. `compareController`
-rendert erst bei zwei vollständigen Plätzen. Beide Quellen verwenden denselben proportionalen
+`compareSelection` hält je eine typisierte Original-, Verarbeitet-, Entwurfs- oder Run-Quelle für A
+und B. Die Zuweisung derselben Quelle in den anderen Platz entfernt sie aus dem bisherigen Platz.
+`compareController` rendert erst bei zwei vollständigen Plätzen. Beide Quellen verwenden denselben proportionalen
 Canvas. Zwei feste Clip-Fenster zeigen A links und B rechts; der direkt ziehbare Trenner und der
 Tastatur-Regler verändern dieselbe Prozentposition. `viewportController` transformiert nur die
 Inhalte hinter den Clip-Fenstern und projiziert Skalierung und Pixelversatz identisch auf beide
@@ -348,7 +350,7 @@ können ergänzend für stabile Standardformulare eingesetzt werden, dürfen abe
 Geschäftslogik erzeugen.
 
 Der Adapter registriert `get_capabilities`, `configure_conversion`, `convert_current_image`,
-Workspace-Zustand, History, A/B-Auswahl einschließlich Rasteroriginal, Export,
+Workspace-Zustand, History, A/B-Auswahl einschließlich Original- und verarbeitetem Raster, Export,
 KI-Modellverwaltung und beide KI-Aktionen. Eine
 typisierte und getestete Capability Map ordnet jedes sichtbare Application Command genau einem
 UI- und einem WebMCP-Einstieg zu. Smart Select nimmt normierte Koordinaten von 0 bis 1 an und

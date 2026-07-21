@@ -3,7 +3,7 @@ import { defaultConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import { ImageVersionKind } from "../image/image-version";
 import { createCompareSelection } from "./compare-selection";
-import { originalSource, runSource } from "./comparison-source";
+import { originalSource, processedSource, runSource } from "./comparison-source";
 
 describe("compare selection", () => {
   test("Given two runs, when assigned to A and B, then both immutable snapshots remain distinct", () => {
@@ -58,7 +58,32 @@ describe("compare selection", () => {
 
     expect(selection.assign("b", converted)).toEqual({ a: original, b: converted });
   });
+
+  test("Given original and processed rasters, when assigned to A and B, then their image versions remain distinct", () => {
+    const selection = createCompareSelection();
+    const original = originalSource(image(1, ImageVersionKind.Original));
+    const processed = processedSource(image(2, ImageVersionKind.ManualResult));
+
+    selection.assign("a", original);
+
+    expect(selection.assign("b", processed)).toEqual({ a: original, b: processed });
+  });
 });
+
+function image(id: number, kind: ImageVersionKind) {
+  return {
+    file: new File([], "circle.png", { type: "image/png" }),
+    metadata: {
+      fileName: "circle.png",
+      heightPixels: 256,
+      mimeType: "image/png",
+      previewUrl: `blob:circle-${String(id)}`,
+      sizeBytes: 0,
+      widthPixels: 256,
+    },
+    version: { id, kind },
+  } as const;
+}
 
 function run(id: number): ConversionRun {
   return Object.freeze({

@@ -10,6 +10,8 @@ const testedHardwareProfile = JSON.stringify({
 
 export default defineConfig({
   testDir: "./e2e",
+  // Deployment contracts consume hashed dist assets and run through playwright.demo.config.ts.
+  testIgnore: "deployed-demo.spec.ts",
   use: {
     baseURL: "http://127.0.0.1:4173",
     browserName: "chromium",

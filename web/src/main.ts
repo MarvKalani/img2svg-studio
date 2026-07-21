@@ -85,6 +85,7 @@ const imageLoader = initializeImageLoader(
     if (original) {
       historyController.setOriginal(original);
     }
+    historyController.setProcessed(imageStore.current());
     optionsController.showSourceDimensions(image);
     workspaceView.showProcessed();
     backgroundRemoval.imageLoaded();
@@ -146,6 +147,7 @@ const studioTools = createStudioTools(
     applySmartSelection: smartSelect.applySelection,
     assignComparison: historyController.assignComparison,
     assignOriginalComparison: historyController.assignOriginalComparison,
+    assignProcessedComparison: historyController.assignProcessedComparison,
     downloadSelectedSvg: svgDownloadController.download,
     loadModel: modelRegistry.load,
     readComparedRuns: compareController.current,

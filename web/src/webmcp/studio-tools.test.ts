@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { MaskPolarity } from "../ai/sam-selection";
-import { originalSource } from "../compare/comparison-source";
+import { originalSource, processedSource } from "../compare/comparison-source";
 import { defaultConversionOptions } from "../conversion/conversion-options";
 import { ImageVersionKind } from "../image/image-version";
 import { createStudioTools, type StudioToolServices } from "./studio-tools";
@@ -98,6 +98,34 @@ describe("complete Studio WebMCP tools", () => {
     expect(workspace.comparison).toEqual({ a: "original" });
   });
 
+  test("Given a processed raster is loaded, when comparison B selects it, then WebMCP exposes the processed source", async () => {
+    const applicationServices = services();
+    applicationServices.assignProcessedComparison = vi.fn(() => true);
+    applicationServices.readComparedRuns = () =>
+      Object.freeze({
+        b: processedSource({
+          file: new File([], "edited.png", { type: "image/png" }),
+          metadata: {
+            fileName: "edited.png",
+            heightPixels: 256,
+            mimeType: "image/png",
+            previewUrl: "blob:edited",
+            sizeBytes: 0,
+            widthPixels: 256,
+          },
+          version: { id: 2, kind: ImageVersionKind.ManualResult },
+        }),
+      });
+    const tools = createStudioTools(applicationServices);
+
+    const selectionResult = JSON.parse(await tools[4]!.execute({ processed: true }));
+    const workspace = JSON.parse(await tools[0]!.execute({}));
+
+    expect(selectionResult).toEqual({ ok: true, slot: "b", source: "processed" });
+    expect(applicationServices.assignProcessedComparison).toHaveBeenCalledWith("b");
+    expect(workspace.comparison).toEqual({ b: "processed" });
+  });
+
   test("Given a History run, when delete_history_run executes, then it delegates the exact session ID", async () => {
     const applicationServices = services();
     applicationServices.removeRun = vi.fn(() => true);
@@ -117,6 +145,7 @@ function services(): StudioToolServices {
     applySmartSelection: vi.fn(),
     assignComparison: vi.fn(),
     assignOriginalComparison: vi.fn(() => false),
+    assignProcessedComparison: vi.fn(() => false),
     downloadSelectedSvg: vi.fn(() => false),
     loadModel: vi.fn(),
     readComparedRuns: () => Object.freeze({}),

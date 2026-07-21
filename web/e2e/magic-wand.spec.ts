@@ -54,6 +54,11 @@ test("Given a flat background, when the Magic Wand sensitivity is previewed and 
   const alpha = await previewAlpha(page);
   expect(alpha.background).toBe(0);
   expect(alpha.foreground).toBe(255);
+  await expect(page.getByTestId("history-processed-card")).toContainText("Verarbeitet");
+  await page.getByRole("button", { name: "Original als A setzen" }).click();
+  await page.getByRole("button", { name: "Verarbeitet als B setzen" }).click();
+  await expect(page.locator("#compare-label-a")).toHaveText("A · Original");
+  await expect(page.locator("#compare-label-b")).toHaveText("B · Verarbeitet");
   expect(remoteRequests).toEqual([]);
 });
 

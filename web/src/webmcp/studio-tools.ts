@@ -15,6 +15,7 @@ export interface StudioToolServices {
   applySmartSelection(request: SmartSelectionRequest): Promise<AiActionResult>;
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
   assignOriginalComparison(slot: CompareSlot): boolean;
+  assignProcessedComparison(slot: CompareSlot): boolean;
   downloadSelectedSvg(): boolean;
   loadModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
   readComparedRuns(): ComparedRuns;
@@ -57,9 +58,11 @@ const comparisonSchema = Object.freeze({
   oneOf: Object.freeze([
     Object.freeze({ required: Object.freeze(["runId"]) }),
     Object.freeze({ required: Object.freeze(["original"]) }),
+    Object.freeze({ required: Object.freeze(["processed"]) }),
   ]),
   properties: Object.freeze({
     original: Object.freeze({ const: true, type: "boolean" }),
+    processed: Object.freeze({ const: true, type: "boolean" }),
     runId: Object.freeze({ minimum: 1, type: "integer" }),
   }),
   type: "object",
@@ -170,16 +173,31 @@ function selectRunTool(services: StudioToolServices): WebMcpTool {
 function compareTool(services: StudioToolServices, slot: CompareSlot, name: string): WebMcpTool {
   return defineTool({
     annotations: { readOnlyHint: false, untrustedContentHint: true },
-    description: `Assign the raster original or one History run to visible comparison slot ${slot.toUpperCase()}.`,
+    description: `Assign the raster original, current processed raster, or one History run to visible comparison slot ${slot.toUpperCase()}.`,
     execute: (input: unknown) => {
-      if (isRecord(input) && input.original === true && input.runId === undefined) {
+      if (
+        isRecord(input) &&
+        input.original === true &&
+        input.processed !== true &&
+        input.runId === undefined
+      ) {
         return services.assignOriginalComparison(slot)
           ? success({ source: "original", slot })
           : failure("original_not_found", "Es ist kein Rasteroriginal geladen.");
       }
+      if (
+        isRecord(input) &&
+        input.processed === true &&
+        input.original !== true &&
+        input.runId === undefined
+      ) {
+        return services.assignProcessedComparison(slot)
+          ? success({ source: "processed", slot })
+          : failure("processed_not_found", "Es ist kein verarbeitetes Raster geladen.");
+      }
       const runId = readRunId(input);
       if (runId === undefined) {
-        return invalidInput("runId must be a positive integer.");
+        return invalidInput("Use exactly one of runId, original: true, or processed: true.");
       }
       const run = services.assignComparison(slot, runId);
       return run ? success({ run: runSummary(run), slot }) : missingRun(runId);
@@ -368,15 +386,28 @@ function modelSummary(snapshot: ModelRegistrySnapshot): Record<string, unknown> 
   return { id: snapshot.model.id, ...snapshot.state };
 }
 
-function comparedRunIds(compared: ComparedRuns): Record<string, number | "original"> {
+function comparedRunIds(
+  compared: ComparedRuns,
+): Record<string, number | "draft" | "original" | "processed"> {
   return {
     ...(compared.a ? { a: comparisonSourceId(compared.a) } : {}),
     ...(compared.b ? { b: comparisonSourceId(compared.b) } : {}),
   };
 }
 
-function comparisonSourceId(source: NonNullable<ComparedRuns["a"]>): number | "original" {
-  return source.kind === ComparisonSourceKind.Run ? source.run.id : "original";
+function comparisonSourceId(
+  source: NonNullable<ComparedRuns["a"]>,
+): number | "draft" | "original" | "processed" {
+  switch (source.kind) {
+    case ComparisonSourceKind.Draft:
+      return "draft";
+    case ComparisonSourceKind.Original:
+      return "original";
+    case ComparisonSourceKind.Processed:
+      return "processed";
+    case ComparisonSourceKind.Run:
+      return source.run.id;
+  }
 }
 
 function actionResult(result: AiActionResult): string {

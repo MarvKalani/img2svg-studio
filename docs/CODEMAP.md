@@ -49,7 +49,7 @@ das sichtbare Produkt.
 | Header, Sidebar oder Verlauf anordnen | `layout/layout-preferences.ts`, `layout-preferences.css` | Layout-Unit-Test, Desktop- und Mobile-Szenarien in `layout-preferences.spec.ts` |
 | Startleistung und Rasterempfehlung | `hardware/hardware-profile.ts`, `conversion-options-controller.ts` | Hardware-Unit-Test, `hardware-profile.spec.ts` |
 | Laufende Konvertierung abbrechen | `conversion-service.ts`, `conversion-controller.ts` | Worker-Lifecycle-Test, `cancel-conversion.spec.ts` |
-| A/B-Auswahl und Parameter-Diff | `compare-selection.ts`, `compare-controller.ts`, `diff-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts` |
+| A/B-Auswahl und Parameter-Diff | `comparison-source.ts`, `compare-selection.ts`, `compare-controller.ts`, `compare-source-settings.ts` | Compare-Unit-Tests, `compare-runs.spec.ts`, `magic-wand.spec.ts` |
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
 | Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |

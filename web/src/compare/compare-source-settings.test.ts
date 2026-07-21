@@ -3,7 +3,7 @@ import { defaultConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import { ImageVersionKind } from "../image/image-version";
 import { compareSourceSettings } from "./compare-source-settings";
-import { draftSource, originalSource, runSource } from "./comparison-source";
+import { draftSource, originalSource, processedSource, runSource } from "./comparison-source";
 
 describe("original comparison settings", () => {
   test("Given the raster original and one run, when differences are requested, then source and all conversion parameters stay explicit", () => {
@@ -51,6 +51,24 @@ describe("original comparison settings", () => {
       label: "Quelle",
     });
     expect(rows).toHaveLength(23);
+  });
+
+  test("Given original and processed rasters, when compared, then their versioned sources stay explicit without conversion parameters", () => {
+    const processed = {
+      ...original(),
+      version: { id: 2, kind: ImageVersionKind.ManualResult },
+    } as const;
+
+    expect(
+      compareSourceSettings(originalSource(original()), processedSource(processed), true),
+    ).toEqual([
+      {
+        a: "Original · V1",
+        b: "Verarbeitet · Bearbeitet · V2",
+        key: "source",
+        label: "Quelle",
+      },
+    ]);
   });
 });
 

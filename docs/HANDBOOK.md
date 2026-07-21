@@ -72,6 +72,8 @@ Revision `260721.11` dockt den Verlauf auf Mobilgeräten als sichtbares unteres 
 Layoutauswahl im Vordergrund, speichert eigene Presets und zeigt Dateiinformationen direkt am Bild.
 Revision `260721.12` verhindert, dass ein vorübergehend fehlendes Worker-Asset als HTML-Fallback
 zwischengespeichert wird, und prüft dessen Inhaltstyp vor jeder Veröffentlichung.
+Revision `260721.13` führt die aktuelle verarbeitete Rasterversion als eigene History- und
+A/B-Quelle neben Original, SVG-Entwurf und Runs.
 
 ### Sprache
 
@@ -286,9 +288,11 @@ Vergleich mit Original A und Entwurf B.
 
 ## Verlauf und A/B-Vergleich
 
-Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Es kann angezeigt
-und wie jeder Run als A oder B gewählt werden. Die ungespeicherte Vorschau steht als „Entwurf“
-direkt dahinter. Jede bewusste Übernahme erzeugt genau einen unveränderlichen Run; weitere
+Das geladene Rasteroriginal steht als unveränderlicher erster Eintrag im Verlauf. Nach einer
+lokalen oder KI-gestützten Rasterbearbeitung steht „Verarbeitet“ als zweite versionierte Karte
+daneben. Beide Raster können angezeigt und wie jeder Run als A oder B gewählt werden. Die
+ungespeicherte SVG-Vorschau steht als „Entwurf“ direkt dahinter. Jede bewusste Übernahme erzeugt
+genau einen unveränderlichen Run; weitere
 Vorschauänderungen ersetzen wieder nur die eine Entwurfskarte. Der Verlauf hält alle Runs von neu
 nach alt als horizontal bedienbare Karten. Jede Run-Karte enthält:
 
@@ -307,10 +311,10 @@ nicht mehr benötigten Run und dessen SVG aus der Session. War der Run ausgewäh
 Arbeitsfläche anschließend das Original; gehörte er zum A/B-Vergleich, wird der Vergleich geleert.
 Beim Laden eines anderen Originalbildes beginnt eine neue leere Session-History.
 
-Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ das Original oder
-den Run in den jeweiligen Vergleichsplatz. Dieselbe Quelle belegt nie beide Plätze. Sobald A und B
-gesetzt sind, zeigt die gemeinsame Arbeitsfläche Rasteroriginal und SVG oder zwei SVGs
-deckungsgleich. Die Labels nennen „Original“ oder die zugeordnete Run-ID.
+Unter jeder History-Karte setzen die tastaturbedienbaren Aktionen „A“ und „B“ Original,
+Verarbeitet, Entwurf oder Run in den jeweiligen Vergleichsplatz. Dieselbe Quelle belegt nie beide
+Plätze. Sobald A und B gesetzt sind, zeigt die gemeinsame Arbeitsfläche zwei Raster, Raster und SVG
+oder zwei SVGs deckungsgleich. Die Labels nennen die jeweilige Quelle.
 
 Der cyanfarbene Trenner teilt dieselbe Bildfläche ohne Überblendung: links liegt A, rechts B. Er
 lässt sich direkt ziehen oder über den Regler „Trennposition“ bewegen. Bei 50 Prozent zeigt die
@@ -633,7 +637,7 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
    `load_conversion_preset` aufgelistet, gespeichert und sichtbar geladen.
 3. Runs über `select_history_run` anzeigen und mit `delete_history_run` entfernen.
    `select_comparison_a` und `select_comparison_b` wählen
-   per Run-ID oder `original: true` die sichtbaren Vergleichsquellen;
+   per Run-ID, `original: true` oder `processed: true` die sichtbaren Vergleichsquellen;
    `download_selected_svg` exportiert den sichtbaren Run.
 4. Modelle mit `load_model`, `retry_model` und `unload_model` verwalten.
 5. `apply_background_removal` oder `apply_smart_selection` anwenden. Smart-Select-Punkte verwenden

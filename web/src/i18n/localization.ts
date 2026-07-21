@@ -244,6 +244,7 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   "Im Handbuch erklären": "Explain in handbook",
   "Auf Standard zurücksetzen": "Reset to default",
   "Original öffnen": "Open original",
+  "Verarbeitet öffnen": "Open processed image",
   "SVG anzeigen": "Show SVG",
   "Entwurf übernehmen": "Accept draft",
   Kurvenmodus: "Curve mode",
@@ -409,6 +410,7 @@ const englishPatterns: readonly Readonly<{
   pattern(/^A · Variante$/, () => "A · Variant"),
   pattern(/^B · Variante$/, () => "B · Variant"),
   pattern(/^([AB]) · Entwurf$/, (slot) => `${slot} · Draft`),
+  pattern(/^([AB]) · Verarbeitet$/, (slot) => `${slot} · Processed`),
   pattern(/^Bereit (.*)$/, (suffix) => `Ready ${suffix}`),
   pattern(/^Bereit$/, () => "Ready"),
   pattern(
@@ -436,6 +438,15 @@ const englishPatterns: readonly Readonly<{
   ),
   pattern(/^MODNet wird lokal vorbereitet(.*)$/, (suffix) => `Preparing MODNet locally${suffix}`),
   pattern(/^Original als ([AB]) setzen$/, (slot) => `Set original as ${slot}`),
+  pattern(
+    /^(Original|Verarbeitet) ausgewählt(.*)$/,
+    (source, suffix) => `${translateContent(source)} selected${translateContent(suffix)}`,
+  ),
+  pattern(/^Verarbeitet als ([AB]) setzen$/, (slot) => `Set processed image as ${slot}`),
+  pattern(
+    /^Verarbeitet · (.*) · V(\d+)$/,
+    (kind, version) => `Processed · ${translateContent(kind)} · V${version}`,
+  ),
   pattern(/^Preset „(.*)“ gespeichert$/, (name) => `Preset “${name}” saved`),
   pattern(/^Preset „(.*)“ geladen$/, (name) => `Preset “${name}” loaded`),
   pattern(/^Preset „(.*)“ gelöscht$/, (name) => `Preset “${name}” deleted`),

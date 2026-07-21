@@ -6,10 +6,11 @@ import {
   ComparisonSourceKind,
   draftSource,
   originalSource,
+  processedSource,
   runSource,
 } from "../compare/comparison-source";
 import type { HistoryStore, NewConversionRun, ConversionRun } from "./history-store";
-import { formatImageVersion } from "../image/image-version";
+import { formatImageVersion, ImageVersionKind } from "../image/image-version";
 import type { LoadedImage } from "../image/image-store";
 import { restoreSelectedRunOptions } from "./restore-run";
 import { formatByteSize, utf8ByteLength } from "../format-byte-size";
@@ -18,6 +19,7 @@ import type { WorkspaceMetadataController } from "../workspace/workspace-metadat
 export interface HistoryController {
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
   assignOriginalComparison(slot: CompareSlot): boolean;
+  assignProcessedComparison(slot: CompareSlot): boolean;
   clearComparison(): void;
   record(input: NewConversionRun): ConversionRun;
   remove(runId: number): ConversionRun | undefined;
@@ -26,6 +28,7 @@ export interface HistoryController {
   selected(): ConversionRun | undefined;
   setDraft(input: NewConversionRun): void;
   setOriginal(image: LoadedImage): void;
+  setProcessed(image: LoadedImage | undefined): void;
 }
 
 export function initializeHistory(
@@ -36,7 +39,8 @@ export function initializeHistory(
 ): HistoryController {
   const elements = readElements();
   let originalImage: LoadedImage | undefined;
-  let originalSelected = false;
+  let processedImage: LoadedImage | undefined;
+  let selectedRaster: "original" | "processed" | undefined;
   let previewDraft: NewConversionRun | undefined;
 
   elements.restoreButton.addEventListener("click", () => {
@@ -56,7 +60,7 @@ export function initializeHistory(
     elements.statusImage.textContent = `Run ${String(run.id)} ausgewählt · ${String(run.widthPixels)} × ${String(run.heightPixels)} SVG · ${svgSize(run)}`;
   };
 
-  const showOriginal = (image: LoadedImage): void => {
+  const showRaster = (image: LoadedImage, label: "Original" | "Verarbeitet"): void => {
     elements.output.replaceChildren();
     elements.output.hidden = true;
     elements.rasterPreview.src = image.metadata.previewUrl;
@@ -65,7 +69,7 @@ export function initializeHistory(
     elements.downloadButton.hidden = true;
     delete elements.downloadButton.dataset.sourceFileName;
     workspaceMetadata.showImage(image);
-    elements.statusImage.textContent = `Original ausgewählt · ${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
+    elements.statusImage.textContent = `${label} ausgewählt · ${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
   };
 
   const clearComparison = (): void => {
@@ -76,7 +80,7 @@ export function initializeHistory(
   const select = (runId: number): ConversionRun | undefined => {
     const selected = store.select(runId);
     if (selected) {
-      originalSelected = false;
+      selectedRaster = undefined;
       clearComparison();
       showRun(selected);
     }
@@ -101,6 +105,15 @@ export function initializeHistory(
     return true;
   };
 
+  const assignProcessedComparison = (slot: CompareSlot): boolean => {
+    if (!processedImage) {
+      return false;
+    }
+    compareController.assign(slot, processedSource(processedImage));
+    render();
+    return true;
+  };
+
   const remove = (runId: number): ConversionRun | undefined => {
     const wasSelected = store.selected()?.id === runId;
     const comparedRuns = compareController.current();
@@ -115,8 +128,8 @@ export function initializeHistory(
       compareController.clear();
     }
     if (wasSelected && originalImage) {
-      originalSelected = true;
-      showOriginal(originalImage);
+      selectedRaster = "original";
+      showRaster(originalImage, "Original");
     }
     render();
     elements.statusImage.textContent = wasSelected
@@ -132,20 +145,44 @@ export function initializeHistory(
     elements.content.replaceChildren(
       ...(originalImage
         ? [
-            originalItem(
+            rasterItem(
               originalImage,
-              originalSelected,
+              "Original",
+              "original",
+              selectedRaster === "original",
               comparedRuns.a?.kind === ComparisonSourceKind.Original,
               comparedRuns.b?.kind === ComparisonSourceKind.Original,
               () => {
-                originalSelected = true;
+                selectedRaster = "original";
                 clearComparison();
-                showOriginal(originalImage!);
+                showRaster(originalImage!, "Original");
               },
               (slot) => {
                 compareController.assign(slot, originalSource(originalImage!));
                 render();
-                focusOriginalCompareButton(elements.content, slot);
+                focusRasterCompareButton(elements.content, "original", slot);
+              },
+            ),
+          ]
+        : []),
+      ...(processedImage
+        ? [
+            rasterItem(
+              processedImage,
+              "Verarbeitet",
+              "processed",
+              selectedRaster === "processed",
+              comparedRuns.a?.kind === ComparisonSourceKind.Processed,
+              comparedRuns.b?.kind === ComparisonSourceKind.Processed,
+              () => {
+                selectedRaster = "processed";
+                clearComparison();
+                showRaster(processedImage!, "Verarbeitet");
+              },
+              (slot) => {
+                compareController.assign(slot, processedSource(processedImage!));
+                render();
+                focusRasterCompareButton(elements.content, "processed", slot);
               },
             ),
           ]
@@ -184,17 +221,18 @@ export function initializeHistory(
     );
     const variantLabel = `${String(runs.length)} ${runs.length === 1 ? "Variante" : "Varianten"}`;
     elements.variantCount.textContent = previewDraft ? `${variantLabel} · 1 Entwurf` : variantLabel;
-    elements.restoreButton.hidden = runs.length === 0 || originalSelected;
+    elements.restoreButton.hidden = runs.length === 0 || selectedRaster !== undefined;
   };
 
   return {
     assignComparison,
     assignOriginalComparison,
+    assignProcessedComparison,
     clearComparison,
     record: (input) => {
       const run = store.add(input);
       previewDraft = undefined;
-      originalSelected = false;
+      selectedRaster = undefined;
       compareController.assign("b", runSource(run));
       render();
       return run;
@@ -205,7 +243,7 @@ export function initializeHistory(
     selected: store.selected,
     setDraft: (input) => {
       previewDraft = input;
-      originalSelected = false;
+      selectedRaster = undefined;
       if (originalImage) {
         compareController.clear();
         compareController.assign("a", originalSource(originalImage));
@@ -221,7 +259,18 @@ export function initializeHistory(
       originalImage = image;
       if (sourceChanged) {
         previewDraft = undefined;
-        originalSelected = true;
+        processedImage = undefined;
+        selectedRaster = "original";
+      }
+      render();
+    },
+    setProcessed: (image) => {
+      processedImage =
+        image && image.version.kind !== ImageVersionKind.Original ? image : undefined;
+      if (processedImage) {
+        selectedRaster = "processed";
+      } else if (image && originalImage?.version.id === image.version.id) {
+        selectedRaster = "original";
       }
       render();
     },
@@ -263,20 +312,22 @@ function draftItem(
   return item;
 }
 
-function originalItem(
+function rasterItem(
   image: LoadedImage,
+  label: "Original" | "Verarbeitet",
+  kind: "original" | "processed",
   selected: boolean,
   comparedAsA: boolean,
   comparedAsB: boolean,
-  selectOriginal: () => void,
-  compareOriginal: (slot: CompareSlot) => void,
+  selectRaster: () => void,
+  compareRaster: (slot: CompareSlot) => void,
 ): HTMLElement {
   const item = document.createElement("article");
-  item.className = "history-item history-original-item";
+  item.className = `history-item history-${kind}-item`;
   const button = document.createElement("button");
   button.type = "button";
   button.className = "history-card";
-  button.dataset.testid = "history-original-card";
+  button.dataset.testid = `history-${kind}-card`;
   button.setAttribute("aria-pressed", String(selected));
 
   const thumbnail = document.createElement("span");
@@ -288,19 +339,19 @@ function originalItem(
   thumbnail.append(preview);
 
   const title = document.createElement("strong");
-  title.textContent = "Original";
+  title.textContent = label;
   const dimensions = document.createElement("span");
   dimensions.textContent = `${String(image.metadata.widthPixels)} × ${String(image.metadata.heightPixels)} · Raster · ${formatByteSize(image.metadata.sizeBytes)}`;
   const version = document.createElement("small");
   version.textContent = formatImageVersion(image.version);
   button.append(thumbnail, title, dimensions, version);
-  button.addEventListener("click", selectOriginal);
+  button.addEventListener("click", selectRaster);
 
   const actions = document.createElement("div");
   actions.className = "history-compare-actions";
   actions.append(
-    originalCompareButton("a", comparedAsA, compareOriginal),
-    originalCompareButton("b", comparedAsB, compareOriginal),
+    rasterCompareButton(label, kind, "a", comparedAsA, compareRaster),
+    rasterCompareButton(label, kind, "b", comparedAsB, compareRaster),
   );
   item.append(button, actions);
   return item;
@@ -404,19 +455,22 @@ function compareButton(
   return button;
 }
 
-function originalCompareButton(
+function rasterCompareButton(
+  sourceLabel: "Original" | "Verarbeitet",
+  sourceKind: "original" | "processed",
   slot: CompareSlot,
   assigned: boolean,
-  compareOriginal: (slot: CompareSlot) => void,
+  compareRaster: (slot: CompareSlot) => void,
 ): HTMLButtonElement {
   const button = document.createElement("button");
   const label = slot.toUpperCase();
   button.type = "button";
   button.textContent = label;
-  button.setAttribute("aria-label", `Original als ${label} setzen`);
+  button.setAttribute("aria-label", `${sourceLabel} als ${label} setzen`);
   button.setAttribute("aria-pressed", String(assigned));
-  button.dataset.compareOriginalSlot = slot;
-  button.addEventListener("click", () => compareOriginal(slot));
+  button.dataset.compareRasterKind = sourceKind;
+  button.dataset.compareRasterSlot = slot;
+  button.addEventListener("click", () => compareRaster(slot));
   return button;
 }
 
@@ -444,8 +498,14 @@ function focusCompareButton(content: HTMLElement, runId: number, slot: CompareSl
   }
 }
 
-function focusOriginalCompareButton(content: HTMLElement, slot: CompareSlot): void {
-  const button = content.querySelector(`[data-compare-original-slot="${slot}"]`);
+function focusRasterCompareButton(
+  content: HTMLElement,
+  kind: "original" | "processed",
+  slot: CompareSlot,
+): void {
+  const button = content.querySelector(
+    `[data-compare-raster-kind="${kind}"][data-compare-raster-slot="${slot}"]`,
+  );
   if (button instanceof HTMLButtonElement) {
     button.focus();
   }

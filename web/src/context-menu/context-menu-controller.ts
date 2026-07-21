@@ -111,6 +111,8 @@ function imageCommands(
   switch (source.kind) {
     case ComparisonSourceKind.Original:
       return [command("Original öffnen", true, dependencies.workspace.showOriginal)];
+    case ComparisonSourceKind.Processed:
+      return [command("Verarbeitet öffnen", true, dependencies.workspace.showProcessed)];
     case ComparisonSourceKind.Draft:
       return [
         command("SVG anzeigen", true, dependencies.workspace.showSvg),
