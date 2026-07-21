@@ -24,6 +24,22 @@ test("Given the static production build, when every asset is measured, then each
   ).toBe(true);
 });
 
+test("Given the published build, when the lazy conversion worker is requested, then JavaScript is served instead of the SPA fallback", async ({
+  request,
+}) => {
+  const builtAssets = await collectFilePaths(resolve(buildOutputPath, "assets"));
+  const workerPath = builtAssets.find((assetPath) =>
+    basename(assetPath).startsWith("conversion-worker-"),
+  );
+  expect(workerPath).toBeDefined();
+
+  const response = await request.get(`/assets/${basename(workerPath ?? "")}`);
+
+  expect(response.ok()).toBe(true);
+  expect(response.headers()["content-type"]).toMatch(/^(?:application|text)\/javascript/);
+  expect(await response.text()).not.toContain("<!doctype html");
+});
+
 test("Given a fresh public demo, when the example is converted, compared, and exported, then the complete workflow survives a direct visit and reload", async ({
   page,
 }) => {

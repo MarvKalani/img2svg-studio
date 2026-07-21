@@ -5,7 +5,7 @@
 
 /assets/*
   ! Cache-Control
-  Cache-Control: public, max-age=31556952, immutable
+  Cache-Control: no-cache
 
 /service-worker.js
   Cache-Control: no-cache

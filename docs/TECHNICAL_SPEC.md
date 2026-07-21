@@ -69,10 +69,12 @@ versionierten Cache ab und löscht ihn beim ersten Lesen. Die App-Shell und Mode
 nicht von diesem Worker gecacht. Eine fehlgeschlagene Registrierung lässt den normalen Tab
 unverändert bedienbar.
 
-Cloudflare revalidiert alle nicht versionierten Antworten mit `Cache-Control: no-cache`. Nur der
-Vite-Ordner `/assets/*` wird für ein Jahr als `immutable` markiert, weil Versionsnummer und
-Inhaltshash gemeinsam den Dateinamen bilden. Der Share-Bridge-Cache verwendet die übergebene
-Produktversion als Namespace; beim Aktivieren entfernt der Worker ältere Namespaces.
+Cloudflare revalidiert HTML und `/assets/*` mit `Cache-Control: no-cache`. Auch versionierte
+Lazy-Assets werden validiert, weil ein noch nicht an allen Custom-Domain-Knoten verfügbarer Worker
+sonst als erfolgreicher HTML-SPA-Fallback zwischengespeichert werden kann. Versionsnummer und
+Inhaltshash im Dateinamen verhindern weiterhin alte Antworten nach einem Release. Der
+Share-Bridge-Cache verwendet die übergebene Produktversion als Namespace; beim Aktivieren entfernt
+der Worker ältere Namespaces.
 
 ## 3. Zentrale Domänenmodelle
 

@@ -70,6 +70,8 @@ Revision `260721.10` härtet den stabilen nativen TypeScript-7-Build, beschleuni
 Typcheck und dokumentiert Compilergrenzen sowie Benchmarks für spätere Erweiterungen.
 Revision `260721.11` dockt den Verlauf auf Mobilgeräten als sichtbares unteres Panel an, hält die
 Layoutauswahl im Vordergrund, speichert eigene Presets und zeigt Dateiinformationen direkt am Bild.
+Revision `260721.12` verhindert, dass ein vorübergehend fehlendes Worker-Asset als HTML-Fallback
+zwischengespeichert wird, und prüft dessen Inhaltstyp vor jeder Veröffentlichung.
 
 ### Sprache
 

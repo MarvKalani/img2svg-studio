@@ -31,6 +31,11 @@ isolation and WebMCP permissions headers. No Functions or server runtime are nee
 Pages serves this project as an SPA because it has a root `index.html` and no `404.html`, so a
 direct visit such as `/workspace` reaches the application without a separate rewrite rule.
 
+HTML and Vite assets use `Cache-Control: no-cache`, which permits browser and edge storage but
+requires revalidation. This is deliberate: during global custom-domain propagation, a lazy worker
+request can briefly reach the SPA fallback. Revalidation prevents that HTML response from being
+pinned under the versioned worker URL.
+
 Provider references:
 
 - [Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)
@@ -58,9 +63,10 @@ IMG2SVG_DEMO_BASE_URL=https://studio.img2.download \
   npm --prefix web run test:demo
 ```
 
-The same test verifies direct navigation, security headers, local geometric conversion, a second
-run, A/B comparison, byte-bearing SVG download, reload, clean console and no cross-origin image
-traffic. It also rejects any build asset above Cloudflare Pages' 25 MiB per-file limit.
+The same test verifies direct navigation, security headers, the lazy worker's JavaScript content
+type, local geometric conversion, a second run, A/B comparison, byte-bearing SVG download, reload,
+clean console and no cross-origin image traffic. It also rejects any build asset above Cloudflare
+Pages' 25 MiB per-file limit.
 
 The public run on 20 July 2026 passed both scenarios in real Chrome in three seconds. A separate
 header probe returned HTTP 200 with `Origin-Agent-Cluster: ?1` and

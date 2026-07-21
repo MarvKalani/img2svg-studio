@@ -39,12 +39,11 @@ describe("PWA assets", () => {
     expect(workerSource).toContain("Response.redirect");
   });
 
-  test("Given Cloudflare serves the build, then HTML revalidates while versioned assets stay immutable", () => {
+  test("Given Cloudflare serves the build, then HTML and lazy assets revalidate", () => {
     const headers = readFileSync(new URL("_headers", publicDirectory), "utf8");
 
     expect(headers).toContain("/*\n  Cache-Control: no-cache");
-    expect(headers).toContain(
-      "/assets/*\n  ! Cache-Control\n  Cache-Control: public, max-age=31556952, immutable",
-    );
+    expect(headers).toContain("/assets/*\n  ! Cache-Control\n  Cache-Control: no-cache");
+    expect(headers).not.toContain("immutable");
   });
 });
