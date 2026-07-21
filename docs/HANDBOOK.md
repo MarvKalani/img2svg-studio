@@ -54,6 +54,8 @@ Revision `260721.02` zeigt die automatische Vorschau sofort als ungespeicherten 
 gegen das Original und trennt direkte Rasterwerkzeuge vom Tracing.
 Revision `260721.03` ergänzt quell- und parameterspezifische Kontextaktionen über die rechte
 Maustaste.
+Revision `260721.04` zeigt beim Tracing den nativen Clusterfortschritt und die Zahl der bereits
+verarbeiteten Farbflächen.
 
 ### Sprache
 
@@ -205,6 +207,14 @@ wird die Vorschau erneut berechnet.
 
 Dieser Ablauf wird mit jedem vertikalen Slice ergänzt und erst dann als verfügbar bezeichnet,
 wenn er im Browser getestet wurde.
+
+## Tracing-Fortschritt
+
+Während der lokalen Konvertierung erscheint oben in der Arbeitsfläche ein Fortschrittsfeld.
+„Farbflächen erkennen“ und bei Ausschnitten „Ausschnitte aufbereiten“ zeigen den nativen
+Visioncortex-Fortschritt. „SVG-Konturen erzeugen“ nennt verarbeitete und gesamte Farbflächen. Die
+Phasen haben bewusst keinen erfundenen gemeinsamen Prozentwert. Nach fertiger Vorschau oder einem
+Fehler verschwindet das Feld; die Statuszeile zeigt anschließend wieder das Ergebnis.
 
 ## Kontextaktionen
 

@@ -10,4 +10,5 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 img2svg-core = { path = "../img2svg-core" }
+js-sys.workspace = true
 wasm-bindgen.workspace = true

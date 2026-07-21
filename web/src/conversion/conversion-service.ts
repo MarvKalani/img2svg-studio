@@ -4,9 +4,14 @@ import type {
 } from "./conversion-worker-contract";
 import { ConversionFailure, ConversionFailureCode } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
+import type { ConversionProgressUpdate } from "./conversion-progress";
 import { readRasterPixels } from "./read-raster-pixels";
 
-export async function convertImage(file: File, options: ConversionOptions): Promise<string> {
+export async function convertImage(
+  file: File,
+  options: ConversionOptions,
+  reportProgress: (progress: ConversionProgressUpdate) => void,
+): Promise<string> {
   const raster = await readRasterPixels(file, options.preprocessing);
   const request: ConversionWorkerRequest = {
     heightPixels: raster.heightPixels,
@@ -15,25 +20,28 @@ export async function convertImage(file: File, options: ConversionOptions): Prom
     widthPixels: raster.widthPixels,
   };
 
-  return runWorker(request);
+  return runWorker(request, reportProgress);
 }
 
-function runWorker(request: ConversionWorkerRequest): Promise<string> {
+function runWorker(
+  request: ConversionWorkerRequest,
+  reportProgress: (progress: ConversionProgressUpdate) => void,
+): Promise<string> {
   const worker = new Worker(new URL("./conversion-worker.ts", import.meta.url), { type: "module" });
 
   return new Promise((resolve, reject) => {
-    worker.addEventListener(
-      "message",
-      (event: MessageEvent<ConversionWorkerResponse>) => {
-        worker.terminate();
-        if (event.data.ok) {
-          resolve(event.data.svg);
-        } else {
-          reject(new ConversionFailure(event.data.failureCode));
-        }
-      },
-      { once: true },
-    );
+    worker.addEventListener("message", (event: MessageEvent<ConversionWorkerResponse>) => {
+      if ("progress" in event.data) {
+        reportProgress(event.data.progress);
+        return;
+      }
+      worker.terminate();
+      if (event.data.ok) {
+        resolve(event.data.svg);
+      } else {
+        reject(new ConversionFailure(event.data.failureCode));
+      }
+    });
     worker.addEventListener(
       "error",
       () => {

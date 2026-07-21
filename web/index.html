@@ -482,6 +482,22 @@
           <section class="comparison" aria-labelledby="workspace-title">
             <h1 id="workspace-title" class="visually-hidden">Arbeitsfläche</h1>
             <div id="comparison-stage" class="comparison-stage">
+              <div
+                id="conversion-progress"
+                class="conversion-progress"
+                role="status"
+                aria-label="Tracing-Fortschritt"
+                aria-live="polite"
+                hidden
+              >
+                <span id="conversion-progress-label">Raster vorbereiten</span>
+                <progress
+                  id="conversion-progress-bar"
+                  aria-labelledby="conversion-progress-label conversion-progress-detail"
+                  max="100"
+                ></progress>
+                <output id="conversion-progress-detail">…</output>
+              </div>
               <article id="primary-preview-pane" class="preview-pane">
                 <span id="primary-preview-label" class="preview-label">SVG</span>
                 <button id="download-svg" class="download-button" type="button" hidden>

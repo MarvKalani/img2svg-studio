@@ -11,6 +11,7 @@ in `web/src/ai/model-manifest.ts`; this document records primary sources and ver
 | VTracer | 0.6.5 | MIT | Reference workflow and parameter semantics for raster-to-SVG tracing; [source](https://github.com/visioncortex/vtracer/tree/v0.6.5) |
 | `visioncortex` | 0.8.10 | MIT OR Apache-2.0; distributed here under MIT | Color clustering and contour tracing; [crate](https://crates.io/crates/visioncortex/0.8.10) |
 | `wasm-bindgen` | 0.2.126 | MIT OR Apache-2.0 | Rust/browser boundary; [crate](https://crates.io/crates/wasm-bindgen/0.2.126) |
+| `js-sys` | 0.3.103 | MIT OR Apache-2.0 | Typed JavaScript progress callback at the WASM boundary; [crate](https://crates.io/crates/js-sys/0.3.103) |
 | `@huggingface/transformers` | 3.8.1 | Apache-2.0 | Browser model runtime; [release](https://github.com/huggingface/transformers.js/releases/tag/3.8.1) |
 | `onnxruntime-web` | 1.22.0-dev.20250409-89f8206ba4 | MIT | Transitive ONNX execution runtime; [package](https://www.npmjs.com/package/onnxruntime-web/v/1.22.0-dev.20250409-89f8206ba4) |
 | `@modelcontextprotocol/sdk` | 1.29.0 | MIT | Streamable HTTP MCP server; [package](https://www.npmjs.com/package/@modelcontextprotocol/sdk/v/1.29.0) |

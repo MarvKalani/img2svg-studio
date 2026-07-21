@@ -38,6 +38,34 @@ struct OrderedSvgElement {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConversionProgressPhase {
+    Clustering,
+    CutoutClustering,
+    Tracing,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ConversionProgress {
+    completed: usize,
+    phase: ConversionProgressPhase,
+    total: usize,
+}
+
+impl ConversionProgress {
+    pub const fn completed(self) -> usize {
+        self.completed
+    }
+
+    pub const fn phase(self) -> ConversionProgressPhase {
+        self.phase
+    }
+
+    pub const fn total(self) -> usize {
+        self.total
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ConversionErrorCode {
     InvalidDimensions,
     PixelLength,
@@ -129,6 +157,16 @@ pub fn convert_rgba_with_options_result(
     height: usize,
     options: ConversionOptions,
 ) -> Result<ConversionResult, ConversionError> {
+    convert_rgba_with_options_and_progress(pixels, width, height, options, |_| {})
+}
+
+pub fn convert_rgba_with_options_and_progress(
+    pixels: &[u8],
+    width: usize,
+    height: usize,
+    options: ConversionOptions,
+    mut report_progress: impl FnMut(ConversionProgress),
+) -> Result<ConversionResult, ConversionError> {
     let expected_length = expected_rgba_length(width, height)?;
     if pixels.len() != expected_length {
         return Err(ConversionError::PixelLength {
@@ -144,56 +182,72 @@ pub fn convert_rgba_with_options_result(
     };
     let (key_color, keying_action) = prepare_transparency(&mut image)?;
     let minimum_cluster_area = usize::from(options.filter_speckle()).pow(2);
-    let mut clusters = Runner::new(
-        RunnerConfig {
-            batch_size: 25_600,
-            deepen_diff: i32::from(options.layer_difference()),
-            diagonal: options.layer_difference() == 0,
-            good_max_area: width * height,
-            good_min_area: minimum_cluster_area,
-            hierarchical: HIERARCHICAL_MAX,
-            hollow_neighbours: 1,
-            is_same_color_a: i32::from(8 - options.color_precision()),
-            is_same_color_b: 1,
-            key_color,
-            keying_action: match options.hierarchical_mode() {
-                HierarchicalMode::Cutout => KeyingAction::Keep,
-                HierarchicalMode::Stacked => keying_action,
+    let has_visible_pixels = pixels.chunks_exact(4).any(|pixel| pixel[3] != 0);
+    let mut clusters = run_clusters(
+        Runner::new(
+            RunnerConfig {
+                batch_size: 25_600,
+                deepen_diff: i32::from(options.layer_difference()),
+                diagonal: options.layer_difference() == 0,
+                good_max_area: width * height,
+                good_min_area: minimum_cluster_area,
+                hierarchical: HIERARCHICAL_MAX,
+                hollow_neighbours: 1,
+                is_same_color_a: i32::from(8 - options.color_precision()),
+                is_same_color_b: 1,
+                key_color,
+                keying_action: match options.hierarchical_mode() {
+                    HierarchicalMode::Cutout => KeyingAction::Keep,
+                    HierarchicalMode::Stacked => keying_action,
+                },
             },
-        },
-        image,
-    )
-    .run();
+            image,
+        ),
+        ConversionProgressPhase::Clustering,
+        has_visible_pixels,
+        &mut report_progress,
+    );
 
     if options.hierarchical_mode() == HierarchicalMode::Cutout {
         let flattened_image = clusters.view().to_color_image();
-        clusters = Runner::new(
-            RunnerConfig {
-                batch_size: 25_600,
-                deepen_diff: 0,
-                diagonal: false,
-                good_max_area: width * height,
-                good_min_area: 0,
-                hierarchical: 64,
-                hollow_neighbours: 0,
-                is_same_color_a: 0,
-                is_same_color_b: 1,
-                key_color,
-                keying_action: KeyingAction::Discard,
-            },
-            flattened_image,
-        )
-        .run();
+        clusters = run_clusters(
+            Runner::new(
+                RunnerConfig {
+                    batch_size: 25_600,
+                    deepen_diff: 0,
+                    diagonal: false,
+                    good_max_area: width * height,
+                    good_min_area: 0,
+                    hierarchical: 64,
+                    hollow_neighbours: 0,
+                    is_same_color_a: 0,
+                    is_same_color_b: 1,
+                    key_color,
+                    keying_action: KeyingAction::Discard,
+                },
+                flattened_image,
+            ),
+            ConversionProgressPhase::CutoutClustering,
+            has_visible_pixels,
+            &mut report_progress,
+        );
     }
 
     let view = clusters.view();
-    let mut svg_elements = Vec::with_capacity(clusters.output_len());
+    let traced_cluster_indices = view
+        .clusters_output
+        .iter()
+        .rev()
+        .copied()
+        .filter(|&cluster_index| view.get_cluster(cluster_index).area() >= minimum_cluster_area)
+        .collect::<Vec<_>>();
+    let tracing_total = traced_cluster_indices.len();
+    let tracing_report_interval = tracing_total.div_ceil(100).max(1);
+    report_progress(progress(ConversionProgressPhase::Tracing, 0, tracing_total));
+    let mut svg_elements = Vec::with_capacity(tracing_total);
     let mut shape_statistics = ShapeStatistics::default();
-    for (cluster_order, &cluster_index) in view.clusters_output.iter().rev().enumerate() {
+    for (cluster_order, &cluster_index) in traced_cluster_indices.iter().enumerate() {
         let cluster = view.get_cluster(cluster_index);
-        if cluster.area() < minimum_cluster_area {
-            continue;
-        }
         let compound_path = cluster.to_compound_path(
             &view,
             false,
@@ -239,6 +293,15 @@ pub fn convert_rgba_with_options_result(
                 });
             }
         }
+        let completed = cluster_order + 1;
+        // Bound WASM crossings while keeping every displayed count native and the final exact.
+        if completed == tracing_total || completed.is_multiple_of(tracing_report_interval) {
+            report_progress(progress(
+                ConversionProgressPhase::Tracing,
+                completed,
+                tracing_total,
+            ));
+        }
     }
 
     // Raster clusters carry no authoring order, so native types use one canonical z-order.
@@ -257,6 +320,47 @@ pub fn convert_rgba_with_options_result(
                 .collect::<String>()
         ),
     })
+}
+
+fn run_clusters(
+    runner: Runner,
+    phase: ConversionProgressPhase,
+    report_intermediate_progress: bool,
+    report_progress: &mut impl FnMut(ConversionProgress),
+) -> visioncortex::color_clusters::Clusters {
+    const CLUSTERING_TOTAL: usize = 100;
+    report_progress(progress(phase, 0, CLUSTERING_TOTAL));
+    let mut builder = runner.start();
+    let mut last_completed = 0;
+    loop {
+        let complete = builder.tick();
+        let completed = if complete {
+            CLUSTERING_TOTAL
+        } else if report_intermediate_progress {
+            builder.progress().min(CLUSTERING_TOTAL as u32) as usize
+        } else {
+            0
+        };
+        if completed > last_completed {
+            report_progress(progress(phase, completed, CLUSTERING_TOTAL));
+            last_completed = completed;
+        }
+        if complete {
+            return builder.result();
+        }
+    }
+}
+
+const fn progress(
+    phase: ConversionProgressPhase,
+    completed: usize,
+    total: usize,
+) -> ConversionProgress {
+    ConversionProgress {
+        completed,
+        phase,
+        total,
+    }
 }
 
 fn path_simplify_mode(mode: CurveFittingMode) -> PathSimplifyMode {

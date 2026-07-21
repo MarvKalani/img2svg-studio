@@ -38,12 +38,64 @@ export function convert_rgba(pixels, width, height, color_precision, filter_spec
         wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
     }
 }
+
+/**
+ * @param {Uint8Array} pixels
+ * @param {number} width
+ * @param {number} height
+ * @param {number} color_precision
+ * @param {number} filter_speckle
+ * @param {number} path_precision
+ * @param {number} hierarchical_mode
+ * @param {number} curve_fitting_mode
+ * @param {number} layer_difference
+ * @param {number} corner_threshold_degrees
+ * @param {number} length_threshold_tenths
+ * @param {number} max_iterations
+ * @param {number} splice_threshold_degrees
+ * @param {number} scale_percent
+ * @param {number} shape_detection_flags
+ * @param {Function} progress_callback
+ * @returns {string}
+ */
+export function convert_rgba_with_progress(pixels, width, height, color_precision, filter_speckle, path_precision, hierarchical_mode, curve_fitting_mode, layer_difference, corner_threshold_degrees, length_threshold_tenths, max_iterations, splice_threshold_degrees, scale_percent, shape_detection_flags, progress_callback) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const ptr0 = passArray8ToWasm0(pixels, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.convert_rgba_with_progress(ptr0, len0, width, height, color_precision, filter_speckle, path_precision, hierarchical_mode, curve_fitting_mode, layer_difference, corner_threshold_degrees, length_threshold_tenths, max_iterations, splice_threshold_degrees, scale_percent, shape_detection_flags, progress_callback);
+        var ptr2 = ret[0];
+        var len2 = ret[1];
+        if (ret[3]) {
+            ptr2 = 0; len2 = 0;
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+    }
+}
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
+        __wbg___wbindgen_throw_344f42d3211c4765: function(arg0, arg1) {
+            throw new Error(getStringFromWasm0(arg0, arg1));
+        },
+        __wbg_call_44b7209e1e252e6a: function() { return handleError(function (arg0, arg1, arg2, arg3, arg4) {
+            const ret = arg0.call(arg1, arg2, arg3, arg4);
+            return ret;
+        }, arguments); },
         __wbindgen_cast_0000000000000001: function(arg0) {
             // Cast intrinsic for `F64 -> Externref`.
             const ret = arg0;
+            return ret;
+        },
+        __wbindgen_cast_0000000000000002: function(arg0, arg1) {
+            // Cast intrinsic for `Ref(String) -> Externref`.
+            const ret = getStringFromWasm0(arg0, arg1);
             return ret;
         },
         __wbindgen_init_externref_table: function() {
@@ -62,6 +114,12 @@ function __wbg_get_imports() {
     };
 }
 
+function addToExternrefTable0(obj) {
+    const idx = wasm.__externref_table_alloc();
+    wasm.__wbindgen_externrefs.set(idx, obj);
+    return idx;
+}
+
 function getStringFromWasm0(ptr, len) {
     return decodeText(ptr >>> 0, len);
 }
@@ -72,6 +130,15 @@ function getUint8ArrayMemory0() {
         cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
     }
     return cachedUint8ArrayMemory0;
+}
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        const idx = addToExternrefTable0(e);
+        wasm.__wbindgen_exn_store(idx);
+    }
 }
 
 function passArray8ToWasm0(arg, malloc) {

@@ -40,6 +40,7 @@ das sichtbare Produkt.
 | VTracer-Parameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vtracer-handbook.spec.ts` |
 | Live-Entwurf gegen Original oder Ergebnis annehmen | `conversion-controller.ts`, `history-controller.ts`, `comparison-source.ts` | `live-preview.spec.ts`, Compare-Unit-Tests |
 | Worker-/WASM-Vertrag | `conversion-worker-contract.ts`, `conversion-worker.ts`, `crates/img2svg-wasm/src/lib.rs` | Typecheck, Web-E2E, Rust-Tests |
+| Tracing-Fortschritt | `conversion-progress.ts`, `conversion-controller.ts`, `img2svg-core/src/lib.rs` | Progress-Unit-/Rust-Tests, `conversion-progress.spec.ts` |
 | Rust-Tracing oder SVG-Ausgabe | `crates/img2svg-core/src/lib.rs` | `default_conversion.rs`, `conversion_errors.rs` |
 | Engine-Optionen und Validierung | `crates/img2svg-core/src/conversion_options.rs` | `conversion_options.rs` in Core-Tests |
 | Native Formerkennung | `shape_detection.rs`, `visioncortex_shape.rs` | `detect_*.rs`, `shape_detection_fallback.rs`, passende Browser-Specs |

@@ -21,6 +21,8 @@ describe("German to English UI translation", () => {
     ["Zauberstab-Auswahl lokal entfernt.", "Magic Wand selection removed locally."],
     ["124 Pixel ausgewählt · Empfindlichkeit 15 %", "124 pixels selected · Sensitivity 15%"],
     ["Bearbeitet · V2", "Edited · V2"],
+    ["Farbflächen erkennen · 42 %", "Detecting color areas · 42 %"],
+    ["23 / 542 Farbflächen", "23 / 542 color areas"],
   ])("translates %s", (german, english) => {
     expect(translateGermanText(german)).toBe(english);
   });

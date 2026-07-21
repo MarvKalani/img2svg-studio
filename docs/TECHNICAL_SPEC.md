@@ -127,8 +127,12 @@ Transparenzschlüssel. Die WASM-Grenze akzeptiert `Uint8Array`, zwei `u32`-Maße
 VTracer-Werte als validierte Zahlen beziehungsweise Enum-Codes, die SVG-Skalierung und ein
 `u32`-Bitfeld für globalen Formerkennungszustand und Typauswahl.
 Sie liefert den SVG-String oder einen der stabilen numerischen Fehlercodes 1–4.
-Die schmale WASM-Grenze liefert weiterhin nur den SVG-String; die Web-App liest sichtbare
-Elementzählungen aus genau diesem validierten SVG und speichert sie mit dem Run.
+Die Fortschrittsvariante derselben schmalen Grenze meldet über einen Callback typisierte Phasen:
+Der inkrementelle Visioncortex-Builder liefert für die Clusterbildung Werte von 0 bis 100; beim
+Tracing meldet der Core verarbeitete und gesamte Farbflächen. Höchstens 100 Zwischenstände pro
+Phase überqueren die WASM-Grenze, der letzte native Wert wird immer übertragen. Der Worker reicht
+diese Meldungen nur an die aktuell angeforderte Preview-Revision weiter. Das Ergebnis bleibt der
+SVG-String; die Web-App liest sichtbare Elementzählungen daraus und speichert sie mit dem Run.
 
 Der Kreisdetektor wertet pro Cluster dessen Begrenzungsrahmen und Pixelanzahl aus. Maximal drei
 Prozent Seitenverhältnisabweichung und acht Prozent Abweichung von der erwarteten Kreisfläche

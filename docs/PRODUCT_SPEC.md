@@ -36,6 +36,7 @@ Der akzeptierte Entwurf besteht aus:
 - Parameter-Diff unter dem Vergleich.
 - Session-History mit allen Runs des aktuellen Bildes und einer Löschaktion pro Run am unteren Rand.
 - quell- und parameterspezifischen Kontextaktionen über die rechte Maustaste.
+- phasenweisen Tracing-Fortschritt aus nativen Cluster- und Farbflächenwerten.
 - Fußbereich mit einer sichtbaren Version im Format `YYMMDD.RR`.
 - direkt erreichbaren, zweisprachigen Seiten für Impressum, Datenschutz und Lizenzen.
 

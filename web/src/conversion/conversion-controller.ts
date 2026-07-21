@@ -2,6 +2,7 @@ import type { ConversionRun, NewConversionRun } from "../history/history-store";
 import type { ImageStore, LoadedImage } from "../image/image-store";
 import { toConversionFailure } from "./conversion-failure";
 import type { ConversionOptions } from "./conversion-options";
+import { presentConversionProgress, type ConversionProgressUpdate } from "./conversion-progress";
 import { convertImage } from "./conversion-service";
 import { parseSvgDocument, readSvgMetrics } from "./svg-document";
 
@@ -70,7 +71,11 @@ export function initializeConversion(
     const revision = requestedRevision;
     const options = readOptions();
     activeRevision = revision;
-    activePreview = createPreview(loadedImage, options)
+    activePreview = createPreview(loadedImage, options, (progress) => {
+      if (revision === requestedRevision) {
+        showConversionProgress(elements, progress);
+      }
+    })
       .then((preview) => {
         if (revision !== requestedRevision) {
           return;
@@ -144,9 +149,10 @@ export function initializeConversion(
 async function createPreview(
   loadedImage: LoadedImage,
   options: ConversionOptions,
+  reportProgress: (progress: ConversionProgressUpdate) => void,
 ): Promise<PreviewResult> {
   const startedAtMilliseconds = Date.now();
-  const svg = await convertImage(loadedImage.file, options);
+  const svg = await convertImage(loadedImage.file, options, reportProgress);
   const renderedSvg = parseSvgDocument(svg);
   const metrics = readSvgMetrics(renderedSvg);
   return {
@@ -167,6 +173,23 @@ function showPendingPreview(elements: ConversionElements): void {
   elements.buttonLabel.textContent = "Vorschau wird aktualisiert …";
   elements.error.hidden = true;
   elements.statusImage.textContent = "Vorschau wird lokal aktualisiert …";
+  elements.progress.hidden = false;
+  elements.progressBar.removeAttribute("value");
+  elements.progressLabel.textContent = "Raster vorbereiten";
+  elements.progressDetail.textContent = "…";
+}
+
+function showConversionProgress(
+  elements: ConversionElements,
+  progress: ConversionProgressUpdate,
+): void {
+  const presentation = presentConversionProgress(progress);
+  elements.progress.hidden = false;
+  elements.progressBar.max = presentation.maximum;
+  elements.progressBar.value = presentation.value;
+  elements.progressLabel.textContent = presentation.label;
+  elements.progressDetail.textContent = presentation.detail;
+  elements.statusImage.textContent = `${presentation.label} · ${presentation.detail}`;
 }
 
 function showPreview(elements: ConversionElements, preview: PreviewResult): void {
@@ -179,6 +202,7 @@ function showPreview(elements: ConversionElements, preview: PreviewResult): void
   elements.statusImage.textContent = previewStatus(preview.run);
   elements.button.disabled = false;
   elements.buttonLabel.textContent = "Variante übernehmen";
+  hideProgress(elements);
 }
 
 function showPreviewFailure(elements: ConversionElements, error: unknown): void {
@@ -188,11 +212,18 @@ function showPreviewFailure(elements: ConversionElements, error: unknown): void 
   elements.statusImage.textContent = "Vorschau fehlgeschlagen";
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Variante übernehmen";
+  hideProgress(elements);
 }
 
 function showNoImage(elements: ConversionElements): void {
   elements.button.disabled = true;
   elements.buttonLabel.textContent = "Variante übernehmen";
+  hideProgress(elements);
+}
+
+function hideProgress(elements: ConversionElements): void {
+  elements.progress.hidden = true;
+  elements.progressBar.removeAttribute("value");
 }
 
 function noImageAttempt(): ConversionAttempt {
@@ -240,6 +271,10 @@ interface ConversionElements {
   downloadButton: HTMLButtonElement;
   error: HTMLParagraphElement;
   output: HTMLElement;
+  progress: HTMLElement;
+  progressBar: HTMLProgressElement;
+  progressDetail: HTMLOutputElement;
+  progressLabel: HTMLElement;
   rasterPreview: HTMLImageElement;
   statusImage: HTMLElement;
 }
@@ -251,6 +286,10 @@ function readConversionElements(): ConversionElements {
     downloadButton: requireElement("#download-svg", HTMLButtonElement),
     error: requireElement("#image-error", HTMLParagraphElement),
     output: requireElement("#svg-output", HTMLElement),
+    progress: requireElement("#conversion-progress", HTMLElement),
+    progressBar: requireElement("#conversion-progress-bar", HTMLProgressElement),
+    progressDetail: requireElement("#conversion-progress-detail", HTMLOutputElement),
+    progressLabel: requireElement("#conversion-progress-label", HTMLElement),
     rasterPreview: requireElement("#workspace-raster-preview", HTMLImageElement),
     statusImage: requireElement("#status-image", HTMLElement),
   };

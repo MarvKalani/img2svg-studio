@@ -23,7 +23,8 @@ downloaded only after a visible user action and then run locally through WebGPU 
 
 - Local PNG, JPEG and WebP input up to 25 MiB, including drag and drop.
 - Deterministic Rust/WebAssembly vectorization with path fallback.
-- Debounced live SVG preview; History changes only when a visible result is accepted.
+- Debounced live SVG preview with native clustering and contour progress; History changes only when
+  a visible result is accepted.
 - Optional native SVG recognition for circles, rectangles, ellipses, lines and triangles.
 - Session history with immutable, individually removable runs, thumbnails, metrics and restorable
   settings.

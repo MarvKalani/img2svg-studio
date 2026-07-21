@@ -457,6 +457,42 @@ a:focus-visible {
   background: #eef2f3;
 }
 
+.conversion-progress {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto minmax(8rem, 14rem) auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #3d6074;
+  border-radius: 0.5rem;
+  color: #f3f8fa;
+  background: rgb(7 28 40 / 94%);
+  box-shadow: 0 0.3rem 1rem rgb(0 0 0 / 22%);
+  font-size: 0.78rem;
+  font-weight: 700;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.conversion-progress[hidden] {
+  display: none;
+}
+
+.conversion-progress progress {
+  width: 100%;
+  accent-color: #35d6f5;
+}
+
+.conversion-progress output {
+  min-width: 4.5rem;
+  color: #bfeefa;
+  text-align: right;
+}
+
 .comparison-stage[data-view-mode="comparison"].compare-active > .preview-pane,
 .comparison-stage[data-view-mode="comparison"].compare-active > .comparison-divider {
   display: none;
