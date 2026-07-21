@@ -63,8 +63,8 @@ Das MVP trennt Rastervorbereitung vor dem Tracing von der SVG-Skalierung danach:
 
 | Parameter | Bereich | Default | Bedeutung |
 |---|---:|---:|---|
-| Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | einmalig gemessen: Original/75/50/25 % | VTracer-Eingabepixel bei festem Seitenverhältnis |
-| Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor VTracer |
+| Rastergröße | Original, 25/50/75/125/150/200/400 %, 576/720/1080/2160 px Höhe | einmalig gemessen: Original/75/50/25 % | Engine-Eingabepixel bei festem Seitenverhältnis |
+| Rasterfilter | Farbe, Graustufen, Schwarzweiß | Farbe | lokale RGB-Vorbereitung vor der Vektorisierung |
 | Glättungsstärke | 0–100 % | 0 % | dosierte lokale Glättung vor der Schärfung |
 | Schärfungsstärke | 0–100 % | 0 % | dosierte Kantenverstärkung nach der Glättung |
 | Schwarzweiß-Schwellwert | 0–255 | 128 | Grenze zwischen Schwarz und Weiß |

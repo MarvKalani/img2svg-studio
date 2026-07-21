@@ -78,9 +78,10 @@ Open `http://127.0.0.1:4173`, switch to **English** in the header if desired, an
 logo demo** for the bundled faceted logo and its original-size Logo preset. The measured
 576-pixel optimization remains selectable under **Raster size**. The small files under
 `fixtures/shape-recognition/input/` remain exact engineering fixtures for individual native-shape
-contracts. The **VTracer** panel exposes all ten color-tracing parameters, shows every default and
-resets them without reloading the page. **Handbook** opens contextual help; hover or keyboard focus
-on a control shows its purpose, effect and default while the full guide remains browsable below.
+contracts. The **Vectorization** panel exposes all ten color-tracing parameters, shows every
+default and resets them without reloading the page. **Handbook** opens contextual help; hover or
+keyboard focus on a control shows its purpose, effect and default while the full guide remains
+browsable below.
 
 On the deployed HTTPS demo, Chrome can install the Studio as an app. Installed platforms expose
 img2svg in **Share with…** for supported images; desktop Chrome can additionally associate PNG,

@@ -38,7 +38,7 @@ das sichtbare Produkt.
 | Logo- oder Topografie-Benchmark | `web/benchmarks/benchmark-runner.ts`, jeweilige Benchmark-Konfiguration | produktiver Chrome-Lauf und Ergebnisdokument unter `docs/release/` |
 | Raster vor dem Tracing skalieren oder filtern | `web/src/conversion/raster-preprocessing.ts`, `read-raster-pixels.ts` | `raster-preprocessing.test.ts`, `preprocess-raster.spec.ts` |
 | Raster- und SVG-Bytegrößen formatieren | `web/src/format-byte-size.ts`, `image-loader.ts`, `history-controller.ts` | `format-byte-size.test.ts`, sichtbarer Chrome-Verlauf |
-| VTracer-Parameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vtracer-handbook.spec.ts` |
+| Vektorisierungsparameter, Defaults oder Presets | `conversion-options.ts`, `conversion-options-controller.ts`, `conversion-presets.ts` | zugehörige Unit-Tests, `change-parameters.spec.ts`, `vectorization-handbook.spec.ts` |
 | Live-Entwurf gegen Original oder Ergebnis annehmen | `conversion-controller.ts`, `history-controller.ts`, `comparison-source.ts` | `live-preview.spec.ts`, Compare-Unit-Tests |
 | Worker-/WASM-Vertrag | `conversion-worker-contract.ts`, `conversion-worker.ts`, `crates/img2svg-wasm/src/lib.rs` | Typecheck, Web-E2E, Rust-Tests |
 | Tracing-Fortschritt | `conversion-progress.ts`, `conversion-controller.ts`, `img2svg-core/src/lib.rs` | Progress-Unit-/Rust-Tests, `conversion-progress.spec.ts` |
@@ -53,7 +53,7 @@ das sichtbare Produkt.
 | Synchroner Zoom, Pan oder Splitter | `viewport-state.ts`, `viewport-controller.ts`, `compare-split.css` | Viewport-Unit-Test, `compare-original-viewport.spec.ts` |
 | Arbeitsfläche wechseln und Rasterwerkzeuge freigeben | `workspace-view-controller.ts`, Raster-Tool-Controller | Workspace-Unit-Test, Konvertierungs- und Auswahl-E2E |
 | Sprache oder sichtbare Texte | `i18n/localization.ts`, `web/index.html` | `localization.test.ts`, `localization.spec.ts` |
-| Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vtracer-handbook.spec.ts` |
+| Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vectorization-handbook.spec.ts` |
 | Rechtsklick-Aktionen und Einzelreset | `context-menu/context-menu-controller.ts`, `conversion-option-key.ts`, `conversion-options-controller.ts` | `context-menu.spec.ts`, Option-Key-Unit-Test |
 | Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts` |
 | AI-Modell laden/entladen | `model-registry.ts`, `browser-model-loader.ts`, `model-manager.ts` | Model-Unit-Tests, `model-lifecycle.spec.ts` |

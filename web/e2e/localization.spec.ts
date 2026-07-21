@@ -10,6 +10,7 @@ test("Given the Studio, when English is selected, then static and dynamic workfl
   await language.selectOption("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { name: "Raster before tracing" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Vectorization" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Choose image" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Accept variant" })).toBeDisabled();
   await page.locator('[data-option-key="colorPrecision"]').click({ button: "right" });

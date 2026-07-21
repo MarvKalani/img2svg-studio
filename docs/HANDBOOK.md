@@ -46,7 +46,7 @@ Deutsch-/Englisch-Auswahl wie das Studio.
 Die Produktversion steht am unteren Seitenrand. `260720.01` bezeichnet die erste veröffentlichte
 Revision vom 20. Juli 2026; weitere Revisionen desselben Tages erhöhen die zweistellige Endung.
 Die Live-Vorschau und bewusste History-Übernahme wurden als Revision `260720.02` ausgeliefert.
-Die vollständige VTracer-Steuerung und das interaktive Handbuch folgen mit `260720.03`.
+Die vollständige Vektorisierungssteuerung und das interaktive Handbuch folgen mit `260720.03`.
 Die fachliche Aufteilung von Engine-Optionen und Historien-Styles sowie die Codemap folgen mit
 `260720.04`.
 Der lokale Zauberstab mit sichtbarer Farbauswahl und Empfindlichkeit folgt mit `260720.05`.
@@ -64,6 +64,8 @@ Revision `260721.07` verwendet dieselbe sichtbare Version für Asset-Dateinamen,
 Updates und den kurzlebigen PWA-Share-Cache.
 Revision `260721.08` ergänzt persistente Layoutmodi, echten Worker-Abbruch und eine einmalige
 Hardwaremessung für die Start-Rastergröße.
+Revision `260721.09` verwendet in Oberfläche und Benutzeranleitung neutrale
+Vektorisierungsbegriffe, damit die Tracing-Engine austauschbar bleibt.
 
 ### Sprache
 
@@ -318,7 +320,7 @@ Die Tabelle „Parameterunterschiede“ verwendet dasselbe kanonische Schema wie
 „Nur Unterschiede“ ist standardmäßig aktiv und zeigt ausschließlich Parameter mit verschiedenen
 Werten in A und B. Ohne den Filter erscheinen Rastergröße, Rasterfilter, Glättungs- und
 Schärfungsstärke, Schwellwert,
-alle zehn VTracer-Parameter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
+alle zehn Vektorisierungsparameter und SVG-Skalierung in stabiler Reihenfolge, gefolgt vom globalen
 Formerkennungsschalter und den fünf Formtypen. Beim Vergleich mit dem Rasteroriginal zeigt die
 Tabelle „Quelle“ und kennzeichnet dort nicht vorhandene Konvertierungsparameter mit „—“.
 
@@ -332,21 +334,21 @@ exakte UTF-8-Größe ihres SVG in B, KiB oder MiB; damit ist eine Parameterände
 
 ### Raster vor Tracing
 
-„Rastergröße“ verändert die Pixel, die VTracer tatsächlich erhält. Verfügbar sind Originalgröße,
-25, 50, 75, 125, 150, 200 und 400 Prozent sowie feste Zielhöhen von 576, 720, 1080 und 2160 Pixeln.
+„Rastergröße“ verändert die Pixel, die die Tracing-Engine tatsächlich erhält. Verfügbar sind
+Originalgröße, 25, 50, 75, 125, 150, 200 und 400 Prozent sowie feste Zielhöhen von 576, 720, 1080 und 2160 Pixeln.
 Die Breite wird immer aus dem Seitenverhältnis berechnet. So wird 1920×1080 bei 2160 Pixeln Höhe
 zu 3840×2160, während Hoch- und Sonderformate weder beschnitten noch verzerrt werden.
 
 „Farbe“ übernimmt RGB unverändert. „Graustufen“ berechnet eine feste Luminanz pro Pixel.
 „Schwarzweiß“ wendet anschließend den einstellbaren Schwellwert von 0 bis 255 an. Der Alphakanal
 bleibt in allen Modi erhalten. Die Anzeige „Vorbereitete Rastermaße“ nennt die Pixelgröße vor
-VTracer; „Zielmaße“ berücksichtigt danach zusätzlich die SVG-Skalierung.
+der Vektorisierung; „Zielmaße“ berücksichtigt danach zusätzlich die SVG-Skalierung.
 
 „Glätten“ und „Schärfen“ sind unabhängige Stärken von 0 bis 100 Prozent. Null schaltet den jeweiligen
 Schritt aus. Die Rasterpipeline skaliert zuerst, mischt dann dosiert einen kleinen 3×3-Gaußfilter
 gegen JPEG-Störungen ein und wendet danach die dosierte Unscharfmaske auf das geglättete Ergebnis
 an. So kann Rauschen reduziert werden, ohne Hauptkanten ungefiltert weich zu lassen. Der Farbfilter
-folgt anschließend. Eine BMP-Zwischenkopie ist nicht nötig, weil VTracer rohe RGBA-Pixel erhält.
+folgt anschließend. Eine BMP-Zwischenkopie ist nicht nötig, weil die Engine rohe RGBA-Pixel erhält.
 
 Rastergröße, Filter und Schwellwert werden unveränderlich im Run gespeichert, über
 „Einstellungen übernehmen“ wiederhergestellt und im A/B-Parametervergleich angezeigt.
@@ -364,10 +366,10 @@ SVG-Skalierung.
 Die numerischen Parameter wirken von der Seitenleiste über den Worker und WASM bis in den
 Rust-Core:
 
-Der VTracer-Farbmodus liegt bewusst im Abschnitt „Raster vor Tracing“: „Farbe“ verwendet den
+Der Farbmodus liegt bewusst im Abschnitt „Raster vor Tracing“: „Farbe“ verwendet den
 farbigen Tracing-Pfad, „Schwarzweiß“ erzeugt vor demselben deterministischen Kern eine binäre
-Pixelvorlage mit sichtbarem Schwellwert. Der VTracer-Bereich enthält die übrigen zehn wirksamen
-Werte. Seine angezeigten Standards entsprechen VTracer 0.6.5; deshalb beträgt die native
+Pixelvorlage mit sichtbarem Schwellwert. Der Vektorisierungsbereich enthält die übrigen zehn
+wirksamen Werte. Seine angezeigten Standards entsprechen der aktuellen Engine; deshalb beträgt die native
 Farbpräzision 6 Bit.
 
 | Parameter | Gültiger Bereich | Standard | Wirkung |
@@ -388,10 +390,10 @@ Die Oberfläche bietet für die Zielgröße 25, 50, 75, 100, 150, 200 und 400 Pr
 Nach dem Laden eines Bildes zeigt sie die daraus entstehenden Zielmaße sofort an. Ein Lauf mit
 50 Prozent aus einem 256×256-Bild erzeugt beispielsweise ein SVG mit 128×128-ViewBox.
 
-„Standardwerte“ setzt ausschließlich die zehn VTracer-Werte zurück; Rastervorbereitung,
+„Standardwerte“ setzt ausschließlich die zehn Vektorisierungswerte zurück; Rastervorbereitung,
 SVG-Skalierung und Formerkennung bleiben erhalten. Jeder sichtbare Wert nennt seinen Standard.
 Eckenwinkel, Segmentlänge, Glättungsdurchläufe und Verbindungswinkel sind außerhalb des
-Spline-Modus deaktiviert, weil VTracer sie dort nicht auswertet. Ungültige Werte werden als
+Spline-Modus deaktiviert, weil sie dort keine Wirkung besitzen. Ungültige Werte werden als
 typisierter Einstellungsfehler abgelehnt.
 
 ### Interaktives Handbuch
@@ -633,8 +635,8 @@ Transformation, SVG-Parameter und Budgetmodus. Die lokale Dateiauswahl bleibt ei
 Nutzer bestätigte Browseraktion.
 
 Sein Quellrepository erzeugt mit `npm ci && npm run build` einen geprüften statischen `dist`-Ordner.
-Dieser enthält die App, VTracer, Service Worker, rechtliche Seiten und WebMCP-Header, aber keine
-Tests oder Paketmetadaten.
+Dieser enthält die App, die Tracing-Engine, Service Worker, rechtliche Seiten und WebMCP-Header,
+aber keine Tests oder Paketmetadaten.
 
 WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedienbar.
 

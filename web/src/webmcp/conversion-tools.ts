@@ -86,7 +86,7 @@ function configureConversionTool(services: ConversionToolServices): WebMcpTool {
   return Object.freeze({
     annotations: Object.freeze({ readOnlyHint: false, untrustedContentHint: false }),
     description:
-      "Set visible raster preprocessing, all ten color-tracing VTracer parameters, and SVG scale. The Studio automatically refreshes its live preview with the same validation.",
+      "Set visible raster preprocessing, all ten color-tracing parameters, and SVG scale. The Studio automatically refreshes its live preview with the same validation.",
     execute: (input: unknown) => {
       try {
         const currentOptions = services.readOptions();

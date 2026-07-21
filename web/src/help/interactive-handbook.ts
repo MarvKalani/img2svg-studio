@@ -23,7 +23,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   ),
   colors: topic(
     "Farben",
-    "Steuert, wie fein VTracer ähnliche Rasterfarben voneinander trennt.",
+    "Steuert, wie fein die Vektorisierung ähnliche Rasterfarben voneinander trennt.",
     "Für Logos zuerst die Farbpräzision senken; das reduziert häufig Pfade und Dateigröße.",
   ),
   cornerThreshold: topic(
@@ -70,7 +70,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   ),
   maxIterations: topic(
     "Glättungsdurchläufe",
-    "Begrenzt, wie oft VTracer lange Kurvensegmente weiter unterteilt.",
+    "Begrenzt, wie oft die Tracing-Engine lange Kurvensegmente weiter unterteilt.",
     "Mehr Durchläufe können komplexe Konturen genauer glätten, kosten aber Rechenzeit. Wirkt nur im Spline-Modus.",
     "10",
   ),
@@ -88,13 +88,13 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   ),
   preprocessing: topic(
     "Raster vor Tracing",
-    "Bereitet die tatsächlichen Pixel vor, bevor VTracer sie erhält.",
+    "Bereitet die tatsächlichen Pixel vor, bevor die Vektorisierung sie analysiert.",
     "Größe und Filter können die spätere Pfadanzahl stärker beeinflussen als einzelne Kurvenparameter.",
   ),
   preset: topic(
     "Preset",
-    "Setzt mehrere Raster-, VTracer- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.",
-    "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im VTracer-Bereich wieder her.",
+    "Setzt mehrere Raster-, Tracing- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.",
+    "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im Vektorisierungsbereich wieder her.",
     "Ausgewogen",
   ),
   rasterSharpenStrength: topic(
@@ -111,7 +111,7 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   ),
   rasterFilter: topic(
     "Rasterfilter",
-    "Übergibt Farbe, Graustufen oder reines Schwarzweiß an VTracer.",
+    "Übergibt Farbe, Graustufen oder reines Schwarzweiß an die Vektorisierung.",
     "Graustufen entfernt Farbinformation; Schwarzweiß eignet sich für klare Konturen, Laser und Fräsen.",
     "Farbe",
   ),
@@ -124,12 +124,12 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
   scalePercent: topic(
     "SVG-Skalierung",
     "Ändert Ausgabegröße und Koordinatensystem des SVG nach der Rastervorbereitung.",
-    "Dieser Wert verändert nicht die Pixel, die VTracer analysiert. Dafür dient die Rastergröße.",
+    "Dieser Wert verändert nicht die Pixel, die die Vektorisierung analysiert. Dafür dient die Rastergröße.",
     "Original · 100 %",
   ),
   shapeDetection: topic(
     "Native Formen",
-    "Ersetzt passende VTracer-Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.",
+    "Ersetzt passende Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.",
     "Der Hauptschalter aktiviert die Erkennung; die einzelnen Typen begrenzen, welche Formen ersetzt werden dürfen.",
     "Aus",
   ),
@@ -155,8 +155,8 @@ const helpTopics: Readonly<Record<string, HelpTopic>> = Object.freeze({
     "Die Rastergröße steuert die Analyse; die SVG-Skalierung steuert die endgültige Ausgabegröße.",
   ),
   tracing: topic(
-    "VTracer",
-    "Stellt alle zehn im farbigen Tracing-Pfad verwendeten VTracer-Parameter bereit.",
+    "Vektorisierung",
+    "Stellt alle zehn Parameter des farbigen Tracing-Pfads bereit.",
     "Jede Änderung aktualisiert die sichtbare Vorschau automatisch; Standardwerte setzt nur diesen Bereich zurück.",
   ),
 });
@@ -165,7 +165,7 @@ function shapeTypeTopic(title: string): HelpTopic {
   return topic(
     title,
     "Erlaubt, geeignete Konturen dieses Typs als natives SVG-Element auszugeben.",
-    "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein VTracer-Pfad.",
+    "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein normaler SVG-Pfad.",
     "Ein",
   );
 }

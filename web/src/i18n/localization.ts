@@ -241,23 +241,24 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
   Verlaufsschritt: "Gradient step",
   Überlagerung: "Layering",
   Ausschnitte: "Cutout",
-  "VTracer-Kurvenmodus": "VTracer curve mode",
-  "VTracer-Überlagerung": "VTracer layering",
-  "VTracer-Eckenwinkel": "VTracer corner threshold",
-  "VTracer-Glättungsdurchläufe": "VTracer smoothing iterations",
-  "VTracer-Segmentlänge": "VTracer segment length",
-  "VTracer-Verbindungswinkel": "VTracer splice threshold",
-  "VTracer-Verlaufsschritt": "VTracer gradient step",
+  Vektorisierung: "Vectorization",
+  "Vektorisierungs-Kurvenmodus": "Vectorization curve mode",
+  "Vektorisierungs-Überlagerung": "Vectorization layering",
+  "Vektorisierungs-Eckenwinkel": "Vectorization corner threshold",
+  "Vektorisierungs-Glättungsdurchläufe": "Vectorization smoothing iterations",
+  "Vektorisierungs-Segmentlänge": "Vectorization segment length",
+  "Vektorisierungs-Verbindungswinkel": "Vectorization splice threshold",
+  "Vektorisierungs-Verlaufsschritt": "Vectorization gradient step",
   "Zeigt die Erklärung des Elements unter der Maus.":
     "Shows the explanation for the element under the pointer.",
-  "Ersetzt passende VTracer-Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.":
-    "Replaces matching VTracer contours with native SVG circles, rectangles, ellipses, lines, or polygons.",
+  "Ersetzt passende Konturen durch native SVG-Kreise, Rechtecke, Ellipsen, Linien oder Polygone.":
+    "Replaces matching contours with native SVG circles, rectangles, ellipses, lines, or polygons.",
   "Der Hauptschalter aktiviert die Erkennung; die einzelnen Typen begrenzen, welche Formen ersetzt werden dürfen.":
     "The main switch enables detection; individual types limit which shapes may be replaced.",
   "Erlaubt, geeignete Konturen dieses Typs als natives SVG-Element auszugeben.":
     "Allows suitable contours of this type to be emitted as a native SVG element.",
-  "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein VTracer-Pfad.":
-    "Only applies while native-shape detection is enabled; otherwise the contour remains a VTracer path.",
+  "Wirkt nur bei aktivierter Formerkennung; ausgeschaltet bleibt die Kontur ein normaler SVG-Pfad.":
+    "Only applies while native-shape detection is enabled; otherwise the contour remains a regular SVG path.",
   "Der sichtbare Entwurf wird ersetzt; erst die Übernahme erzeugt eine gespeicherte Variante.":
     "The visible draft is replaced; only acceptance creates a saved variant.",
   "Speichert genau die aktuell sichtbare Vorschau als unveränderlichen Run im Verlauf.":
@@ -294,31 +295,31 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Smooths iteratively until curve segments are shorter than this pixel value.",
   "Kleinere Werte folgen Konturen genauer und erzeugen mehr Kurvenpunkte. Wirkt nur im Spline-Modus.":
     "Lower values follow contours more closely and create more curve points. Only affects spline mode.",
-  "Begrenzt, wie oft VTracer lange Kurvensegmente weiter unterteilt.":
-    "Limits how often VTracer subdivides long curve segments.",
+  "Begrenzt, wie oft die Tracing-Engine lange Kurvensegmente weiter unterteilt.":
+    "Limits how often the tracing engine subdivides long curve segments.",
   "Mehr Durchläufe können komplexe Konturen genauer glätten, kosten aber Rechenzeit. Wirkt nur im Spline-Modus.":
     "More iterations can smooth complex contours more precisely but cost processing time. Only affects spline mode.",
   "Mindeständerung des Winkels, ab der benachbarte Spline-Abschnitte getrennt werden.":
     "Minimum angular change at which adjacent spline sections are separated.",
   "Kleinere Werte erzeugen mehr getrennte Kurvenabschnitte; größere verbinden stärker. Wirkt nur im Spline-Modus.":
     "Lower values create more separate curve sections; higher values join more. Only affects spline mode.",
-  "Stellt alle zehn im farbigen Tracing-Pfad verwendeten VTracer-Parameter bereit.":
-    "Provides all ten VTracer parameters used by the color tracing path.",
+  "Stellt alle zehn Parameter des farbigen Tracing-Pfads bereit.":
+    "Provides all ten parameters used by the color tracing path.",
   "Jede Änderung aktualisiert die sichtbare Vorschau automatisch; Standardwerte setzt nur diesen Bereich zurück.":
     "Every change updates the visible preview automatically; Defaults resets only this section.",
   "Aktuelles Element": "Current element",
-  "Steuert, wie fein VTracer ähnliche Rasterfarben voneinander trennt.":
-    "Controls how finely VTracer separates similar raster colors.",
+  "Steuert, wie fein die Vektorisierung ähnliche Rasterfarben voneinander trennt.":
+    "Controls how finely vectorization separates similar raster colors.",
   "Für Logos zuerst die Farbpräzision senken; das reduziert häufig Pfade und Dateigröße.":
     "For logos, lower color precision first; this often reduces paths and file size.",
-  "Bereitet die tatsächlichen Pixel vor, bevor VTracer sie erhält.":
-    "Prepares the actual pixels before VTracer receives them.",
+  "Bereitet die tatsächlichen Pixel vor, bevor die Vektorisierung sie analysiert.":
+    "Prepares the actual pixels before vectorization analyzes them.",
   "Größe und Filter können die spätere Pfadanzahl stärker beeinflussen als einzelne Kurvenparameter.":
     "Size and filters can affect the final path count more than individual curve parameters.",
-  "Setzt mehrere Raster-, VTracer- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.":
-    "Sets multiple raster, VTracer, and shape-recognition values to a proven profile.",
-  "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im VTracer-Bereich wieder her.":
-    "After a manual change, Custom appears. The button in the VTracer section restores its defaults.",
+  "Setzt mehrere Raster-, Tracing- und Formerkennungswerte gemeinsam auf ein erprobtes Profil.":
+    "Sets multiple raster, tracing, and shape-recognition values to a proven profile.",
+  "Nach einer eigenen Änderung erscheint Benutzerdefiniert. Standardwerte stellt der Knopf im Vektorisierungsbereich wieder her.":
+    "After a manual change, Custom appears. The button in the vectorization section restores its defaults.",
   "Verstärkt Hauptkanten nach der optionalen Glättung mit einer dosierten Unscharfmaske.":
     "Strengthens main edges after optional smoothing with a controlled unsharp mask.",
   "Höhere Werte erhalten schwache Kanten, können aber zusätzliche Pfade und Kantenartefakte erzeugen.":
@@ -327,8 +328,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Blends the raster with a small 3×3 Gaussian filter at the selected strength.",
   "Höhere Werte reduzieren JPEG-Rauschen und kleine Cluster. Schärfen wird danach angewendet.":
     "Higher values reduce JPEG noise and small clusters. Sharpening is applied afterward.",
-  "Übergibt Farbe, Graustufen oder reines Schwarzweiß an VTracer.":
-    "Passes color, grayscale, or pure black and white to VTracer.",
+  "Übergibt Farbe, Graustufen oder reines Schwarzweiß an die Vektorisierung.":
+    "Passes color, grayscale, or pure black and white to vectorization.",
   "Graustufen entfernt Farbinformation; Schwarzweiß eignet sich für klare Konturen, Laser und Fräsen.":
     "Grayscale removes color information; black and white suits clear contours, lasers, and milling.",
   "Ändert die Pixelauflösung vor dem Tracing bei festem Seitenverhältnis.":
@@ -337,8 +338,8 @@ const englishText: Readonly<Record<string, string>> = Object.freeze({
     "Smaller rasters simplify detail and save paths; larger rasters can capture fine edges better.",
   "Ändert Ausgabegröße und Koordinatensystem des SVG nach der Rastervorbereitung.":
     "Changes SVG output size and coordinate system after raster preparation.",
-  "Dieser Wert verändert nicht die Pixel, die VTracer analysiert. Dafür dient die Rastergröße.":
-    "This value does not change the pixels VTracer analyzes. Raster size does that.",
+  "Dieser Wert verändert nicht die Pixel, die die Vektorisierung analysiert. Dafür dient die Rastergröße.":
+    "This value does not change the pixels vectorization analyzes. Raster size does that.",
   "Lädt ein lokales PNG-, JPEG- oder WebP-Bild oder das mitgelieferte Logo-Beispiel.":
     "Loads a local PNG, JPEG, or WebP image or the bundled logo example.",
   "Das Bild bleibt im Browser; die Live-Vorschau erscheint automatisch als B gegen Original A.":
