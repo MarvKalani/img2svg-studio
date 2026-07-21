@@ -153,6 +153,8 @@ test("Given a loaded image and WebMCP, when an agent configures and converts, th
       "load_model",
       "retry_model",
       "unload_model",
+      "preview_magic_wand_selection",
+      "apply_magic_wand_selection",
       "apply_background_removal",
       "apply_smart_selection",
     ],

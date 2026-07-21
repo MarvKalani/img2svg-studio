@@ -417,7 +417,8 @@ Secure MCP Tunnel; temporäres öffentliches HTTPS bleibt eine Alternative. Daue
 nur für eine unabhängig verfügbare ChatGPT-App sinnvoll. Tunnel-, Hosting- und
 Datei-/Datenschutzfluss werden getrennt vom statischen Browser-Studio getestet und dokumentiert.
 Die stateless Bildwerkzeuge teilen nur Rust-Kern und Verträge. Ein kleiner In-Memory-Relay teilt
-für höchstens eine zuletzt aktive Browser-Sitzung sechs sichtbare Studio-Aktionen. Das öffentliche
+für höchstens eine zuletzt aktive Browser-Sitzung acht sichtbare Studio-Aktionen. Dazu gehören
+eine sichtbare Zauberstab-Vorschau mit normierten Koordinaten und ihre getrennte Bestätigung. Das öffentliche
 MCP erreicht den Relay direkt im selben Prozess; Session-Erstellung, Polling und Antworten sind
 hingegen auf `127.0.0.1` beziehungsweise `localhost`, erlaubte Origins und zufällige Tokens
 begrenzt. Befehle laufen nach 30 Sekunden ab; Bildbytes werden nicht übertragen.

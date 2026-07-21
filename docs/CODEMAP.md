@@ -57,7 +57,7 @@ das sichtbare Produkt.
 | TypeScript-Version oder Compilerleistung | `package.json`, alle `tsconfig.json`, `docs/TYPESCRIPT_7.md` | `typescript-platform.test.ts`, `npm run typecheck` |
 | Kontext-Handbuch | `help/interactive-handbook.ts`, `interactive-handbook.css`, `docs/HANDBOOK.md` | `vectorization-handbook.spec.ts` |
 | Rechtsklick-Aktionen und Einzelreset | `context-menu/context-menu-controller.ts`, `conversion-option-key.ts`, `conversion-options-controller.ts` | `context-menu.spec.ts`, Option-Key-Unit-Test |
-| Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts` |
+| Zauberstab-Auswahl | `selection/magic-wand-selection.ts`, `magic-wand-controller.ts`, `magic-wand.css` | Selection-Unit-Tests, `magic-wand.spec.ts`, `webmcp-magic-wand.spec.ts` |
 | AI-Modell laden/entladen | `model-registry.ts`, `browser-model-loader.ts`, `model-manager.ts` | Model-Unit-Tests, `model-lifecycle.spec.ts` |
 | Hintergrund entfernen | `background-removal-controller.ts`, `modnet-adapter.ts` | Adapter-Tests, `remove-background.spec.ts` |
 | Smart Select | `smart-select-controller.ts`, `sam-selection.ts`, `sam-adapter.ts` | Selection-Tests, `smart-select.spec.ts` |
@@ -172,7 +172,7 @@ Dieser Prozess ist bewusst getrennt vom lokalen Browserzustand und hält weder B
 
 ```text
 ChatGPT MCP-Aufruf
-  -> studio-relay-tools (sechs freigegebene Verträge)
+  -> studio-relay-tools (acht freigegebene Verträge)
   -> studio-relay (flüchtige Befehlswarteschlange)
   -> Loopback-HTTP
   -> studio-relay-client im sichtbaren Tab

@@ -36,6 +36,8 @@ describe("Streamable HTTP MCP server", () => {
       "load_conversion_preset",
       "configure_conversion",
       "convert_current_image",
+      "preview_magic_wand_selection",
+      "apply_magic_wand_selection",
       "analyze_image",
       "remove_background_region",
       "vectorize_image",

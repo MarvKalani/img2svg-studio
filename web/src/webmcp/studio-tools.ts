@@ -8,11 +8,17 @@ import { ComparisonSourceKind } from "../compare/comparison-source";
 import type { ConversionOptions } from "../conversion/conversion-options";
 import type { ConversionRun } from "../history/history-store";
 import type { LoadedImage } from "../image/image-store";
+import type {
+  MagicWandApplyResult,
+  MagicWandPreviewRequest,
+  MagicWandPreviewResult,
+} from "../selection/magic-wand-controller";
 import { WebMcpToolName, type WebMcpTool } from "./webmcp-adapter";
 import { utf8ByteLength } from "../format-byte-size";
 
 export interface StudioToolServices {
   applySmartSelection(request: SmartSelectionRequest): Promise<AiActionResult>;
+  applyMagicWandSelection(): Promise<MagicWandApplyResult>;
   assignComparison(slot: CompareSlot, runId: number): ConversionRun | undefined;
   assignOriginalComparison(slot: CompareSlot): boolean;
   assignProcessedComparison(slot: CompareSlot): boolean;
@@ -25,6 +31,7 @@ export interface StudioToolServices {
   readRuns(): readonly ConversionRun[];
   removeRun(runId: number): boolean;
   removeBackground(): Promise<AiActionResult>;
+  previewMagicWandSelection(request: MagicWandPreviewRequest): Promise<MagicWandPreviewResult>;
   retryModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
   selectRun(runId: number): ConversionRun | undefined;
   unloadModel(modelId: BrowserModelId): Promise<ModelRegistrySnapshot>;
@@ -100,6 +107,18 @@ const smartSelectionSchema = Object.freeze({
   type: "object",
 });
 
+const magicWandSchema = Object.freeze({
+  additionalProperties: false,
+  properties: Object.freeze({
+    sensitivityPercent: Object.freeze({ maximum: 100, minimum: 0, type: "number" }),
+    source: Object.freeze({ enum: Object.freeze(["original", "processed"]), type: "string" }),
+    x: Object.freeze({ maximum: 1, minimum: 0, type: "number" }),
+    y: Object.freeze({ maximum: 1, minimum: 0, type: "number" }),
+  }),
+  required: Object.freeze(["source", "x", "y", "sensitivityPercent"]),
+  type: "object",
+});
+
 export function createStudioTools(
   services: StudioToolServices,
   availability: StudioToolAvailability = allStudioTools,
@@ -114,10 +133,41 @@ export function createStudioTools(
     modelTool(services, availability.modelIds, "load", WebMcpToolName.LoadModel),
     modelTool(services, availability.modelIds, "retry", WebMcpToolName.RetryModel),
     modelTool(services, availability.modelIds, "unload", WebMcpToolName.UnloadModel),
+    magicWandPreviewTool(services),
+    magicWandApplyTool(services),
     backgroundRemovalTool(services),
     ...(availability.smartSelection ? [smartSelectionTool(services)] : []),
   ];
   return Object.freeze(tools);
+}
+
+function magicWandPreviewTool(services: StudioToolServices): WebMcpTool {
+  return defineTool({
+    annotations: { readOnlyHint: false, untrustedContentHint: true },
+    description:
+      "Preview a visible contiguous Magic Wand selection without changing pixels. Coordinates are normalized from the image top-left. For the bundled logo's black edge background, start with source original, x 0.01, y 0.01 and sensitivityPercent 15; inspect coverage before applying it.",
+    execute: async (input: unknown) => {
+      const request = readMagicWandRequest(input);
+      return request
+        ? magicWandResult(await services.previewMagicWandSelection(request))
+        : invalidInput(
+            "Use source original or processed, normalized x/y, and sensitivityPercent 0 to 100.",
+          );
+    },
+    inputSchema: magicWandSchema,
+    name: WebMcpToolName.PreviewMagicWandSelection,
+  });
+}
+
+function magicWandApplyTool(services: StudioToolServices): WebMcpTool {
+  return defineTool({
+    annotations: { readOnlyHint: false, untrustedContentHint: true },
+    description:
+      "Remove the currently visible Magic Wand selection and load the transparent PNG as a processed raster. Call only after preview_magic_wand_selection succeeded and the user asked to remove that region.",
+    execute: async () => magicWandResult(await services.applyMagicWandSelection()),
+    inputSchema: emptyObjectSchema,
+    name: WebMcpToolName.ApplyMagicWandSelection,
+  });
 }
 
 function deleteRunTool(services: StudioToolServices): WebMcpTool {
@@ -337,6 +387,27 @@ function readSmartSelection(input: unknown): SmartSelectionRequest | undefined {
   return { negativePoints, polarity, positivePoints };
 }
 
+function readMagicWandRequest(input: unknown): MagicWandPreviewRequest | undefined {
+  if (
+    !isRecord(input) ||
+    (input.source !== "original" && input.source !== "processed") ||
+    !withinUnit(input.x) ||
+    !withinUnit(input.y) ||
+    typeof input.sensitivityPercent !== "number" ||
+    !Number.isFinite(input.sensitivityPercent) ||
+    input.sensitivityPercent < 0 ||
+    input.sensitivityPercent > 100
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    sensitivityPercent: input.sensitivityPercent,
+    source: input.source,
+    x: input.x,
+    y: input.y,
+  });
+}
+
 function readPoints(
   input: readonly unknown[],
   minimum: number,
@@ -414,6 +485,10 @@ function actionResult(result: AiActionResult): string {
   return result.ok
     ? success({ fileName: result.fileName })
     : failure("action_failed", result.message);
+}
+
+function magicWandResult(result: MagicWandApplyResult | MagicWandPreviewResult): string {
+  return result.ok ? JSON.stringify(result) : failure("magic_wand_failed", result.message);
 }
 
 function success(result: Record<string, unknown>): string {

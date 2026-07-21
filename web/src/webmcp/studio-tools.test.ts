@@ -20,6 +20,8 @@ describe("complete Studio WebMCP tools", () => {
       "load_model",
       "retry_model",
       "unload_model",
+      "preview_magic_wand_selection",
+      "apply_magic_wand_selection",
       "apply_background_removal",
       "apply_smart_selection",
     ]);
@@ -68,6 +70,51 @@ describe("complete Studio WebMCP tools", () => {
 
     expect(output).toMatchObject({ code: "invalid_input", ok: false });
     expect(applicationServices.applySmartSelection).not.toHaveBeenCalled();
+  });
+
+  test("Given normalized Magic Wand input, when preview and apply execute, then both delegate the visible two-step workflow", async () => {
+    const applicationServices = services();
+    applicationServices.previewMagicWandSelection = vi.fn(async () =>
+      Object.freeze({
+        coveragePercent: 37.36,
+        ok: true as const,
+        seed: Object.freeze({ xPixels: 12, yPixels: 8 }),
+        selectedPixelCount: 418_876,
+        sensitivityPercent: 15,
+        source: "original" as const,
+      }),
+    );
+    applicationServices.applyMagicWandSelection = vi.fn(async () =>
+      Object.freeze({
+        fileName: "marv-kalani-logo-zauberstab.png",
+        ok: true as const,
+        selectedPixelCount: 418_876,
+      }),
+    );
+    const tools = createStudioTools(applicationServices);
+
+    const preview = JSON.parse(
+      await tools
+        .find((tool) => tool.name === "preview_magic_wand_selection")!
+        .execute({ sensitivityPercent: 15, source: "original", x: 0.01, y: 0.01 }),
+    );
+    const applied = JSON.parse(
+      await tools.find((tool) => tool.name === "apply_magic_wand_selection")!.execute({}),
+    );
+
+    expect(preview).toMatchObject({ ok: true, selectedPixelCount: 418_876 });
+    expect(applied).toEqual({
+      fileName: "marv-kalani-logo-zauberstab.png",
+      ok: true,
+      selectedPixelCount: 418_876,
+    });
+    expect(applicationServices.previewMagicWandSelection).toHaveBeenCalledWith({
+      sensitivityPercent: 15,
+      source: "original",
+      x: 0.01,
+      y: 0.01,
+    });
+    expect(applicationServices.applyMagicWandSelection).toHaveBeenCalledOnce();
   });
 
   test("Given an original is loaded, when comparison A selects it, then the visible source and workspace state use the typed original", async () => {
@@ -142,6 +189,7 @@ describe("complete Studio WebMCP tools", () => {
 
 function services(): StudioToolServices {
   return {
+    applyMagicWandSelection: vi.fn(),
     applySmartSelection: vi.fn(),
     assignComparison: vi.fn(),
     assignOriginalComparison: vi.fn(() => false),
@@ -153,6 +201,7 @@ function services(): StudioToolServices {
     readModels: () => [],
     readOptions: () => ({ ...defaultConversionOptions }),
     readRuns: () => [],
+    previewMagicWandSelection: vi.fn(),
     removeRun: vi.fn(),
     removeBackground: vi.fn(),
     retryModel: vi.fn(),

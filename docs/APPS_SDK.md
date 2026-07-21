@@ -3,7 +3,7 @@
 ## Goal
 
 The companion exposes img2svg Studio's deterministic conversion core to ChatGPT and can explicitly
-bridge six commands into the visible local-first browser Studio. It is a Node and TypeScript MCP
+bridge eight commands into the visible local-first browser Studio. It is a Node and TypeScript MCP
 server using the official MCP SDK and Streamable HTTP. Image conversion remains stateless; relay
 sessions exist only in memory while the user keeps the Studio connected.
 
@@ -89,10 +89,13 @@ For the visible ChatGPT demo, the user chooses **Connect ChatGPT**. Chrome then 
 Studio to reach `http://127.0.0.1:8787/studio-relay`; the local server already exposed to ChatGPT
 through `/mcp` relays only tool names, parameters and JSON results. It never relays image bytes.
 
-The six relayed tools are `get_workspace_state`, `list_conversion_presets`,
+The eight relayed tools are `get_workspace_state`, `list_conversion_presets`,
 `save_conversion_preset`, `load_conversion_preset`, `configure_conversion` and
-`convert_current_image`. The browser executes the same WebMCP tool objects as the native browser
-agent. Relay HTTP endpoints accept only loopback Host headers, the production Studio or local-dev
+`convert_current_image`, plus the two-step `preview_magic_wand_selection` and
+`apply_magic_wand_selection`. The first Magic Wand call shows the connected component in the
+visible Studio without changing pixels; only the second call creates the transparent processed
+PNG. The browser executes the same WebMCP tool objects as the native browser agent. Relay HTTP
+endpoints accept only loopback Host headers, the production Studio or local-dev
 Origin, and random session credentials. The most recently polling tab is active; an idle tab
 expires after ten seconds and a command after thirty seconds.
 

@@ -11,7 +11,7 @@ minutes and be publicly visible on YouTube.
 - Cache MODNet before recording, then unload it so the load state remains visible without waiting
   for a full network download during the take.
 - Close personal tabs, notifications and unrelated DevTools panels.
-- In ChatGPT Settings → Plugins → img2svg Studio, press **Refresh** once and verify ten actions.
+- In ChatGPT Settings → Plugins → img2svg Studio, press **Refresh** once and verify twelve actions.
 - Record voice and screen together; use no copyrighted music.
 
 ## Timed narration and shots
@@ -53,13 +53,15 @@ the same lifecycle for positive and negative point selection.”
 
 ### 1:48–2:10 — WebMCP
 
-**Screen:** In the visible Studio choose **Connect ChatGPT**. In ChatGPT ask: “Inspect the connected
-Studio, list my presets, load Jury Logo and accept the current draft.” Show the preset controls and
-History update in the Studio without manual input there.
+**Screen:** In the visible Studio choose **Connect ChatGPT**. In ChatGPT first ask it to preview the
+black edge-connected Logo background with the Magic Wand at x 0.01, y 0.01 and 15 percent. Show the
+turquoise mask. Then ask it to remove the visible selection, load Jury Logo and accept the current
+draft. Show the transparent processed image, preset controls and History update without manual
+input in the Studio.
 
-**Voice:** “ChatGPT is controlling this same visible Studio through typed WebMCP contracts. It can
-use presets stored only in my browser because the local Companion relays commands, never the image.
-The tools call the same controllers as the UI, and the complete interface still works manually.”
+**Voice:** “ChatGPT is controlling this same visible Studio through typed WebMCP contracts. It uses
+the real Magic Wand in two visible steps and can load presets stored only in my browser because the
+local Companion relays commands, never the image. The tools call the same controllers as the UI.”
 
 ### 2:10–2:29 — Codex and GPT-5.6
 
@@ -95,6 +97,12 @@ The product shots passed in Chrome 150 before recording:
 - MODNet background removal completed locally through WebGPU;
 - the WebMCP inventory and state-changing tools were operated in the visible Studio; and
 - the Chrome warning and error log stayed empty.
+
+The version 260721.16 ChatGPT rehearsal refreshed all twelve Developer Mode actions. Through the
+connected visible Studio, ChatGPT previewed 421,847 black edge pixels (37.62 percent) at normalized
+point 0.01/0.01 and sensitivity 15, left the turquoise mask visible, then removed it only after the
+follow-up. It loaded **Jury Logo** and accepted the resulting 52,962-byte SVG as Run 1. The Studio
+console contained no warning or error.
 
 The final take still requires the spoken recording, runtime measurement and signed-out YouTube
 check.

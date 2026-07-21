@@ -28,6 +28,8 @@ export const toolCapabilityMap: readonly ToolCapability[] = Object.freeze([
   capability(WebMcpToolName.LoadModel, "#model-manager"),
   capability(WebMcpToolName.RetryModel, "#model-manager"),
   capability(WebMcpToolName.UnloadModel, "#model-manager"),
+  capability(WebMcpToolName.PreviewMagicWandSelection, "#magic-wand, #magic-wand-overlay"),
+  capability(WebMcpToolName.ApplyMagicWandSelection, "#magic-wand-remove"),
   capability(WebMcpToolName.ApplyBackgroundRemoval, "#remove-background"),
   capability(WebMcpToolName.ApplySmartSelection, "#smart-select"),
 ]);

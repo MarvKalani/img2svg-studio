@@ -8,6 +8,13 @@ import { StudioRelayError, type StudioRelay } from "./studio-relay.js";
 
 const presetNameSchema = { name: z.string().min(1).max(60) };
 
+const magicWandSchema = {
+  sensitivityPercent: z.number().min(0).max(100),
+  source: z.enum(["original", "processed"]),
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+};
+
 const configureConversionSchema = {
   colorPrecision: z.number().int().min(1).max(8),
   cornerThreshold: z.number().int().min(0).max(180).optional(),
@@ -87,6 +94,22 @@ export function registerStudioRelayTools(server: McpServer, relay: StudioRelay):
     relay,
     "convert_current_image",
     "Accept the current visible SVG preview as an immutable Studio History run after the user asks to keep or convert it.",
+    {},
+    false,
+  );
+  registerRelayTool(
+    server,
+    relay,
+    "preview_magic_wand_selection",
+    "Preview a visible contiguous Magic Wand selection in the connected Studio without changing pixels. Coordinates are normalized from the image top-left. For the bundled logo's black edge background, start with source original, x 0.01, y 0.01 and sensitivityPercent 15; inspect coverage before applying it.",
+    magicWandSchema,
+    false,
+  );
+  registerRelayTool(
+    server,
+    relay,
+    "apply_magic_wand_selection",
+    "Remove the currently visible Magic Wand selection in the connected Studio and load the transparent PNG. Call only after preview_magic_wand_selection succeeded and the user asked to remove that region.",
     {},
     false,
   );

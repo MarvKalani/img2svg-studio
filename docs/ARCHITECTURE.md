@@ -11,7 +11,7 @@ For concrete ownership, entry points and test routes, use the maintained
 flowchart LR
   Human["Human in the UI"] --> Controllers["Typed application controllers"]
   Agent["Browser agent via WebMCP"] --> Controllers
-  ChatGPT["ChatGPT via local Companion"] --> Relay["Six-command in-memory relay"]
+  ChatGPT["ChatGPT via local Companion"] --> Relay["Eight-command in-memory relay"]
   Relay --> Controllers
   OS["OS share / file open"] --> PWA["One-time PWA ingress"]
   PWA --> Controllers
@@ -58,7 +58,8 @@ error codes. Tool availability never controls UI availability. Origin isolation 
 
 The optional Studio Companion does not add a second command implementation. After an explicit
 button click, the tab polls a loopback-only session and dispatches allowed MCP commands to the same
-six WebMCP tool objects. This is why browser-local presets remain available to ChatGPT while image
+eight WebMCP tool objects. This includes a visible Magic Wand preview and its separate confirmation;
+browser-local presets remain available to ChatGPT while image
 bytes never cross the relay.
 
 ### PWA ingress

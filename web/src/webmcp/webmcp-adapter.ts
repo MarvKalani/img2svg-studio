@@ -1,5 +1,6 @@
 export const WebMcpToolName = {
   ApplyBackgroundRemoval: "apply_background_removal",
+  ApplyMagicWandSelection: "apply_magic_wand_selection",
   ApplySmartSelection: "apply_smart_selection",
   CancelConversion: "cancel_conversion",
   ConfigureConversion: "configure_conversion",
@@ -10,6 +11,7 @@ export const WebMcpToolName = {
   ListConversionPresets: "list_conversion_presets",
   LoadConversionPreset: "load_conversion_preset",
   LoadModel: "load_model",
+  PreviewMagicWandSelection: "preview_magic_wand_selection",
   RetryModel: "retry_model",
   SaveConversionPreset: "save_conversion_preset",
   DeleteHistoryRun: "delete_history_run",

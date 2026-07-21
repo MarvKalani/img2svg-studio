@@ -197,9 +197,10 @@ laufen und denselben lokalen Zustand wie der Nutzer verwenden. Die Abnahme aktiv
 Tools im echten Tab auf.
 
 Der Apps-SDK-Weg bietet weiterhin stateless Bildkonvertierung und ein ChatGPT-Widget. Zusätzlich
-verbindet ein explizit aktivierter Loopback-Companion sechs MCP-Werkzeuge mit den identischen
+verbindet ein explizit aktivierter Loopback-Companion acht MCP-Werkzeuge mit den identischen
 WebMCP-Toolobjekten des sichtbaren Studios: Workspace lesen, Presets auflisten, speichern und
-laden, Konvertierung konfigurieren und den Entwurf übernehmen. Dadurch verwendet ChatGPT auch
+laden, Konvertierung konfigurieren, den Entwurf übernehmen sowie eine Zauberstab-Auswahl sichtbar
+vorbereiten und getrennt bestätigen. Dadurch verwendet ChatGPT auch
 Browser-Presets und sichtbaren Zustand, ohne Geschäftslogik zu duplizieren.
 
 Im Developer Mode bleibt der MCP-Server lokal und wird bevorzugt über OpenAI Secure MCP Tunnel

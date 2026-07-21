@@ -180,6 +180,26 @@ new Studio and a small drop-in WebMCP adapter prepared for the predecessor.
 - PWA installation, OS share targets and file associations depend on platform support; the normal
   browser tab remains the primary judge and WebMCP path.
 
+### Jury: connect ChatGPT to the visible Studio
+
+The bridge is included in `mcp/src/studio-relay*.ts` and `web/src/webmcp/studio-relay*.ts`. To test
+it locally:
+
+1. Run `npm ci`, `npm run build`, then `npm start --workspace=img2svg-studio-mcp`.
+2. Expose `http://127.0.0.1:8787/mcp` through an HTTPS tunnel and add that `/mcp` URL as the
+   **img2svg Studio** app in ChatGPT Developer Mode.
+3. Open `https://studio.img2.download`, choose **Connect ChatGPT**, and allow Chrome's one-time
+   local-network request. In ChatGPT use **Settings → Plugins → img2svg Studio → Refresh**; the app
+   must list twelve actions.
+4. Load **Logo demo**. Ask ChatGPT to preview the original's black connected background with the
+   Magic Wand at `x 0.01`, `y 0.01`, sensitivity `15`, without removing it. After the turquoise
+   mask appears, ask it to remove the visible selection, load **Jury Logo**, and accept the draft.
+
+The browser performs both Magic Wand operations and conversion locally. The Companion receives
+only typed parameters, status, measurements and preset names. A command fails explicitly when no
+Studio tab is connected. The complete narrated rehearsal is in
+[docs/release/DEMO_SCRIPT.md](docs/release/DEMO_SCRIPT.md).
+
 ## Repository map
 
 ```text

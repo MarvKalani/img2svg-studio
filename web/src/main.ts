@@ -149,6 +149,7 @@ const conversionTools = createConversionTools({
 });
 const studioTools = createStudioTools(
   {
+    applyMagicWandSelection: magicWand.applySelection,
     applySmartSelection: smartSelect.applySelection,
     assignComparison: historyController.assignComparison,
     assignOriginalComparison: historyController.assignOriginalComparison,
@@ -161,6 +162,7 @@ const studioTools = createStudioTools(
       modelRegistry.snapshots().filter((snapshot) => availableModelIds.has(snapshot.model.id)),
     readOptions: optionsController.current,
     readRuns: historyController.runs,
+    previewMagicWandSelection: magicWand.previewSelection,
     removeRun: (runId) => historyController.remove(runId) !== undefined,
     removeBackground: backgroundRemoval.removeBackground,
     retryModel: modelRegistry.retry,
@@ -180,6 +182,8 @@ const studioRelayToolNames: ReadonlySet<string> = new Set([
   WebMcpToolName.LoadConversionPreset,
   WebMcpToolName.ConfigureConversion,
   WebMcpToolName.ConvertCurrentImage,
+  WebMcpToolName.PreviewMagicWandSelection,
+  WebMcpToolName.ApplyMagicWandSelection,
 ]);
 const studioRelayControl = initializeStudioRelay(
   document,

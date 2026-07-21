@@ -12,8 +12,40 @@ import { SelectionTool, type SelectionActivity } from "./selection-activity";
 import type { WorkspaceViewController } from "../workspace/workspace-view-controller";
 
 export interface MagicWandController {
+  applySelection(): Promise<MagicWandApplyResult>;
   imageLoaded(): void;
+  previewSelection(request: MagicWandPreviewRequest): Promise<MagicWandPreviewResult>;
 }
+
+export const MagicWandRasterSource = {
+  Original: "original",
+  Processed: "processed",
+} as const;
+
+export type MagicWandRasterSource =
+  (typeof MagicWandRasterSource)[keyof typeof MagicWandRasterSource];
+
+export interface MagicWandPreviewRequest {
+  readonly sensitivityPercent: number;
+  readonly source: MagicWandRasterSource;
+  readonly x: number;
+  readonly y: number;
+}
+
+export type MagicWandPreviewResult =
+  | Readonly<{
+      coveragePercent: number;
+      ok: true;
+      seed: Readonly<{ xPixels: number; yPixels: number }>;
+      selectedPixelCount: number;
+      sensitivityPercent: number;
+      source: MagicWandRasterSource;
+    }>
+  | Readonly<{ message: string; ok: false }>;
+
+export type MagicWandApplyResult =
+  | Readonly<{ fileName: string; ok: true; selectedPixelCount: number }>
+  | Readonly<{ message: string; ok: false }>;
 
 interface ActiveMagicWand {
   readonly input: RasterPixels;
@@ -80,20 +112,13 @@ export function initializeMagicWand(
     updateAvailability();
   };
 
-  const startSelection = async (): Promise<void> => {
+  const startSelection = async (): Promise<ActiveMagicWand | undefined> => {
     const source = workspaceView.rasterSource();
-    if (
-      !source ||
-      starting ||
-      applying ||
-      active ||
-      !selectionActivity.acquire(SelectionTool.MagicWand)
-    ) {
-      return;
+    if (active) {
+      return active;
     }
-    if (!imageLoader.showCurrentImage()) {
-      selectionActivity.release(SelectionTool.MagicWand);
-      return;
+    if (!source || starting || applying || !selectionActivity.acquire(SelectionTool.MagicWand)) {
+      return undefined;
     }
     starting = true;
     updateAvailability();
@@ -112,8 +137,10 @@ export function initializeMagicWand(
       renderControls(elements, active, applying);
       elements.status.textContent =
         "Klicke auf den zusammenhängenden Farbbereich, den du entfernen möchtest.";
+      return active;
     } catch (error) {
       elements.status.textContent = errorMessage(error);
+      return undefined;
     } finally {
       starting = false;
       if (!active) {
@@ -172,30 +199,90 @@ export function initializeMagicWand(
     refreshMask();
   };
 
-  const removeSelection = async (): Promise<void> => {
+  const removeSelection = async (): Promise<MagicWandApplyResult> => {
     const selection = active;
     if (!selection?.mask || applying) {
-      return;
+      return Object.freeze({
+        message: "Zeige zuerst eine Zauberstab-Auswahl an.",
+        ok: false,
+      });
     }
+    const selectedPixelCount = selection.mask.selectedPixelCount;
+    const fileName = resultFileName(selection.source.file.name);
     applying = true;
     elements.canvas.setAttribute("aria-busy", "true");
     renderControls(elements, selection, applying);
     elements.status.textContent = "Auswahl wird lokal entfernt …";
     try {
       const result = removeMagicWandSelection(selection.input, selection.mask);
-      const file = await encodeRasterPng(result, resultFileName(selection.source.file.name));
+      const file = await encodeRasterPng(result, fileName);
       if (!(await imageLoader.loadManualVersion(file))) {
         throw new Error("Das Zauberstab-Ergebnis konnte nicht angezeigt werden.");
       }
       elements.status.textContent = "Zauberstab-Auswahl lokal entfernt.";
+      return Object.freeze({ fileName, ok: true, selectedPixelCount });
     } catch (error) {
-      elements.status.textContent = errorMessage(error);
+      const message = errorMessage(error);
+      elements.status.textContent = message;
+      return Object.freeze({ message, ok: false });
     } finally {
       applying = false;
       elements.canvas.removeAttribute("aria-busy");
       renderControls(elements, active, applying);
       updateAvailability();
     }
+  };
+
+  const previewSelection = async (
+    request: MagicWandPreviewRequest,
+  ): Promise<MagicWandPreviewResult> => {
+    if (!validPreviewRequest(request)) {
+      return Object.freeze({
+        message: "Zauberstab-Koordinaten und Empfindlichkeit sind ungültig.",
+        ok: false,
+      });
+    }
+    if (request.source === MagicWandRasterSource.Original) {
+      workspaceView.showOriginal();
+    } else {
+      workspaceView.showProcessed();
+    }
+    const source = workspaceView.rasterSource();
+    if (!source) {
+      return Object.freeze({ message: "Die gewählte Rasterquelle ist nicht geladen.", ok: false });
+    }
+    if (active && active.source !== source) {
+      closeSelection();
+    }
+    const selection = await startSelection();
+    if (!selection) {
+      return Object.freeze({
+        message: elements.status.textContent || "Der Zauberstab konnte nicht gestartet werden.",
+        ok: false,
+      });
+    }
+    elements.sensitivity.value = String(request.sensitivityPercent);
+    elements.sensitivityValue.textContent = `${String(request.sensitivityPercent)} %`;
+    selection.seed = Object.freeze({
+      xPixels: normalizedPixel(request.x, selection.input.widthPixels),
+      yPixels: normalizedPixel(request.y, selection.input.heightPixels),
+    });
+    refreshMask();
+    const mask = selection.mask;
+    if (!mask) {
+      return Object.freeze({
+        message: "Die Zauberstab-Auswahl konnte nicht berechnet werden.",
+        ok: false,
+      });
+    }
+    return Object.freeze({
+      coveragePercent: Number(((mask.selectedPixelCount / mask.selected.length) * 100).toFixed(2)),
+      ok: true,
+      seed: selection.seed,
+      selectedPixelCount: mask.selectedPixelCount,
+      sensitivityPercent: request.sensitivityPercent,
+      source: request.source,
+    });
   };
 
   elements.start.addEventListener("click", () => void startSelection());
@@ -223,7 +310,29 @@ export function initializeMagicWand(
   renderControls(elements, undefined, applying);
   updateAvailability();
 
-  return Object.freeze({ imageLoaded });
+  return Object.freeze({
+    applySelection: removeSelection,
+    imageLoaded,
+    previewSelection,
+  });
+}
+
+function validPreviewRequest(request: MagicWandPreviewRequest): boolean {
+  return (
+    (request.source === MagicWandRasterSource.Original ||
+      request.source === MagicWandRasterSource.Processed) &&
+    within(request.x, 0, 1) &&
+    within(request.y, 0, 1) &&
+    within(request.sensitivityPercent, 0, 100)
+  );
+}
+
+function normalizedPixel(value: number, length: number): number {
+  return clamp(Math.floor(value * length), 0, length - 1);
+}
+
+function within(value: number, minimum: number, maximum: number): boolean {
+  return Number.isFinite(value) && value >= minimum && value <= maximum;
 }
 
 function renderControls(

@@ -536,6 +536,14 @@ Alpha-Werte bleiben erhalten. Das Original bleibt wiederherstellbar; bestehende 
 History. „Verwerfen“ schließt die Auswahl ohne Bildänderung. Der vollständige Ablauf bleibt lokal
 und startet keinen Modelldownload.
 
+ChatGPT bedient genau denselben Ablauf mit zwei getrennten Werkzeugen. Der Aufruf
+`preview_magic_wand_selection` wählt `original` oder `processed`, normierte X-/Y-Koordinaten von
+0 bis 1 und eine Empfindlichkeit. Er schaltet die sichtbare Arbeitsfläche auf diese Rasterquelle
+und zeigt die Maske einschließlich Pixelzahl und Bildanteil an. Erst
+`apply_magic_wand_selection` bestätigt die sichtbare Auswahl. Für den schwarzen, mit dem Rand
+verbundenen Hintergrund des Logo-Demos ist der getestete Startwert `original`, `x: 0.01`,
+`y: 0.01`, `sensitivityPercent: 15`.
+
 ## KI-Manager
 
 Der KI-Manager startet geschlossen und öffnet oder schließt seine verfügbaren Modellkarten über
@@ -655,6 +663,8 @@ Nach bestätigter Bildauswahl kann ein Agent diesen Ablauf verwenden:
 5. `apply_background_removal` oder `apply_smart_selection` anwenden. Smart-Select-Punkte verwenden
    bildunabhängige X-/Y-Werte von 0 bis 1 und mindestens zwei Vordergrund- sowie einen
    Hintergrundpunkt.
+6. Eine farbzusammenhängende Fläche zuerst mit `preview_magic_wand_selection` sichtbar prüfen und
+   anschließend mit `apply_magic_wand_selection` entfernen. Dieser Weg benötigt kein KI-Modell.
 
 Zustandsändernde Toolergebnisse enthalten `ok` sowie bei Fehlern einen stabilen Code und eine
 verständliche Meldung. Dateinamen aus lokalen Eingaben sind als nicht vertrauenswürdiger Inhalt
@@ -678,24 +688,34 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
    `/mcp`-Endpunkt mit der in ChatGPT Developer Mode eingerichteten HTTPS-Verbindung verfügbar
    machen.
    Nach einer Änderung am Tool-Inventar einmal in **Settings · Plugins · img2svg Studio · Refresh**
-   wählen; danach zeigt die Aktionsliste zehn Werkzeuge.
+   wählen; danach zeigt die Aktionsliste zwölf Werkzeuge.
 2. Das Studio öffnen und **ChatGPT verbinden** wählen. Beim öffentlichen Studio bestätigt der
    Nutzer einmalig Chromes Zugriff auf das lokale Netzwerk.
-3. In ChatGPT die img2svg-App auswählen und zum Beispiel sagen: „Prüfe das verbundene Studio,
-   liste meine Presets, lade Jury Logo und übernimm den aktuellen Entwurf.“
-4. **ChatGPT trennen** beendet die flüchtige Browser-Sitzung sofort.
+3. In ChatGPT die img2svg-App auswählen und sagen: „Prüfe das verbundene Studio. Markiere im
+   Original-Logo mit dem Zauberstab den schwarzen Randbereich bei x 0,01, y 0,01 und 15 Prozent.
+   Zeige mir zuerst den Bildanteil und entferne noch nichts.“ Die türkise Auswahl bleibt im Studio
+   sichtbar.
+4. Danach sagen: „Entferne jetzt die sichtbare Auswahl, lade das Preset Jury Logo und übernimm den
+   aktuellen Entwurf.“ Das Studio zeigt die transparente PNG-Version und den neuen History-Run.
+5. **ChatGPT trennen** beendet die flüchtige Browser-Sitzung sofort.
 
 ChatGPT kann über diese Freigabe `get_workspace_state`, `list_conversion_presets`,
 `save_conversion_preset`, `load_conversion_preset`, `configure_conversion` und
-`convert_current_image` aufrufen. Der Browser führt exakt die bereits registrierten WebMCP-Tools
-aus. Der lokale Relay überträgt nur Toolname, Parameter und JSON-Ergebnis; Bilddaten bleiben im
-Tab. Ist kein Studio verbunden, erhält ChatGPT einen verständlichen Fehler statt einen versteckten
-Ersatzablauf.
+`convert_current_image` sowie die beiden Zauberstab-Schritte aufrufen. Der Browser führt exakt die
+bereits registrierten WebMCP-Tools aus. Der lokale Relay überträgt nur Toolname, Parameter und
+JSON-Ergebnis; Bilddaten bleiben im Tab. Ist kein Studio verbunden, erhält ChatGPT einen
+verständlichen Fehler statt einen versteckten Ersatzablauf.
+
+Die echte Chrome-150-Abnahme der Version 260721.16 aktualisierte zwölf App-Aktionen und führte
+beide Prompts gegen das sichtbare lokale Studio aus. Die Vorschau markierte 421.847 Pixel
+beziehungsweise 37,62 Prozent. Nach der Bestätigung entstand
+`marv-kalani-logo-zauberstab.png`; ChatGPT lud „Jury Logo“ und übernahm den 52.962 Byte großen
+SVG-Entwurf als Run 1. Die Studio-Konsole enthielt weder Warnung noch Fehler.
 
 ## ChatGPT-MCP-Companion
 
 Der Companion unter `mcp/` bietet ChatGPT zwei enge Wege. Die vier Bildwerkzeuge sind stateless und
-teilen den Rust/WASM-Konvertierungskern. Die sechs Studio-Werkzeuge werden nur bei sichtbarer
+teilen den Rust/WASM-Konvertierungskern. Die acht Studio-Werkzeuge werden nur bei sichtbarer
 Browserfreigabe an den flüchtigen Zustand des offenen Tabs weitergereicht.
 Für eine kontrollierte Hintergrundentfernung ruft ChatGPT zuerst `analyze_image` auf. Das Werkzeug
 liefert eine beschriftete PNG-Vorschau und bis zu zwölf Randregionen mit Farbwert, Bildanteil und
