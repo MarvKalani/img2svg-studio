@@ -50,6 +50,11 @@ const normalizedPointSchema = z.object({
   y: z.number().min(0).max(1),
 });
 
+const backgroundRemovalSchema = z.object({
+  seed: normalizedPointSchema,
+  sensitivity_percent: z.number().min(0).max(100),
+});
+
 const regionStatisticsSchema = z.object({
   heightPixels: z.number().int().positive(),
   removedPercent: z.number().min(0).max(100),
@@ -212,8 +217,9 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
         readOnlyHint: true,
       },
       description:
-        "Use this when the user wants to convert an attached raster image to SVG. Choose shapes, 4 colors, and low detail for flat logos; trace, 16 colors, and medium detail for illustrations; or trace, 64 colors, and high detail for photographs. When the user asks for a simpler result, lower color_count and detail_level. Provide exactly one image or image_base64.",
+        "Use this when the user wants to convert an attached raster image to SVG. Choose shapes, 4 colors, and low detail for flat logos; trace, 16 colors, and medium detail for illustrations; or trace, 64 colors, and high detail for photographs. When the user asks for a simpler result, lower color_count and detail_level. For a connected edge background, pass background_removal with its normalized seed and sensitivity so removal and tracing happen in one call without sending a large intermediate PNG through the model. Provide exactly one image or image_base64. The tool renders its own SVG preview and download widget; do not pass the SVG to another tool.",
       inputSchema: {
+        background_removal: backgroundRemovalSchema.optional(),
         color_count: z.number().int().min(2).max(256),
         detail_level: z.enum(["low", "medium", "high"]),
         image: fileReferenceSchema.optional(),
@@ -221,32 +227,52 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
         mode: z.enum(["trace", "shapes"]),
       },
       outputSchema: {
+        backgroundRemoval: regionStatisticsSchema.optional(),
         parameters: parametersSchema,
         stats: statisticsSchema,
-        svg: z.string(),
       },
       _meta: {
         "openai/fileParams": ["image"],
+        ui: { resourceUri: previewResourceUri },
+        "openai/outputTemplate": previewResourceUri,
         "openai/toolInvocation/invoked": "SVG created",
         "openai/toolInvocation/invoking": "Creating SVG…",
       },
     },
     async (input) => {
       try {
+        const rasterImage = await readToolImage(input);
+        const backgroundResult = input.background_removal
+          ? await removeBackgroundRegion({
+              ...rasterImage,
+              seed: input.background_removal.seed,
+              sensitivityPercent: input.background_removal.sensitivity_percent,
+            })
+          : undefined;
         const result = await vectorizeImage({
           colorCount: input.color_count,
           detailLevel: input.detail_level,
-          ...(await readToolImage(input)),
+          ...(backgroundResult ? { imageBase64: backgroundResult.imagePngBase64 } : rasterImage),
           mode: input.mode,
         });
+        const backgroundMessage = backgroundResult
+          ? ` Removed ${String(backgroundResult.stats.removedPixelCount)} connected background pixels first.`
+          : "";
         return {
           content: [
             {
-              text: `Created a ${result.stats.byteSize}-byte SVG with ${result.stats.pathCount} paths.`,
+              text: `Created a ${result.stats.byteSize}-byte SVG with ${result.stats.pathCount} paths.${backgroundMessage} The attached widget contains the exact preview and download.`,
               type: "text" as const,
             },
           ],
-          structuredContent: result,
+          // The SVG can be hundreds of kilobytes. ChatGPT only needs statistics;
+          // the widget receives the exact markup through hidden result metadata.
+          _meta: { svg: result.svg },
+          structuredContent: {
+            ...(backgroundResult ? { backgroundRemoval: backgroundResult.stats } : {}),
+            parameters: result.parameters,
+            stats: result.stats,
+          },
         };
       } catch (error) {
         const failure = publicFailure(error);
@@ -268,7 +294,7 @@ export function createImg2SvgMcpServer(relay: StudioRelay = createStudioRelay())
         readOnlyHint: true,
       },
       description:
-        "Use this after vectorize_image to render its SVG in an inline preview with an exact download button. Pass the SVG string returned by vectorize_image unchanged.",
+        "Compatibility renderer for callers that already hold an SVG string. Do not call this after vectorize_image because vectorize_image already renders its own exact preview and download widget.",
       inputSchema: { svg: z.string().min(1) },
       outputSchema: {
         stats: z.object({

@@ -15,7 +15,7 @@ When the model chooses conversion parameters and calls vectorize_image
 Then the existing Rust engine returns a deterministic SVG and structural statistics
 When the user asks to make the result simpler
 Then the model calls vectorize_image again with a lower detail level
-And get_svg_preview renders the new SVG with an exact download action
+And vectorize_image renders the new SVG with an exact download action
 ```
 
 ## Smallest architecture
@@ -26,17 +26,17 @@ flowchart LR
   Connection --> Http["Stateless Streamable HTTP"]
   Http --> Analyze["analyze_image data tool"]
   Analyze --> Remove["remove_background_region data tool"]
-  Remove --> Vectorize["vectorize_image data tool"]
+  Remove --> Vectorize["vectorize_image + preview widget"]
   Vectorize --> Decode["bounded raster decode"]
   Decode --> Wasm["existing img2svg WASM boundary"]
   Wasm --> Core["shared img2svg-core Rust crate"]
   Core --> Result["SVG + typed statistics"]
-  Result --> Preview["get_svg_preview render tool"]
-  Preview --> Widget["MCP Apps SVG widget + download"]
+  Result --> Widget["MCP Apps SVG widget + download"]
 ```
 
-The data tool and render tool stay separate. This lets the model inspect and reuse the structured
-SVG result before choosing whether to render it, and keeps the widget free of conversion logic.
+Statistics stay in concise `structuredContent`; the exact SVG travels in result `_meta`, which is
+visible to the widget but not the model. This prevents large SVG strings from consuming the model
+context while keeping the widget free of conversion logic.
 
 ## Tool contracts
 
@@ -64,13 +64,16 @@ Inputs:
 
 - `image`: ChatGPT file reference declared through `_meta["openai/fileParams"]`.
 - `image_base64`: compatibility input for MCP Inspector and non-ChatGPT hosts.
+- `background_removal`: optional normalized seed and sensitivity from the region analysis.
 - `mode`: `trace` for paths or `shapes` for evidence-backed native SVG elements.
 - `color_count`: requested palette size from 2 to 256; the adapter quantizes before tracing.
 - `detail_level`: `low`, `medium`, or `high`; mapped to explicit speckle and path-precision settings.
 
 Exactly one image input is required. The server bounds downloaded and decoded image sizes before
-calling the engine. The output contains the SVG string, effective parameters, byte size, path
-count, native shape counts, source dimensions, and output dimensions.
+calling the engine. ChatGPT receives effective parameters, byte size, path count, native shape
+counts, source dimensions, and output dimensions. The attached widget alone receives the SVG. If
+`background_removal` is present, the server removes that connected region and immediately traces
+the transparent raster. This avoids sending a large intermediate PNG through the model.
 
 The description teaches the model to start flat logos with `shapes`, four colors, and low detail;
 illustrations with 16 colors and medium detail; and photographs with 64 colors and high detail. A
@@ -78,9 +81,9 @@ request such as “make it simpler” lowers detail and color count on the next 
 
 ### `get_svg_preview`
 
-Input is the SVG from `vectorize_image`. The tool attaches one MCP Apps resource and returns the SVG
-as structured content. The iframe displays it through an image URL, reports the same statistics,
-and downloads the exact SVG bytes. Conversion remains in the data tool.
+This compatibility tool accepts SVG already held by another MCP client. ChatGPT does not need it
+after `vectorize_image`, because that tool now attaches the same iframe directly. The iframe renders
+an image URL, reports the same statistics, and downloads the exact hidden SVG bytes.
 
 ## Hosting and privacy
 
@@ -97,7 +100,9 @@ visible Studio without changing pixels; only the second call creates the transpa
 PNG. The browser executes the same WebMCP tool objects as the native browser agent. Relay HTTP
 endpoints accept only loopback Host headers, the production Studio or local-dev
 Origin, and random session credentials. The most recently polling tab is active; an idle tab
-expires after ten seconds and a command after thirty seconds.
+expires after sixty seconds and a command after thirty seconds. Command retrieval holds one HTTP
+request open instead of relying on a browser timer, so Chrome can keep the bridge alive while the
+Studio tab is in the background.
 
 After adding or changing a tool, refresh the Developer Mode installation under **Settings →
 Plugins → img2svg Studio → Refresh**. ChatGPT otherwise keeps the previously discovered tool

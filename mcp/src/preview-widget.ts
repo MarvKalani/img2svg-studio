@@ -77,11 +77,32 @@ export const previewWidgetHtml: string = String.raw`<!doctype html>
       let rpcId = 0;
       const pendingRequests = new Map();
 
-      function render(result) {
-        if (!result || typeof result.svg !== "string" || !result.stats) return;
-        currentSvg = result.svg;
+      function hiddenSvg(metadata) {
+        const envelopes = [
+          metadata,
+          metadata?.mcp_tool_result,
+          metadata?.call_tool_result,
+          metadata?.mcp_tool_result?.result,
+          metadata?.call_tool_result?.result,
+        ];
+        for (const envelope of envelopes) {
+          if (typeof envelope?._meta?.svg === "string") return envelope._meta.svg;
+        }
+        return "";
+      }
+
+      function elementCount(resultStats) {
+        if (Number.isFinite(resultStats?.elementCount)) return resultStats.elementCount;
+        return ["pathCount", "circleCount", "ellipseCount", "rectangleCount", "lineCount",
+          "polygonCount"].reduce((total, key) => total + (resultStats?.[key] || 0), 0);
+      }
+
+      function render(result, metadata) {
+        const svg = typeof result?.svg === "string" ? result.svg : hiddenSvg(metadata);
+        if (!svg || !result?.stats) return;
+        currentSvg = svg;
         preview.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(currentSvg);
-        stats.textContent = result.stats.byteSize + " bytes · " + result.stats.elementCount +
+        stats.textContent = result.stats.byteSize + " bytes · " + elementCount(result.stats) +
           " elements · " + result.stats.pathCount + " paths";
         downloadButton.disabled = false;
       }
@@ -110,7 +131,7 @@ export const previewWidgetHtml: string = String.raw`<!doctype html>
           return;
         }
         if (message.method === "ui/notifications/tool-result") {
-          render(message.params?.structuredContent);
+          render(message.params?.structuredContent, message.params);
         }
       }, { passive: true });
 
@@ -124,7 +145,7 @@ export const previewWidgetHtml: string = String.raw`<!doctype html>
         setTimeout(() => URL.revokeObjectURL(url), 0);
       });
 
-      render(window.openai?.toolOutput);
+      render(window.openai?.toolOutput, window.openai?.toolResponseMetadata);
       try {
         await rpcRequest("ui/initialize", {
           appCapabilities: {},

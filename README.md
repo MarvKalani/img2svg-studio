@@ -95,8 +95,11 @@ The separate companion accepts a ChatGPT file reference or a Base64 fixture. Bef
 `analyze_image` can show numbered edge-connected color regions with normalized seed coordinates;
 `remove_background_region` returns the chosen region as transparent PNG for visual review and
 direct reuse by `vectorize_image`. The same Rust engine then creates the SVG. The companion keeps
-no image, SVG, account, or application session. `get_svg_preview` renders the returned SVG in an
-MCP Apps widget and provides a byte-exact local download.
+no image, SVG, account, or application session. `vectorize_image` returns concise statistics to
+ChatGPT and sends the exact SVG only to its MCP Apps widget, which provides a byte-exact local
+download. For the final step it can remove the selected edge region and vectorize in one call, so
+the intermediate PNG never enters the model context. `get_svg_preview` remains a compatibility
+renderer for callers that already hold SVG.
 
 ```bash
 npm run build --workspace=img2svg-studio-mcp

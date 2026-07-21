@@ -252,6 +252,25 @@ Laufzeitabhängigkeit noch Bewertungsanforderung und verändert die img2svg-Arch
 Offizielle Regeln und Hackathon-Webseite bleiben die Quelle der Wahrheit. Deshalb wird das Plugin
 erst für den finalen Einreichungsaudit verwendet; Produktcode und Nachweise bleiben im Repository.
 
+## D-027 — Große SVG-Daten bleiben außerhalb des Modellkontexts
+
+**Status:** entschieden am 21. Juli 2026
+
+`vectorize_image` hängt das Vorschauwidget direkt an. Statistiken und wirksame Parameter stehen in
+`structuredContent`; der exakte SVG-String steht ausschließlich im widget-sichtbaren `_meta`.
+Dadurch erhält ChatGPT keine hunderttausende Zeichen lange SVG-Antwort und Vorschau sowie Download
+erscheinen ohne zweiten Modellaufruf. `get_svg_preview` bleibt nur als Kompatibilitätswerkzeug.
+
+## D-028 — Bild-Zwischenergebnisse und Hintergrund-Timer vermeiden
+
+**Status:** entschieden am 21. Juli 2026
+
+`vectorize_image` kann eine zuvor bestimmte Randregion im selben Serveraufruf entfernen und das
+Ergebnis unmittelbar vektorisieren. Dadurch muss ChatGPT kein großes Base64-PNG zwischen zwei
+Tools weiterreichen. Die sichtbare Studio-Brücke wartet zugleich per Long Poll auf Befehle, weil
+Chrome Timer in Hintergrund-Tabs drosseln kann. Beide Wege bleiben zustandslos beziehungsweise
+nur an eine ausdrücklich verbundene, flüchtige Studio-Sitzung gebunden.
+
 Quelle:
 
 - <https://openai.devpost.com/details/faqs>

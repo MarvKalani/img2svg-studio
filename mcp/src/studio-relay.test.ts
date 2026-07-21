@@ -30,6 +30,23 @@ describe("visible Studio relay", () => {
     );
   });
 
+  test("Given a background Studio is long-polling, when ChatGPT invokes a tool, then the pending browser request receives it", async () => {
+    let nextId = 0;
+    const relay = createStudioRelay({ createId: () => `id-${String(++nextId)}` });
+    const session = relay.createSession();
+
+    const waitingCommand = relay.waitForCommand(session.sessionId, session.token);
+    const execution = relay.execute("load_conversion_preset", { name: "Candy Logo" });
+
+    await expect(waitingCommand).resolves.toEqual({
+      commandId: "id-3",
+      input: { name: "Candy Logo" },
+      toolName: "load_conversion_preset",
+    });
+    relay.submitResult(session.sessionId, session.token, "id-3", '{"ok":true}');
+    await expect(execution).resolves.toBe('{"ok":true}');
+  });
+
   test("Given a relay token from another session, when it polls, then no command is exposed", () => {
     let nextId = 0;
     const relay = createStudioRelay({ createId: () => `id-${String(++nextId)}` });

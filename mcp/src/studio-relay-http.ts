@@ -42,7 +42,9 @@ export async function handleStudioRelayRequest(
       return true;
     }
     if (request.method === "GET" && url.pathname === `${relayPath}/commands`) {
-      const command = relay.poll(sessionId, token);
+      // Long polling remains active when Chrome backgrounds the visible Studio tab.
+      // Timer-only polling is frozen by browser energy-saving and loses the demo bridge.
+      const command = await relay.waitForCommand(sessionId, token);
       if (command) {
         writeJson(response, 200, command);
       } else {

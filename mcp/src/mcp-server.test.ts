@@ -54,6 +54,8 @@ describe("Streamable HTTP MCP server", () => {
       openWorldHint: true,
       readOnlyHint: true,
     });
+    expect(vectorizeTool?._meta?.ui).toEqual({ resourceUri: "ui://img2svg/preview.html" });
+    expect(vectorizeTool?._meta?.["openai/outputTemplate"]).toBe("ui://img2svg/preview.html");
     expect(previewTool?._meta?.ui).toEqual({ resourceUri: "ui://img2svg/preview.html" });
 
     const imageBase64 = (await readFile(circleFixture)).toString("base64");
@@ -83,13 +85,18 @@ describe("Streamable HTTP MCP server", () => {
     expect(removed.content).toEqual(
       expect.arrayContaining([expect.objectContaining({ mimeType: "image/png", type: "image" })]),
     );
-    const editedImageBase64 = (removed.structuredContent as { imagePngBase64: string })
-      .imagePngBase64;
+    expect(removed.structuredContent).toEqual(
+      expect.objectContaining({ imagePngBase64: expect.any(String) }),
+    );
     const result = await client.callTool({
       arguments: {
+        background_removal: {
+          seed: regions[0]?.seed,
+          sensitivity_percent: 0,
+        },
         color_count: 4,
         detail_level: "low",
-        image_base64: editedImageBase64,
+        image_base64: imageBase64,
         mode: "shapes",
       },
       name: "vectorize_image",
@@ -98,12 +105,16 @@ describe("Streamable HTTP MCP server", () => {
     expect(result.isError).not.toBe(true);
     expect(result.structuredContent).toEqual(
       expect.objectContaining({
+        backgroundRemoval: expect.objectContaining({ removedPixelCount: expect.any(Number) }),
         stats: expect.objectContaining({ circleCount: 1, pathCount: 0 }),
-        svg: expect.stringMatching(/^<svg\b/u),
       }),
     );
+    expect(result.structuredContent).not.toHaveProperty("svg");
+    expect(result._meta).toEqual(
+      expect.objectContaining({ svg: expect.stringMatching(/^<svg\b/u) }),
+    );
 
-    const svg = (result.structuredContent as { svg: string }).svg;
+    const svg = (result._meta as { svg: string }).svg;
     const previewResult = await client.callTool({
       arguments: { svg },
       name: "get_svg_preview",

@@ -723,7 +723,9 @@ normiertem Saatpunkt. Koordinaten von 0 bis 1 beziehen sich immer auf das Origin
 damit unabhängig von Chatfenster, Zoom und Bildschirmauflösung. ChatGPT prüft die Vorschau und
 übergibt den gewählten Saatpunkt unverändert an `remove_background_region`. Dort werden nur die
 vierfach verbundenen Pixel innerhalb derselben Empfindlichkeit transparent. Das zurückgegebene
-PNG bleibt eine Vorschau; erst seine bewusste Übergabe an `vectorize_image` setzt den Ablauf fort.
+PNG bleibt eine Vorschau. Für den finalen Schritt erhält `vectorize_image` Startpunkt und
+Empfindlichkeit direkt und führt Entfernung sowie Vektorisierung in einem Aufruf aus. Dadurch muss
+ChatGPT kein großes Base64-PNG zwischen zwei Werkzeugen weiterreichen.
 Analyse- und Entfernungsvorschauen werden als indizierte PNGs übertragen. Das erhält Transparenz,
 entspricht der maximalen Farbanzahl des Konverters und verhindert unnötig große ChatGPT-Antworten.
 
@@ -741,8 +743,14 @@ bis zur Vektorisierung und SVG-Vorschau mit dem Kreis-Fixture aus.
 Die Toolbeschreibung empfiehlt für flache Logos `shapes`, vier Farben und niedrige Details. Eine
 Bitte wie „mach es einfacher“ reduziert Farbanzahl und Detailstufe. Niedrig, mittel und hoch
 verwenden dabei 0, 1 oder 2 Koordinaten-Nachkommastellen. Das Ergebnis enthält den
-SVG-String, effektive Parameter, Eingabe- und Ausgabemaße, Bytezahl sowie Zählungen für Pfade und
-alle fünf nativen Formtypen.
+exakten SVG-String ausschließlich in Widget-Metadaten. ChatGPT selbst erhält nur effektive
+Parameter, Eingabe- und Ausgabemaße, Bytezahl sowie Zählungen für Pfade und alle fünf nativen
+Formtypen. Dadurch versucht das Modell nicht, große SVG-Zeichenketten zu komprimieren oder erneut
+zu interpretieren. Vorschau und „Download SVG“ erscheinen direkt am `vectorize_image`-Ergebnis.
+
+Die Studio-Brücke wartet per Long Poll auf Befehle. Deshalb bleibt die sichtbare Verbindung auch
+erhalten, wenn Chrome den Studio-Tab im Hintergrund drosselt; sie endet weiterhin beim bewussten
+Trennen oder Schließen der flüchtigen Sitzung.
 
 Lokaler Start:
 
@@ -756,10 +764,9 @@ npm start --workspace=img2svg-studio-mcp
 Sekunden und denselben Byteumfang begrenzt. Bild und SVG existieren nur während des einzelnen
 Toolaufrufs; es gibt keine MCP-Anwendungssitzung oder Persistenz.
 
-`get_svg_preview` übernimmt den SVG-String unverändert, rendert ihn als isolierte Bildquelle und
-zeigt Byte-, Element- und Pfadzahl. „Download SVG“ erzeugt einen Blob direkt aus demselben String;
-dadurch entsprechen Download und Vorschau bytegenau einander. Das Renderwerkzeug enthält keine
-Konvertierungslogik und akzeptiert höchstens 5 MiB SVG.
+`get_svg_preview` bleibt für MCP-Clients erhalten, die bereits selbst einen SVG-String besitzen.
+ChatGPT ruft es nach `vectorize_image` nicht mehr auf. Das gemeinsame Widget rendert die isolierte
+Bildquelle und erzeugt den Download-Blob direkt aus demselben, höchstens 5 MiB großen SVG.
 
 Die echte ChatGPT-Abnahme verbindet den lokalen Endpunkt bevorzugt über OpenAI Secure MCP Tunnel.
 Dafür bleiben Server und Bilder auf dem Entwicklungsrechner; nur ausgehender HTTPS-Verkehr zum

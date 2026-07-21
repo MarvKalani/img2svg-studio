@@ -1,8 +1,6 @@
 import { createStudioRelayClient, type StudioRelayClient } from "./studio-relay-client";
 import type { WebMcpTool } from "./webmcp-adapter";
 
-const synchronizationIntervalMilliseconds = 250;
-
 export interface StudioRelayControl {
   dispose(): void;
 }
@@ -14,8 +12,6 @@ interface StudioRelayElements {
 
 interface StudioRelayControllerOptions {
   readonly client?: StudioRelayClient;
-  readonly setInterval?: typeof window.setInterval;
-  readonly clearInterval?: typeof window.clearInterval;
 }
 
 export function initializeStudioRelay(
@@ -25,9 +21,6 @@ export function initializeStudioRelay(
 ): StudioRelayControl {
   const elements = readElements(source);
   const client = options.client ?? createStudioRelayClient(tools);
-  const schedule = options.setInterval ?? window.setInterval.bind(window);
-  const cancelSchedule = options.clearInterval ?? window.clearInterval.bind(window);
-  let timer: number | undefined;
   let synchronizing = false;
 
   async function synchronize(): Promise<void> {
@@ -36,7 +29,11 @@ export function initializeStudioRelay(
     }
     synchronizing = true;
     try {
-      await client.synchronize();
+      // A pending fetch keeps working in a background tab while browser timers pause.
+      // The server long-polls, so this loop is idle until ChatGPT sends a command.
+      while (client.connected) {
+        await client.synchronize();
+      }
     } catch {
       await stop("Verbindung unterbrochen");
     } finally {
@@ -52,7 +49,7 @@ export function initializeStudioRelay(
       elements.toggle.setAttribute("aria-pressed", "true");
       elements.toggle.textContent = "ChatGPT trennen";
       elements.status.textContent = "Studio verbunden";
-      timer = schedule(() => void synchronize(), synchronizationIntervalMilliseconds);
+      void synchronize();
     } catch {
       elements.status.textContent = "Companion nicht erreichbar";
     } finally {
@@ -61,10 +58,6 @@ export function initializeStudioRelay(
   }
 
   async function stop(status = "Nicht verbunden"): Promise<void> {
-    if (timer !== undefined) {
-      cancelSchedule(timer);
-      timer = undefined;
-    }
     await client.disconnect();
     elements.toggle.setAttribute("aria-pressed", "false");
     elements.toggle.textContent = "ChatGPT verbinden";

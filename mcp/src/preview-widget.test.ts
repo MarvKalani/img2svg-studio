@@ -30,6 +30,8 @@ describe("SVG preview widget", () => {
     expect(previewWidgetHtml).toContain('type: "image/svg+xml"');
     expect(previewWidgetHtml).toContain('download = "img2svg-result.svg"');
     expect(previewWidgetHtml).toContain('message.method === "ui/notifications/tool-result"');
+    expect(previewWidgetHtml).toContain("toolResponseMetadata");
+    expect(previewWidgetHtml).toContain("mcp_tool_result");
     expect(previewWidgetHtml).not.toContain("preview.innerHTML");
   });
 });
