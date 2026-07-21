@@ -677,6 +677,8 @@ WebMCP ist eine progressive Erweiterung. Ohne WebMCP bleibt die gesamte UI bedie
 1. Den Companion mit `npm start --workspace=img2svg-studio-mcp` auf Port 8787 starten und seinen
    `/mcp`-Endpunkt mit der in ChatGPT Developer Mode eingerichteten HTTPS-Verbindung verfügbar
    machen.
+   Nach einer Änderung am Tool-Inventar einmal in **Settings · Plugins · img2svg Studio · Refresh**
+   wählen; danach zeigt die Aktionsliste zehn Werkzeuge.
 2. Das Studio öffnen und **ChatGPT verbinden** wählen. Beim öffentlichen Studio bestätigt der
    Nutzer einmalig Chromes Zugriff auf das lokale Netzwerk.
 3. In ChatGPT die img2svg-App auswählen und zum Beispiel sagen: „Prüfe das verbundene Studio,

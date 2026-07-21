@@ -11,6 +11,7 @@ minutes and be publicly visible on YouTube.
 - Cache MODNet before recording, then unload it so the load state remains visible without waiting
   for a full network download during the take.
 - Close personal tabs, notifications and unrelated DevTools panels.
+- In ChatGPT Settings → Plugins → img2svg Studio, press **Refresh** once and verify ten actions.
 - Record voice and screen together; use no copyrighted music.
 
 ## Timed narration and shots

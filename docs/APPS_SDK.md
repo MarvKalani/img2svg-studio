@@ -96,6 +96,10 @@ agent. Relay HTTP endpoints accept only loopback Host headers, the production St
 Origin, and random session credentials. The most recently polling tab is active; an idle tab
 expires after ten seconds and a command after thirty seconds.
 
+After adding or changing a tool, refresh the Developer Mode installation under **Settings →
+Plugins → img2svg Studio → Refresh**. ChatGPT otherwise keeps the previously discovered tool
+inventory even though the MCP server already exposes the new contracts.
+
 For Developer Mode, the preferred smallest setup keeps `http://127.0.0.1:8787/mcp` local and uses
 OpenAI Secure MCP Tunnel. The tunnel requires its own `tunnel_id` and runtime API key, but it does
 not expose an inbound port and does not add an OpenAI API call to conversion. A temporary public
